@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mueblesysillones · Derivaciones · Mar–May 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --bg:#F0EDE8; --bg2:#E8E4DF; --surface:#FFFFFF;
+  --ink:#111111; --ink2:#444444; --ink3:#8A8A8A;
+  --border:rgba(0,0,0,0.10); --border2:rgba(0,0,0,0.06);
+  --c-hudson:#1A1A2E; --c-caba:#2C6E8A; --c-canning:#3A7A55; --c-norcenter:#8A5A2C;
+  --c-success:#1A6A3A; --c-warn:#9A6A00; --c-danger:#B4231F; --c-info:#1A4A8A;
+}
+html,body{ width:100%; height:100%; overflow:hidden; font-family:'Montserrat',sans-serif; background:#222; }
+.deck{ width:100vw; height:100vh; position:relative; overflow:hidden; background:var(--bg); }
+.slide{ position:absolute; inset:0; display:flex; flex-direction:column; opacity:0; pointer-events:none; transform:translateX(46px); transition:opacity .4s ease, transform .4s ease; }
+.slide.active{ opacity:1; pointer-events:all; transform:translateX(0); }
+.slide.exit{ opacity:0; transform:translateX(-46px); pointer-events:none; }
+#progress-bar{ position:fixed; top:0; left:0; height:3px; background:var(--ink); transition:width .35s ease; z-index:200; }
+#nav{ position:fixed; bottom:26px; right:36px; display:flex; gap:10px; z-index:200; }
+.nav-btn{ padding:9px 22px; border-radius:6px; border:1.5px solid var(--ink); background:transparent; color:var(--ink); font-size:12px; font-family:inherit; font-weight:500; cursor:pointer; letter-spacing:.5px; transition:all .2s; }
+.nav-btn:hover{ background:var(--ink); color:var(--bg); } .nav-btn:disabled{ opacity:.2; cursor:default; }
+.nav-btn.primary{ background:var(--ink); color:var(--bg); }
+#slide-counter{ position:fixed; bottom:32px; left:36px; font-size:11px; color:var(--ink3); z-index:200; letter-spacing:1.5px; }
+#dot-row{ position:fixed; bottom:34px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:200; }
+.dot{ width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,0.18); cursor:pointer; transition:.2s; }
+.dot.active{ background:var(--ink); transform:scale(1.4); }
+#fs-hint{ position:fixed; top:18px; right:24px; font-size:11px; color:var(--ink3); z-index:300; background:var(--surface); padding:6px 14px; border-radius:6px; border:1px solid var(--border); cursor:pointer; letter-spacing:.5px; transition:opacity .4s; }
+.slide-inner{ flex:1; display:flex; flex-direction:column; justify-content:safe center; overflow-y:auto; padding:54px 72px 88px; }
+.slide-inner > *{ flex-shrink:0; }
+.eyebrow{ font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--ink3); margin-bottom:14px; }
+.s-title{ font-size:clamp(30px,3.6vw,48px); font-weight:800; color:var(--ink); line-height:1.05; letter-spacing:-1px; margin-bottom:6px; }
+.s-sub{ font-size:15px; color:var(--ink3); font-weight:400; margin-bottom:32px; }
+/* icons */
+.ico svg{ width:100%; height:100%; display:block; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.icirc{ border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--border); color:var(--ink); flex:0 0 auto; }
+/* portada */
+.s1{ display:flex; flex-direction:row; height:100%; }
+.s1-left{ flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:64px 72px; }
+.s1-logo{ width:170px; filter:brightness(0); opacity:.9; }
+.s1-heading{ font-size:clamp(42px,5.4vw,70px); font-weight:800; color:var(--ink); line-height:1.02; letter-spacing:-2px; }
+.s1-heading em{ font-style:normal; color:var(--ink3); font-weight:300; }
+.s1-meta{ display:flex; gap:46px; }
+.s1-meta .v{ font-size:34px; font-weight:800; color:var(--ink); letter-spacing:-1px; }
+.s1-meta .l{ font-size:11px; color:var(--ink3); text-transform:uppercase; letter-spacing:2px; margin-top:2px; font-weight:600; }
+.s1-right{ width:300px; background:var(--ink); display:flex; flex-direction:column; justify-content:center; gap:0; }
+.s1-br{ flex:1; display:flex; flex-direction:column; justify-content:center; padding:0 38px; border-bottom:1px solid rgba(255,255,255,.08); }
+.s1-br:last-child{ border-bottom:none; }
+.s1-br .n{ font-size:17px; font-weight:700; color:#fff; }
+.s1-br .c{ font-size:12px; color:rgba(255,255,255,.4); margin-top:3px; }
+/* objetivos */
+.obj-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.obj-card{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; gap:22px; }
+.obj-card .icirc{ width:88px; height:88px; color:#fff; }
+.obj-card .icirc .ico{ width:40px; height:40px; }
+.obj-card .h{ font-size:22px; font-weight:800; color:var(--ink); letter-spacing:-.5px; }
+.obj-card .p{ font-size:14px; color:var(--ink3); line-height:1.5; }
+/* proceso */
+.proc{ display:flex; align-items:flex-start; justify-content:space-between; gap:4px; margin-top:14px; }
+.proc-step{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; gap:18px; }
+.proc-step .icirc{ width:104px; height:104px; }
+.proc-step .icirc .ico{ width:46px; height:46px; }
+.proc-step.hl .icirc{ background:var(--ink); color:#fff; border-color:var(--ink); }
+.proc-step .l{ font-size:17px; font-weight:700; color:var(--ink); }
+.proc-arrow{ flex:0 0 30px; color:#C4BDB2; display:flex; align-items:center; justify-content:center; height:104px; }
+.proc-arrow .ico{ width:26px; height:26px; stroke-width:2.2; }
+/* meses grandes */
+.month-row{ display:flex; gap:22px; }
+.month-card{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:34px 22px; text-align:center; position:relative; }
+.month-card.lead{ background:var(--ink); border-color:var(--ink); }
+.month-card .ml{ font-size:14px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--ink3); margin-bottom:8px; }
+.month-card.lead .ml{ color:rgba(255,255,255,.55); }
+.month-card .mn{ font-size:clamp(60px,8.5vw,116px); font-weight:800; letter-spacing:-4px; line-height:.95; color:var(--ink); }
+.month-card.lead .mn{ color:#fff; }
+.month-card .mt{ margin-top:14px; font-size:14px; font-weight:700; }
+.tdown{ color:var(--c-danger); } .tflat{ color:var(--ink3); } .tup{ color:var(--c-success); }
+.month-foot{ margin-top:26px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:14px; color:var(--ink3); font-weight:500; }
+.month-foot b{ color:var(--ink); font-weight:700; }
+/* barras prolijas */
+.bars{ display:flex; flex-direction:column; gap:16px; }
+.bar2{ display:flex; align-items:center; gap:20px; }
+.bar2 .bl{ width:120px; font-size:17px; font-weight:700; color:var(--ink); text-align:right; flex:0 0 auto; }
+.bar2 .bt{ flex:1; height:50px; background:var(--surface); border-radius:12px; overflow:hidden; border:1px solid var(--border); position:relative; }
+.bar2 .bf{ height:100%; border-radius:12px; display:flex; align-items:center; padding:0 20px; }
+.bar2 .bf .bn{ font-size:20px; font-weight:800; color:#fff; letter-spacing:-.5px; }
+.bar2 .br{ width:130px; flex:0 0 auto; font-size:13px; color:var(--ink3); font-weight:600; }
+.chip{ display:inline-flex; align-items:center; gap:5px; padding:5px 13px; border-radius:30px; font-size:11px; font-weight:700; letter-spacing:.3px; }
+.chip.g{ background:#D4EDDA; color:#145A2E; } .chip.r{ background:#FADBD8; color:#922B21; }
+.chip.y{ background:#FBE9C9; color:#7D5A08; } .chip.gr{ background:#E8E8E8; color:#555; }
+/* tabla mensual */
+.tbl{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); margin-top:6px; }
+table{ width:100%; border-collapse:collapse; }
+thead{ background:var(--ink); }
+thead th{ padding:13px 18px; color:rgba(255,255,255,.7); text-align:left; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1.2px; }
+thead th.num{ text-align:right; }
+tbody tr:nth-child(even){ background:var(--bg2); } tbody tr:nth-child(odd){ background:var(--surface); }
+tbody td{ padding:12px 18px; color:var(--ink); border-bottom:1px solid var(--border2); font-size:15px; font-weight:500; }
+tbody td.num{ text-align:right; font-weight:700; }
+tbody tr.rt td{ background:#E9F6EE; } tbody tr.rz td{ background:#FCEDEC; }
+/* conversion cards */
+.conv-row{ display:flex; gap:18px; }
+.conv-card{ flex:1; border-radius:18px; padding:30px 26px; color:#fff; }
+.conv-card .cs{ font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; opacity:.8; }
+.conv-card .cbig{ font-size:clamp(44px,5.6vw,66px); font-weight:800; letter-spacing:-2px; margin:6px 0 2px; }
+.conv-card .csub{ font-size:13px; opacity:.85; font-weight:500; }
+.conv-card .ctag{ margin-top:14px; font-size:12px; font-weight:700; background:rgba(255,255,255,.16); display:inline-block; padding:5px 12px; border-radius:20px; }
+/* top5 */
+.podium{ display:flex; gap:16px; align-items:flex-end; }
+.pod{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px 18px; text-align:center; }
+.pod.first{ border:2px solid var(--c-success); }
+.pod .rank{ font-size:12px; font-weight:800; letter-spacing:1px; color:var(--ink3); }
+.pod .name{ font-size:19px; font-weight:800; color:var(--ink); margin:8px 0 2px; letter-spacing:-.5px; }
+.pod .suc{ font-size:11px; color:var(--ink3); text-transform:uppercase; letter-spacing:1px; font-weight:600; }
+.pod .sales{ font-size:46px; font-weight:800; color:var(--ink); letter-spacing:-2px; margin:10px 0 0; }
+.pod .slbl{ font-size:11px; color:var(--ink3); font-weight:600; }
+.pod .cv{ margin-top:12px; font-size:12px; font-weight:700; padding:5px 12px; border-radius:20px; display:inline-block; }
+.pod .cv.best{ background:#D4EDDA; color:#145A2E; } .pod .cv.norm{ background:#EEE; color:#555; }
+/* mini conv bar en tabla */
+.cbar{ display:inline-block; width:62px; height:7px; background:#E5E2DC; border-radius:4px; overflow:hidden; vertical-align:middle; margin-right:8px; }
+.cbar i{ display:block; height:100%; border-radius:4px; background:var(--c-success); }
+/* dual big stat */
+.dual{ display:flex; gap:22px; }
+.dual-stat{ flex:1; border-radius:18px; padding:38px 32px; text-align:center; border:1px solid var(--border); }
+.dual-stat.a{ background:#FBEDEA; border-color:#EDC9C4; } .dual-stat.b{ background:#FBF2E0; border-color:#EAD7AC; }
+.dual-stat .dn{ font-size:clamp(66px,9.5vw,128px); font-weight:800; letter-spacing:-5px; line-height:.9; }
+.dual-stat.a .dn{ color:var(--c-danger); } .dual-stat.b .dn{ color:var(--c-warn); }
+.dual-stat .dt{ font-size:16px; color:var(--ink2); margin-top:16px; font-weight:600; line-height:1.45; }
+.dual-stat .dt b{ color:var(--ink); }
+/* before / after */
+.ba{ display:flex; gap:22px; align-items:stretch; }
+.ba-col{ flex:1; border-radius:18px; padding:30px; display:flex; flex-direction:column; gap:18px; }
+.ba-col.antes{ background:#FBEDEA; border:1px solid #EDC9C4; }
+.ba-col.ahora{ background:#E9F6EE; border:1px solid #C9E6D3; }
+.ba-col .bah{ display:flex; align-items:center; gap:12px; font-size:14px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+.ba-col.antes .bah{ color:var(--c-danger); } .ba-col.ahora .bah{ color:var(--c-success); }
+.ba-flow{ display:flex; align-items:center; gap:12px; }
+.ba-node{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; font-size:14px; font-weight:600; color:var(--ink); flex:1; }
+.ba-node .icirc{ width:42px; height:42px; } .ba-node .icirc .ico{ width:22px; height:22px; }
+.ba-arrow{ color:var(--ink3); flex:0 0 20px; } .ba-arrow .ico{ width:20px; height:20px; stroke-width:2.2; }
+.ba-out{ font-size:16px; font-weight:800; display:flex; align-items:center; gap:10px; }
+.ba-out .icirc{ width:34px; height:34px; } .ba-out .icirc .ico{ width:18px; height:18px; }
+.ba-col.antes .ba-out{ color:var(--c-danger); } .ba-col.ahora .ba-out{ color:var(--c-success); }
+/* slide 11 urgencia + whatsapp */
+.s11-grid{ display:flex; gap:34px; align-items:center; }
+.urg{ flex:1; }
+.urg .icirc{ width:96px; height:96px; background:var(--c-danger); border-color:var(--c-danger); color:#fff; margin-bottom:24px; }
+.urg .icirc .ico{ width:46px; height:46px; }
+.urg .ubig{ font-size:clamp(30px,4vw,46px); font-weight:800; color:var(--ink); line-height:1.05; letter-spacing:-1px; margin-bottom:16px; }
+.urg .ubig em{ font-style:normal; color:var(--c-danger); }
+.urg .uli{ list-style:none; }
+.urg .uli li{ display:flex; gap:12px; align-items:flex-start; font-size:15px; color:var(--ink2); font-weight:500; padding:7px 0; }
+.urg .uli li .ico{ width:20px; height:20px; color:var(--c-success); flex:0 0 auto; margin-top:2px; }
+.wa{ width:320px; flex:0 0 auto; background:#E5DDD5; border-radius:22px; padding:14px; box-shadow:0 16px 40px rgba(0,0,0,.18); }
+.wa-top{ background:#075E54; color:#fff; border-radius:14px 14px 0 0; padding:12px 16px; display:flex; align-items:center; gap:10px; margin:-14px -14px 12px; }
+.wa-top .wav{ width:34px; height:34px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; }
+.wa-top .wav img{ width:24px; }
+.wa-top .wan{ font-size:14px; font-weight:700; } .wa-top .was{ font-size:10px; opacity:.8; }
+.wa-bub{ background:#fff; border-radius:4px 12px 12px 12px; padding:12px 14px; font-size:13px; color:#111; line-height:1.5; box-shadow:0 1px 1px rgba(0,0,0,.1); }
+.wa-bub b{ font-weight:700; }
+.wa-time{ font-size:9px; color:#888; text-align:right; margin-top:4px; }
+.wa-btns{ margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+.wa-b{ background:#fff; border-radius:8px; padding:9px; text-align:center; font-size:12px; font-weight:600; color:#0A7CFF; box-shadow:0 1px 1px rgba(0,0,0,.1); display:flex; align-items:center; justify-content:center; gap:6px; }
+.wa-b .ico{ width:15px; height:15px; }
+/* cierre */
+.dark{ background:var(--ink); }
+.dark .eyebrow{ color:rgba(255,255,255,.4); } .dark .s-title{ color:#fff; } .dark .s-sub{ color:rgba(255,255,255,.45); }
+.s12-logo{ width:150px; opacity:.92; margin-bottom:26px; }
+.ask-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.ask{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:26px 22px; display:flex; flex-direction:column; gap:16px; }
+.ask .icirc{ width:64px; height:64px; background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.16); color:#fff; }
+.ask .icirc .ico{ width:30px; height:30px; }
+.ask .ah{ font-size:16px; font-weight:800; color:#fff; line-height:1.2; letter-spacing:-.3px; }
+.ask .ap{ font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.5; font-weight:400; }
+.note{ font-size:11px; color:var(--ink3); margin-top:14px; font-weight:500; }
+/* ===== PDF / IMPRESIÓN (no afecta la vista en pantalla) ===== */
+@media print {
+  @page { size: 13.333in 7.5in; margin: 0; }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  html, body { width:1280px; height:auto; overflow:visible; background:#fff; }
+  .deck { width:1280px; height:auto; position:static; overflow:visible; background:transparent; }
+  .slide { position:relative; inset:auto; opacity:1 !important; transform:none !important; pointer-events:auto;
+    width:1280px; height:720px; overflow:hidden; background:var(--bg);
+    page-break-after:always; break-after:page; page-break-inside:avoid; }
+  .slide.dark { background:var(--ink); }
+  .slide:last-of-type { page-break-after:auto; break-after:auto; }
+  #progress-bar, #nav, #slide-counter, #dot-row, #fs-hint,
+  #menu-btn, #menu-overlay, #menu-panel { display:none !important; }
+}
+
+/* ===== MENU HAMBURGUESA ===== */
+#menu-btn{ position:fixed; top:16px; left:18px; z-index:320; width:46px; height:46px; border-radius:10px;
+  background:var(--surface); border:1px solid var(--border); display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:5px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.10); transition:background .2s; }
+#menu-btn:hover{ background:var(--ink); }
+#menu-btn span{ display:block; width:20px; height:2px; background:var(--ink); border-radius:2px; transition:transform .28s, opacity .2s, background .2s; }
+#menu-btn:hover span{ background:#fff; }
+body.menu-open #menu-btn span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+body.menu-open #menu-btn span:nth-child(2){ opacity:0; }
+body.menu-open #menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+#menu-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.45); opacity:0; pointer-events:none; transition:opacity .3s; z-index:310; }
+body.menu-open #menu-overlay{ opacity:1; pointer-events:auto; }
+#menu-panel{ position:fixed; top:0; left:0; height:100%; width:312px; max-width:85vw; background:var(--surface); z-index:315;
+  transform:translateX(-100%); transition:transform .32s cubic-bezier(.4,0,.2,1); box-shadow:0 0 50px rgba(0,0,0,.22);
+  display:flex; flex-direction:column; overflow-y:auto; }
+body.menu-open #menu-panel{ transform:translateX(0); }
+.menu-head{ background:var(--ink); padding:24px 22px 20px; display:flex; flex-direction:column; gap:10px; }
+.menu-logo{ width:122px; }
+.menu-title{ color:rgba(255,255,255,.5); font-size:11px; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+.menu-group{ font-size:10.5px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink3); padding:18px 22px 6px; }
+.menu-item{ display:flex; align-items:center; gap:12px; padding:11px 22px; font-size:14px; font-weight:600; color:var(--ink2);
+  cursor:pointer; border-left:3px solid transparent; transition:background .15s, color .15s; }
+.menu-item:hover{ background:var(--bg2); color:var(--ink); }
+.menu-item.active{ border-left-color:var(--ink); color:var(--ink); background:var(--bg); font-weight:800; }
+.menu-item .mnum{ font-size:11px; color:var(--ink3); font-weight:700; min-width:16px; text-align:right; }
+.menu-foot{ margin-top:auto; padding:16px 22px 22px; font-size:10.5px; color:var(--ink3); border-top:1px solid var(--border2); }
+/* submenus / acordeon */
+.menu-cat{ border-bottom:1px solid var(--border2); }
+.menu-parent{ display:flex; align-items:center; gap:10px; padding:14px 22px; cursor:pointer; user-select:none;
+  font-size:12px; font-weight:800; letter-spacing:1.1px; text-transform:uppercase; color:var(--ink2); transition:background .15s, color .15s; }
+.menu-parent:hover{ background:var(--bg2); color:var(--ink); }
+.menu-parent .mp-txt{ flex:1; }
+.menu-parent .mp-count{ font-size:10px; font-weight:700; color:var(--ink3); background:var(--bg2); border-radius:20px; padding:2px 8px; }
+.menu-parent:hover .mp-count{ background:var(--surface); }
+.menu-cat.open .menu-parent{ color:var(--ink); }
+.menu-chev{ width:14px; height:14px; flex:0 0 auto; color:var(--ink3); transition:transform .3s; }
+.menu-cat.open .menu-chev{ transform:rotate(180deg); }
+.menu-sub{ max-height:0; overflow:hidden; transition:max-height .32s ease; background:var(--bg); }
+.menu-cat.open .menu-sub{ max-height:460px; }
+.menu-sub .menu-item{ padding:10px 22px 10px 28px; font-size:13.5px; }
+
+/* ===== RESPONSIVE / MOBILE (todos los tamanos) ===== */
+@media (max-width: 860px){
+  .slide{ overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .slide-inner{ justify-content:flex-start; padding:76px 18px 92px; }
+  .s-title{ font-size:clamp(24px,6.2vw,34px); letter-spacing:-.5px; }
+  .s-sub{ font-size:13px; margin-bottom:20px; }
+  .eyebrow{ font-size:11px; letter-spacing:2px; margin-bottom:10px; }
+  /* portada */
+  .s1{ flex-direction:column; height:auto; }
+  .s1-left{ padding:76px 18px 24px; gap:26px; }
+  .s1-logo{ width:140px; }
+  .s1-heading{ font-size:clamp(34px,9vw,50px); letter-spacing:-1px; }
+  .s1-meta{ gap:26px; flex-wrap:wrap; }
+  .s1-meta .v{ font-size:30px; }
+  .s1-right{ width:100%; flex-direction:row; flex-wrap:wrap; }
+  .s1-right .s1-br{ flex:1 1 44%; padding:16px 18px; }
+  /* cards genericas */
+  .obj-grid{ grid-template-columns:1fr !important; gap:14px; }
+  .obj-card{ padding:22px !important; gap:14px; }
+  .obj-card .icirc{ width:60px; height:60px; }
+  .obj-card .icirc .ico{ width:28px; height:28px; }
+  .obj-card .h{ font-size:18px !important; }
+  /* proceso vertical */
+  .proc{ flex-direction:column; align-items:stretch; gap:4px; margin-top:8px; }
+  .proc-step{ flex-direction:row; justify-content:flex-start; gap:16px; text-align:left; }
+  .proc-step .icirc{ width:58px; height:58px; flex:0 0 auto; }
+  .proc-step .icirc .ico{ width:26px; height:26px; }
+  .proc-step .l{ font-size:16px; }
+  .proc-arrow{ height:auto; transform:rotate(90deg); margin:2px 0 2px 26px; }
+  .proc-arrow .ico{ width:22px; height:22px; }
+  /* meses 2x2 */
+  .month-row{ flex-wrap:wrap; gap:12px; }
+  .month-card{ flex:1 1 42%; padding:22px 12px; }
+  .month-card .mn{ font-size:clamp(46px,13vw,64px); letter-spacing:-2px; }
+  .month-foot{ font-size:13px !important; flex-wrap:wrap; text-align:center; line-height:1.5; }
+  /* barras */
+  .bar2{ gap:10px; flex-wrap:wrap; }
+  .bar2 .bl{ width:72px; font-size:14px; }
+  .bar2 .bt{ height:42px; flex:1 1 140px; }
+  .bar2 .bf .bn{ font-size:16px; }
+  .bar2 .br{ width:auto; }
+  /* tablas: scroll horizontal */
+  .tbl{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table{ min-width:520px; }
+  thead th{ padding:10px 12px; font-size:10px; letter-spacing:.6px; }
+  tbody td{ padding:9px 12px; font-size:13px; }
+  /* conversion */
+  .conv-row{ flex-wrap:wrap; gap:12px; }
+  .conv-card{ flex:1 1 45%; padding:20px 18px; }
+  .conv-card .cbig{ font-size:clamp(32px,9vw,46px); }
+  /* podium */
+  .podium{ flex-wrap:wrap; gap:10px; }
+  .pod{ flex:1 1 30%; padding:16px 10px; }
+  .pod .name{ font-size:15px; } .pod .sales{ font-size:34px; }
+  /* dual */
+  .dual{ flex-direction:column; gap:14px; }
+  .dual-stat{ padding:26px 22px; }
+  .dual-stat .dn{ font-size:clamp(54px,16vw,92px); letter-spacing:-3px; }
+  .dual-stat .dt{ font-size:14px; }
+  /* before / after */
+  .ba{ flex-direction:column; gap:14px; }
+  .ba-col{ padding:22px; }
+  /* slide 11 */
+  .s11-grid{ flex-direction:column; gap:24px; }
+  .urg .icirc{ width:72px; height:72px; margin-bottom:16px; }
+  .urg .ubig{ font-size:clamp(24px,6.5vw,34px); }
+  .wa{ width:100%; max-width:340px; margin:0 auto; }
+  /* cierre */
+  .ask-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+  .ask{ padding:20px 16px; }
+  .s12-logo{ width:120px; margin-bottom:18px; }
+  /* UI nav */
+  #dot-row{ display:none; }
+  #fs-hint{ display:none; }
+  #nav{ bottom:14px; right:14px; gap:8px; }
+  .nav-btn{ padding:10px 16px; font-size:12px; }
+  #slide-counter{ bottom:22px; left:auto; right:14px; }
+  #menu-btn{ top:12px; left:12px; }
+}
+@media (max-width: 480px){
+  .slide-inner{ padding:70px 14px 88px; }
+  .s1-left{ padding:70px 14px 20px; }
+  .ask-grid{ grid-template-columns:1fr; }
+  .conv-card{ flex:1 1 100%; }
+  .pod{ flex:1 1 46%; }
+  .month-card{ flex:1 1 46%; }
+  .s1-meta .v{ font-size:26px; }
+  table{ min-width:480px; }
+}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<div id="fs-hint" onclick="toggleFullscreen()">⛶ Pantalla completa · F</div>
+<div id="slide-counter">1 / 14</div>
+<div id="dot-row"></div>
+<div id="nav">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>← Anterior</button>
+  <button class="nav-btn primary" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+</div>
+
+<!-- MENU HAMBURGUESA -->
+<button id="menu-btn" aria-label="Abrir menú" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+<div id="menu-overlay" onclick="closeMenu()"></div>
+<nav id="menu-panel" aria-label="Secciones de la presentación">
+  <div class="menu-head">
+    <img class="menu-logo" src="logo.png" alt="Mueblesysillones">
+    <div class="menu-title">Contenido de la reunión</div>
+  </div>
+  <div class="menu-cat">
+    <div class="menu-parent" onclick="toggleCat(this)"><span class="mp-txt">Introducción</span><span class="mp-count">3</span><svg class="menu-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="menu-sub">
+      <div class="menu-item" data-slide="1" onclick="goTo(1)"><span class="mnum">1</span> Portada</div>
+      <div class="menu-item" data-slide="2" onclick="goTo(2)"><span class="mnum">2</span> Por qué estamos acá</div>
+      <div class="menu-item" data-slide="3" onclick="goTo(3)"><span class="mnum">3</span> Cómo medimos cada derivación</div>
+    </div>
+  </div>
+  <div class="menu-cat">
+    <div class="menu-parent" onclick="toggleCat(this)"><span class="mp-txt">Derivaciones</span><span class="mp-count">3</span><svg class="menu-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="menu-sub">
+      <div class="menu-item" data-slide="4" onclick="goTo(4)"><span class="mnum">4</span> Derivaciones por mes</div>
+      <div class="menu-item" data-slide="5" onclick="goTo(5)"><span class="mnum">5</span> Derivaciones por sucursal</div>
+      <div class="menu-item" data-slide="6" onclick="goTo(6)"><span class="mnum">6</span> Conversión por sucursal</div>
+    </div>
+  </div>
+  <div class="menu-cat">
+    <div class="menu-parent" onclick="toggleCat(this)"><span class="mp-txt">Equipo de ventas</span><span class="mp-count">2</span><svg class="menu-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="menu-sub">
+      <div class="menu-item" data-slide="7" onclick="goTo(7)"><span class="mnum">7</span> Top 5 vendedores</div>
+      <div class="menu-item" data-slide="8" onclick="goTo(8)"><span class="mnum">8</span> El equipo completo</div>
+    </div>
+  </div>
+  <div class="menu-cat">
+    <div class="menu-parent" onclick="toggleCat(this)"><span class="mp-txt">Diagnóstico y solución</span><span class="mp-count">3</span><svg class="menu-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="menu-sub">
+      <div class="menu-item" data-slide="9" onclick="goTo(9)"><span class="mnum">9</span> El problema</div>
+      <div class="menu-item" data-slide="10" onclick="goTo(10)"><span class="mnum">10</span> La solución</div>
+      <div class="menu-item" data-slide="11" onclick="goTo(11)"><span class="mnum">11</span> Respuesta 24 hs y plantillas</div>
+    </div>
+  </div>
+  <div class="menu-cat">
+    <div class="menu-parent" onclick="toggleCat(this)"><span class="mp-txt">Email marketing</span><span class="mp-count">2</span><svg class="menu-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="menu-sub">
+      <div class="menu-item" data-slide="12" onclick="goTo(12)"><span class="mnum">12</span> Cada email es una venta</div>
+      <div class="menu-item" data-slide="13" onclick="goTo(13)"><span class="mnum">13</span> Contactos por sucursal</div>
+    </div>
+  </div>
+  <div class="menu-cat">
+    <div class="menu-parent" onclick="toggleCat(this)"><span class="mp-txt">Cierre</span><span class="mp-count">1</span><svg class="menu-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="menu-sub">
+      <div class="menu-item" data-slide="14" onclick="goTo(14)"><span class="mnum">14</span> Lo que necesitamos de ustedes</div>
+    </div>
+  </div>
+  <div class="menu-foot">Mueblesysillones · Marzo–Mayo 2026</div>
+</nav>
+
+<div class="deck" id="deck">
+
+<!-- 1 PORTADA -->
+<div class="slide active" id="s1">
+  <div class="s1">
+    <div class="s1-left">
+      <img class="s1-logo" src="logo.png" alt="Mueblesysillones">
+      <div>
+        <div class="eyebrow">Reunión de equipo · Marzo – Mayo 2026</div>
+        <div class="s1-heading">Cómo medimos<br><em>las derivaciones</em></div>
+      </div>
+      <div class="s1-meta">
+        <div><div class="v">992</div><div class="l">Derivaciones</div></div>
+        <div><div class="v">43</div><div class="l">Ventas</div></div>
+        <div><div class="v">4</div><div class="l">Sucursales</div></div>
+      </div>
+    </div>
+    <div class="s1-right">
+      <div class="s1-br"><div class="n">Hudson</div><div class="c">GBA Sur</div></div>
+      <div class="s1-br"><div class="n">CABA</div><div class="c">Capital Federal</div></div>
+      <div class="s1-br"><div class="n">Norcenter</div><div class="c">GBA Norte</div></div>
+      <div class="s1-br"><div class="n">Canning</div><div class="c">GBA Sur</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 OBJETIVOS -->
+<div class="slide" id="s2">
+  <div class="slide-inner">
+    <div class="eyebrow">La idea de hoy</div>
+    <div class="s-title">Por qué estamos acá</div>
+    <div class="s-sub">Tres objetivos, claros y simples</div>
+    <div class="obj-grid">
+      <div class="obj-card">
+        <div class="icirc" style="background:var(--c-hudson);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span></div>
+        <div class="h">Transparencia</div>
+        <div class="p">Les mostramos cómo vivimos las derivaciones, mes a mes.</div>
+      </div>
+      <div class="obj-card">
+        <div class="icirc" style="background:var(--c-caba);"><span class="ico"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span></div>
+        <div class="h">3 meses</div>
+        <div class="p">Cómo fueron llegando las consultas y cómo las derivamos.</div>
+      </div>
+      <div class="obj-card">
+        <div class="icirc" style="background:var(--c-canning);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span></div>
+        <div class="h">Crecer juntos</div>
+        <div class="p">Detectar qué mejorar y darles más herramientas para vender.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 PROCESO -->
+<div class="slide" id="s3">
+  <div class="slide-inner">
+    <div class="eyebrow">El proceso</div>
+    <div class="s-title">Así medimos cada derivación</div>
+    <div class="s-sub">Desde que llega la consulta hasta que se cierra la venta</div>
+    <div class="proc">
+      <div class="proc-step"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span></div><div class="l">Consulta</div></div>
+      <div class="proc-arrow"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      <div class="proc-step"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg></span></div><div class="l">Respondemos</div></div>
+      <div class="proc-arrow"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      <div class="proc-step hl"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span></div><div class="l">Derivamos</div></div>
+      <div class="proc-arrow"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      <div class="proc-step"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg></span></div><div class="l">Seguimiento</div></div>
+      <div class="proc-arrow"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      <div class="proc-step"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></div><div class="l">Venta</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 DERIVACIONES POR MES -->
+<div class="slide" id="s4">
+  <div class="slide-inner">
+    <div class="eyebrow">Evolución mensual</div>
+    <div class="s-title">Derivaciones por mes</div>
+    <div class="s-sub">Cuántas derivaciones realizamos en cada mes</div>
+    <div class="month-row">
+      <div class="month-card"><div class="ml">Marzo</div><div class="mn">362</div><div class="mt">&nbsp;</div></div>
+      <div class="month-card"><div class="ml">Abril</div><div class="mn">316</div><div class="mt tdown">▼ −12,7%</div></div>
+      <div class="month-card"><div class="ml">Mayo</div><div class="mn">314</div><div class="mt tflat">▬ estable</div></div>
+      <div class="month-card lead"><div class="ml">Trimestre</div><div class="mn">992</div><div class="mt" style="color:rgba(255,255,255,.75)">total</div></div>
+    </div>
+    <div class="month-foot"><span class="ico" style="width:18px;height:18px;color:var(--c-danger)"><svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></span> Venimos derivando un poco menos cada mes: <b>−13% de marzo a mayo</b>.</div>
+  </div>
+</div>
+
+<!-- 5 DERIVACIONES POR SUCURSAL -->
+<div class="slide" id="s5">
+  <div class="slide-inner">
+    <div class="eyebrow">Sucursales</div>
+    <div class="s-title">¿A qué sucursal derivamos más?</div>
+    <div class="s-sub">Consolidado marzo–mayo, según el/la vendedor/a de cada sucursal</div>
+    <div class="bars" style="margin-bottom:24px;">
+      <div class="bar2"><div class="bl">Hudson</div><div class="bt"><div class="bf" style="width:100%;background:var(--c-hudson);"><span class="bn">416</span></div></div><div class="br"><span class="chip g">1° — más recibe</span></div></div>
+      <div class="bar2"><div class="bl">CABA</div><div class="bt"><div class="bf" style="width:84%;background:var(--c-caba);"><span class="bn">350</span></div></div><div class="br"><span class="chip y">2°</span></div></div>
+      <div class="bar2"><div class="bl">Norcenter</div><div class="bt"><div class="bf" style="width:27%;background:var(--c-norcenter);"><span class="bn">110</span></div></div><div class="br"><span class="chip gr">3°</span></div></div>
+      <div class="bar2"><div class="bl">Canning</div><div class="bt"><div class="bf" style="width:25%;background:var(--c-canning);"><span class="bn">105</span></div></div><div class="br"><span class="chip gr">4°</span></div></div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Por mes</th><th class="num">Marzo</th><th class="num">Abril</th><th class="num">Mayo</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          <tr><td>Hudson</td><td class="num">163</td><td class="num">112</td><td class="num">141</td><td class="num">416</td></tr>
+          <tr><td>CABA</td><td class="num">123</td><td class="num">116</td><td class="num">111</td><td class="num">350</td></tr>
+          <tr><td>Norcenter</td><td class="num">26</td><td class="num">48</td><td class="num">36</td><td class="num">110</td></tr>
+          <tr><td>Canning</td><td class="num">40</td><td class="num">39</td><td class="num">26</td><td class="num">105</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 6 CONVERSION POR SUCURSAL -->
+<div class="slide" id="s6">
+  <div class="slide-inner">
+    <div class="eyebrow">Sucursales · lo que importa</div>
+    <div class="s-title">No es cuánto recibís: es cuánto convertís</div>
+    <div class="s-sub">Tasa de conversión por sucursal (ventas sobre derivaciones) · marzo–mayo</div>
+    <div class="conv-row" style="margin-bottom:22px;">
+      <div class="conv-card" style="background:var(--c-hudson);"><div class="cs">Hudson</div><div class="cbig">6,2%</div><div class="csub">26 ventas · 416 derivaciones</div><div class="ctag">★ Mejor conversión</div></div>
+      <div class="conv-card" style="background:var(--c-canning);"><div class="cs">Canning</div><div class="cbig">4,8%</div><div class="csub">5 ventas · 105 derivaciones</div></div>
+      <div class="conv-card" style="background:var(--c-caba);"><div class="cs">CABA</div><div class="cbig">2,9%</div><div class="csub">10 ventas · 350 derivaciones</div></div>
+      <div class="conv-card" style="background:var(--c-norcenter);"><div class="cs">Norcenter</div><div class="cbig">1,8%</div><div class="csub">2 ventas · 110 derivaciones</div></div>
+    </div>
+    <div class="obj-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="obj-card" style="padding:24px 28px;flex-direction:row;align-items:center;gap:18px;">
+        <div class="icirc" style="width:60px;height:60px;background:var(--c-hudson);"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
+        <div><div class="h" style="font-size:18px;">Hudson cierra mejor</div><div class="p">Recibe más y aun así convierte el doble que CABA. Eso es calidad de asesoramiento.</div></div>
+      </div>
+      <div class="obj-card" style="padding:24px 28px;flex-direction:row;align-items:center;gap:18px;">
+        <div class="icirc" style="width:60px;height:60px;background:var(--c-success);"><span class="ico"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></div>
+        <div><div class="h" style="font-size:18px;">El que más convierte, gana</div><div class="p">A la sucursal que mejor cierra le damos más campañas, herramientas y beneficios.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 TOP 5 -->
+<div class="slide" id="s7">
+  <div class="slide-inner">
+    <div class="eyebrow">Equipo de ventas</div>
+    <div class="s-title">Top 5 · quiénes cerraron más</div>
+    <div class="s-sub">No gana quien más derivaciones recibe, sino quien mejor las trabaja</div>
+    <div class="podium" style="margin-bottom:22px;">
+      <div class="pod"><div class="rank">1°</div><div class="name">Agustina</div><div class="suc">Hudson</div><div class="sales">8</div><div class="slbl">ventas</div><div class="cv norm">conv. 4,5%</div></div>
+      <div class="pod first"><div class="rank">2°</div><div class="name">Rosana</div><div class="suc">Hudson</div><div class="sales">7</div><div class="slbl">ventas</div><div class="cv best">★ conv. 12,5%</div></div>
+      <div class="pod"><div class="rank">3°</div><div class="name">Viviana</div><div class="suc">CABA</div><div class="sales">5</div><div class="slbl">ventas</div><div class="cv norm">conv. 3,3%</div></div>
+      <div class="pod"><div class="rank">4°</div><div class="name">Gonzalo</div><div class="suc">Hudson</div><div class="sales">5</div><div class="slbl">ventas</div><div class="cv norm">conv. 6,5%</div></div>
+      <div class="pod"><div class="rank">5°</div><div class="name">Matías</div><div class="suc">CABA</div><div class="sales">4</div><div class="slbl">ventas</div><div class="cv norm">conv. 5,6%</div></div>
+    </div>
+    <div class="dual">
+      <div class="dual-stat b" style="padding:22px 30px;display:flex;align-items:center;gap:20px;text-align:left;background:#F4EFE7;border-color:var(--border);">
+        <div class="icirc" style="width:56px;height:56px;background:var(--c-warn);color:#fff;flex:0 0 auto;"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></span></div>
+        <div><div class="h" style="font-size:17px;">Agustina, la más constante</div><div class="p">8 ventas: el mayor volumen del equipo.</div></div>
+      </div>
+      <div class="dual-stat b" style="padding:22px 30px;display:flex;align-items:center;gap:20px;text-align:left;background:#E9F6EE;border-color:#C9E6D3;">
+        <div class="icirc" style="width:56px;height:56px;background:var(--c-success);color:#fff;flex:0 0 auto;"><span class="ico"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></div>
+        <div><div class="h" style="font-size:17px;">Rosana, la más eficiente</div><div class="p">Con menos derivaciones, la mejor conversión: 12,5%.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 TABLA COMPLETA -->
+<div class="slide" id="s8">
+  <div class="slide-inner">
+    <div class="eyebrow">Equipo de ventas</div>
+    <div class="s-title">El equipo completo</div>
+    <div class="s-sub">La conversión manda: la barra verde muestra qué tan bien cierra cada uno</div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Vendedor/a</th><th>Sucursal</th><th class="num">Derivac.</th><th class="num">Ventas</th><th>Conversión</th></tr></thead>
+        <tbody>
+          <tr class="rt"><td>Agustina</td><td>Hudson</td><td class="num">179</td><td class="num">8</td><td><span class="cbar"><i style="width:35%"></i></span>4,5%</td></tr>
+          <tr class="rt"><td>Rosana</td><td>Hudson</td><td class="num">56</td><td class="num">7</td><td><span class="cbar"><i style="width:100%"></i></span>12,5% ★</td></tr>
+          <tr><td>Viviana</td><td>CABA</td><td class="num">152</td><td class="num">5</td><td><span class="cbar"><i style="width:26%"></i></span>3,3%</td></tr>
+          <tr><td>Gonzalo</td><td>Hudson</td><td class="num">77</td><td class="num">5</td><td><span class="cbar"><i style="width:52%"></i></span>6,5%</td></tr>
+          <tr><td>Matías</td><td>CABA</td><td class="num">71</td><td class="num">4</td><td><span class="cbar"><i style="width:45%"></i></span>5,6%</td></tr>
+          <tr><td>Adriana</td><td>Hudson</td><td class="num">23</td><td class="num">3</td><td><span class="cbar"><i style="width:100%"></i></span>13,0% ★</td></tr>
+          <tr><td>Mario</td><td>Norcenter</td><td class="num">51</td><td class="num">2</td><td><span class="cbar"><i style="width:31%"></i></span>3,9%</td></tr>
+          <tr><td>María Marta</td><td>Canning</td><td class="num">37</td><td class="num">2</td><td><span class="cbar"><i style="width:43%"></i></span>5,4%</td></tr>
+          <tr><td>Alexa</td><td>CABA</td><td class="num">64</td><td class="num">1</td><td><span class="cbar"><i style="width:13%"></i></span>1,6%</td></tr>
+          <tr class="rz"><td>Marcelo</td><td>CABA</td><td class="num">63</td><td class="num">0</td><td><span class="cbar"><i style="width:0"></i></span>0%</td></tr>
+          <tr class="rz"><td>Flor</td><td>Norcenter</td><td class="num">59</td><td class="num">0</td><td><span class="cbar"><i style="width:0"></i></span>0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Marcelo y Flor reciben 60+ derivaciones y aún no registran ventas. La oportunidad está en convertir, no en recibir más.</p>
+  </div>
+</div>
+
+<!-- 9 EL PROBLEMA -->
+<div class="slide" id="s9">
+  <div class="slide-inner">
+    <div class="eyebrow">Lo que detectamos</div>
+    <div class="s-title">¿Por qué perdemos clientes?</div>
+    <div class="s-sub">El problema casi nunca es el precio. Es la respuesta.</div>
+    <div class="dual">
+      <div class="dual-stat a">
+        <div class="dn">50,7%</div>
+        <div class="dt">de las consultas terminan en <b>"no respondió"</b>. Solo 6% se pierde por presupuesto.</div>
+      </div>
+      <div class="dual-stat b">
+        <div class="dn">~30%</div>
+        <div class="dt">deja de responder por el <b>cambio de línea</b>: pasa del canal de la empresa al teléfono personal del vendedor.</div>
+      </div>
+    </div>
+    <div class="month-foot" style="margin-top:30px;font-size:15px;"><span class="ico" style="width:20px;height:20px;color:var(--c-warn)"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Cada cliente que cambia de línea es una venta que se nos escapa.</div>
+  </div>
+</div>
+
+<!-- 10 LA SOLUCION -->
+<div class="slide" id="s10">
+  <div class="slide-inner">
+    <div class="eyebrow">La solución</div>
+    <div class="s-title">Una sola línea verificada para todos</div>
+    <div class="s-sub">El cliente nunca se mueve de la línea oficial: ahí lo atienden ustedes, con nuestro apoyo</div>
+    <div class="ba">
+      <div class="ba-col antes">
+        <div class="bah"><span class="ico" style="width:22px;height:22px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span> Antes</div>
+        <div class="ba-flow">
+          <div class="ba-node"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span></div>Línea empresa</div>
+          <div class="ba-arrow"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+          <div class="ba-node"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg></span></div>Tel. personal</div>
+        </div>
+        <div class="ba-out"><div class="icirc" style="background:var(--c-danger);color:#fff;border-color:var(--c-danger)"><span class="ico"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div>El cliente se pierde</div>
+      </div>
+      <div class="ba-col ahora">
+        <div class="bah"><span class="ico" style="width:22px;height:22px;"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span> Ahora</div>
+        <div class="ba-flow">
+          <div class="ba-node"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span></div>Línea verificada</div>
+          <div class="ba-arrow"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+          <div class="ba-node"><div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span></div>Plataforma</div>
+        </div>
+        <div class="ba-out"><div class="icirc" style="background:var(--c-success);color:#fff;border-color:var(--c-success)"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>El cliente se queda</div>
+      </div>
+    </div>
+    <div class="month-foot" style="margin-top:26px;font-size:15px;"><span class="ico" style="width:20px;height:20px;color:var(--c-info)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span> El bot pide los datos de forma sutil para que el cliente no se vaya, y marketing los apoya en el cierre.</div>
+  </div>
+</div>
+
+<!-- 11 24HS + PLANTILLAS -->
+<div class="slide" id="s11">
+  <div class="slide-inner">
+    <div class="eyebrow">Importante</div>
+    <div class="s-title">Respuesta inmediata · plantillas de Meta</div>
+    <div class="s-sub">El tiempo es todo: una derivación que no se contesta rápido, se pierde</div>
+    <div class="s11-grid">
+      <div class="urg">
+        <div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span></div>
+        <div class="ubig">Contestá <em>antes de 24 hs</em><br>o perdemos la derivación</div>
+        <ul class="uli">
+          <li><span class="ico"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Respondé apenas te llega la derivación.</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Pasadas 24 hs, Meta bloquea el chat: hay que enviar una plantilla.</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Mejoramos la aprobación: antes 24–48 hs, hoy casi inmediata.</li>
+        </ul>
+      </div>
+      <div class="wa">
+        <div class="wa-top"><div class="wav"><img src="logo.png" alt=""></div><div><div class="wan">Mueblesysillones</div><div class="was">Cuenta verificada · en línea</div></div></div>
+        <div class="wa-bub"><b>¡Hola! 👋</b><br>Vimos que consultaste por un <b>sillón</b>. Tenemos una promo especial esta semana con cuotas sin interés. ¿Querés que te pase el catálogo y los precios?<div class="wa-time">10:24 ✓✓</div></div>
+        <div class="wa-btns">
+          <div class="wa-b"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Sí, quiero ver el catálogo</div>
+          <div class="wa-b">Hablar con un asesor</div>
+        </div>
+      </div>
+    </div>
+    <p class="note">Vista previa de ejemplo · podemos reemplazarla por una plantilla real aprobada por Meta.</p>
+  </div>
+</div>
+
+<!-- 12 EMAILS · IMPORTANCIA -->
+<div class="slide" id="s12">
+  <div class="slide-inner">
+    <div class="eyebrow">Base de datos · Email marketing</div>
+    <div class="s-title">Cada email es una venta futura</div>
+    <div class="s-sub">El mail de cada cliente y cada presupuesto es oro: nos deja volver a venderle</div>
+    <div class="dual" style="margin-bottom:22px;">
+      <div class="dual-stat" style="background:#E9F6EE;border-color:#C9E6D3;">
+        <div class="dn" style="color:var(--c-success);">2.369</div>
+        <div class="dt">contactos <b>únicos y reales</b> listos para recibir campañas (enero–mayo 2026)</div>
+      </div>
+      <div class="dual-stat" style="background:#E9F1F6;border-color:#C9DEEA;">
+        <div class="dn" style="color:var(--c-caba);">474</div>
+        <div class="dt">nuevos contactos <b>por mes</b> en promedio</div>
+      </div>
+    </div>
+    <div class="obj-grid">
+      <div class="obj-card" style="padding:22px 24px;flex-direction:row;align-items:center;gap:16px;">
+        <div class="icirc" style="width:56px;height:56px;background:var(--c-norcenter);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span></div>
+        <div><div class="h" style="font-size:17px;">Promociones</div><div class="p">Ofertas exclusivas a quien ya nos consultó.</div></div>
+      </div>
+      <div class="obj-card" style="padding:22px 24px;flex-direction:row;align-items:center;gap:16px;">
+        <div class="icirc" style="width:56px;height:56px;background:var(--c-caba);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span></div>
+        <div><div class="h" style="font-size:17px;">Novedades</div><div class="p">Productos y lanzamientos directo a su correo.</div></div>
+      </div>
+      <div class="obj-card" style="padding:22px 24px;flex-direction:row;align-items:center;gap:16px;">
+        <div class="icirc" style="width:56px;height:56px;background:var(--c-success);"><span class="ico"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></div>
+        <div><div class="h" style="font-size:17px;">Incentivos de compra</div><div class="p">Descuentos y cuotas para reactivar la venta.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 13 EMAILS · POR SUCURSAL -->
+<div class="slide" id="s13">
+  <div class="slide-inner">
+    <div class="eyebrow">Base de datos · Email marketing</div>
+    <div class="s-title">Contactos únicos por sucursal</div>
+    <div class="s-sub">Enero a mayo 2026 · contactos únicos (sin repetir) por sucursal</div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Sucursal</th><th class="num">Enero</th><th class="num">Febrero</th><th class="num">Marzo</th><th class="num">Abril</th><th class="num">Mayo</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          <tr><td>Belgrano · CABA</td><td class="num">201</td><td class="num">225</td><td class="num">227</td><td class="num">214</td><td class="num">249</td><td class="num">1.116</td></tr>
+          <tr><td>Norcenter</td><td class="num">123</td><td class="num">113</td><td class="num">98</td><td class="num">72</td><td class="num">84</td><td class="num">490</td></tr>
+          <tr><td>Hudson</td><td class="num">86</td><td class="num">81</td><td class="num">104</td><td class="num">102</td><td class="num">82</td><td class="num">455</td></tr>
+          <tr><td>Canning</td><td class="num">82</td><td class="num">58</td><td class="num">70</td><td class="num">41</td><td class="num">56</td><td class="num">307</td></tr>
+          <tr><td>Casa Central</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr style="background:var(--ink);"><td style="color:#fff;font-weight:800;">TOTAL MES</td><td class="num" style="color:#fff;font-weight:800;">492</td><td class="num" style="color:#fff;font-weight:800;">477</td><td class="num" style="color:#fff;font-weight:800;">499</td><td class="num" style="color:#fff;font-weight:800;">429</td><td class="num" style="color:#fff;font-weight:800;">472</td><td class="num" style="color:#fff;font-weight:800;">2.369</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="month-foot" style="margin-top:24px;font-size:15px;"><span class="ico" style="width:20px;height:20px;color:var(--c-success)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> <b>Belgrano</b> lidera la base real de contactos; <b>Norcenter</b> y <b>Hudson</b> la siguen. Cada email cargado hoy es una venta posible mañana.</div>
+  </div>
+</div>
+
+<!-- 14 CIERRE -->
+<div class="slide dark" id="s14">
+  <div class="slide-inner">
+    <img class="s12-logo" src="logo.png" alt="Mueblesysillones">
+    <div class="eyebrow">Lo que les pedimos</div>
+    <div class="s-title">Lo que necesitamos de ustedes</div>
+    <div class="s-sub" style="margin-bottom:30px;">Cuatro cosas concretas para no perder ninguna venta</div>
+    <div class="ask-grid">
+      <div class="ask">
+        <div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span></div>
+        <div class="ah">Usá la plataforma al 100%</div>
+        <div class="ap">Fotos, audios y mensajes desde ahí. Nada se pierde y el cliente queda en el canal oficial.</div>
+      </div>
+      <div class="ask">
+        <div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span></div>
+        <div class="ah">Atentos a nuestros avisos</div>
+        <div class="ap">Si un cliente te escribe y no lo viste, te avisamos. Acordate del límite de 24 hs.</div>
+      </div>
+      <div class="ask">
+        <div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span></div>
+        <div class="ah">Si dice "muy caro"</div>
+        <div class="ap">No lo dejes ir: ofrecé otra opción o preguntale con qué presupuesto contaba.</div>
+      </div>
+      <div class="ask">
+        <div class="icirc"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span></div>
+        <div class="ah">Pedinos plantillas</div>
+        <div class="ap">¿Salió una promo con descuentos? Pedinos la plantilla y la enviamos a tus clientes derivados.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const TOTAL = 14;
+let current = 1, animating = false;
+const dotRow = document.getElementById('dot-row');
+for (let i=1;i<=TOTAL;i++){ const d=document.createElement('div'); d.className='dot'+(i===1?' active':''); d.onclick=()=>goTo(i); dotRow.appendChild(d); }
+function updateUI(){
+  document.getElementById('progress-bar').style.width=(current/TOTAL*100)+'%';
+  document.getElementById('slide-counter').textContent=current+' / '+TOTAL;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));
+  document.getElementById('prevBtn').disabled=current===1;
+  document.getElementById('nextBtn').disabled=current===TOTAL;
+  document.querySelectorAll('.menu-item').forEach(el=>el.classList.toggle('active', +el.dataset.slide===current));
+  const act=document.querySelector('.menu-item.active');
+  if(act){ const cat=act.closest('.menu-cat'); if(cat) cat.classList.add('open'); }
+}
+function toggleCat(el){ el.parentElement.classList.toggle('open'); }
+function goTo(n){
+  closeMenu();
+  if(n===current||animating||n<1||n>TOTAL) return;
+  animating=true;
+  const prev=document.getElementById('s'+current), next=document.getElementById('s'+n);
+  prev.classList.add('exit'); prev.classList.remove('active');
+  setTimeout(()=>{ prev.classList.remove('exit'); next.scrollTop=0; next.classList.add('active'); current=n; updateUI(); setTimeout(()=>{animating=false;},450); },300);
+}
+function toggleMenu(){ document.body.classList.toggle('menu-open'); }
+function closeMenu(){ document.body.classList.remove('menu-open'); }
+function changeSlide(dir){ goTo(current+dir); }
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ closeMenu(); return; }
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); changeSlide(1); }
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); changeSlide(-1); }
+  if(e.key==='f'||e.key==='F'){ toggleFullscreen(); }
+});
+function toggleFullscreen(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); }
+setTimeout(()=>{ const h=document.getElementById('fs-hint'); if(h) h.style.opacity='0'; },5000);
+/* Swipe tactil (solo horizontal dominante; no interfiere con el scroll vertical) */
+let tX=null, tY=null;
+const deckEl=document.getElementById('deck');
+deckEl.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; tX=t.clientX; tY=t.clientY; }, {passive:true});
+deckEl.addEventListener('touchend', e=>{
+  if(tX===null||document.body.classList.contains('menu-open')) { tX=null; return; }
+  const t=e.changedTouches[0], dx=t.clientX-tX, dy=t.clientY-tY;
+  if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.6){ changeSlide(dx<0?1:-1); }
+  tX=null;
+}, {passive:true});
+updateUI();
+</script>
+</body>
+</html>

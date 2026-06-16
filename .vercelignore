@@ -1,0 +1,7 @@
+# No publicar: datos sensibles (emails de clientes), herramientas internas y notas
+datos/
+herramientas/
+memoria-diseno/
+.claude/
+*.bat
+LEEME.md

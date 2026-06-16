@@ -1,0 +1,7 @@
+# No subir al repo: datos sensibles (emails de clientes), herramientas internas y notas
+datos/
+herramientas/
+memoria-diseno/
+.claude/
+*.bat
+LEEME.md

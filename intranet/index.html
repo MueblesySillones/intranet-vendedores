@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intranet · Vendedores · Mueblesysillones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --bg:#F0EDE8; --bg2:#E8E4DF; --surface:#FFFFFF;
+  --ink:#111111; --ink2:#444444; --ink3:#8A8A8A;
+  --border:rgba(0,0,0,0.10); --border2:rgba(0,0,0,0.06);
+  --c-hudson:#1A1A2E; --c-caba:#2C6E8A; --c-canning:#3A7A55; --c-norcenter:#8A5A2C;
+  --c-success:#1A6A3A; --c-warn:#9A6A00; --c-danger:#B4231F; --c-info:#1A4A8A;
+}
+html,body{ font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--ink); min-height:100%; }
+.ico svg{ width:100%; height:100%; display:block; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.icirc{ border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--border); color:var(--ink); flex:0 0 auto; }
+
+/* top bar */
+.top{ position:sticky; top:0; z-index:50; background:rgba(255,255,255,.88); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border); display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; padding:13px 26px; }
+.brand{ grid-column:2; justify-self:center; display:flex; align-items:center; cursor:pointer; }
+.brand img{ width:104px; filter:brightness(0); opacity:.9; display:block; }
+.top-r{ grid-column:3; justify-self:end; display:flex; align-items:center; gap:10px; }
+.home-btn{ display:flex; align-items:center; gap:8px; padding:9px 18px; border-radius:8px; border:1.5px solid var(--ink);
+  background:transparent; color:var(--ink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; letter-spacing:.4px; transition:.2s; }
+.home-btn:hover{ background:var(--ink); color:#fff; }
+.home-btn .ico{ width:15px; height:15px; }
+/* boton menu (solo mobile) */
+.menu-btn{ display:none; align-items:center; gap:8px; padding:9px 16px; border-radius:8px; border:1.5px solid var(--ink);
+  background:transparent; color:var(--ink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; letter-spacing:.4px; transition:.2s; }
+.menu-btn:hover{ background:var(--ink); color:#fff; }
+.menu-btn .ico{ width:18px; height:18px; }
+/* drawer de navegacion */
+.navmenu{ position:fixed; inset:0; z-index:120; }
+.navmenu[hidden]{ display:none; }
+.nav-ov{ position:absolute; inset:0; background:rgba(0,0,0,.45); opacity:0; animation:navfade .2s forwards; }
+.nav-panel{ position:absolute; top:0; right:0; height:100%; width:86%; max-width:340px; background:var(--bg);
+  box-shadow:-12px 0 44px rgba(0,0,0,.28); display:flex; flex-direction:column; transform:translateX(100%); animation:navslide .24s cubic-bezier(.22,.61,.36,1) forwards; }
+@keyframes navfade{ to{ opacity:1; } }
+@keyframes navslide{ to{ transform:translateX(0); } }
+.nav-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 18px 13px; border-bottom:1px solid var(--border); }
+.nav-head .nh-t{ font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ink3); }
+.nav-close{ width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--ink2);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.nav-close svg{ width:16px; height:16px; }
+.nav-list{ flex:1; overflow-y:auto; padding:11px; display:flex; flex-direction:column; gap:7px; }
+.nav-item{ display:flex; align-items:center; gap:13px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:11px 13px; font-family:inherit; cursor:pointer; transition:border-color .15s, transform .15s; }
+.nav-item:hover{ border-color:var(--ink); transform:translateX(-2px); }
+.nav-item.locked{ cursor:default; opacity:.62; }
+.nav-item.locked:hover{ border-color:var(--border); transform:none; }
+.nav-item .ni-ic{ width:40px; height:40px; border-radius:10px; color:#fff; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.nav-item .ni-ic .ico{ width:20px; height:20px; }
+.nav-item .ni-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item .ni-t{ font-size:14px; font-weight:700; color:var(--ink); line-height:1.15; }
+.nav-item .ni-d{ font-size:11px; color:var(--ink3); line-height:1.25; }
+.nav-item .chip{ flex:0 0 auto; align-self:center; }
+body.menu-open{ overflow:hidden; }
+@media(max-width:860px){
+  .menu-btn{ display:inline-flex; }
+  #homeBtn{ display:none !important; }
+}
+
+main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
+
+/* hero */
+.hero .eyebrow{ font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--ink3); margin-bottom:12px; }
+.hero h1{ font-size:clamp(30px,5vw,46px); font-weight:800; letter-spacing:-1.5px; line-height:1.05; }
+.hero p{ font-size:15px; color:var(--ink3); margin-top:10px; font-weight:400; max-width:560px; }
+
+/* botonera */
+.botonera{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:34px; }
+.tile{ text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:24px 22px;
+  display:flex; flex-direction:column; gap:16px; cursor:pointer; font-family:inherit; transition:transform .18s, box-shadow .18s, border-color .18s; position:relative; }
+.tile:hover{ transform:translateY(-4px); box-shadow:0 14px 34px rgba(0,0,0,.10); border-color:var(--ink); }
+.tile.locked{ cursor:default; opacity:.62; }
+.tile.locked:hover{ transform:none; box-shadow:none; border-color:var(--border); }
+.tile .icirc{ width:60px; height:60px; color:#fff; }
+.tile .icirc .ico{ width:28px; height:28px; }
+.tile .tt{ font-size:17px; font-weight:800; letter-spacing:-.3px; line-height:1.2; }
+.tile .td{ font-size:12.5px; color:var(--ink3); line-height:1.45; font-weight:500; flex:1; }
+.tile .num{ position:absolute; top:18px; right:20px; font-size:12px; font-weight:800; color:var(--border); }
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:30px; font-size:10.5px; font-weight:700; letter-spacing:.4px; align-self:flex-start; }
+.chip .dot{ width:6px; height:6px; border-radius:50%; }
+.chip.ok{ background:#D4EDDA; color:#145A2E; } .chip.ok .dot{ background:#1A6A3A; }
+.chip.soon{ background:#ECE9E3; color:#7A756C; } .chip.soon .dot{ background:#A39C90; }
+
+/* vista de seccion */
+.back{ display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface); color:var(--ink2); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:24px; transition:.2s; }
+.back:hover{ border-color:var(--ink); color:var(--ink); }
+.back .ico{ width:16px; height:16px; }
+.sec-head{ display:flex; align-items:center; gap:18px; margin-bottom:8px; }
+.sec-head .icirc{ width:64px; height:64px; color:#fff; }
+.sec-head .icirc .ico{ width:30px; height:30px; }
+.sec-head h2{ font-size:clamp(24px,4vw,34px); font-weight:800; letter-spacing:-1px; line-height:1.05; }
+.sec-head .sub{ font-size:13px; color:var(--ink3); margin-top:4px; font-weight:500; }
+.sec-body{ margin-top:26px; }
+.lead{ font-size:16px; color:var(--ink2); line-height:1.6; max-width:680px; }
+.cta{ display:inline-flex; align-items:center; gap:10px; margin-top:22px; padding:15px 26px; border-radius:12px; background:var(--ink);
+  color:#fff; text-decoration:none; font-size:15px; font-weight:700; letter-spacing:.3px; transition:.2s; }
+.cta:hover{ opacity:.88; transform:translateY(-2px); }
+.cta .ico{ width:20px; height:20px; }
+.cta.alt{ background:var(--surface); color:var(--ink); border:1.5px solid var(--ink); margin-left:12px; }
+.hint{ font-size:12px; color:var(--ink3); margin-top:14px; }
+.report-frame{ margin-top:24px; border:1px solid var(--border); border-radius:16px; overflow:hidden; background:#222; box-shadow:0 14px 40px rgba(0,0,0,.14); }
+.report-frame iframe{ width:100%; height:560px; border:0; display:block; }
+
+/* estado pendiente */
+.pending{ margin-top:24px; background:var(--surface); border:1px dashed var(--border); border-radius:18px; padding:46px 32px; text-align:center; }
+.pending .icirc{ width:78px; height:78px; margin:0 auto 20px; background:var(--bg2); color:var(--ink3); border:none; }
+.pending .icirc .ico{ width:34px; height:34px; }
+.pending h3{ font-size:20px; font-weight:800; letter-spacing:-.4px; }
+.pending p{ font-size:14px; color:var(--ink3); margin-top:10px; line-height:1.6; max-width:460px; margin-left:auto; margin-right:auto; }
+
+/* galeria de imagenes / flyers */
+.gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
+.gcard{ background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .18s; }
+.gcard:hover{ box-shadow:0 12px 30px rgba(0,0,0,.10); }
+.gcard .gimg{ width:100%; aspect-ratio:4/5; object-fit:contain; background:var(--bg2); cursor:zoom-in; display:block; }
+.gcard .gmeta{ padding:14px 16px; display:flex; flex-direction:column; gap:11px; }
+.gcard .gtitle{ font-size:13px; font-weight:700; color:var(--ink); line-height:1.3; }
+.dl-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 12px; border-radius:10px;
+  background:var(--ink); color:#fff; text-decoration:none; font-size:13px; font-weight:700; letter-spacing:.3px; transition:.2s; }
+.dl-btn:hover{ opacity:.88; }
+.dl-btn .ico{ width:16px; height:16px; }
+/* visor ampliado */
+#lightbox{ position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.86); display:flex; align-items:center; justify-content:center; padding:24px; cursor:zoom-out; }
+#lightbox[hidden]{ display:none; }
+#lightbox img{ max-width:100%; max-height:88vh; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+#lightbox .lb-dl{ position:fixed; bottom:26px; left:50%; transform:translateX(-50%); }
+.footer{ text-align:center; font-size:11px; color:var(--ink3); padding:30px 0 10px; letter-spacing:.5px; }
+@media (max-width:860px){ .gallery{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:520px){ .gallery{ grid-template-columns:1fr; } }
+
+@media (max-width:860px){
+  .botonera{ grid-template-columns:repeat(2,1fr); gap:14px; }
+  main{ padding:30px 18px 60px; }
+  .report-frame iframe{ height:420px; }
+  .cta.alt{ margin-left:0; margin-top:12px; }
+}
+@media (max-width:520px){
+  .botonera{ grid-template-columns:1fr; }
+  .top{ padding:11px 14px; } .brand img{ width:92px; }
+  .sec-head{ gap:14px; } .sec-head .icirc{ width:52px; height:52px; }
+  .cta{ width:100%; justify-content:center; } .cta.alt{ width:100%; }
+}
+
+/* ---- Manual de derivaciones (contenido enriquecido) ---- */
+.manual{ max-width:760px; }
+.manual .m-lead{ font-size:16px; color:var(--ink2); line-height:1.6; }
+.manual .m-lead b{ color:var(--ink); }
+.m-block{ margin-top:38px; }
+.m-kicker{ font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ink3); margin-bottom:12px; display:flex; align-items:center; gap:9px; }
+.m-kicker .n{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--ink); color:#fff; font-size:11px; font-weight:800; letter-spacing:0; }
+.m-h{ font-size:20px; font-weight:800; letter-spacing:-.5px; color:var(--ink); }
+.m-sub{ font-size:13px; color:var(--ink3); margin-top:3px; }
+.m-p{ font-size:14.5px; color:var(--ink2); line-height:1.6; margin-top:12px; } .m-p b{ color:var(--ink); }
+
+/* proceso con flechas */
+.flow{ display:flex; align-items:stretch; margin-top:4px; }
+.flow .step{ flex:1; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 12px; text-align:center; }
+.flow .step .si{ width:36px; height:36px; margin:0 auto 9px; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.flow .step .si svg{ width:18px; height:18px; }
+.flow .step .st{ font-size:12.5px; font-weight:800; color:var(--ink); line-height:1.2; }
+.flow .step .sd{ font-size:11px; color:var(--ink3); margin-top:4px; line-height:1.35; }
+.flow .arrow{ display:flex; align-items:center; justify-content:center; color:var(--ink3); padding:0 6px; flex:0 0 auto; }
+.flow .arrow svg{ width:20px; height:20px; }
+@media(max-width:600px){ .flow{ flex-direction:column; } .flow .arrow{ transform:rotate(90deg); padding:7px 0; } }
+
+/* chat estilo whatsapp */
+.chat{ margin-top:14px; background:#E7E0D7; border:1px solid var(--border); border-radius:16px; padding:15px 14px; display:flex; flex-direction:column; gap:9px;
+  background-image:radial-gradient(rgba(0,0,0,.03) 1px, transparent 1px); background-size:18px 18px; }
+.chat .blabel{ font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--ink3); }
+.bubble{ max-width:84%; padding:10px 13px; border-radius:14px; font-size:14px; line-height:1.45; box-shadow:0 1px 1px rgba(0,0,0,.07); }
+.bubble.out{ align-self:flex-end; background:#D7FBCB; border-top-right-radius:4px; color:#0d1b0d; }
+.bubble.in{ align-self:flex-start; background:#fff; border-top-left-radius:4px; color:var(--ink); }
+.bubble .time{ display:block; font-size:9.5px; color:rgba(0,0,0,.42); text-align:right; margin-top:4px; }
+/* botones estilo whatsapp debajo de la burbuja */
+.bbtns{ align-self:flex-end; width:84%; max-width:300px; display:flex; flex-direction:column; gap:3px; margin-top:2px; }
+.bbtn{ background:#fff; border-radius:8px; padding:9px 10px; font-size:13px; font-weight:600; color:var(--c-caba); display:flex; align-items:center; justify-content:center; gap:7px; box-shadow:0 1px 1px rgba(0,0,0,.06); }
+.bbtn .ico{ width:15px; height:15px; flex:0 0 auto; }
+/* ====== Mock realista de WhatsApp ====== */
+.wa{ max-width:390px; margin:18px auto 4px; border-radius:12px; overflow:hidden; box-shadow:0 16px 44px rgba(0,0,0,.20); border:1px solid var(--border); background:#efeae2; }
+.wa.mini{ max-width:100%; margin:8px 0 0; }
+.wa-top{ display:flex; align-items:center; gap:11px; background:#008069; color:#fff; padding:9px 13px; }
+.wa-top .ico{ width:20px; height:20px; flex:0 0 auto; }
+.wa-top .ico svg{ stroke:#fff; }
+.wa-av{ width:38px; height:38px; border-radius:50%; background:#dfe5e7; color:#008069; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; letter-spacing:-.5px; }
+.wa-id{ flex:1; min-width:0; }
+.wa-name{ font-size:15px; font-weight:600; line-height:1.15; display:flex; align-items:center; gap:5px; }
+.wa-name .v{ width:14px; height:14px; flex:0 0 auto; }
+.wa-name .v svg{ stroke:#fff; }
+.wa-status{ font-size:11.5px; opacity:.85; margin-top:1px; }
+.wa-acts{ display:flex; gap:18px; align-items:center; }
+.wa-body{ padding:16px 12px 18px; display:flex; flex-direction:column; gap:9px; background:#efeae2;
+  background-image:radial-gradient(rgba(0,0,0,.022) 1px, transparent 1px); background-size:16px 16px; }
+.wa-sys{ align-self:center; background:#fff; color:#54656f; font-size:10.5px; font-weight:700; letter-spacing:.4px; padding:5px 12px; border-radius:8px; box-shadow:0 1px 1px rgba(0,0,0,.07); margin:3px 0; text-transform:uppercase; text-align:center; }
+.wa-msg{ position:relative; max-width:80%; padding:7px 9px 7px 10px; border-radius:8px; font-size:14.2px; line-height:1.42; color:#111b21; box-shadow:0 1px .6px rgba(0,0,0,.16); word-wrap:break-word; }
+.wa-msg.out{ align-self:flex-end; background:#d9fdd3; border-top-right-radius:0; }
+.wa-msg.in{ align-self:flex-start; background:#fff; border-top-left-radius:0; }
+.wa-msg.out::after{ content:""; position:absolute; top:0; right:-8px; width:0; height:0; border:8px solid transparent; border-top-color:#d9fdd3; border-right-width:0; }
+.wa-msg.in::after{ content:""; position:absolute; top:0; left:-8px; width:0; height:0; border:8px solid transparent; border-top-color:#fff; border-left-width:0; }
+.wa-time{ float:right; font-size:10.5px; color:#667781; margin:7px -2px -2px 10px; display:inline-flex; align-items:center; gap:3px; }
+.wa-tick{ display:inline-flex; }
+.wa-tick svg{ width:16px; height:11px; stroke:#53bdeb; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.wa-btns{ align-self:flex-end; width:80%; max-width:300px; display:flex; flex-direction:column; gap:2px; margin-top:1px; }
+.wa-btn{ background:#fff; color:#0096de; border-radius:7px; padding:9px; font-size:13.5px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 1px .6px rgba(0,0,0,.16); }
+.wa-btn .ico{ width:16px; height:16px; flex:0 0 auto; }
+.wa-btn .ico svg{ stroke:#0096de; }
+@media(max-width:520px){ .wa{ max-width:100%; } }
+
+/* checklist */
+.checklist{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+.checklist .ci{ display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px 13px; font-size:13.5px; font-weight:600; color:var(--ink); }
+.checklist .ci svg{ width:17px; height:17px; color:var(--c-success); flex:0 0 auto; }
+@media(max-width:520px){ .checklist{ grid-template-columns:1fr; } }
+
+/* tarjeta de situacion (con flecha) */
+.situ{ margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; }
+.situ .sit-head{ display:flex; align-items:center; gap:10px; font-size:14px; font-weight:800; color:var(--ink); }
+.situ .sit-tag{ font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:#fff; background:var(--c-warn); padding:3px 9px; border-radius:20px; flex:0 0 auto; }
+.situ .sit-arrow{ display:flex; align-items:center; gap:7px; color:var(--c-success); font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; margin:13px 0 0; }
+.situ .sit-arrow svg{ width:16px; height:16px; }
+
+/* nota / tip */
+.note{ margin-top:14px; display:flex; gap:12px; background:#F4F1EA; border:1px solid var(--border); border-left:3px solid var(--ink); border-radius:12px; padding:13px 15px; }
+.note svg{ width:20px; height:20px; color:var(--ink); flex:0 0 auto; margin-top:1px; }
+.note .nt{ font-size:13.5px; color:var(--ink2); line-height:1.5; } .note .nt b{ color:var(--ink); }
+
+/* tutorial chatbot (pasos con captura) */
+.tut-fig{ margin:14px 0 0; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center; }
+.tut-fig img{ max-width:100%; max-height:440px; border-radius:9px; box-shadow:0 4px 18px rgba(0,0,0,.10); cursor:zoom-in; transition:transform .15s; }
+.tut-fig img:hover{ transform:scale(1.015); }
+.tut-fig figcaption{ font-size:11px; font-weight:600; letter-spacing:.4px; text-transform:uppercase; color:var(--ink3); margin-top:11px; }
+.tut-tag{ display:inline-block; margin-left:8px; padding:2px 9px; border-radius:20px; background:var(--c-danger); color:#fff; font-size:10px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; vertical-align:middle; }
+
+/* beneficios */
+.benefits{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+.benefit{ display:flex; align-items:center; gap:11px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+.benefit .bi{ width:38px; height:38px; border-radius:10px; background:var(--bg2); color:var(--ink); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.benefit .bi svg{ width:19px; height:19px; }
+.benefit .bt{ font-size:13.5px; font-weight:700; color:var(--ink); line-height:1.25; }
+.benefit .bd{ font-size:11.5px; color:var(--ink3); margin-top:2px; }
+@media(max-width:520px){ .benefits{ grid-template-columns:1fr; } }
+
+/* ---- Reporte a pantalla completa ---- */
+body.report-mode .top{ display:none; }
+body.report-mode main{ max-width:none; margin:0; padding:0; }
+body.report-mode #view{ display:flex; flex-direction:column; height:100vh; height:100dvh; }
+body.report-mode .sec-head{ display:none; }
+body.report-mode .footer{ display:none; }
+body.report-mode .back{ margin:11px 0 11px 16px; align-self:flex-start; }
+body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
+.report-stage{ height:100%; background:#fff; }
+.report-stage iframe{ width:100%; height:100%; border:0; display:block; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand" onclick="showHub()">
+    <img src="logo.png" alt="Mueblesysillones">
+  </div>
+  <div class="top-r">
+    <button class="home-btn" id="homeBtn" onclick="showHub()" hidden>
+      <span class="ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Inicio
+    </button>
+    <button class="menu-btn" id="menuBtn" onclick="openMenu()" aria-label="Abrir menú de navegación">
+      <span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Menú
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- HUB -->
+  <section id="hub">
+    <div class="hero">
+      <div class="eyebrow">Centro de recursos</div>
+      <h1>Todo lo que necesitás,<br>en un solo lugar</h1>
+      <p>Elegí una sección para ver la información o descargar el material. Vamos sumando contenido a medida que esté listo.</p>
+    </div>
+    <div class="botonera" id="botonera"></div>
+  </section>
+
+  <!-- VISTA DE SECCION -->
+  <section id="view" hidden>
+    <button class="back" onclick="showHub()"><span class="ico"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span> Volver al inicio</button>
+    <div class="sec-head">
+      <div class="icirc" id="secIcon"></div>
+      <div>
+        <h2 id="secTitle"></h2>
+        <div class="sub" id="secSub"></div>
+      </div>
+    </div>
+    <div class="sec-body" id="secBody"></div>
+  </section>
+
+  <div class="footer">Mueblesysillones · Intranet de Vendedores · 2026</div>
+</main>
+
+<div id="navmenu" class="navmenu" hidden>
+  <div class="nav-ov" onclick="closeMenu()"></div>
+  <aside class="nav-panel">
+    <div class="nav-head">
+      <span class="nh-t">Navegación</span>
+      <button class="nav-close" onclick="closeMenu()" aria-label="Cerrar menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="nav-list" id="navList"></div>
+  </aside>
+</div>
+
+<div id="lightbox" hidden onclick="closeLightbox()"><img id="lbimg" src="" alt="Vista ampliada"></div>
+
+<script>
+/* ---- iconos SVG ---- */
+const I = {
+  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  card:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',
+  tag:'<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+  truck:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+  award:'<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  chart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  play:'<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+  ext:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  arrowR:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  arrowDR:'<polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  map:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  mic:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  store:'<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/>',
+  ruler:'<rect x="2" y="7" width="20" height="10" rx="1"/><line x1="6" y1="7" x2="6" y2="11"/><line x1="10" y1="7" x2="10" y2="11"/><line x1="14" y1="7" x2="14" y2="11"/><line x1="18" y1="7" x2="18" y2="11"/>',
+  whatsapp:'<path d="M3 21l1.65-4.8a8.5 8.5 0 1 1 3.4 3.05L3 21z"/><path d="M9 8.5c0 4 2.5 6.5 6.5 6.5l1-1.8-2-1-.9 1c-1.2-.5-2.1-1.4-2.6-2.6l1-.9-1-2-1.5.3a1.5 1.5 0 0 0-.5 1.2z"/>',
+  chatBubble:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/><line x1="8.5" y1="11" x2="15.5" y2="11"/><line x1="8.5" y1="14" x2="13" y2="14"/>',
+  megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z"/><path d="M18 8a5 5 0 0 1 0 8"/><line x1="7" y1="14" x2="8" y2="19"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><line x1="12" y1="15" x2="12" y2="17"/>',
+  funnel:'<path d="M3 5h18l-7 8v6l-4 2v-8L3 5z"/>',
+  refresh:'<path d="M4 12a8 8 0 0 1 13.7-5.6L20 8"/><path d="M20 4v4h-4"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 16"/><path d="M4 20v-4h4"/>',
+  verified:'<path d="M12 2l2.3 1.6 2.8-.2 1 2.6 2.3 1.6-.8 2.7.8 2.7-2.3 1.6-1 2.6-2.8-.2L12 22l-2.3-1.6-2.8.2-1-2.6-2.3-1.6.8-2.7-.8-2.7 2.3-1.6 1-2.6 2.8.2L12 2z"/><path d="M9 12l2 2 4-4"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  reply:'<polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+  home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  layers:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>'
+};
+const svg = p => '<span class="ico"><svg viewBox="0 0 24 24">'+p+'</svg></span>';
+const tick = '<span class="wa-tick"><svg viewBox="0 0 16 11"><polyline points="1 6 4.4 9.3 9.6 2.6"/><polyline points="6.2 9.3 11.4 2.6"/></svg></span>';
+
+/* ---- definicion de secciones (editar acá para sumar contenido) ---- */
+const TILES = [
+  { key:'descargables', n:1, title:'Material descargable',      desc:'Promos bancarias, vigentes y envíos.',      color:'--c-caba',    icon:'download', ready:true },
+  { key:'manual',       n:2, title:'Manual de derivaciones',   desc:'Guía completa del proceso de derivación.',  color:'--c-hudson',  icon:'book',     ready:true },
+  { key:'chatbot',      n:3, title:'Tutorial de chatbot',       desc:'Cómo usar el bot, paso a paso.',            color:'--c-danger',  icon:'play',     ready:true },
+  { key:'reporte',      n:4, title:'Reporte de métricas',       desc:'Consultas y derivaciones, mes a mes.',      color:'--c-success', icon:'chart',    ready:true },
+  { key:'whatsapp',     n:5, title:'Normas de WhatsApp',        desc:'Vender bien sin que te bloqueen.',          color:'--c-success', icon:'whatsapp', ready:true },
+  { key:'porque',       n:6, title:'¿Por qué elegirnos?',       desc:'Flyer con nuestros diferenciales.',         color:'--c-warn',    icon:'award',    ready:false },
+  { key:'competencia',  n:7, title:'Reporte mini competencia',  desc:'Qué está haciendo la competencia.',         color:'--c-info',    icon:'search',   ready:false },
+];
+const MAP = Object.fromEntries(TILES.map(t=>[t.key,t]));
+/* secciones que agrupan varias galerias descargables bajo subtitulos */
+const DOWNLOAD_GROUPS = {
+  descargables: [
+    { key:'fechas_especiales', title:'Fechas especiales' },
+    { key:'promos_bancarias', title:'Promociones bancarias' },
+    { key:'promos_mensuales', title:'Promociones vigentes' },
+    { key:'entregas',         title:'Placas de envío' },
+  ]
+};
+
+/* contenido propio de cada seccion lista */
+const CONTENT = {
+  manual: `
+  <div class="manual">
+    <p class="m-lead"><b>Objetivo:</b> un proceso claro, profesional y efectivo para gestionar consultas y derivarlas al vendedor de cada sucursal. <b>Meta del vendedor:</b> maximizar la tasa de cierre y optimizar el tiempo.</p>
+
+    <div class="m-block">
+      <div class="m-kicker">El proceso, de un vistazo</div>
+      <div class="flow">
+        <div class="step"><div class="si" style="background:var(--c-caba)">${svg(I.users)}</div><div class="st">Redes</div><div class="sd">Asesora, filtra y suma info del cliente</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-hudson)">${svg(I.arrowR)}</div><div class="st">Derivación</div><div class="sd">Pasa al vendedor de la sucursal</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-canning)">${svg(I.user)}</div><div class="st">Asesoramiento</div><div class="sd">Presentación y detección de necesidades</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-success)">${svg(I.check)}</div><div class="st">Cierre / Visita</div><div class="sd">Cita al local y seguimiento semanal</div></div>
+      </div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">1</span> Equipo de redes</div>
+      <p class="m-p">Brinda un <b>asesoramiento previo</b> (sin enviar precios) para <b>tomar el mayor dato posible del cliente</b> y acercárselo al vendedor.</p>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">2</span> Equipo de vendedores</div>
+
+      <div class="m-h">Presentación inicial (obligatoria)</div>
+      <p class="m-sub">Siempre igual, para reforzar marca y recordación.</p>
+      <div class="chat"><div class="blabel">Ejemplo</div>
+        <div class="bubble out">Hola 👋 soy [Nombre], asesora comercial de MueblesySillones.com. ¡Gracias por tu consulta!<span class="time">10:24 ✓✓</span></div>
+      </div>
+
+      <div class="m-h" style="margin-top:28px">Información clave (primer mensaje)</div>
+      <p class="m-sub">Priorizá lo que más valor genera:</p>
+      <div class="checklist">
+        <div class="ci">${svg(I.check)} Modelo / diseño</div>
+        <div class="ci">${svg(I.check)} Medidas generales</div>
+        <div class="ci">${svg(I.check)} Personalización (si aplica)</div>
+        <div class="ci">${svg(I.check)} Beneficio diferencial</div>
+        <div class="ci">${svg(I.check)} Formas de pago</div>
+        <div class="ci">${svg(I.check)} Envíos</div>
+      </div>
+      <p class="m-p">Hacé <b>preguntas abiertas</b> y detectá necesidades como en el local. Pedí <b>fotos del ambiente</b> y disponibilidad para asesorar con medidas. Que el cliente sienta que estás para ayudarlo, no solo para venderle.</p>
+      <div class="chat"><div class="blabel">Ejemplo</div>
+        <div class="bubble out">Este modelo es uno de los más elegidos: combina diseño moderno y máxima comodidad. Lo tenemos en distintas medidas y tapizados.<span class="time">10:27 ✓✓</span></div>
+        <div class="bubble out">¿Tenés una foto del espacio? Así pensamos juntos cuál es el modelo ideal 🙂<span class="time">10:27 ✓✓</span></div>
+      </div>
+
+      <div class="m-h" style="margin-top:28px">Recurso: ir directo a la acción</div>
+      <p class="m-sub">Sobre todo cuando el cliente queda en "pasar por el local". Sé concreto para generar el compromiso de la visita.</p>
+      <div class="chat"><div class="blabel">Ejemplo</div>
+        <div class="bubble out">¿Podés acercarte hoy? ¿Te agendamos un horario para que nos visites?<span class="time">10:30 ✓✓</span></div>
+      </div>
+
+      <div class="note">${svg(I.map)}<div class="nt"><b>Compartí siempre el link de Google Maps</b> de tu sucursal: el cliente ve cómo llegar, la distancia y las reseñas de otros clientes.</div></div>
+      <div class="note">${svg(I.mic)}<div class="nt"><b>Audios cortos (20–40 s)</b> con info clara: humanizan y aumentan la conversión.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker">Detección de objeciones</div>
+      <p class="m-p">Frase clave para detectar frenos:</p>
+      <div class="chat">
+        <div class="bubble out">¿Hay algún detalle por el cual no estés convencido/a? Tenemos distintas opciones de diseño, medidas y valores.<span class="time">11:02 ✓✓</span></div>
+      </div>
+      <div class="checklist">
+        <div class="ci">${svg(I.check)} Identificar precio / espacio / diseño</div>
+        <div class="ci">${svg(I.check)} Reencuadrar la propuesta</div>
+        <div class="ci">${svg(I.check)} Ofrecer alternativas</div>
+      </div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker">Situaciones frecuentes · qué responder</div>
+      <p class="m-sub">Cada situación, con su respuesta recomendada.</p>
+
+      <div class="situ">
+        <div class="sit-head"><span class="sit-tag">Situación</span> El cliente no responde</div>
+        <div class="sit-arrow">${svg(I.arrowDR)} Respuesta recomendada</div>
+        <div class="chat">
+          <div class="bubble out">Hola [Nombre], te escribía para retomar la consulta 😊 ¿Este modelo se ajusta a lo que estás buscando?<span class="time">✓✓</span></div>
+        </div>
+        <div class="note">${svg(I.clock)}<div class="nt"><b>Regla de seguimiento:</b> es <b>mucho más eficiente seguir ANTES de las 24 h</b>. Pasado ese plazo, si el cliente no respondió, ya no se le puede escribir libre y hay que reabrir con una plantilla. 1.º seguimiento dentro de las 24 h · 2.º con una alternativa o beneficio EXTRA. Nunca abandonar una consulta.</div></div>
+      </div>
+
+      <div class="situ">
+        <div class="sit-head"><span class="sit-tag">Situación</span> Dice "después paso"</div>
+        <div class="sit-arrow">${svg(I.arrowDR)} Respuesta recomendada</div>
+        <div class="chat">
+          <div class="bubble out">¡Perfecto 🙌! ¿Tenías pensado pasar esta semana o el finde? Así te derivamos con el asesor del local.<span class="time">✓✓</span></div>
+        </div>
+        <p class="m-p">Objetivo: bajar la indefinición y avanzar a la derivación.</p>
+      </div>
+
+      <div class="situ">
+        <div class="sit-head"><span class="sit-tag">Situación</span> Cliente del interior</div>
+        <div class="sit-arrow">${svg(I.arrowDR)} Respuesta recomendada</div>
+        <div class="chat">
+          <div class="bubble out">¿Tenías programado algún viaje a Buenos Aires? Sería ideal para ver y probar los modelos en persona.<span class="time">✓✓</span></div>
+          <div class="bubble out">Hacemos envíos con flota propia o expresos de confianza del cliente.<span class="time">✓✓</span></div>
+        </div>
+        <p class="m-p">Si no viaja: aclarar envíos al interior y brindar opciones claras.</p>
+      </div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker">Beneficios para comunicar</div>
+      <p class="m-sub">Usalos como refuerzo, no como listado frío.</p>
+      <div class="benefits">
+        <div class="benefit"><div class="bi">${svg(I.shield)}</div><div><div class="bt">Garantía de 8 años</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.card)}</div><div><div class="bt">La mejor financiación del mercado</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.truck)}</div><div><div class="bt">Servicio de entrega integral</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.award)}</div><div><div class="bt">Flota propia Premium</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.box)}</div><div><div class="bt">Embalaje cuidado</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.layers)}</div><div><div class="bt">Stock inmediato</div><div class="bd">+3000 productos en stock</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.store)}</div><div><div class="bt">Locales al público</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.user)}</div><div><div class="bt">Asesoramiento personalizado</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.ruler)}</div><div><div class="bt">Muebles a medida</div></div></div>
+      </div>
+    </div>
+  </div>`,
+  reporte: `<div class="report-stage"><iframe src="../mys-presentaciones/index.html" title="Reporte de métricas"></iframe></div>`,
+  chatbot: `
+  <div class="manual">
+
+    <p class="m-lead"><b>ChatBot Lucy</b> es la plataforma donde te llegan los contactos que <b>marketing te deriva</b>. Desde ahí respondés a cada cliente como si fuera WhatsApp. Seguí estos pasos para empezar a usarla.</p>
+
+    <div class="m-block">
+      <div class="m-h">Acceder a la plataforma</div>
+    </div>
+
+    <div class="m-block" style="margin-top:18px">
+      <div class="m-kicker"><span class="n">1</span> Ingresá a tu cuenta</div>
+      <p class="m-p">Entrás a la plataforma con tu <b>correo electrónico</b> y la <b>contraseña</b> que creaste.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/01-login.png" alt="Pantalla de inicio de sesión" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/01-login.png','ChatBot Lucy - Login')"><figcaption>Pantalla de inicio de sesión</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">2</span> Abrí el menú</div>
+      <p class="m-p">Tocá las <b>3 rayitas</b> de la parte superior izquierda para desplegar la lista de opciones.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/02-menu.png" alt="Botón de menú (3 rayitas) arriba a la izquierda" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/02-menu.png','ChatBot Lucy - Menú')"><figcaption>Las 3 rayitas, arriba a la izquierda</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">3</span> Entrá a "Conversaciones"</div>
+      <p class="m-p">En la lista de opciones, ingresá a <b>Conversaciones</b>.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/03-conversaciones.png" alt="Opción Conversaciones en el menú" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/03-conversaciones.png','ChatBot Lucy - Conversaciones')"><figcaption>Opción "Conversaciones"</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-h">Trabajar con tus contactos</div>
+    </div>
+
+    <div class="m-block" style="margin-top:18px">
+      <div class="m-kicker"><span class="n">4</span> Tus contactos derivados</div>
+      <p class="m-p">Acá vas a encontrar los <b>contactos que te fueron derivados</b>.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/04-lista-contactos.png" alt="Lista de conversaciones derivadas" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/04-lista-contactos.png','ChatBot Lucy - Contactos')"><figcaption>Lista de contactos derivados</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">5</span> Adentro del chat</div>
+      <p class="m-p">Al ingresar al chat vas a ver la <b>consulta que realizó el cliente</b> más la <b>información que marketing pudo extraer</b>, para que arranques con contexto.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/05-chat.png" alt="Vista del chat con la consulta del cliente e info de marketing" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/05-chat.png','ChatBot Lucy - Chat')"><figcaption>Consulta del cliente + info de marketing</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">6</span> Funciona como WhatsApp</div>
+      <p class="m-p">Podés usar las funciones básicas <b>como si fuera WhatsApp</b>: escribir, adjuntar y enviar audios.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/06-microfono.png" alt="Barra de mensaje con el botón de micrófono" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/06-microfono.png','ChatBot Lucy - Micrófono')"><figcaption>Botón de micrófono para enviar audios</figcaption></figure>
+      <div class="note">${svg(I.mic)}<div class="nt"><b>Para enviar audios</b> tenés que darle permiso al micrófono. La primera vez te aparece una ventana: tocá <b>"Permitir"</b>. Solo lo pide <b>una sola vez</b>.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-h">Tenelo en la pantalla del celular</div>
+      <p class="m-p">Podés dejar un acceso directo a la plataforma en la pantalla principal del celular para entrar de una.</p>
+    </div>
+
+    <div class="m-block" style="margin-top:18px">
+      <div class="m-kicker"><span class="n">7</span> Tocá "Compartir"</div>
+      <p class="m-p">Dentro de la página, buscá la opción <b>Compartir</b>. <b>Según el modelo de teléfono puede aparecer de distintas formas.</b></p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/07-compartir.png" alt="Botón Compartir del navegador" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/07-compartir.png','ChatBot Lucy - Compartir')"><figcaption>Opción "Compartir" del navegador</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">8</span> "Añadir a pantalla de inicio"</div>
+      <p class="m-p">En el menú que se abre, elegí <b>Añadir a pantalla de inicio</b>.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/08-anadir-inicio.png" alt="Opción Añadir a pantalla de inicio" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/08-anadir-inicio.png','ChatBot Lucy - Añadir a inicio')"><figcaption>Opción "Añadir a pantalla de inicio"</figcaption></figure>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">9</span> Ponele nombre y agregá</div>
+      <p class="m-p">Le ponés un nombre y tocás <b>Agregar</b>. Listo: el ícono queda en la pantalla principal de tu celular para entrar de forma directa.</p>
+      <figure class="tut-fig"><img src="assets/tutorial_chatbot/09-agregar.png" alt="Confirmación para agregar el acceso directo a inicio" loading="lazy" onclick="openLightbox('assets/tutorial_chatbot/09-agregar.png','ChatBot Lucy - Agregar')"><figcaption>Ponele un nombre y tocá "Agregar"</figcaption></figure>
+    </div>
+
+    <div class="note">${svg(I.shield)}<div class="nt"><b>¿Algún error o duda en la plataforma?</b> Mandanos una captura o consultanos las veces que sea necesario.</div></div>
+
+  </div>`,
+  whatsapp: `
+  <div class="manual">
+
+    <p class="m-lead"><b>WhatsApp es nuestra mejor herramienta para acercar al cliente a la compra,</b> pero tiene reglas claras. Entenderlas no te limita: te da poder. El cliente nos abre la puerta cuando nos escribe, y tenemos 24 horas para charlar con total libertad. Pasado ese tiempo, todavía podemos volver a contactarlo de forma legal con plantillas aprobadas.</p>
+
+    <div class="note">${svg(I.clock)}<div class="nt"><b>La idea en una frase:</b> el cliente abre la puerta cuando nos escribe, la aprovechamos dentro de las 24h, y la reabrimos con plantillas cuando hace falta. Todo lo demás cuelga de ahí.</div></div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">1</span> LA HERRAMIENTA</div>
+      <div class="m-h">Qué es WhatsApp Business API y por qué la usamos</div>
+      <p class="m-sub">Existen tres WhatsApp distintos: el personal, la app Business (gratis, para un negocio chico en un solo teléfono) y la Business Platform, llamada API. Nosotros usamos la API porque está hecha para crecer.</p>
+      <p class="m-p">La diferencia central es la escala. La app gratis funciona en un teléfono principal más hasta 4 dispositivos: todos ven los mismos chats, pero nadie sabe quién respondió a quién. Con la API, muchos vendedores atienden el mismo número a la vez sin pisarse, con la consulta de cada cliente registrada y medible en el sistema.</p>
+      <p class="m-p">La API no se baja de una tienda de apps: se conecta a través de un proveedor oficial (BSP) o un CRM. Esto nos da algo clave para una mueblería: <b>profesionalismo y confianza</b>. Perfil de empresa, catálogo y el tilde de Cuenta Oficial verificada le dicen al cliente que habla con un negocio serio.</p>
+
+      <div class="benefits">
+        <div class="benefit"><div class="bi">${svg(I.users)}</div><div><div class="bt">1 número, vendedores ilimitados</div><div class="bd">Trabajan en simultáneo sin perder ninguna consulta</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.chart)}</div><div><div class="bt">Todo queda registrado</div><div class="bd">Cada conversación en el sistema, no perdida en un celular</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.verified)}</div><div><div class="bt">Cuenta Oficial verificada</div><div class="bd">El tilde da confianza para que el cliente compre</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.store)}</div><div><div class="bt">Siempre vía proveedor</div><div class="bd">Se opera por un BSP o CRM, no desde el teléfono</div></div></div>
+      </div>
+
+      <div class="note">${svg(I.check)}<div class="nt"><b>Dato:</b> en la API NO existe el viejo límite de 256 contactos. Ese tope es de las listas de difusión de la app del celular, no del sistema que usamos nosotros. La Cloud API está disponible para todas las empresas desde mayo de 2022.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">2</span> LA REGLA DE ORO</div>
+      <div class="m-h">La regla de las 24 horas: el cliente abre la puerta</div>
+      <p class="m-sub">Cada vez que un cliente nos escribe o nos llama, se abre un reloj de 24 horas: la ventana de servicio. Mientras corre, respondemos con lo que queramos.</p>
+      <p class="m-p">Texto, fotos del sillón, audios, videos, precios, ubicación de la sucursal: libertad total y sin costo. El reloj se cuenta desde el ÚLTIMO mensaje del cliente, no desde el nuestro.</p>
+
+      <div class="flow">
+        <div class="step"><div class="si" style="background:var(--c-success)">${svg(I.chatBubble)}</div><div class="st">Cliente escribe</div><div class="sd">Se abre la ventana de 24h</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-caba)">${svg(I.clock)}</div><div class="st">Tenés 24h</div><div class="sd">Fotos, precios y propuestas, gratis</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-canning)">${svg(I.refresh)}</div><div class="st">Responde de nuevo</div><div class="sd">El reloj vuelve a cero: +24h</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-danger)">${svg(I.lock)}</div><div class="st">Pasan 24h sin respuesta</div><div class="sd">La ventana se cierra: solo plantillas</div></div>
+      </div>
+
+      <p class="m-p"><b>Importante:</b> que nosotros contestemos NO estira la ventana. Lo único que vuelve el reloj a cero es que el cliente responda. Si la ventana está cerrada e intentás escribir libre, WhatsApp rechaza el mensaje y NO se entrega (error 131047, "mensaje de reenganche").</p>
+
+      <div class="checklist">
+        <div class="ci">${svg(I.check)} Dentro de las 24h: mandás cualquier cosa, gratis y sin plantilla</div>
+        <div class="ci">${svg(I.check)} Se cuenta desde el último mensaje DEL CLIENTE</div>
+        <div class="ci">${svg(I.check)} Cada respuesta del cliente reinicia el reloj a 24h</div>
+        <div class="ci">${svg(I.check)} Fuera de la ventana: solo plantillas; el texto libre se rechaza</div>
+        <div class="ci">${svg(I.check)} No se compra ni se amplía: solo la reinicia una respuesta</div>
+        <div class="ci">${svg(I.check)} Es la regla anti-spam de Meta: protege al usuario y a tu número</div>
+      </div>
+
+      <div class="note">${svg(I.clock)}<div class="nt"><b>Por eso conviene cerrar o avanzar la venta DENTRO de las 24h:</b> con la ventana abierta tenés vía libre para mandar fotos, precios y propuestas sin restricciones ni costos.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">3</span> LA LLAVE</div>
+      <div class="m-h">Plantillas: la llave para reabrir y retomar</div>
+      <p class="m-sub">Una plantilla es un mensaje pre-aprobado por Meta. Es la ÚNICA forma de escribirle primero a un cliente o de retomarlo después de las 24 horas. La aprobás una vez y la reutilizás siempre.</p>
+      <p class="m-p">La plantilla se personaliza de verdad: con variables tipo {{1}} el sistema completa el nombre real del cliente, el modelo que consultó o la fecha. Parece escrito a mano, pero lo manda el sistema. Además sumás una foto del sillón en el encabezado y botones de un toque como "Ver catálogo", "Llamar ahora" o "Visitar sitio web".</p>
+
+      <div class="benefits">
+        <div class="benefit"><div class="bi">${svg(I.megaphone)}</div><div><div class="bt">Marketing</div><div class="bd">Promos, ofertas, novedades y reactivar consultas frías</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.truck)}</div><div><div class="bt">Utilidad</div><div class="bd">Seguimiento de un pedido o gestión</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.shield)}</div><div><div class="bt">Autenticación</div><div class="bd">Códigos de verificación</div></div></div>
+      </div>
+      <p class="m-p">Las tres categorías están vigentes desde junio de 2023. <b>Para difundir productos de la mueblería usamos siempre Marketing.</b> Toda plantilla pasa por revisión: muchas se aprueban en minutos de forma automática; si hace falta revisión humana, puede tardar hasta 48 horas.</p>
+
+      <div class="situ">
+        <div class="sit-head"><span class="sit-tag">Situación</span> Consulta fría de hace una semana por un sillón. La ventana de 24h ya se cerró.</div>
+        <div class="sit-arrow">${svg(I.arrowDR)} Le mandás una plantilla de Marketing para reactivar (con permiso del cliente)</div>
+        <div class="wa mini">
+          <div class="wa-body">
+            <div class="wa-sys">Plantilla de Marketing aprobada</div>
+            <div class="wa-msg out">¡Hola Carla! 👋 Vimos que consultaste por el sillón Berlín 3 cuerpos. Esta semana entró con 15% off y entrega en zona Norte. ¿Te muestro fotos?<span class="wa-time">10:24 ${tick}</span></div>
+            <div class="wa-msg in">¡Sí! Mandame todo 🙌<span class="wa-time">10:31</span></div>
+            <div class="wa-sys" style="background:#d8f5c6;color:#3a7a55">Cliente respondió → ventana de 24h reabierta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="m-h" style="margin-top:30px">Más ejemplos de plantillas listas para adaptar</div>
+      <p class="m-sub">Los {{1}}, {{2}}… son variables: el sistema las reemplaza por los datos reales del cliente (nombre, modelo, sucursal, fecha). La categoría y los botones se eligen al crear la plantilla.</p>
+
+      <div class="wa">
+        <div class="wa-top">
+          <span class="ico"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
+          <div class="wa-av">MyS</div>
+          <div class="wa-id">
+            <div class="wa-name">MueblesySillones <span class="v">${svg(I.verified)}</span></div>
+            <div class="wa-status">en línea</div>
+          </div>
+          <div class="wa-acts">
+            <span class="ico"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+            <span class="ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4" fill="#fff" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="#fff" stroke="none"/><circle cx="12" cy="19" r="1.4" fill="#fff" stroke="none"/></svg></span>
+          </div>
+        </div>
+        <div class="wa-body">
+          <div class="wa-sys">Marketing · Promoción</div>
+          <div class="wa-msg out">{{1}}, esta semana tenemos 3 y 6 cuotas sin interés en toda la línea de sillones + envío bonificado en zona {{2}}. ¿Querés que te reserve el tuyo?<span class="wa-time">10:41 ${tick}</span></div>
+          <div class="wa-btns">
+            <div class="wa-btn">${svg(I.ext)} Ver promo</div>
+            <div class="wa-btn">${svg(I.ext)} Comprar ahora</div>
+          </div>
+
+          <div class="wa-sys">Utilidad · Recordatorio de visita</div>
+          <div class="wa-msg out">Hola {{1}}, te esperamos el {{2}} en nuestro local de {{3}} para que veas y pruebes los modelos. ¿Confirmás tu visita?<span class="wa-time">11:05 ${tick}</span></div>
+          <div class="wa-btns">
+            <div class="wa-btn">${svg(I.check)} Confirmo</div>
+            <div class="wa-btn">${svg(I.refresh)} Reprogramar</div>
+          </div>
+
+          <div class="wa-sys">Marketing · Llegó stock</div>
+          <div class="wa-msg out">¡Buenas noticias {{1}}! Volvió a entrar el {{2}} que estabas esperando, en {{3}}. Quedan pocas unidades. ¿Te lo aparto?<span class="wa-time">12:30 ${tick}</span></div>
+          <div class="wa-btns">
+            <div class="wa-btn">${svg(I.ext)} Ver disponibilidad</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="note">${svg(I.check)}<div class="nt"><b>Recordá:</b> las de <b>Marketing</b> necesitan opt-in del cliente; las de <b>Utilidad</b> se disparan por una acción suya (una compra, una visita agendada). Todas se aprueban una vez y se reutilizan.</div></div>
+
+      <div class="checklist">
+        <div class="ci">${svg(I.check)} Se aprueba una vez y se reutiliza siempre</div>
+        <div class="ci">${svg(I.check)} Personalizás con nombre real y producto consultado</div>
+        <div class="ci">${svg(I.check)} Sumás foto en el encabezado y botones de un toque</div>
+        <div class="ci">${svg(I.check)} Tres categorías: Marketing, Utilidad y Autenticación</div>
+        <div class="ci">${svg(I.check)} Aprobación: muchas en minutos; revisión humana hasta 48h</div>
+        <div class="ci">${svg(I.check)} Cuando el cliente responde, se reabre la ventana de 24h</div>
+      </div>
+
+      <div class="note">${svg(I.shield)}<div class="nt"><b>Cuidado:</b> no pidas datos sensibles como tarjeta o salud en una plantilla: eso hace que se rechace.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">4</span> ESCALAR BIEN</div>
+      <div class="m-h">Difusiones masivas con plantillas: escalar sin que te bloqueen</div>
+      <p class="m-sub">La difusión masiva real no es la "lista de difusión" del celular. Se hace con plantillas aprobadas y solo a clientes que dieron su permiso (opt-in).</p>
+      <p class="m-p">El opt-in es el consentimiento explícito para recibir nuestros mensajes; se junta en cualquier canal: un formulario, el mostrador, una venta, un anuncio. <b>Ojo:</b> que un cliente nos escriba NO equivale a permiso para mandarle promos después; eso se pide aparte.</p>
+
+      <div class="flow">
+        <div class="step"><div class="si" style="background:var(--c-canning)">${svg(I.users)}</div><div class="st">250 / día</div><div class="sd">Personas distintas para arrancar</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-caba)">${svg(I.chart)}</div><div class="st">2.000</div><div class="sd">Al cumplir requisitos</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-info)">${svg(I.chart)}</div><div class="st">10.000 / 100.000</div><div class="sd">Escala por niveles</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-success)">${svg(I.award)}</div><div class="st">Ilimitado</div><div class="sd">Ganándolo con calidad</div></div>
+      </div>
+
+      <p class="m-p">El límite cuenta destinatarios únicos por día, no mensajes: si le mandás 3 plantillas a la misma persona, cuenta como 1. <b>Para SUBIR:</b> mensajes de calidad y usar al menos la mitad del cupo en los últimos 7 días; el límite sube en pocas horas. <b>Para BAJAR:</b> alcanza con que la calidad quede en rojo (Flagged) 7 días seguidos.</p>
+
+      <div class="benefits">
+        <div class="benefit"><div class="bi" style="color:var(--c-success)">${svg(I.shield)}</div><div><div class="bt">Verde: calidad alta</div><div class="bd">Más alcance</div></div></div>
+        <div class="benefit"><div class="bi" style="color:var(--c-warn)">${svg(I.shield)}</div><div><div class="bt">Amarillo: media</div><div class="bd">Cuidala</div></div></div>
+        <div class="benefit"><div class="bi" style="color:var(--c-danger)">${svg(I.shield)}</div><div><div class="bt">Rojo: baja</div><div class="bd">Menos alcance; puede quedar restringida</div></div></div>
+      </div>
+      <p class="m-p">La bajan los bloqueos, los reportes y que la gente te silencie o archive. Meta también limita cuántas promos de Marketing recibe una persona: no satures.</p>
+
+      <div class="note">${svg(I.megaphone)}<div class="nt"><b>El cupo diario NO se compra: se gana mandando bien.</b> Respetá siempre la baja: quien pide salir, sale de la lista. Eso protege tu número.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">5</span> MANDAR AL GRUPO JUSTO</div>
+      <div class="m-h">Etiquetas y segmentación por zona y producto</div>
+      <p class="m-sub">Conviene separar dos ideas: las etiquetas sirven para ordenar tu bandeja; las plantillas sirven para enviar al grupo. No son lo mismo y no se mezclan.</p>
+      <p class="m-p">En la app del celular hay etiquetas nativas (5 por defecto más hasta 20 propias, con nombre y color) para clasificar chats por zona o producto. Pero las etiquetas no envían solas: para mandar a un grupo desde la app se usa una lista de difusión de hasta 256 contactos, y solo le llega a quien tenga TU número agendado. Por eso esa vía no escala.</p>
+      <p class="m-p"><b>En la API que usamos para crecer no hay etiquetas de WhatsApp:</b> la segmentación vive en el CRM o plataforma del proveedor. El flujo es claro:</p>
+
+      <div class="flow">
+        <div class="step"><div class="si" style="background:var(--c-canning)">${svg(I.check)}</div><div class="st">1. Permiso</div><div class="sd">El cliente da el opt-in</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-caba)">${svg(I.tag)}</div><div class="st">2. Etiqueta</div><div class="sd">Por sucursal/zona e interés</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-info)">${svg(I.funnel)}</div><div class="st">3. Filtrá</div><div class="sd">Zona Norte + sillones</div></div>
+        <div class="arrow">${svg(I.arrowR)}</div>
+        <div class="step"><div class="si" style="background:var(--c-success)">${svg(I.megaphone)}</div><div class="st">4. Disparás</div><div class="sd">A ese grupo, SU plantilla</div></div>
+      </div>
+
+      <p class="m-p"><b>Mandar a cada grupo su oferta es lo que más vende</b> y baja los bloqueos: el cliente recibe algo que le interesa de verdad.</p>
+
+      <div class="checklist">
+        <div class="ci">${svg(I.check)} Etiquetas = ordenar la bandeja. Plantillas = enviar al segmento</div>
+        <div class="ci">${svg(I.check)} App: 5 etiquetas fijas + 20 propias; difusión hasta 256 agendados</div>
+        <div class="ci">${svg(I.check)} En la API la segmentación vive en el CRM, no en WhatsApp</div>
+        <div class="ci">${svg(I.check)} Segmentá por sucursal/zona y por interés de producto</div>
+        <div class="ci">${svg(I.check)} A cada grupo, su oferta: más ventas y menos bloqueos</div>
+      </div>
+
+      <div class="note">${svg(I.tag)}<div class="nt"><b>Tip:</b> si una plantilla de Utilidad tiene contenido de promoción, Meta la reclasifica como Marketing. Para ofertas, armala directamente como Marketing desde el principio.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">6</span> SIN DESHACER</div>
+      <div class="m-h">Cuidado al enviar: no se puede editar ni borrar</div>
+      <p class="m-sub">Una diferencia clave con el WhatsApp del celular: desde la API (el sistema que usamos) un mensaje o una imagen, una vez enviados, NO se pueden editar ni eliminar.</p>
+
+      <div class="benefits">
+        <div class="benefit"><div class="bi">${svg(I.phone)}</div><div><div class="bt">WhatsApp común (celular)</div><div class="bd">Podés editar el mensaje (hasta 15 min) y borrarlo para todos</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.lock)}</div><div><div class="bt">WhatsApp API (nuestro sistema)</div><div class="bd">No hay editar ni borrar: lo enviado queda firme</div></div></div>
+      </div>
+
+      <p class="m-p"><b>¿Por qué?</b> La API es un canal automatizado, de envío masivo y auditable. Meta solo habilita <b>enviar, marcar como leído, reacciones y el "escribiendo…"</b>. Editar y "eliminar para todos" son comodidades de la app personal, no parte de la mensajería de empresa: los mensajes del negocio quedan firmes y registrados (trazabilidad), y así se evita mandar algo y borrarlo para esquivar el control.</p>
+
+      <div class="note">${svg(I.shield)}<div class="nt"><b>Regla práctica:</b> revisá la imagen, el precio y el texto <b>antes</b> de enviar. No hay "deshacer". Si te equivocaste, la única salida es mandar un mensaje nuevo aclarando o corrigiendo.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker"><span class="n">7</span> PARA LLEVARSE</div>
+      <div class="m-h">Cierre: buenas prácticas para vender cumpliendo</div>
+      <p class="m-sub">El resumen es simple y se sostiene en una sola idea: el cliente abre la puerta cuando nos escribe, la aprovechamos dentro de las 24h, y la reabrimos de forma legal con plantillas cuando hace falta.</p>
+      <p class="m-p">Si trabajás dentro de la ventana, cerrás más rápido y sin costos. Si la ventana se cerró, no fuerces texto libre (no llega): mandá una plantilla relevante y dejá que el cliente reabra la charla. Y nunca arranques una conversación promocional sin permiso. Cuidar la calidad del número es cuidar tu herramienta de trabajo.</p>
+
+      <div class="benefits">
+        <div class="benefit"><div class="bi">${svg(I.clock)}</div><div><div class="bt">Aprovechá la ventana de 24h</div><div class="bd">Ahí vendés libre, con fotos y precios, sin costo</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.lock)}</div><div><div class="bt">Fuera de la ventana, solo plantillas</div><div class="bd">Nunca texto libre forzado</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.check)}</div><div><div class="bt">Sin permiso no hay difusión</div><div class="bd">Pedí siempre el opt-in</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.funnel)}</div><div><div class="bt">Personalizá y segmentá</div><div class="bd">A cada cliente, lo que le interesa</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.shield)}</div><div><div class="bt">Respetá la baja y no satures</div><div class="bd">Protegés el número y el alcance</div></div></div>
+        <div class="benefit"><div class="bi">${svg(I.refresh)}</div><div><div class="bt">La plantilla no es spam</div><div class="bd">Es el mecanismo legal de Meta para reabrir el contacto</div></div></div>
+      </div>
+
+      <div class="note">${svg(I.card)}<div class="nt"><b>Antes de prometer costos</b> a un cliente o a la gerencia, confirmá las tarifas vigentes con el proveedor: desde julio de 2025 el cobro es por mensaje de plantilla entregado, según categoría.</div></div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-kicker">${svg(I.award)} PUNTOS PARA RECORDAR</div>
+      <div class="checklist">
+        <div class="ci">${svg(I.check)} El cliente abre la puerta: cuando te escribe se abre una ventana de 24h para charlar libre, con fotos y precios, sin costo</div>
+        <div class="ci">${svg(I.check)} La ventana se cuenta desde el último mensaje DEL CLIENTE y se reinicia cada vez que él responde; tu respuesta no la estira</div>
+        <div class="ci">${svg(I.check)} Fuera de las 24h solo se contacta con plantillas aprobadas; el texto libre se rechaza y no llega (error 131047)</div>
+        <div class="ci">${svg(I.check)} La plantilla se aprueba una vez y se reutiliza siempre: personalizala con nombre, sumá foto y botones de un toque</div>
+        <div class="ci">${svg(I.check)} Difusión masiva real = plantilla aprobada + permiso (opt-in); arranca en 250 personas/día y crece con calidad hasta Ilimitado</div>
+        <div class="ci">${svg(I.check)} Segmentá en el CRM por zona y por producto, y mandá a cada grupo su oferta: vende más y baja los bloqueos</div>
+        <div class="ci">${svg(I.check)} Cuidá la calidad del número (verde): respetá la baja, no satures y enviá solo a quien dio el OK</div>
+        <div class="ci">${svg(I.check)} Desde la API no se puede editar ni borrar lo enviado: revisá bien la imagen, el precio y el texto antes de mandar</div>
+      </div>
+    </div>
+
+  </div>`
+};
+
+/* ---- render ---- */
+const botonera = document.getElementById('botonera');
+function seccionLista(t){ return t.ready || ((window.GALLERIES||{})[t.key]||[]).length>0; }
+function renderBotonera(){ botonera.innerHTML = TILES.map(t=>{ const r=seccionLista(t); return `
+  <button class="tile${r?'':' locked'}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
+    <span class="num">${String(t.n).padStart(2,'0')}</span>
+    <div class="icirc" style="background:var(${t.color})">${svg(I[t.icon])}</div>
+    <div class="tt">${t.title}</div>
+    <div class="td">${t.desc}</div>
+    <span class="chip ${r?'ok':'soon'}"><span class="dot"></span>${r?'Disponible':'Próximamente'}</span>
+  </button>`; }).join(''); }
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function galleryHTML(items, t){
+  return `<p class="lead">${esc(t.desc)} Tocá una imagen para verla en grande, o el botón <b>Descargar</b> para guardarla en tu celular.</p>
+  <div class="gallery">` + items.map(it=>`
+    <div class="gcard">
+      <img class="gimg" src="${esc(it.file)}" alt="${esc(it.title)}" loading="lazy" onclick="openLightbox('${esc(it.file)}','${esc(it.download||it.title)}')">
+      <div class="gmeta">
+        <div class="gtitle">${esc(it.title)}</div>
+        <a class="dl-btn" href="${esc(it.file)}" download="${esc(it.download||it.title)}">${svg(I.download)} Descargar</a>
+      </div>
+    </div>`).join('') + `</div>`;
+}
+function galleryGrid(items){
+  return `<div class="gallery">` + items.map(it=>`
+    <div class="gcard">
+      <img class="gimg" src="${esc(it.file)}" alt="${esc(it.title)}" loading="lazy" onclick="openLightbox('${esc(it.file)}','${esc(it.download||it.title)}')">
+      <div class="gmeta">
+        <div class="gtitle">${esc(it.title)}</div>
+        <a class="dl-btn" href="${esc(it.file)}" download="${esc(it.download||it.title)}">${svg(I.download)} Descargar</a>
+      </div>
+    </div>`).join('') + `</div>`;
+}
+function groupsHTML(groups){
+  const G = window.GALLERIES||{};
+  let html = `<p class="lead">Todo el material para descargar y compartir con tus clientes, ordenado por tipo. Tocá una imagen para verla en grande, o usá <b>Descargar</b> para guardarla en tu celular.</p>`;
+  let n = 0;
+  groups.forEach(g=>{
+    const items = G[g.key] || [];
+    if(!items.length) return;
+    n++;
+    html += `<div class="m-block"${n===1?' style="margin-top:26px"':''}>
+      <div class="m-kicker"><span class="n">${n}</span> ${esc(g.title)}</div>
+      ${galleryGrid(items)}
+    </div>`;
+  });
+  if(!n) html = pendingHTML({title:'Material descargable'});
+  return html;
+}
+function pendingHTML(t){
+  return `<div class="pending">
+      <div class="icirc">${svg(I.clock)}</div>
+      <h3>Sección en preparación</h3>
+      <p>Todavía no cargamos el contenido de <b>${esc(t.title)}</b>. En cuanto nos pases la info o los archivos, lo dejamos disponible acá.</p>
+    </div>`;
+}
+function openLightbox(src, name){
+  const lb=document.getElementById('lightbox');
+  lb.innerHTML = `<img id="lbimg" src="${esc(src)}" alt="Vista ampliada"><a class="dl-btn lb-dl" href="${esc(src)}" download="${esc(name||'')}" onclick="event.stopPropagation()">${svg(I.download)} Descargar</a>`;
+  lb.hidden=false;
+}
+function closeLightbox(){ document.getElementById('lightbox').hidden=true; }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closeMenu(); } });
+function openSection(key){ location.hash = key; }
+function renderSection(key){
+  const t = MAP[key];
+  document.getElementById('secIcon').style.background = `var(${t.color})`;
+  document.getElementById('secIcon').innerHTML = svg(I[t.icon]);
+  document.getElementById('secTitle').textContent = t.title;
+  document.getElementById('secSub').textContent = t.desc;
+  const imgs = (window.GALLERIES||{})[key] || [];
+  let body;
+  if(DOWNLOAD_GROUPS[key]) body = groupsHTML(DOWNLOAD_GROUPS[key]);
+  else if(CONTENT[key]) body = CONTENT[key];
+  else if(imgs.length) body = galleryHTML(imgs, t);
+  else body = pendingHTML(t);
+  document.getElementById('secBody').innerHTML = body;
+  document.body.classList.toggle('report-mode', key==='reporte');
+  document.getElementById('hub').hidden = true;
+  document.getElementById('view').hidden = false;
+  document.getElementById('homeBtn').hidden = false;
+  window.scrollTo(0,0);
+}
+function showHub(){
+  if(location.hash){ location.hash=''; return; } // hashchange dispara route()
+  document.body.classList.remove('report-mode');
+  document.getElementById('view').hidden = true;
+  document.getElementById('hub').hidden = false;
+  document.getElementById('homeBtn').hidden = true;
+  window.scrollTo(0,0);
+}
+/* ---- menu de navegacion (mobile) ---- */
+function renderNav(){
+  const list = document.getElementById('navList');
+  const inicio = `<button class="nav-item" onclick="navHome()">
+    <span class="ni-ic" style="background:var(--ink)">${svg(I.home)}</span>
+    <span class="ni-tx"><span class="ni-t">Inicio</span><span class="ni-d">Volver al centro de recursos</span></span>
+  </button>`;
+  list.innerHTML = inicio + TILES.map(t=>{ const r=seccionLista(t); return `
+    <button class="nav-item${r?'':' locked'}"${r?` onclick="navTo('${t.key}')"`:' aria-disabled="true" disabled'}>
+      <span class="ni-ic" style="background:var(${t.color})">${svg(I[t.icon])}</span>
+      <span class="ni-tx"><span class="ni-t">${t.title}</span><span class="ni-d">${t.desc}</span></span>
+      <span class="chip ${r?'ok':'soon'}"><span class="dot"></span>${r?'Disponible':'Próximamente'}</span>
+    </button>`; }).join('');
+}
+function openMenu(){ renderNav(); document.getElementById('navmenu').hidden=false; document.body.classList.add('menu-open'); }
+function closeMenu(){ document.getElementById('navmenu').hidden=true; document.body.classList.remove('menu-open'); }
+function navTo(key){ closeMenu(); location.hash = key; }
+function navHome(){ closeMenu(); showHub(); }
+
+function route(){
+  closeMenu();
+  const key = decodeURIComponent(location.hash.slice(1));
+  if(key && MAP[key]) renderSection(key);
+  else { document.body.classList.remove('report-mode'); document.getElementById('view').hidden=true; document.getElementById('hub').hidden=false; document.getElementById('homeBtn').hidden=true; }
+}
+window.addEventListener('hashchange', route);
+/* carga las galerias siempre frescas (evita problemas de cache al actualizar imagenes) */
+(function(){
+  var g=document.createElement('script');
+  g.src='galerias.js?v='+(new Date().getTime());
+  g.onload=function(){ renderBotonera(); route(); };
+  g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; renderBotonera(); route(); };
+  document.head.appendChild(g);
+})();
+</script>
+</body>
+</html>
