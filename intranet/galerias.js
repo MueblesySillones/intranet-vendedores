@@ -5,6 +5,11 @@ window.GALLERIES = {
       "file": "assets/promos_bancarias/Promociones bancarias.jpeg",
       "title": "Promociones bancarias",
       "download": "Promociones bancarias.jpeg"
+    },
+    {
+      "file": "assets/promos_bancarias/Mes del Mundial - 18 y 24 cuotas.jpeg",
+      "title": "Mes del Mundial - 18 y 24 cuotas",
+      "download": "Mes del Mundial - 18 y 24 cuotas.jpeg"
     }
   ],
   "promos_mensuales": [
