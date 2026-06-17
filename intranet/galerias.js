@@ -61,6 +61,13 @@ window.GALLERIES = {
       "download": "Servicio de entregas integral.jpeg"
     }
   ],
+  "porque": [
+    {
+      "file": "assets/porque/Por que elegirnos.jpeg",
+      "title": "Por que elegirnos",
+      "download": "Por que elegirnos.jpeg"
+    }
+  ],
   "fechas_especiales": [
     {
       "file": "assets/fechas_especiales/Dia del padre.jpg",

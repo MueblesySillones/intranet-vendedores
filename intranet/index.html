@@ -374,8 +374,7 @@ const TILES = [
   { key:'chatbot',      n:3, title:'Tutorial de chatbot',       desc:'Cómo usar el bot, paso a paso.',            color:'--c-danger',  icon:'play',     ready:true },
   { key:'reporte',      n:4, title:'Reporte de métricas',       desc:'Consultas y derivaciones, mes a mes.',      color:'--c-success', icon:'chart',    ready:true },
   { key:'whatsapp',     n:5, title:'Normas de WhatsApp',        desc:'Vender bien sin que te bloqueen.',          color:'--c-success', icon:'whatsapp', ready:true },
-  { key:'porque',       n:6, title:'¿Por qué elegirnos?',       desc:'Flyer con nuestros diferenciales.',         color:'--c-warn',    icon:'award',    ready:false },
-  { key:'competencia',  n:7, title:'Reporte mini competencia',  desc:'Qué está haciendo la competencia.',         color:'--c-info',    icon:'search',   ready:false },
+  { key:'competencia',  n:6, title:'Reporte mini competencia',  desc:'Qué está haciendo la competencia.',         color:'--c-info',    icon:'search',   ready:false },
 ];
 const MAP = Object.fromEntries(TILES.map(t=>[t.key,t]));
 /* secciones que agrupan varias galerias descargables bajo subtitulos */
@@ -385,6 +384,7 @@ const DOWNLOAD_GROUPS = {
     { key:'promos_bancarias', title:'Promociones bancarias' },
     { key:'promos_mensuales', title:'Promociones vigentes' },
     { key:'entregas',         title:'Placas de envío' },
+    { key:'porque',           title:'¿Por qué elegirnos?' },
   ]
 };
 
