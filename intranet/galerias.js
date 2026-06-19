@@ -2,13 +2,8 @@
 window.GALLERIES = {
   "promos_bancarias": [
     {
-      "file": "assets/promos_bancarias/Promociones bancarias.jpeg",
-      "title": "Promociones bancarias",
-      "download": "Promociones bancarias.jpeg"
-    },
-    {
       "file": "assets/promos_bancarias/Mes del Mundial - 18 y 24 cuotas.jpeg",
-      "title": "Mes del Mundial - 18 y 24 cuotas",
+      "title": "Mes del Mundial   18 y 24 cuotas",
       "download": "Mes del Mundial - 18 y 24 cuotas.jpeg"
     }
   ],
@@ -66,13 +61,6 @@ window.GALLERIES = {
       "download": "Servicio de entregas integral.jpeg"
     }
   ],
-  "porque": [
-    {
-      "file": "assets/porque/Por que elegirnos.jpeg",
-      "title": "Por que elegirnos",
-      "download": "Por que elegirnos.jpeg"
-    }
-  ],
   "fechas_especiales": [
     {
       "file": "assets/fechas_especiales/Dia del padre.jpg",
@@ -83,6 +71,13 @@ window.GALLERIES = {
       "file": "assets/fechas_especiales/Polo Hudson 20 de junio.jpeg",
       "title": "Polo Hudson 20 de junio",
       "download": "Polo Hudson 20 de junio.jpeg"
+    }
+  ],
+  "porque": [
+    {
+      "file": "assets/porque/Por que elegirnos.jpeg",
+      "title": "Por que elegirnos",
+      "download": "Por que elegirnos.jpeg"
     }
   ]
 };
