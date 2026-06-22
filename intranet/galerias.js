@@ -54,6 +54,13 @@ window.GALLERIES = {
       "download": "Sillon Cuore.jpeg"
     }
   ],
+  "entregas": [
+    {
+      "file": "assets/entregas/Servicio de entregas integral.jpg",
+      "title": "Servicio de entregas integral",
+      "download": "Servicio de entregas integral.jpg"
+    }
+  ],
   "porque": [
     {
       "file": "assets/porque/Por que elegirnos.jpeg",
