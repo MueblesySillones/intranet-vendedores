@@ -117,6 +117,8 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .pending .icirc .ico{ width:34px; height:34px; }
 .pending h3{ font-size:20px; font-weight:800; letter-spacing:-.4px; }
 .pending p{ font-size:14px; color:var(--ink3); margin-top:10px; line-height:1.6; max-width:460px; margin-left:auto; margin-right:auto; }
+.empty-cat{ display:flex; align-items:center; gap:10px; margin-top:16px; background:var(--surface); border:1px dashed var(--border); border-radius:14px; padding:18px 20px; color:var(--ink3); font-size:14px; }
+.empty-cat .ico{ width:20px; height:20px; flex:none; color:var(--ink3); }
 
 /* galeria de imagenes / flyers */
 .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
@@ -869,11 +871,13 @@ function groupsHTML(groups){
   let n = 0;
   groups.forEach(g=>{
     const items = G[g.key] || [];
-    if(!items.length) return;
     n++;
+    const cuerpo = items.length
+      ? galleryGrid(items)
+      : `<div class="empty-cat">${svg(I.image)} Sin imagen para descargar por el momento.</div>`;
     html += `<div class="m-block"${n===1?' style="margin-top:26px"':''}>
       <div class="m-kicker"><span class="n">${n}</span> ${esc(g.title)}</div>
-      ${galleryGrid(items)}
+      ${cuerpo}
     </div>`;
   });
   if(!n) html = pendingHTML({title:'Material descargable'});

@@ -54,25 +54,6 @@ window.GALLERIES = {
       "download": "Sillon Cuore.jpeg"
     }
   ],
-  "entregas": [
-    {
-      "file": "assets/entregas/Servicio de entregas integral.jpeg",
-      "title": "Servicio de entregas integral",
-      "download": "Servicio de entregas integral.jpeg"
-    }
-  ],
-  "fechas_especiales": [
-    {
-      "file": "assets/fechas_especiales/Dia del padre.jpg",
-      "title": "Dia del padre",
-      "download": "Dia del padre.jpg"
-    },
-    {
-      "file": "assets/fechas_especiales/Polo Hudson 20 de junio.jpeg",
-      "title": "Polo Hudson 20 de junio",
-      "download": "Polo Hudson 20 de junio.jpeg"
-    }
-  ],
   "porque": [
     {
       "file": "assets/porque/Por que elegirnos.jpeg",
