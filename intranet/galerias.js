@@ -2,6 +2,16 @@
 window.GALLERIES = {
   "promos_bancarias": [
     {
+      "file": "assets/promos_bancarias/Historia Promos bancarias 01.jpg",
+      "title": "Historia Promos bancarias 01",
+      "download": "Historia Promos bancarias 01.jpg"
+    },
+    {
+      "file": "assets/promos_bancarias/Historia Promos bancarias 02.jpg",
+      "title": "Historia Promos bancarias 02",
+      "download": "Historia Promos bancarias 02.jpg"
+    },
+    {
       "file": "assets/promos_bancarias/Mes del Mundial - 18 y 24 cuotas.jpeg",
       "title": "Mes del Mundial   18 y 24 cuotas",
       "download": "Mes del Mundial - 18 y 24 cuotas.jpeg"
