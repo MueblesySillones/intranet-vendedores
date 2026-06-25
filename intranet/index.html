@@ -142,6 +142,11 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 @media (max-width:860px){ .gallery{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:520px){ .gallery{ grid-template-columns:1fr; } }
 
+/* placa / flyer a pantalla (ej. Embajadores) */
+.flyer{ margin-top:24px; text-align:center; background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:18px; }
+.flyer img{ max-width:520px; width:100%; border-radius:10px; box-shadow:0 14px 40px rgba(0,0,0,.16); cursor:zoom-in; transition:transform .15s; display:block; margin:0 auto; }
+.flyer img:hover{ transform:scale(1.01); }
+
 @media (max-width:860px){
   .botonera{ grid-template-columns:repeat(2,1fr); gap:14px; }
   main{ padding:30px 18px 60px; }
@@ -375,8 +380,9 @@ const TILES = [
   { key:'manual',       n:2, title:'Manual de derivaciones',   desc:'Guía completa del proceso de derivación.',  color:'--c-hudson',  icon:'book',     ready:true },
   { key:'chatbot',      n:3, title:'Tutorial de chatbot',       desc:'Cómo usar el bot, paso a paso.',            color:'--c-danger',  icon:'play',     ready:true },
   { key:'reporte',      n:4, title:'Reporte de métricas',       desc:'Consultas y derivaciones, mes a mes.',      color:'--c-success', icon:'chart',    ready:true },
-  { key:'whatsapp',     n:5, title:'Normas de WhatsApp',        desc:'Vender bien sin que te bloqueen.',          color:'--c-success', icon:'whatsapp', ready:true },
-  { key:'competencia',  n:6, title:'Reporte mini competencia',  desc:'Qué está haciendo la competencia.',         color:'--c-info',    icon:'search',   ready:false },
+  { key:'whatsapp',     n:5, title:'Normas de WhatsApp',        desc:'Vender bien sin que te bloqueen.',          color:'--c-success',   icon:'whatsapp', ready:true },
+  { key:'embajadores',  n:6, title:'Programa de Embajadores',   desc:'Para arquitectos y decoradores.',           color:'--c-norcenter', icon:'award',    ready:true },
+  { key:'competencia',  n:7, title:'Reporte mini competencia',  desc:'Qué está haciendo la competencia.',         color:'--c-info',      icon:'search',   ready:false },
 ];
 const MAP = Object.fromEntries(TILES.map(t=>[t.key,t]));
 /* secciones que agrupan varias galerias descargables bajo subtitulos */
@@ -828,6 +834,15 @@ const CONTENT = {
       </div>
     </div>
 
+  </div>`,
+  embajadores: `
+  <div class="manual">
+    <p class="m-lead"><b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b> que trabajan con nosotros. Compartiles esta placa: pueden <b>escanear el QR</b> para sumarse y empezar a recomendar nuestros productos en sus proyectos.</p>
+    <figure class="flyer">
+      <img src="assets/embajadores/Programa de Embajadores.jpg" alt="Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores" loading="lazy" onclick="openLightbox('assets/embajadores/Programa de Embajadores.jpg','Programa de Embajadores MyS')">
+    </figure>
+    <a class="cta" href="assets/embajadores/Programa de Embajadores.jpg" download="Programa de Embajadores MyS.jpg">${svg(I.download)} Descargar placa</a>
+    <p class="hint">Tocá la imagen para verla en grande.</p>
   </div>`
 };
 
