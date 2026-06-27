@@ -542,7 +542,28 @@ window.MODULES = [
     "icon": "award",
     "color": "--c-norcenter",
     "ready": true,
-    "builtin": true
+    "builtin": true,
+    "content": {
+      "tipo": "bloques",
+      "bloques": [
+        {
+          "t": "destacado",
+          "html": "<b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>."
+        },
+        {
+          "t": "imagen",
+          "src": "assets/embajadores/Programa de Embajadores.jpg",
+          "alt": "Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores",
+          "caption": "",
+          "descargable": true
+        },
+        {
+          "t": "html",
+          "html": "<p class=\"hint\">Tocá la imagen para verla en grande.</p>"
+        }
+      ],
+      "html": "<div class=\"db\"><p class=\"m-lead\"><b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>.</p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/embajadores/Programa de Embajadores.jpg\" alt=\"Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores\" loading=\"lazy\"><a class=\"dl-btn\" href=\"assets/embajadores/Programa de Embajadores.jpg\" download=\"Programa de Embajadores MyS · Exclusivo para arquitectos y d.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></figure></div><div class=\"db\"><p class=\"hint\">Tocá la imagen para verla en grande.</p></div>"
+    }
   },
   {
     "key": "competencia",
