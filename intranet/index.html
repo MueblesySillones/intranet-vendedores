@@ -236,6 +236,8 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .checklist{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
 .checklist .ci{ display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px 13px; font-size:13.5px; font-weight:600; color:var(--ink); }
 .checklist .ci svg{ width:17px; height:17px; color:var(--c-success); flex:0 0 auto; }
+.checklist .ci .ci-ic{ width:26px; height:26px; border-radius:8px; display:grid; place-items:center; flex:0 0 auto; }
+.checklist .ci .ci-ic svg{ width:15px; height:15px; color:#fff; }
 @media(max-width:520px){ .checklist{ grid-template-columns:1fr; } }
 
 /* tarjeta de situacion (con flecha) */
@@ -246,8 +248,8 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .situ .sit-arrow svg{ width:16px; height:16px; }
 
 /* nota / tip */
-.note{ margin-top:14px; display:flex; gap:12px; background:#F4F1EA; border:1px solid var(--border); border-left:3px solid var(--ink); border-radius:12px; padding:13px 15px; }
-.note svg{ width:20px; height:20px; color:var(--ink); flex:0 0 auto; margin-top:1px; }
+.note{ margin-top:14px; display:flex; gap:12px; background:#F4F1EA; border:1px solid var(--border); border-left:3px solid var(--nota-acc, var(--ink)); border-radius:12px; padding:13px 15px; }
+.note svg{ width:20px; height:20px; color:var(--nota-acc, var(--ink)); flex:0 0 auto; margin-top:1px; }
 .note .nt{ font-size:13.5px; color:var(--ink2); line-height:1.5; } .note .nt b{ color:var(--ink); }
 
 /* tutorial chatbot (pasos con captura) */
@@ -275,6 +277,32 @@ body.report-mode .back{ margin:11px 0 11px 16px; align-self:flex-start; }
 body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .report-stage{ height:100%; background:#fff; }
 .report-stage iframe{ width:100%; height:100%; border:0; display:block; }
+/* bloques imagen / embed / boton dentro de un documento .manual */
+.manual .m-img{ text-align:center; }
+.manual .m-img img{ max-width:100%; border-radius:14px; display:block; margin:16px auto 0; }
+.manual .m-img figcaption{ font-size:12.5px; color:var(--ink2); text-align:center; margin-top:9px; font-weight:600; line-height:1.35; }
+.manual .m-img .dl-btn{ margin-top:11px; }
+.manual .m-btn{ text-align:center; padding:10px 0; }
+.manual .report-frame{ border-radius:14px; overflow:hidden; border:1px solid var(--border); margin:14px 0; }
+.manual .report-frame iframe{ width:100%; border:0; display:block; height:460px; }
+.manual .report-frame.report-sm iframe{ height:300px; }
+.manual .report-frame.report-lg iframe{ height:680px; }
+/* plantilla WhatsApp (carrusel de tarjetas) */
+.manual .wa-carousel{ display:flex; gap:14px; overflow-x:auto; padding:6px 2px 12px; margin-top:14px; -webkit-overflow-scrolling:touch; }
+.manual .wa-card{ flex:0 0 300px; max-width:300px; background:#fff; border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.manual .wa-img{ aspect-ratio:1.9/1; background:#EDE7DE; overflow:hidden; }
+.manual .wa-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+.manual .wa-body{ padding:13px 15px; font-size:14px; line-height:1.5; color:var(--ink); }
+.manual .wa-btn{ display:block; text-align:center; padding:12px; border-top:1px solid var(--border); color:var(--c-caba); font-weight:700; font-size:14px; text-decoration:none; }
+/* contenido propio de modulos reemplazados desde el panel */
+.free-content{ font-size:15px; line-height:1.7; color:var(--ink); }
+.free-content h1,.free-content h2,.free-content h3{ line-height:1.25; margin:1.2em 0 .4em; }
+.free-content p{ margin:0 0 1em; }
+.free-content a{ color:var(--c-caba); }
+.free-content ul,.free-content ol{ margin:0 0 1em; padding-left:1.3em; }
+.free-content li{ margin:.3em 0; }
+.free-content img{ max-width:100%; height:auto; border-radius:12px; }
+.free-content b,.free-content strong{ font-weight:700; }
 </style>
 </head>
 <body>
@@ -375,7 +403,7 @@ const svg = p => '<span class="ico"><svg viewBox="0 0 24 24">'+p+'</svg></span>'
 const tick = '<span class="wa-tick"><svg viewBox="0 0 16 11"><polyline points="1 6 4.4 9.3 9.6 2.6"/><polyline points="6.2 9.3 11.4 2.6"/></svg></span>';
 
 /* ---- definicion de secciones (editar acá para sumar contenido) ---- */
-const TILES = [
+let TILES = [
   { key:'descargables', n:1, title:'Material descargable',      desc:'Promos bancarias, vigentes y envíos.',      color:'--c-caba',    icon:'download', ready:true },
   { key:'manual',       n:2, title:'Manual de derivaciones',   desc:'Guía completa del proceso de derivación.',  color:'--c-hudson',  icon:'book',     ready:true },
   { key:'chatbot',      n:3, title:'Tutorial de chatbot',       desc:'Cómo usar el bot, paso a paso.',            color:'--c-danger',  icon:'play',     ready:true },
@@ -384,7 +412,8 @@ const TILES = [
   { key:'embajadores',  n:6, title:'Programa de Embajadores',   desc:'Para arquitectos y decoradores.',           color:'--c-norcenter', icon:'award',    ready:true },
   { key:'competencia',  n:7, title:'Reporte mini competencia',  desc:'Qué está haciendo la competencia.',         color:'--c-info',      icon:'search',   ready:false },
 ];
-const MAP = Object.fromEntries(TILES.map(t=>[t.key,t]));
+let MAP = Object.fromEntries(TILES.map(t=>[t.key,t]));
+let MODMAP = {};   /* key -> modulo completo (incluye content si el panel lo definió) */
 /* secciones que agrupan varias galerias descargables bajo subtitulos */
 const DOWNLOAD_GROUPS = {
   descargables: [
@@ -920,13 +949,18 @@ function renderSection(key){
   document.getElementById('secTitle').textContent = t.title;
   document.getElementById('secSub').textContent = t.desc;
   const imgs = (window.GALLERIES||{})[key] || [];
-  let body;
-  if(DOWNLOAD_GROUPS[key]) body = groupsHTML(DOWNLOAD_GROUPS[key]);
+  const mod = MODMAP[key];
+  let body, embed = false;
+  if(mod && mod.content && mod.content.tipo){
+    body = renderContent(mod.content, t);
+    embed = mod.content.tipo === 'embed';
+  }
+  else if(DOWNLOAD_GROUPS[key]) body = groupsHTML(DOWNLOAD_GROUPS[key]);
   else if(CONTENT[key]) body = CONTENT[key];
   else if(imgs.length) body = galleryHTML(imgs, t);
   else body = pendingHTML(t);
   document.getElementById('secBody').innerHTML = body;
-  document.body.classList.toggle('report-mode', key==='reporte');
+  document.body.classList.toggle('report-mode', embed || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
   document.getElementById('hub').hidden = true;
   document.getElementById('view').hidden = false;
   document.getElementById('homeBtn').hidden = false;
@@ -966,13 +1000,51 @@ function route(){
   else { document.body.classList.remove('report-mode'); document.getElementById('view').hidden=true; document.getElementById('hub').hidden=false; document.getElementById('homeBtn').hidden=true; }
 }
 window.addEventListener('hashchange', route);
-/* carga las galerias siempre frescas (evita problemas de cache al actualizar imagenes) */
+
+/* ---- modulos editables desde el panel (modulos.js -> window.MODULES) ----
+   Reconstruye TILES/MAP a partir de la lista guardada por el panel y suma el
+   cuerpo (body) de los modulos personalizados a CONTENT. Si modulos.js no existe
+   o esta vacio, se usan los TILES por defecto definidos arriba (compatibilidad). */
+function applyModules(){
+  const M = window.MODULES;
+  if(!Array.isArray(M) || !M.length) return;
+  TILES = M.filter(m=>!m.hidden).map((m,i)=>({
+    key:m.key, n:i+1, title:m.title, desc:m.desc,
+    color:m.color, icon:(I[m.icon]?m.icon:'layers'), ready:!!m.ready
+  }));
+  MAP = Object.fromEntries(TILES.map(t=>[t.key,t]));
+  MODMAP = Object.fromEntries(M.map(m=>[m.key, m]));
+  /* compatibilidad: módulos viejos con "body" -> content de tipo html */
+  M.forEach(m=>{ if(!m.content && !m.builtin && typeof m.body==='string' && m.body.trim()) m.content={tipo:'html', html:m.body}; });
+}
+
+/* Cuerpo de un módulo cuyo contenido fue definido/reemplazado desde el panel */
+function renderContent(c, t){
+  if(!c || !c.tipo) return '';
+  if(c.tipo==='bloques') return `<div class="manual">${c.html||''}</div>`;
+  if(c.tipo==='html')   return `<div class="free-content">${c.html||''}</div>`;
+  if(c.tipo==='embed')  return `<div class="report-stage"><iframe src="${esc(c.url||'')}" title="${esc(t.title)}" loading="lazy"></iframe></div>`;
+  if(c.tipo==='imagen') return c.src ? galleryGrid([{file:c.src, title:t.title, download:c.download||t.title}]) : pendingHTML(t);
+  if(c.tipo==='link')   return `<div class="free-content" style="text-align:center;padding:34px 0">
+      <a class="dl-btn" style="display:inline-flex" href="${esc(c.url||'#')}" target="_blank" rel="noopener">${svg(I.ext)} ${esc(c.texto||'Abrir')}</a>
+    </div>`;
+  return '';
+}
+
+/* carga modulos y galerias siempre frescos (evita cache al actualizar) */
 (function(){
-  var g=document.createElement('script');
-  g.src='galerias.js?v='+(new Date().getTime());
-  g.onload=function(){ renderBotonera(); route(); };
-  g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; renderBotonera(); route(); };
-  document.head.appendChild(g);
+  function loadGalerias(){
+    var g=document.createElement('script');
+    g.src='galerias.js?v='+(new Date().getTime());
+    g.onload=function(){ applyModules(); renderBotonera(); route(); };
+    g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; applyModules(); renderBotonera(); route(); };
+    document.head.appendChild(g);
+  }
+  var m=document.createElement('script');
+  m.src='modulos.js?v='+(new Date().getTime());
+  m.onload=loadGalerias;
+  m.onerror=loadGalerias;
+  document.head.appendChild(m);
 })();
 </script>
 </body>
