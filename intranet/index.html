@@ -131,6 +131,13 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
   background:var(--ink); color:#fff; text-decoration:none; font-size:13px; font-weight:700; letter-spacing:.3px; transition:.2s; }
 .dl-btn:hover{ opacity:.88; }
 .dl-btn .ico{ width:16px; height:16px; }
+/* secciones de galería plegables (para que los vendedores oculten lo que no usan) */
+.m-kicker.plegable{ cursor:pointer; user-select:none; display:flex; align-items:center; gap:9px; }
+.m-kicker.plegable:hover{ opacity:.82; }
+.m-kicker.plegable .pleg-count{ font-size:11px; font-weight:800; color:var(--ink2); background:var(--bg2); padding:2px 9px; border-radius:20px; margin-left:auto; flex:0 0 auto; }
+.m-kicker.plegable .pleg-chev{ font-size:13px; color:var(--ink3); transition:transform .2s; flex:0 0 auto; }
+.dl-section.cerrada .gallery, .m-block.cerrada .gallery{ display:none; }
+.cerrada > .m-kicker.plegable .pleg-chev{ transform:rotate(-90deg); }
 /* visor ampliado */
 #lightbox{ position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.86); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:56px 16px 24px; cursor:zoom-out; }
 #lightbox[hidden]{ display:none; }
@@ -960,11 +967,33 @@ function renderSection(key){
   else if(imgs.length) body = galleryHTML(imgs, t);
   else body = pendingHTML(t);
   document.getElementById('secBody').innerHTML = body;
+  plegarGalerias(document.getElementById('secBody'), key);
   document.body.classList.toggle('report-mode', embed || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
   document.getElementById('hub').hidden = true;
   document.getElementById('view').hidden = false;
   document.getElementById('homeBtn').hidden = false;
   window.scrollTo(0,0);
+}
+// hace plegable cada grilla de imágenes: la cabecera (.m-kicker) abre/cierra la galería,
+// muestra cuántas placas tiene, y recuerda el estado por vendedor (localStorage).
+function plegarGalerias(root, key){
+  root.querySelectorAll('.gallery').forEach((gal, i)=>{
+    const head = gal.previousElementSibling;
+    if(!head || !head.classList.contains('m-kicker') || head.dataset.pleg) return;
+    head.dataset.pleg = '1';
+    head.classList.add('plegable');
+    const wrap = head.parentElement;                 // .dl-section o .m-block
+    const n = gal.querySelectorAll('.gcard').length;
+    const badge = document.createElement('span'); badge.className='pleg-count'; badge.textContent = n;
+    const chev = document.createElement('span'); chev.className='pleg-chev'; chev.setAttribute('aria-hidden','true'); chev.textContent='▾';
+    head.append(badge, chev);
+    head.setAttribute('role','button'); head.setAttribute('tabindex','0');
+    const lsKey = 'pleg:'+key+':'+i;
+    try{ if(localStorage.getItem(lsKey)==='1') wrap.classList.add('cerrada'); }catch(e){}
+    const toggle = ()=>{ const c = wrap.classList.toggle('cerrada'); try{ localStorage.setItem(lsKey, c?'1':'0'); }catch(e){} };
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+  });
 }
 function showHub(){
   if(location.hash){ location.hash=''; return; } // hashchange dispara route()
