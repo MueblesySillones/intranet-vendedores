@@ -24,9 +24,19 @@ window.GALLERIES = {
       "download": "Bahiut Mora.jpeg"
     },
     {
+      "file": "assets/promos_mensuales/Bajo City Macro.jpeg",
+      "title": "Bajo City Macro",
+      "download": "Bajo City Macro.jpeg"
+    },
+    {
       "file": "assets/promos_mensuales/Bajo LED Mediterranea.jpeg",
       "title": "Bajo LED Mediterranea",
       "download": "Bajo LED Mediterranea.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Bajo LED.jpeg",
+      "title": "Bajo LED",
+      "download": "Bajo LED.jpeg"
     },
     {
       "file": "assets/promos_mensuales/Dune Extra.jpeg",
@@ -34,9 +44,19 @@ window.GALLERIES = {
       "download": "Dune Extra.jpeg"
     },
     {
+      "file": "assets/promos_mensuales/Dune.jpeg",
+      "title": "Dune",
+      "download": "Dune.jpeg"
+    },
+    {
       "file": "assets/promos_mensuales/Esquinero Philadelphia.jpeg",
       "title": "Esquinero Philadelphia",
       "download": "Esquinero Philadelphia.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Grecia.jpeg",
+      "title": "Grecia",
+      "download": "Grecia.jpeg"
     },
     {
       "file": "assets/promos_mensuales/Mesa Boston.jpeg",
@@ -47,6 +67,36 @@ window.GALLERIES = {
       "file": "assets/promos_mensuales/Mesa Bradley.jpeg",
       "title": "Mesa Bradley",
       "download": "Mesa Bradley.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Mesa de Centro.jpeg",
+      "title": "Mesa de Centro",
+      "download": "Mesa de Centro.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Mesa Mora.jpeg",
+      "title": "Mesa Mora",
+      "download": "Mesa Mora.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Mesa Oakland.jpeg",
+      "title": "Mesa Oakland",
+      "download": "Mesa Oakland.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Michigan.jpeg",
+      "title": "Michigan",
+      "download": "Michigan.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Moon.jpeg",
+      "title": "Moon",
+      "download": "Moon.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Philadelphia.jpeg",
+      "title": "Philadelphia",
+      "download": "Philadelphia.jpeg"
     },
     {
       "file": "assets/promos_mensuales/Pompei.jpeg",
@@ -62,6 +112,11 @@ window.GALLERIES = {
       "file": "assets/promos_mensuales/Sillon Cuore.jpeg",
       "title": "Sillon Cuore",
       "download": "Sillon Cuore.jpeg"
+    },
+    {
+      "file": "assets/promos_mensuales/Vajillero Laqueado.jpeg",
+      "title": "Vajillero Laqueado",
+      "download": "Vajillero Laqueado.jpeg"
     }
   ],
   "entregas": [
