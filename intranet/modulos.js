@@ -103,6 +103,10 @@ window.MODULES = [
           "t": "separador"
         },
         {
+          "t": "espacio",
+          "alto": "md"
+        },
+        {
           "t": "titulo",
           "nivel": "h1",
           "html": "Fecha"
@@ -115,6 +119,10 @@ window.MODULES = [
           "t": "separador"
         },
         {
+          "t": "espacio",
+          "alto": "md"
+        },
+        {
           "t": "titulo",
           "nivel": "h1",
           "html": "FECHA"
@@ -127,6 +135,10 @@ window.MODULES = [
           "t": "separador"
         },
         {
+          "t": "espacio",
+          "alto": "md"
+        },
+        {
           "t": "titulo",
           "nivel": "h1",
           "html": "FECHA"
@@ -136,7 +148,7 @@ window.MODULES = [
           "html": "TEST #"
         }
       ],
-      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><p class=\"m-p\">No hay mas disponibles Lyon patas con forma solo quedan las de stock</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponible a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div class=\"m-h\">Fecha</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div>"
+      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><p class=\"m-p\">No hay mas disponibles Lyon patas con forma solo quedan las de stock</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponible a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">Fecha</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div>"
     }
   },
   {
