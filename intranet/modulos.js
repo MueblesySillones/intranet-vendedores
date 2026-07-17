@@ -90,14 +90,14 @@ window.MODULES = [
           "html": "17/07/2026"
         },
         {
-          "t": "parrafo",
-          "html": "No hay mas disponibles Lyon patas con forma solo quedan las de stock"
+          "t": "nota",
+          "icono": "x",
+          "color": "--c-danger",
+          "html": "<b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>."
         },
         {
-          "t": "nota",
-          "icono": "check",
-          "color": "--c-canning",
-          "html": "Disponible a fabricar solo patas rectas"
+          "t": "espacio",
+          "alto": "md"
         },
         {
           "t": "separador"
@@ -148,7 +148,7 @@ window.MODULES = [
           "html": "TEST #"
         }
       ],
-      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><p class=\"m-p\">No hay mas disponibles Lyon patas con forma solo quedan las de stock</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponible a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">Fecha</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div>"
+      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></span><div class=\"nt\"><b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>.</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">Fecha</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div>"
     }
   },
   {
