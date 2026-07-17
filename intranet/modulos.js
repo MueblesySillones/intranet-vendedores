@@ -96,6 +96,12 @@ window.MODULES = [
           "html": "<b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>."
         },
         {
+          "t": "nota",
+          "icono": "check",
+          "color": "--c-canning",
+          "html": "Disponibles a fabricar solo patas rectas"
+        },
+        {
           "t": "espacio",
           "alto": "md"
         },
@@ -148,7 +154,7 @@ window.MODULES = [
           "html": "TEST #"
         }
       ],
-      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></span><div class=\"nt\"><b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>.</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">Fecha</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div>"
+      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></span><div class=\"nt\"><b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>.</div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponibles a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">Fecha</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">FECHA</div></div><div class=\"db\"><p class=\"m-p\">TEST #</p></div>"
     }
   },
   {
@@ -507,72 +513,6 @@ window.MODULES = [
     }
   },
   {
-    "key": "chatbot",
-    "title": "Tutorial de chatbot",
-    "desc": "Cómo usar el bot, paso a paso.",
-    "icon": "play",
-    "color": "--c-danger",
-    "ready": true,
-    "builtin": true
-  },
-  {
-    "key": "reporte",
-    "title": "Reporte de métricas",
-    "desc": "Consultas y derivaciones, mes a mes.",
-    "icon": "chart",
-    "color": "--c-success",
-    "ready": true,
-    "builtin": true
-  },
-  {
-    "key": "whatsapp",
-    "title": "Normas de WhatsApp",
-    "desc": "Vender bien sin que te bloqueen.",
-    "icon": "whatsapp",
-    "color": "--c-success",
-    "ready": true,
-    "builtin": true
-  },
-  {
-    "key": "embajadores",
-    "title": "Programa de Embajadores",
-    "desc": "Para arquitectos y decoradores.",
-    "icon": "award",
-    "color": "--c-norcenter",
-    "ready": true,
-    "builtin": true,
-    "content": {
-      "tipo": "bloques",
-      "bloques": [
-        {
-          "t": "destacado",
-          "html": "<b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>."
-        },
-        {
-          "t": "imagen",
-          "src": "assets/embajadores/Programa de Embajadores.jpg",
-          "alt": "Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores",
-          "caption": "",
-          "descargable": true
-        },
-        {
-          "t": "html",
-          "html": "<p class=\"hint\">Tocá la imagen para verla en grande.</p>"
-        }
-      ],
-      "html": "<div class=\"db\"><p class=\"m-lead\"><b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>.</p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/embajadores/Programa de Embajadores.jpg\" alt=\"Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores\" loading=\"lazy\"><a class=\"dl-btn\" href=\"assets/embajadores/Programa de Embajadores.jpg\" download=\"Programa de Embajadores MyS · Exclusivo para arquitectos y d.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></figure></div><div class=\"db\"><p class=\"hint\">Tocá la imagen para verla en grande.</p></div>"
-    }
-  },
-  {
-    "key": "competencia",
-    "title": "Reporte mini competencia",
-    "desc": "Qué está haciendo la competencia.",
-    "icon": "search",
-    "color": "--c-info",
-    "ready": false,
-    "builtin": true
-  },
-  {
     "key": "notificaciones_de_chatbot",
     "title": "Notificaciones de Chatbot",
     "desc": "Notificaciones directo a whatsapp",
@@ -737,5 +677,71 @@ window.MODULES = [
       ],
       "html": "<div class=\"db\"><div class=\"m-h\">Activar notificaciones a Whatsapp</div></div><div class=\"db\"><p class=\"m-p\">Le mostramos el paso a paso a seguir para recibir un mensaje de Whatsapp para saber si un contacto les envió un mensaje en la plataforma</p></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">1</span><span>Primer paso</span></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span><div class=\"nt\">Hacer click en <b>Perfil </b>(El circulo que aparece en la parte de arriba a la derecha)<b>&nbsp; &nbsp;</b></div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span><div class=\"nt\">Hacer <b>Click </b>en tu nombre</div></div></div><div class=\"db\"><p class=\"m-p\">Aparecerá esa misma ventana emergente con su nombre, su disponibilidad y cerrar sesión.</p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783793344093.png\" alt=\"\" loading=\"lazy\"><figcaption>&lt;br&gt;</figcaption></figure></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">2</span><span>Segundo paso</span></div></div><div class=\"db\"><p class=\"m-p\">Aparece este nuevo menú con distintas opciones</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Hacer clik en <b>Preferencias</b></div></div></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783794061570.png\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">3</span><span>Tercer paso</span></div></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783794149606.png\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\"><p class=\"m-p\">Les aparecerá esta pantalla donde van&nbsp; a poner su numero personal con +549 11----&nbsp;Luego haces click en <b>Enviar código</b></p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/></svg></span><div class=\"nt\">Les llegará un mensaje en su Whatsapp con el código y lo ingresan donde dice \"<b>Código recibido</b>\" Luego click&nbsp;<b>Verificar</b></div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">4</span><span>Cuarto paso</span></div></div><div class=\"db\"><p class=\"m-p\">Al llegar a este paso seguirán deslizando hacia abajo y van a ver todas las opciones de notificaciones. <b>Recomendamos que solo dejen activado las siguientes</b></p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783794534986.png\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Nuevo mensaje</div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Mensajes Pendientes</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">5</span><span>quinto paso</span></div></div><div class=\"db\"><div class=\"m-h2\">Cada ves que reciban un mensaje de nuevo de un clientes y no estén dentro de la plataforma recibirán este tipo de mensaje en sus Whatsapp</div></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783795357476.png\" alt=\"\" loading=\"lazy\"><figcaption>&lt;br&gt;</figcaption></figure></div>"
     }
+  },
+  {
+    "key": "chatbot",
+    "title": "Tutorial de chatbot",
+    "desc": "Cómo usar el bot, paso a paso.",
+    "icon": "play",
+    "color": "--c-danger",
+    "ready": true,
+    "builtin": true
+  },
+  {
+    "key": "reporte",
+    "title": "Reporte de métricas",
+    "desc": "Consultas y derivaciones, mes a mes.",
+    "icon": "chart",
+    "color": "--c-success",
+    "ready": true,
+    "builtin": true
+  },
+  {
+    "key": "whatsapp",
+    "title": "Normas de WhatsApp",
+    "desc": "Vender bien sin que te bloqueen.",
+    "icon": "whatsapp",
+    "color": "--c-success",
+    "ready": true,
+    "builtin": true
+  },
+  {
+    "key": "embajadores",
+    "title": "Programa de Embajadores",
+    "desc": "Para arquitectos y decoradores.",
+    "icon": "award",
+    "color": "--c-norcenter",
+    "ready": true,
+    "builtin": true,
+    "content": {
+      "tipo": "bloques",
+      "bloques": [
+        {
+          "t": "destacado",
+          "html": "<b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>."
+        },
+        {
+          "t": "imagen",
+          "src": "assets/embajadores/Programa de Embajadores.jpg",
+          "alt": "Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores",
+          "caption": "",
+          "descargable": true
+        },
+        {
+          "t": "html",
+          "html": "<p class=\"hint\">Tocá la imagen para verla en grande.</p>"
+        }
+      ],
+      "html": "<div class=\"db\"><p class=\"m-lead\"><b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>.</p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/embajadores/Programa de Embajadores.jpg\" alt=\"Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores\" loading=\"lazy\"><a class=\"dl-btn\" href=\"assets/embajadores/Programa de Embajadores.jpg\" download=\"Programa de Embajadores MyS · Exclusivo para arquitectos y d.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></figure></div><div class=\"db\"><p class=\"hint\">Tocá la imagen para verla en grande.</p></div>"
+    }
+  },
+  {
+    "key": "competencia",
+    "title": "Reporte mini competencia",
+    "desc": "Qué está haciendo la competencia.",
+    "icon": "search",
+    "color": "--c-info",
+    "ready": false,
+    "builtin": true
   }
 ];
