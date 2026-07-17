@@ -659,5 +659,40 @@ window.MODULES = [
       ],
       "html": "<div class=\"db\"><div class=\"m-h\">Activar notificaciones a Whatsapp</div></div><div class=\"db\"><p class=\"m-p\">Le mostramos el paso a paso a seguir para recibir un mensaje de Whatsapp para saber si un contacto les envió un mensaje en la plataforma</p></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">1</span><span>Primer paso</span></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span><div class=\"nt\">Hacer click en <b>Perfil </b>(El circulo que aparece en la parte de arriba a la derecha)<b>&nbsp; &nbsp;</b></div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span><div class=\"nt\">Hacer <b>Click </b>en tu nombre</div></div></div><div class=\"db\"><p class=\"m-p\">Aparecerá esa misma ventana emergente con su nombre, su disponibilidad y cerrar sesión.</p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783793344093.png\" alt=\"\" loading=\"lazy\"><figcaption>&lt;br&gt;</figcaption></figure></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">2</span><span>Segundo paso</span></div></div><div class=\"db\"><p class=\"m-p\">Aparece este nuevo menú con distintas opciones</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Hacer clik en <b>Preferencias</b></div></div></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783794061570.png\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">3</span><span>Tercer paso</span></div></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783794149606.png\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\"><p class=\"m-p\">Les aparecerá esta pantalla donde van&nbsp; a poner su numero personal con +549 11----&nbsp;Luego haces click en <b>Enviar código</b></p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/></svg></span><div class=\"nt\">Les llegará un mensaje en su Whatsapp con el código y lo ingresan donde dice \"<b>Código recibido</b>\" Luego click&nbsp;<b>Verificar</b></div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">4</span><span>Cuarto paso</span></div></div><div class=\"db\"><p class=\"m-p\">Al llegar a este paso seguirán deslizando hacia abajo y van a ver todas las opciones de notificaciones. <b>Recomendamos que solo dejen activado las siguientes</b></p></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783794534986.png\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Nuevo mensaje</div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Mensajes Pendientes</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-kicker\"><span class=\"n\">5</span><span>quinto paso</span></div></div><div class=\"db\"><div class=\"m-h2\">Cada ves que reciban un mensaje de nuevo de un clientes y no estén dentro de la plataforma recibirán este tipo de mensaje en sus Whatsapp</div></div><div class=\"db\"><figure class=\"m-img\"><img src=\"assets/_modulos/notificaciones_de_chatbot_img_1783795357476.png\" alt=\"\" loading=\"lazy\"><figcaption>&lt;br&gt;</figcaption></figure></div>"
     }
+  },
+  {
+    "key": "comunicacion_importante",
+    "title": "COMUNICACION IMPORTANTE",
+    "desc": "",
+    "icon": "megaphone",
+    "color": "--c-danger",
+    "ready": true,
+    "builtin": false,
+    "content": {
+      "tipo": "bloques",
+      "bloques": [
+        {
+          "t": "titulo",
+          "nivel": "h1",
+          "html": "Comunicación Importante"
+        },
+        {
+          "t": "kicker",
+          "n": "",
+          "html": "17/7/2026<br>"
+        },
+        {
+          "t": "parrafo",
+          "html": "No hay mas disponibles Lyon patas con forma solo quedan las de stock"
+        },
+        {
+          "t": "nota",
+          "icono": "check",
+          "color": "--c-canning",
+          "html": "Disponible a fabricar solo patas rectas"
+        }
+      ],
+      "html": "<div class=\"db\"><div class=\"m-h\">Comunicación Importante</div></div><div class=\"db\"><div class=\"m-kicker\"><span>17/7/2026<br></span></div></div><div class=\"db\"><p class=\"m-p\">No hay mas disponibles Lyon patas con forma solo quedan las de stock</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponible a fabricar solo patas rectas</div></div></div>"
+    }
   }
 ];
