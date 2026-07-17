@@ -87,12 +87,7 @@ window.MODULES = [
         {
           "t": "titulo",
           "nivel": "h1",
-          "html": "Comunicación Importante"
-        },
-        {
-          "t": "kicker",
-          "n": "",
-          "html": "17/7/2026<br>"
+          "html": "17/7/2026"
         },
         {
           "t": "parrafo",
@@ -108,7 +103,7 @@ window.MODULES = [
           "t": "separador"
         }
       ],
-      "html": "<div class=\"db\"><div class=\"m-h\">Comunicación Importante</div></div><div class=\"db\"><div class=\"m-kicker\"><span>17/7/2026<br></span></div></div><div class=\"db\"><p class=\"m-p\">No hay mas disponibles Lyon patas con forma solo quedan las de stock</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponible a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div>"
+      "html": "<div class=\"db\"><div class=\"m-h\">17/7/2026</div></div><div class=\"db\"><p class=\"m-p\">No hay mas disponibles Lyon patas con forma solo quedan las de stock</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponible a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div>"
     }
   },
   {
