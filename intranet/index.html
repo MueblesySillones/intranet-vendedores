@@ -294,6 +294,10 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .manual .report-frame iframe{ width:100%; border:0; display:block; height:460px; }
 .manual .report-frame.report-sm iframe{ height:300px; }
 .manual .report-frame.report-lg iframe{ height:680px; }
+/* separador / linea divisoria: un poco mas gruesa y con aire arriba/abajo */
+.manual .m-sep{ height:2px; background:var(--border); border-radius:2px; margin:18px 0; }
+/* separadores ya publicados (estilo inline viejo height:1px): mismo look sin re-guardar */
+.manual .db > div[style*="height:1px"][style*="--border"]{ height:2px !important; border-radius:2px; margin:18px 0; }
 /* bloque PDF */
 .manual .pdf-block{ margin:14px 0; }
 .pdf-card{ width:100%; display:flex; align-items:center; gap:14px; text-align:left; cursor:pointer; font:inherit; color:inherit;
