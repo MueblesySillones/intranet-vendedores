@@ -294,6 +294,30 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .manual .report-frame iframe{ width:100%; border:0; display:block; height:460px; }
 .manual .report-frame.report-sm iframe{ height:300px; }
 .manual .report-frame.report-lg iframe{ height:680px; }
+/* bloque PDF */
+.manual .pdf-block{ margin:14px 0; }
+.pdf-card{ width:100%; display:flex; align-items:center; gap:14px; text-align:left; cursor:pointer; font:inherit; color:inherit;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px; transition:box-shadow .15s, transform .05s; }
+.pdf-card:hover{ box-shadow:0 8px 26px rgba(0,0,0,.10); }
+.pdf-card:active{ transform:scale(.995); }
+.pdf-card .pdf-ic{ width:44px; height:44px; border-radius:11px; background:#e2483d; color:#fff; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.pdf-card .pdf-ic .ico{ width:22px; height:22px; }
+.pdf-card .pdf-meta{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.pdf-card .pdf-nombre{ font-weight:800; font-size:14.5px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pdf-card .pdf-sub{ font-size:12px; color:var(--ink3); font-weight:600; }
+.pdf-card .pdf-arrow{ color:var(--ink3); flex:0 0 auto; }
+.pdf-card .pdf-arrow .ico{ width:17px; height:17px; }
+.manual .pdf-dl{ text-align:center; margin-top:11px; }
+#pdfview{ position:fixed; inset:0; z-index:210; background:rgba(0,0,0,.88); display:flex; flex-direction:column; }
+#pdfview[hidden]{ display:none; }
+.pv-bar{ display:flex; align-items:center; gap:8px; padding:10px 12px; background:#1c1c1c; color:#fff; }
+.pv-name{ flex:1; min-width:0; font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pv-btn{ display:inline-flex; align-items:center; gap:6px; padding:8px 11px; border-radius:9px; background:rgba(255,255,255,.14); color:#fff; border:none; cursor:pointer; font:inherit; font-size:12.5px; font-weight:700; text-decoration:none; }
+.pv-btn:hover{ background:rgba(255,255,255,.24); }
+.pv-btn .ico{ width:15px; height:15px; }
+.pv-x{ padding:8px; }
+@media (max-width:560px){ .pv-tx{ display:none; } }
+.pv-frame{ flex:1; width:100%; border:0; background:#525659; }
 /* plantilla WhatsApp (carrusel de tarjetas) */
 .manual .wa-carousel{ display:flex; gap:14px; overflow-x:auto; padding:6px 2px 12px; margin-top:14px; -webkit-overflow-scrolling:touch; }
 .manual .wa-card{ flex:0 0 300px; max-width:300px; background:#fff; border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
@@ -381,6 +405,7 @@ const I = {
   ext:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
   clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
   download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
   image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
   check:'<polyline points="20 6 9 17 4 12"/>',
   arrowR:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
@@ -947,7 +972,17 @@ function openLightbox(src, name){
   lb.hidden=false;
 }
 function closeLightbox(){ document.getElementById('lightbox').hidden=true; }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closeMenu(); } });
+/* visor de PDF a pantalla completa (para el bloque PDF en modo tarjeta) */
+function openPdf(src, name){
+  let pv=document.getElementById('pdfview');
+  if(!pv){ pv=document.createElement('div'); pv.id='pdfview'; pv.onclick=e=>{ if(e.target===pv) closePdf(); }; document.body.appendChild(pv); }
+  pv.innerHTML = `<div class="pv-bar"><span class="pv-name">${esc(name||'PDF')}</span>`
+    + `<button class="pv-btn" aria-label="Cerrar" onclick="closePdf()">${svg(I.x)}<span class="pv-tx">Cerrar</span></button></div>`
+    + `<iframe class="pv-frame" src="${esc(src)}#view=FitH" title="${esc(name||'PDF')}"></iframe>`;
+  pv.hidden=false; document.body.style.overflow='hidden';
+}
+function closePdf(){ const pv=document.getElementById('pdfview'); if(pv){ pv.hidden=true; pv.innerHTML=''; } document.body.style.overflow=''; }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closePdf(); closeMenu(); } });
 function openSection(key){ location.hash = key; }
 function renderSection(key){
   const t = MAP[key];
