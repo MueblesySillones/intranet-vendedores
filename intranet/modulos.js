@@ -153,6 +153,19 @@ window.MODULES = [
           "alto": "md"
         },
         {
+          "t": "titulo",
+          "nivel": "h1",
+          "html": "23/06/2026"
+        },
+        {
+          "t": "pdf",
+          "src": "assets/_modulos/comunicacion_importante_pdf_1784571732495.pdf",
+          "nombre": "INSTRUCTIVO STOCK",
+          "modo": "tarjeta",
+          "alto": "md",
+          "descargable": true
+        },
+        {
           "t": "separador"
         },
         {
@@ -167,7 +180,7 @@ window.MODULES = [
           "alto": "md"
         }
       ],
-      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></span><div class=\"nt\"><b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>.</div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponibles a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div>"
+      "html": "<div class=\"db\"><div class=\"m-h\">17/07/2026</div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></span><div class=\"nt\"><b>PATA LYON</b>: No hay más disponibles. solo quedan las de <b>stock</b>.</div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\">Disponibles a fabricar solo patas rectas</div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-h\">23/06/2026</div></div><div class=\"db\"><div class=\"pdf-block\"><button type=\"button\" class=\"pdf-card\" onclick=\"openPdf('assets/_modulos/comunicacion_importante_pdf_1784571732495.pdf','INSTRUCTIVO STOCK')\"><span class=\"pdf-ic\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg></span></span><span class=\"pdf-meta\"><span class=\"pdf-nombre\">INSTRUCTIVO STOCK</span><span class=\"pdf-sub\">Tocar para abrir el PDF</span></span><span class=\"pdf-arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></button><div class=\"pdf-dl\"><a class=\"dl-btn\" href=\"assets/_modulos/comunicacion_importante_pdf_1784571732495.pdf\" download=\"INSTRUCTIVO STOCK.pdf\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div style=\"height:1px;background:var(--border)\"></div></div><div class=\"db\"><div style=\"height:30px\"></div></div>"
     }
   },
   {
