@@ -145,6 +145,8 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 #lightbox .lb-dl{ position:static; transform:none; }
 #lightbox .lb-close{ position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:10px; border:none; background:rgba(255,255,255,.14); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
 #lightbox .lb-close .ico{ width:22px; height:22px; }
+#lightbox .lb-hint{ display:flex; align-items:center; gap:8px; color:#fff; background:rgba(255,255,255,.16); padding:9px 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:default; }
+#lightbox .lb-hint[hidden]{ display:none; }
 .footer{ text-align:center; font-size:11px; color:var(--ink3); padding:30px 0 10px; letter-spacing:.5px; }
 @media (max-width:860px){ .gallery{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:520px){ .gallery{ grid-template-columns:1fr; } }
@@ -286,7 +288,10 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .report-stage iframe{ width:100%; height:100%; border:0; display:block; }
 /* bloques imagen / embed / boton dentro de un documento .manual */
 .manual .m-img{ text-align:center; }
-.manual .m-img img{ max-width:100%; border-radius:14px; display:block; margin:16px auto 0; }
+.manual .m-img img{ max-width:100%; max-height:360px; border-radius:14px; display:block; margin:16px auto 0; cursor:zoom-in; }
+.manual .m-img.tam-ch img{ max-height:200px; }
+.manual .m-img.tam-gr img{ max-height:560px; }
+.manual .m-img.tam-full img{ max-height:none; }
 .manual .m-img figcaption{ font-size:12.5px; color:var(--ink2); text-align:center; margin-top:9px; font-weight:600; line-height:1.35; }
 .manual .m-img .dl-btn{ margin-top:11px; }
 .manual .m-btn{ text-align:center; padding:10px 0; }
@@ -973,9 +978,29 @@ function pendingHTML(t){
 }
 function openLightbox(src, name){
   const lb=document.getElementById('lightbox');
-  lb.innerHTML = `<button class="lb-close" aria-label="Cerrar" onclick="event.stopPropagation();closeLightbox()">${svg(I.x)}</button><img id="lbimg" src="${esc(src)}" alt="Vista ampliada" onclick="event.stopPropagation()"><a class="dl-btn lb-dl" href="${esc(src)}" download="${esc(name||'')}" onclick="event.stopPropagation()">${svg(I.download)} Descargar</a>`;
+  lb.innerHTML = `<button class="lb-close" aria-label="Cerrar" onclick="event.stopPropagation();closeLightbox()">${svg(I.x)}</button>`
+    + `<img id="lbimg" src="${esc(src)}" alt="Vista ampliada" onclick="event.stopPropagation()">`
+    + `<div class="lb-hint" id="lbHint" hidden onclick="event.stopPropagation()">📱 Girá el teléfono para verla más grande</div>`
+    + `<a class="dl-btn lb-dl" href="${esc(src)}" download="${esc(name||'')}" onclick="event.stopPropagation()">${svg(I.download)} Descargar</a>`;
   lb.hidden=false;
+  const img=document.getElementById('lbimg');
+  if(img.complete) chequearHintLightbox(); else img.onload=chequearHintLightbox;
 }
+function chequearHintLightbox(){
+  const lb=document.getElementById('lightbox');
+  if(!lb || lb.hidden) return;
+  const img=document.getElementById('lbimg'), hint=document.getElementById('lbHint');
+  if(!img || !hint || !img.naturalWidth) return;
+  const apaisada = img.naturalWidth > img.naturalHeight*1.15;   // claramente horizontal
+  const vertical = window.innerHeight > window.innerWidth;      // celular parado
+  hint.hidden = !(apaisada && vertical);
+}
+window.addEventListener('resize', chequearHintLightbox);
+// tocar una imagen de contenido (bloque imagen) abre el visor grande
+document.addEventListener('click', function(e){
+  const img = e.target.closest && e.target.closest('.manual .m-img img');
+  if(img && img.getAttribute('src')) openLightbox(img.getAttribute('src'), img.getAttribute('alt')||'');
+});
 function closeLightbox(){ document.getElementById('lightbox').hidden=true; }
 /* visor de PDF a pantalla completa (para el bloque PDF en modo tarjeta) */
 function openPdf(src, name){
