@@ -1295,12 +1295,15 @@ function renderContent(c, t){
 let COL_KEY = null;                       /* modulo de tipo biblioteca abierto */
 function docsVisibles(c){ return ((c && c.docs) || []).filter(d => !d.archivado); }
 function resumenDoc(d){
-  const bl = d.bloques || [];
-  if(d.presentacion){
-    const n = bl.filter(b=>b.t==='diapo').length + (bl.some(b=>b.t!=='diapo') ? 1 : 0);
-    return n + (n===1 ? ' diapositiva' : ' diapositivas');
+  if(!d.presentacion) return '';
+  /* lo mas fiable es contar lo que realmente quedo armado en el html */
+  let n = (d.html || '').split('<section class="dk-slide"').length - 1;
+  if(n < 1){                       /* respaldo: mismo criterio que usa el panel */
+    let cuerpo = 0; n = 0;
+    (d.bloques || []).forEach(b => { if(b.t==='diapo'){ if(cuerpo) n++; cuerpo = 0; } else cuerpo++; });
+    if(cuerpo) n++;
   }
-  return '';
+  return n ? n + (n===1 ? ' diapositiva' : ' diapositivas') : '';
 }
 function indiceHTML(c){
   const docs = docsVisibles(c);
