@@ -36,6 +36,9 @@ html,body{ font-family:'Montserrat',sans-serif; background:var(--bg); color:var(
 .top-r{ grid-column:3; justify-self:end; display:flex; align-items:center; gap:10px; }
 .home-btn{ display:flex; align-items:center; gap:8px; padding:9px 18px; border-radius:8px; border:1.5px solid var(--ink);
   background:transparent; color:var(--ink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; letter-spacing:.4px; transition:.2s; }
+/* el atributo hidden tiene que ganarle al display:flex de arriba (si no, el boton
+   "Inicio" se ve tambien en la portada, donde no hace falta) */
+.home-btn[hidden]{ display:none; }
 .home-btn:hover{ background:var(--ink); color:#fff; }
 .home-btn .ico{ width:15px; height:15px; }
 /* boton menu (solo mobile) */
@@ -71,7 +74,10 @@ html,body{ font-family:'Montserrat',sans-serif; background:var(--bg); color:var(
 body.menu-open{ overflow:hidden; }
 @media(max-width:860px){
   .menu-btn{ display:inline-flex; }
-  #homeBtn{ display:none !important; }
+  /* el "Inicio" queda solo con el icono para que entre al lado del boton Menu.
+     Se muestra unicamente dentro de una seccion (afuera lleva el atributo hidden). */
+  #homeBtn{ padding:11px 13px; min-height:44px; }
+  #homeBtn .hb-tx{ display:none; }
   .top{ padding:12px 18px; } .brand img{ width:96px; }
 }
 
@@ -100,10 +106,8 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .chip.soon{ background:#ECE9E3; color:#7A756C; } .chip.soon .dot{ background:#A39C90; }
 
 /* vista de seccion */
-.back{ display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:8px; border:1px solid var(--border);
-  background:var(--surface); color:var(--ink2); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:24px; transition:.2s; }
-.back:hover{ border-color:var(--ink); color:var(--ink); }
-.back .ico{ width:16px; height:16px; }
+/* (el "Volver al inicio" que vivia aca adentro se saco: se vuelve con el boton
+   "Inicio" de la barra de arriba, que esta presente en todas las secciones) */
 .sec-head{ display:flex; align-items:center; gap:18px; margin-bottom:8px; }
 .sec-head .icirc{ width:64px; height:64px; color:#fff; }
 .sec-head .icirc .ico{ width:30px; height:30px; }
@@ -294,17 +298,9 @@ body.report-mode{ display:flex; flex-direction:column; height:100vh; height:100d
 body.report-mode .top{ flex:0 0 auto; position:static; }
 body.report-mode main{ flex:1; min-height:0; max-width:none; margin:0; padding:0; display:flex; flex-direction:column; }
 body.report-mode #view{ flex:1; min-height:0; display:flex; flex-direction:column; }
-body.report-mode .back{ display:none; }
 body.report-mode .sec-head{ display:none; }
 body.report-mode .footer{ display:none; }
 body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
-/* en celular el "Inicio" del header esta oculto (ahi se navega por el Menu), pero en
-   pantalla completa es la unica salida: lo mostramos solo con el icono, para que entre
-   al lado del boton Menu. */
-@media(max-width:860px){
-  body.report-mode #homeBtn{ display:inline-flex !important; padding:11px 13px; min-height:44px; }
-  body.report-mode #homeBtn .hb-tx{ display:none; }
-}
 .report-stage{ height:100%; background:#fff; }
 .report-stage iframe{ width:100%; height:100%; border:0; display:block; }
 /* bloques imagen / embed / boton dentro de un documento .manual */
@@ -543,7 +539,6 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 
   <!-- VISTA DE SECCION -->
   <section id="view" hidden>
-    <button class="back" onclick="showHub()"><span class="ico"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span> Volver al inicio</button>
     <div class="sec-head">
       <div class="icirc" id="secIcon"></div>
       <div>
