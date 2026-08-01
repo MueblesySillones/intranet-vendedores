@@ -2114,11 +2114,23 @@ window.MODULES = [
                   "pie": "112%",
                   "tend": "up",
                   "lead": true
+                },
+                {
+                  "label": "Ventas",
+                  "valor": "11",
+                  "pie": "10%",
+                  "tend": "up",
+                  "lead": false
                 }
               ]
+            },
+            {
+              "t": "diapo",
+              "titulo": "",
+              "grupo": ""
             }
           ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ 112%</div>\n    </div></div></div>"
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ 112%</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ 10%</div>\n    </div></div></div><div class=\"db\"></div>"
         }
       ]
     }
