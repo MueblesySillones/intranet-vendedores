@@ -1644,9 +1644,98 @@ window.MODULES = [
                   "tono": "gr"
                 }
               ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "diapo",
+              "titulo": "TOP VENDEDORES",
+              "grupo": ""
+            },
+            {
+              "t": "podio",
+              "items": [
+                {
+                  "puesto": "1°",
+                  "nombre": "",
+                  "suc": "",
+                  "valor": "",
+                  "vlabel": "ventas",
+                  "extra": "",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "diapo",
+              "titulo": "",
+              "grupo": ""
+            },
+            {
+              "t": "tabla",
+              "cols": [
+                {
+                  "h": "Concepto",
+                  "num": false
+                },
+                {
+                  "h": "Cantidad",
+                  "num": true
+                }
+              ],
+              "filas": [
+                {
+                  "celdas": [
+                    "VIVIANA",
+                    "88"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ALEXA",
+                    "49"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MATIAS",
+                    "44"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARCELO",
+                    "36"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GONZALO",
+                    "42"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "",
+                    ""
+                  ],
+                  "destaque": ""
+                }
+              ]
             }
           ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ 112%</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ 10%</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div>"
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ 112%</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ 10%</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Cantidad</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td></tr><tr><td>MATIAS</td><td class=\"num\">44</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td></tr><tr><td></td><td class=\"num\"></td></tr></tbody></table></div></div>"
         }
       ]
     }
