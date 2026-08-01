@@ -344,6 +344,154 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .manual .wa-img img{ width:100%; height:100%; object-fit:cover; display:block; }
 .manual .wa-body{ padding:13px 15px; font-size:14px; line-height:1.5; color:var(--ink); }
 .manual .wa-btn{ display:block; text-align:center; padding:12px; border-top:1px solid var(--border); color:var(--c-caba); font-weight:700; font-size:14px; text-decoration:none; }
+/* ---- BLOQUES DE DATOS (tabla / numeros / barras / podio / tarjetas) ----
+   Los arma el panel de administracion. Las mismas reglas estan en
+   herramientas/panel/web/styles.css bajo .doc-preview: si tocas una, toca la otra. */
+.manual .m-tabla{ border:1px solid var(--border); border-radius:12px; overflow:hidden; overflow-x:auto; margin:14px 0; }
+.manual .m-tabla table{ width:100%; border-collapse:collapse; min-width:380px; }
+.manual .m-tabla thead{ background:var(--ink); }
+.manual .m-tabla thead th{ padding:11px 14px; color:rgba(255,255,255,.72); text-align:left; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:1.1px; white-space:nowrap; }
+.manual .m-tabla thead th.num{ text-align:right; }
+.manual .m-tabla tbody tr:nth-child(odd){ background:var(--surface); }
+.manual .m-tabla tbody tr:nth-child(even){ background:var(--bg2); }
+.manual .m-tabla tbody td{ padding:10px 14px; color:var(--ink); border-bottom:1px solid rgba(0,0,0,.06); font-size:13.5px; font-weight:500; }
+.manual .m-tabla tbody td.num{ text-align:right; font-weight:700; white-space:nowrap; }
+.manual .m-tabla tbody tr.fx-ok td{ background:#E9F6EE; }
+.manual .m-tabla tbody tr.fx-mal td{ background:#FCEDEC; }
+.manual .m-tabla tbody tr.fx-total td{ background:var(--ink); color:#fff; font-weight:800; }
+
+.manual .m-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:12px; margin:14px 0; }
+.manual .m-kpis .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 12px; text-align:center; }
+.manual .m-kpis .kpi.lead{ background:var(--ink); border-color:var(--ink); }
+.manual .m-kpis .kl{ font-size:10.5px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ink3); margin-bottom:6px; }
+.manual .m-kpis .kpi.lead .kl{ color:rgba(255,255,255,.55); }
+.manual .m-kpis .kv{ font-size:38px; font-weight:800; letter-spacing:-1.5px; line-height:1; color:var(--ink); }
+.manual .m-kpis .kpi.lead .kv{ color:#fff; }
+.manual .m-kpis .kt{ margin-top:8px; font-size:12px; font-weight:700; color:var(--ink3); min-height:1.1em; }
+.manual .m-kpis .kt.t-up{ color:var(--c-success); } .manual .m-kpis .kt.t-down{ color:var(--c-danger); }
+.manual .m-kpis .kpi.lead .kt{ color:rgba(255,255,255,.75); }
+
+.manual .m-barras{ display:flex; flex-direction:column; gap:11px; margin:14px 0; }
+.manual .m-barras .ba{ display:flex; align-items:center; gap:12px; }
+.manual .m-barras .bl{ width:88px; flex:0 0 auto; text-align:right; font-size:13.5px; font-weight:700; color:var(--ink); }
+.manual .m-barras .bt{ flex:1; min-width:0; height:38px; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.manual .m-barras .bf{ height:100%; border-radius:10px; display:flex; align-items:center; padding:0 13px; min-width:46px; }
+.manual .m-barras .bn{ font-size:15px; font-weight:800; color:#fff; white-space:nowrap; }
+.manual .m-barras .br{ width:126px; flex:0 0 auto; }
+.manual .m-barras .bchip{ display:inline-flex; padding:4px 10px; border-radius:30px; font-size:10.5px; font-weight:700; line-height:1.3; }
+.manual .m-barras .bchip.g{ background:#D4EDDA; color:#145A2E; }
+.manual .m-barras .bchip.y{ background:#FBE9C9; color:#7D5A08; }
+.manual .m-barras .bchip.r{ background:#FADBD8; color:#922B21; }
+.manual .m-barras .bchip.gr{ background:#E8E8E8; color:#555; }
+
+.manual .m-podio{ display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:11px; margin:14px 0; }
+.manual .m-podio .pod{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 10px; text-align:center; }
+.manual .m-podio .pod.lead{ border:2px solid var(--c-success); }
+.manual .m-podio .rank{ font-size:11px; font-weight:800; letter-spacing:1px; color:var(--ink3); }
+.manual .m-podio .name{ font-size:15.5px; font-weight:800; color:var(--ink); margin:6px 0 1px; letter-spacing:-.3px; }
+.manual .m-podio .suc{ font-size:10px; color:var(--ink3); text-transform:uppercase; letter-spacing:1px; font-weight:600; }
+.manual .m-podio .sales{ font-size:32px; font-weight:800; color:var(--ink); letter-spacing:-1.5px; margin-top:8px; line-height:1; }
+.manual .m-podio .slbl{ font-size:10px; color:var(--ink3); font-weight:600; }
+.manual .m-podio .cv{ margin-top:9px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; display:inline-block; background:#EFEBE4; color:var(--ink2); }
+.manual .m-podio .pod.lead .cv{ background:#D4EDDA; color:#145A2E; }
+
+.manual .m-tarj{ display:grid; gap:12px; margin:14px 0; }
+.manual .m-tarj.cols-2{ grid-template-columns:repeat(2,1fr); }
+.manual .m-tarj.cols-3{ grid-template-columns:repeat(3,1fr); }
+.manual .m-tarj.cols-4{ grid-template-columns:repeat(4,1fr); }
+.manual .m-tarj .tj{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 16px; display:flex; gap:14px; }
+.manual .m-tarj.orient-v .tj{ flex-direction:column; }
+.manual .m-tarj.orient-h .tj{ flex-direction:row; align-items:center; padding:14px 16px; }
+.manual .m-tarj .tj-ic{ width:46px; height:46px; border-radius:50%; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
+.manual .m-tarj .tj-ic .ico{ width:22px; height:22px; }
+.manual .m-tarj .tj-t{ font-size:15px; font-weight:800; color:var(--ink); letter-spacing:-.3px; }
+.manual .m-tarj .tj-p{ font-size:12.5px; color:var(--ink3); line-height:1.5; margin-top:3px; }
+@media(max-width:640px){
+  .manual .m-tarj.cols-3, .manual .m-tarj.cols-4{ grid-template-columns:repeat(2,1fr); }
+  .manual .m-barras .bl{ width:66px; font-size:12px; }
+  .manual .m-barras .br{ width:auto; }
+  .manual .m-barras .bchip{ font-size:9.5px; padding:3px 7px; }
+  .manual .m-kpis .kv{ font-size:30px; }
+}
+@media(max-width:420px){ .manual .m-tarj{ grid-template-columns:1fr!important; } }
+
+/* ---- BIBLIOTECA: indice de documentos de un modulo ---- */
+.col-index{ display:grid; grid-template-columns:repeat(auto-fill,minmax(216px,1fr)); gap:14px; margin-top:6px; }
+.col-card{ position:relative; display:flex; flex-direction:column; gap:5px; text-align:left; font:inherit; cursor:pointer;
+  background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 18px 18px;
+  transition:box-shadow .15s, transform .06s; }
+.col-card:hover{ box-shadow:0 10px 30px rgba(0,0,0,.10); }
+.col-card:active{ transform:scale(.995); }
+.col-card.destacada{ grid-column:1 / -1; background:var(--ink); border-color:var(--ink); padding:26px 24px 24px; }
+.col-ult{ font-size:9.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--ink);
+  background:#fff; border-radius:20px; padding:4px 10px; align-self:flex-start; margin-bottom:4px; }
+.col-ct{ font-size:17px; font-weight:800; color:var(--ink); letter-spacing:-.3px; line-height:1.2; }
+.col-card.destacada .col-ct{ color:#fff; font-size:26px; }
+.col-cm{ font-size:12px; color:var(--ink3); font-weight:600; }
+.col-card.destacada .col-cm{ color:rgba(255,255,255,.6); }
+.col-cir{ position:absolute; top:16px; right:16px; width:16px; height:16px; color:var(--ink3); }
+.col-card.destacada .col-cir{ color:rgba(255,255,255,.5); }
+.col-cir svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.col-back{ display:inline-flex; align-items:center; gap:7px; border:1px solid var(--border); background:var(--surface);
+  border-radius:10px; padding:9px 14px; font:inherit; font-size:13px; font-weight:700; color:var(--ink2);
+  cursor:pointer; margin-bottom:14px; }
+.col-back:hover{ color:var(--ink); border-color:var(--ink3); }
+.dk-volver{ flex:0 0 auto; border:1px solid var(--border); background:var(--surface); border-radius:8px;
+  padding:8px 13px; font:inherit; font-size:11.5px; font-weight:700; color:var(--ink2); cursor:pointer; }
+.dk-volver:hover{ color:var(--ink); border-color:var(--ink3); }
+@media(max-width:520px){
+  .col-index{ grid-template-columns:1fr; }
+  .col-card.destacada .col-ct{ font-size:21px; }
+  .dk-volver{ padding:7px 10px; font-size:11px; }
+}
+
+/* ---- MODO PRESENTACION (un modulo se ve como diapositivas) ---- */
+/* .sec-body en report-mode ya tiene alto definido (flex:1), asi que el deck usa height:100% */
+.deck{ position:relative; height:100%; min-height:420px; display:flex; flex-direction:column; background:var(--bg); }
+.deck .dk-slide{ display:none; }
+.deck .dk-slide.on{ display:block; animation:dkIn .32s ease; }
+@keyframes dkIn{ from{ opacity:0; transform:translateX(26px); } to{ opacity:1; transform:none; } }
+/* "safe center" centra vertical si entra, y si no entra deja scrollear desde arriba */
+.dk-stage{ flex:1; min-height:0; overflow-y:auto; padding:26px 28px 78px; display:flex; flex-direction:column; justify-content:safe center; }
+.dk-stage .manual{ max-width:1000px; width:100%; margin:0 auto; flex-shrink:0; }
+.dk-bar{ position:absolute; left:0; right:0; bottom:0; display:flex; align-items:center; gap:12px; padding:10px 16px;
+  background:linear-gradient(to top, var(--bg) 62%, transparent); }
+.dk-count{ font-size:11px; color:var(--ink3); letter-spacing:1.2px; font-weight:700; flex:0 0 auto; }
+.dk-dots{ flex:1; display:flex; justify-content:center; gap:7px; flex-wrap:wrap; }
+.dk-dot{ width:7px; height:7px; border-radius:50%; background:rgba(0,0,0,.18); border:none; padding:0; cursor:pointer; transition:.2s; }
+.dk-dot.on{ background:var(--ink); transform:scale(1.4); }
+.dk-navs{ display:flex; gap:8px; flex:0 0 auto; }
+.dk-btn{ padding:9px 18px; border-radius:8px; border:1.5px solid var(--ink); background:transparent; color:var(--ink);
+  font-size:12px; font-family:inherit; font-weight:700; cursor:pointer; letter-spacing:.4px; }
+.dk-btn:hover{ background:var(--ink); color:var(--bg); }
+.dk-btn:disabled{ opacity:.22; cursor:default; }
+.dk-btn:disabled:hover{ background:transparent; color:var(--ink); }
+.dk-prog{ position:absolute; top:0; left:0; height:3px; background:var(--ink); transition:width .3s ease; z-index:4; }
+.dk-idx{ position:absolute; top:9px; right:14px; z-index:5; display:inline-flex; align-items:center; gap:7px; padding:7px 13px;
+  border-radius:9px; background:var(--surface); border:1px solid var(--border); font-size:12px; font-weight:700; color:var(--ink); cursor:pointer; }
+.dk-idx .ico{ width:15px; height:15px; }
+.dk-menu{ position:absolute; inset:0; z-index:9; display:none; }
+.dk-menu.on{ display:block; }
+.dk-menu-ov{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+.dk-menu-p{ position:absolute; top:0; right:0; bottom:0; width:min(330px,86vw); background:var(--surface);
+  border-left:1px solid var(--border); overflow-y:auto; padding:16px 0 20px; box-shadow:-10px 0 40px rgba(0,0,0,.16); }
+.dk-menu-h{ display:flex; align-items:center; justify-content:space-between; padding:0 16px 12px; border-bottom:1px solid var(--border); }
+.dk-menu-h b{ font-size:13px; }
+.dk-menu-x{ border:none; background:none; font-size:19px; line-height:1; cursor:pointer; color:var(--ink3); padding:4px 8px; }
+.dk-grp{ font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; color:var(--ink3); padding:16px 16px 6px; }
+.dk-mi{ display:flex; gap:10px; align-items:center; width:100%; text-align:left; border:none; background:none; cursor:pointer;
+  padding:10px 16px; font:inherit; font-size:13.5px; color:var(--ink2); }
+.dk-mi:hover{ background:var(--bg2); }
+.dk-mi.on{ background:var(--bg2); color:var(--ink); font-weight:700; }
+.dk-mi .mnum{ width:22px; height:22px; border-radius:50%; background:var(--bg2); color:var(--ink3); display:grid; place-items:center;
+  font-size:10.5px; font-weight:800; flex:0 0 auto; }
+.dk-mi.on .mnum{ background:var(--ink); color:#fff; }
+@media(max-width:640px){
+  .dk-stage{ padding:10px 14px 70px; }
+  .dk-btn{ padding:9px 14px; font-size:11.5px; }
+  .dk-dots{ display:none; }
+}
+
 /* contenido propio de modulos reemplazados desde el panel */
 .free-content{ font-size:15px; line-height:1.7; color:var(--ink); }
 .free-content h1,.free-content h2,.free-content h3{ line-height:1.25; margin:1.2em 0 .4em; }
@@ -1021,7 +1169,7 @@ function openPdf(src, name){
   pv.hidden=false; document.body.style.overflow='hidden';
 }
 function closePdf(){ const pv=document.getElementById('pdfview'); if(pv){ pv.hidden=true; pv.innerHTML=''; } document.body.style.overflow=''; }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closePdf(); closeMenu(); } });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closePdf(); closeMenu(); if(typeof dkMenu==='function') dkMenu(false); } });
 function openSection(key){ location.hash = key; }
 function renderSection(key){
   const t = MAP[key];
@@ -1031,10 +1179,12 @@ function renderSection(key){
   document.getElementById('secSub').textContent = t.desc;
   const imgs = (window.GALLERIES||{})[key] || [];
   const mod = MODMAP[key];
-  let body, embed = false;
+  let body, embed = false, presenta = false;
+  COL_KEY = (mod && mod.content && mod.content.tipo === 'coleccion') ? key : null;
   if(mod && mod.content && mod.content.tipo){
     body = renderContent(mod.content, t);
     embed = mod.content.tipo === 'embed';
+    presenta = mod.content.tipo === 'bloques' && !!mod.content.presentacion;
   }
   else if(DOWNLOAD_GROUPS[key]) body = groupsHTML(DOWNLOAD_GROUPS[key]);
   else if(CONTENT[key]) body = CONTENT[key];
@@ -1042,7 +1192,8 @@ function renderSection(key){
   else body = pendingHTML(t);
   document.getElementById('secBody').innerHTML = body;
   plegarGalerias(document.getElementById('secBody'), key);
-  document.body.classList.toggle('report-mode', embed || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
+  document.body.classList.toggle('report-mode', embed || presenta || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
+  if(presenta) initDeck(); else dkSlides = [];
   document.getElementById('hub').hidden = true;
   document.getElementById('view').hidden = false;
   document.getElementById('homeBtn').hidden = false;
@@ -1124,6 +1275,8 @@ function applyModules(){
 /* Cuerpo de un módulo cuyo contenido fue definido/reemplazado desde el panel */
 function renderContent(c, t){
   if(!c || !c.tipo) return '';
+  if(c.tipo==='coleccion') return indiceHTML(c);
+  if(c.tipo==='bloques' && c.presentacion) return deckHTML(c.html||'');
   if(c.tipo==='bloques') return `<div class="manual">${c.html||''}</div>`;
   if(c.tipo==='html')   return `<div class="free-content">${c.html||''}</div>`;
   if(c.tipo==='embed')  return `<div class="report-stage"><iframe src="${esc(c.url||'')}" title="${esc(t.title)}" loading="lazy"></iframe></div>`;
@@ -1133,6 +1286,130 @@ function renderContent(c, t){
     </div>`;
   return '';
 }
+
+/* ===================================================================
+   BIBLIOTECA: un modulo guarda VARIOS documentos (ej. un reporte por mes).
+   El vendedor ve primero el indice y elige cual abrir. Los archivados no
+   se listan (el panel los conserva pero no se publican a la vista).
+   =================================================================== */
+let COL_KEY = null;                       /* modulo de tipo biblioteca abierto */
+function docsVisibles(c){ return ((c && c.docs) || []).filter(d => !d.archivado); }
+function resumenDoc(d){
+  const bl = d.bloques || [];
+  if(d.presentacion){
+    const n = bl.filter(b=>b.t==='diapo').length + (bl.some(b=>b.t!=='diapo') ? 1 : 0);
+    return n + (n===1 ? ' diapositiva' : ' diapositivas');
+  }
+  return '';
+}
+function indiceHTML(c){
+  const docs = docsVisibles(c);
+  if(!docs.length) return `<div class="pending"><b>Todavía no hay nada publicado acá.</b><br>Muy pronto.</div>`;
+  return `<div class="col-index">${docs.map((d,i)=>{
+    const meta = [d.etiqueta, resumenDoc(d)].filter(Boolean).map(esc).join(' · ');
+    return `<button type="button" class="col-card${i===0?' destacada':''}" onclick="verDoc(${i})">
+      ${i===0 ? '<span class="col-ult">Último</span>' : ''}
+      <span class="col-ct">${esc(d.titulo||'')}</span>
+      ${meta ? `<span class="col-cm">${meta}</span>` : ''}
+      <span class="col-cir">${svg(I.ext)}</span>
+    </button>`;
+  }).join('')}</div>`;
+}
+function verDoc(i){
+  const mod = MODMAP[COL_KEY]; if(!mod || !mod.content) return;
+  const d = docsVisibles(mod.content)[i]; if(!d) return;
+  const volver = '← Volver a la lista';
+  const body = document.getElementById('secBody');
+  if(d.presentacion){
+    body.innerHTML = deckHTML(d.html||'', volver);
+    document.body.classList.add('report-mode');
+    initDeck();
+  } else {
+    body.innerHTML = `<button type="button" class="col-back" onclick="volverIndice()">${volver}</button>`
+                   + `<div class="manual">${d.html||''}</div>`;
+    document.body.classList.remove('report-mode');
+    dkSlides = [];
+    plegarGalerias(body, COL_KEY + ':' + i);
+  }
+  window.scrollTo(0,0);
+}
+function volverIndice(){ if(COL_KEY) renderSection(COL_KEY); }
+
+/* ===================================================================
+   MODO PRESENTACION: un modulo armado en el panel se ve como diapositivas.
+   El panel ya entrego el contenido cortado en <section class="dk-slide">
+   con data-titulo / data-grupo; aca solo le ponemos la navegacion encima.
+   =================================================================== */
+function deckHTML(html, volver){
+  return `<div class="deck" id="deck">
+    <div class="dk-prog" id="dkProg"></div>
+    <button class="dk-idx" onclick="dkMenu(true)" aria-label="Ver todas las diapositivas">
+      <span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Diapositivas
+    </button>
+    <div class="dk-stage" id="dkStage"><div class="manual">${html}</div></div>
+    <div class="dk-bar">
+      ${volver ? `<button type="button" class="dk-volver" onclick="volverIndice()">${esc(volver)}</button>` : ''}
+      <span class="dk-count" id="dkCount"></span>
+      <div class="dk-dots" id="dkDots"></div>
+      <div class="dk-navs">
+        <button class="dk-btn" id="dkPrev" onclick="dkMover(-1)">← Anterior</button>
+        <button class="dk-btn" id="dkNext" onclick="dkMover(1)">Siguiente →</button>
+      </div>
+    </div>
+    <div class="dk-menu" id="dkMenu">
+      <div class="dk-menu-ov" onclick="dkMenu(false)"></div>
+      <div class="dk-menu-p">
+        <div class="dk-menu-h"><b>Contenido</b><button class="dk-menu-x" onclick="dkMenu(false)" aria-label="Cerrar">✕</button></div>
+        <div id="dkMenuList"></div>
+      </div>
+    </div>
+  </div>`;
+}
+let dkCur = 0, dkSlides = [];
+function initDeck(){
+  const deck = document.getElementById('deck');
+  dkSlides = deck ? [...deck.querySelectorAll('.dk-slide')] : [];
+  if(!dkSlides.length) return;
+  document.getElementById('dkDots').innerHTML = dkSlides.map((s,i)=>
+    `<button class="dk-dot" onclick="dkGo(${i})" aria-label="Diapositiva ${i+1}"></button>`).join('');
+  let html = '', grpAnt = null;
+  dkSlides.forEach((s,i)=>{
+    const g = s.dataset.grupo || '';
+    if(g && g !== grpAnt){ html += `<div class="dk-grp">${esc(g)}</div>`; grpAnt = g; }
+    html += `<button class="dk-mi" data-i="${i}" onclick="dkGo(${i});dkMenu(false)">`
+          + `<span class="mnum">${i+1}</span>${esc(s.dataset.titulo || ('Diapositiva '+(i+1)))}</button>`;
+  });
+  document.getElementById('dkMenuList').innerHTML = html;
+  const st = document.getElementById('dkStage');
+  let tX = null, tY = null;
+  st.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; tX=t.clientX; tY=t.clientY; }, {passive:true});
+  st.addEventListener('touchend', e=>{
+    if(tX===null) return;
+    const t=e.changedTouches[0], dx=t.clientX-tX, dy=t.clientY-tY; tX=null;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.6) dkMover(dx<0?1:-1);
+  }, {passive:true});
+  dkCur = 0; dkPintar();
+}
+function dkPintar(){
+  const n = dkSlides.length; if(!n) return;
+  dkSlides.forEach((s,i)=>s.classList.toggle('on', i===dkCur));
+  document.getElementById('dkProg').style.width = ((dkCur+1)/n*100)+'%';
+  document.getElementById('dkCount').textContent = (dkCur+1)+' / '+n;
+  document.getElementById('dkPrev').disabled = dkCur===0;
+  document.getElementById('dkNext').disabled = dkCur===n-1;
+  document.querySelectorAll('#dkDots .dk-dot').forEach((d,i)=>d.classList.toggle('on', i===dkCur));
+  document.querySelectorAll('#dkMenuList .dk-mi').forEach(b=>b.classList.toggle('on', +b.dataset.i===dkCur));
+  const st = document.getElementById('dkStage'); if(st) st.scrollTop = 0;
+}
+function dkGo(i){ if(i<0 || i>=dkSlides.length || i===dkCur) return; dkCur = i; dkPintar(); }
+function dkMover(d){ dkGo(dkCur + d); }
+function dkMenu(on){ const m = document.getElementById('dkMenu'); if(m) m.classList.toggle('on', !!on); }
+document.addEventListener('keydown', e=>{
+  if(!dkSlides.length || !document.getElementById('deck')) return;
+  if(document.getElementById('dkMenu').classList.contains('on')) return;
+  if(e.key==='ArrowRight' || e.key==='PageDown'){ e.preventDefault(); dkMover(1); }
+  else if(e.key==='ArrowLeft' || e.key==='PageUp'){ e.preventDefault(); dkMover(-1); }
+});
 
 /* carga modulos y galerias siempre frescos (evita cache al actualizar) */
 (function(){
