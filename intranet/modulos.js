@@ -1727,6 +1727,62 @@ window.MODULES = [
                 },
                 {
                   "celdas": [
+                    "ROSANA",
+                    "36"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "AGUSTINA",
+                    "56"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "JOAN",
+                    "15"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "DORA",
+                    "32"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ADRIANA",
+                    "8"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "WALTER",
+                    "21"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "FLORENCIA",
+                    "69"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIO",
+                    "42"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
                     "",
                     ""
                   ],
@@ -1735,7 +1791,7 @@ window.MODULES = [
               ]
             }
           ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ 112%</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ 10%</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Cantidad</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td></tr><tr><td>MATIAS</td><td class=\"num\">44</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td></tr><tr><td></td><td class=\"num\"></td></tr></tbody></table></div></div>"
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ 112%</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ 10%</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Cantidad</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td></tr><tr><td>MATIAS</td><td class=\"num\">44</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td></tr><tr><td>JOAN</td><td class=\"num\">15</td></tr><tr><td>DORA</td><td class=\"num\">32</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td></tr><tr><td>WALTER</td><td class=\"num\">21</td></tr><tr><td>FLORENCIA</td><td class=\"num\">69</td></tr><tr><td>MARIO</td><td class=\"num\">42</td></tr><tr><td></td><td class=\"num\"></td></tr></tbody></table></div></div>"
         }
       ]
     }
