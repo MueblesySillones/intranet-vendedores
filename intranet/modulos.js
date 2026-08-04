@@ -1711,6 +1711,20 @@ window.MODULES = [
                 },
                 {
                   "celdas": [
+                    "Florencia",
+                    "69"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "AGUSTINA",
+                    "56"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
                     "ALEXA",
                     "49"
                   ],
@@ -1718,21 +1732,14 @@ window.MODULES = [
                 },
                 {
                   "celdas": [
-                    "MATIAS",
-                    "44"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARCELO",
-                    "36"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
                     "GONZALO",
+                    "42"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIO",
                     "42"
                   ],
                   "destaque": ""
@@ -1746,15 +1753,8 @@ window.MODULES = [
                 },
                 {
                   "celdas": [
-                    "AGUSTINA",
-                    "56"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "JOAN",
-                    "15"
+                    "MARCELO",
+                    "36"
                   ],
                   "destaque": ""
                 },
@@ -1767,8 +1767,8 @@ window.MODULES = [
                 },
                 {
                   "celdas": [
-                    "ADRIANA",
-                    "8"
+                    "MALENA",
+                    "30"
                   ],
                   "destaque": ""
                 },
@@ -1781,29 +1781,36 @@ window.MODULES = [
                 },
                 {
                   "celdas": [
-                    "FLORENCIA",
-                    "69"
+                    "TOMAS",
+                    "16"
                   ],
                   "destaque": ""
                 },
                 {
                   "celdas": [
-                    "MARIO",
-                    "42"
+                    "JOAN",
+                    "15"
                   ],
                   "destaque": ""
                 },
                 {
                   "celdas": [
-                    "",
-                    ""
+                    "ADRIANA",
+                    "8"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "Maria Marta",
+                    "6"
                   ],
                   "destaque": ""
                 }
               ]
             }
           ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ +112% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ +10% vs período anterior</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Cantidad</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td></tr><tr><td>MATIAS</td><td class=\"num\">44</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td></tr><tr><td>JOAN</td><td class=\"num\">15</td></tr><tr><td>DORA</td><td class=\"num\">32</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td></tr><tr><td>WALTER</td><td class=\"num\">21</td></tr><tr><td>FLORENCIA</td><td class=\"num\">69</td></tr><tr><td>MARIO</td><td class=\"num\">42</td></tr><tr><td></td><td class=\"num\"></td></tr></tbody></table></div></div>"
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ +112% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ +10% vs período anterior</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Cantidad</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td></tr><tr><td>Florencia</td><td class=\"num\">69</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td></tr><tr><td>MARIO</td><td class=\"num\">42</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td></tr><tr><td>DORA</td><td class=\"num\">32</td></tr><tr><td>MALENA</td><td class=\"num\">30</td></tr><tr><td>WALTER</td><td class=\"num\">21</td></tr><tr><td>TOMAS</td><td class=\"num\">16</td></tr><tr><td>JOAN</td><td class=\"num\">15</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td></tr><tr><td>Maria Marta</td><td class=\"num\">6</td></tr></tbody></table></div></div>"
         }
       ]
     }
