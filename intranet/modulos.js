@@ -447,10 +447,641 @@ window.MODULES = [
       "palabra": "reporte",
       "docs": [
         {
+          "id": "dmseye9vycmnr",
+          "titulo": "JUNIO 2026",
+          "etiqueta": "",
+          "archivado": false,
+          "presentacion": false,
+          "bloques": [
+            {
+              "t": "titulo",
+              "nivel": "h1",
+              "html": "Derivaciones del mes"
+            },
+            {
+              "t": "kpis",
+              "items": [
+                {
+                  "label": "Derivaciones totales",
+                  "valor": "299",
+                  "pie": "-7.4% vs período anterior",
+                  "tend": "down",
+                  "lead": true
+                },
+                {
+                  "label": "Ventas",
+                  "valor": "8",
+                  "pie": "",
+                  "tend": "",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "diapo",
+              "titulo": "SUCURSALES",
+              "grupo": "Derivaciones"
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "barras",
+              "items": [
+                {
+                  "label": "HUDSON",
+                  "valor": "123",
+                  "color": "--c-canning",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "CABA",
+                  "valor": "113",
+                  "color": "--c-caba",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "CANNING",
+                  "valor": "33",
+                  "color": "--c-hudson",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "NORCENTER",
+                  "valor": "28",
+                  "color": "--c-warn",
+                  "chip": "",
+                  "tono": "gr"
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "diapo",
+              "titulo": "TOP VENDEDORES",
+              "grupo": ""
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "RANKING DE VENTAS"
+            },
+            {
+              "t": "podio",
+              "items": [
+                {
+                  "puesto": "1°",
+                  "nombre": "DORA",
+                  "suc": "HUDSON",
+                  "valor": "3",
+                  "vlabel": "ventas",
+                  "extra": "conv. 25,00%",
+                  "lead": true
+                },
+                {
+                  "puesto": "2°",
+                  "nombre": "MALENA",
+                  "suc": "HUDSON",
+                  "valor": "1",
+                  "vlabel": "ventas",
+                  "extra": "conv. 10,00%",
+                  "lead": false
+                },
+                {
+                  "puesto": "3°",
+                  "nombre": "JOAN",
+                  "suc": "CANNING",
+                  "valor": "1",
+                  "vlabel": "ventas",
+                  "extra": "conv. 8,33%",
+                  "lead": false
+                },
+                {
+                  "puesto": "4°",
+                  "nombre": "GONZALO",
+                  "suc": "HUDSON",
+                  "valor": "1",
+                  "vlabel": "ventas",
+                  "extra": "conv. 5,26%",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "diapo",
+              "titulo": "TABLA DE VENDEDORES",
+              "grupo": ""
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "TABLA DE VENDEDORES"
+            },
+            {
+              "t": "tabla",
+              "cols": [
+                {
+                  "h": "Concepto",
+                  "num": false
+                },
+                {
+                  "h": "Derivaciones",
+                  "num": true
+                },
+                {
+                  "h": "ventas",
+                  "num": true
+                },
+                {
+                  "h": "conversión",
+                  "num": true
+                }
+              ],
+              "filas": [
+                {
+                  "celdas": [
+                    "AGUSTINA",
+                    "35",
+                    "1",
+                    "2,86%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "VIVIANA",
+                    "32",
+                    "1",
+                    "3,13%%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ALEXA",
+                    "22",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MATÍAS",
+                    "20",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GONZALO",
+                    "19",
+                    "1",
+                    "5,26%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "FLORENCIA",
+                    "18",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ROSANA",
+                    "17",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARCELO",
+                    "16",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "DORA",
+                    "12",
+                    "3",
+                    "☆ 25,00%"
+                  ],
+                  "destaque": "ok"
+                },
+                {
+                  "celdas": [
+                    "JOAN",
+                    "12",
+                    "1",
+                    "8,33%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "WALTER",
+                    "10",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MALENA",
+                    "10",
+                    "1",
+                    "10,00%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "TOMAS",
+                    "10",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIO",
+                    "9",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ADRIANA",
+                    "6",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARÍA MARTA",
+                    "2",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">299</div>\n      <div class=\"kt t-down\">▼ -7.4% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">8</div>\n      <div class=\"kt\"></div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">123</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:92%;background:var(--c-caba)\"><span class=\"bn\">113</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:27%;background:var(--c-hudson)\"><span class=\"bn\">33</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:23%;background:var(--c-warn)\"><span class=\"bn\">28</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod lead\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">DORA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">3</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 25,00%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">MALENA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 10,00%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">JOAN</div>\n      <div class=\"suc\">CANNING</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 8,33%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">GONZALO</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 5,26%</div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Derivaciones</th><th class=\"num\">ventas</th><th class=\"num\">conversión</th></tr></thead><tbody><tr><td>AGUSTINA</td><td class=\"num\">35</td><td class=\"num\">1</td><td class=\"num\">2,86%</td></tr><tr><td>VIVIANA</td><td class=\"num\">32</td><td class=\"num\">1</td><td class=\"num\">3,13%%</td></tr><tr><td>ALEXA</td><td class=\"num\">22</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MATÍAS</td><td class=\"num\">20</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GONZALO</td><td class=\"num\">19</td><td class=\"num\">1</td><td class=\"num\">5,26%</td></tr><tr><td>FLORENCIA</td><td class=\"num\">18</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">17</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARCELO</td><td class=\"num\">16</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-ok\"><td>DORA</td><td class=\"num\">12</td><td class=\"num\">3</td><td class=\"num\">☆ 25,00%</td></tr><tr><td>JOAN</td><td class=\"num\">12</td><td class=\"num\">1</td><td class=\"num\">8,33%</td></tr><tr><td>WALTER</td><td class=\"num\">10</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">10</td><td class=\"num\">1</td><td class=\"num\">10,00%</td></tr><tr><td>TOMAS</td><td class=\"num\">10</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARIO</td><td class=\"num\">9</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ADRIANA</td><td class=\"num\">6</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARÍA MARTA</td><td class=\"num\">2</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr></tbody></table></div></div>"
+        },
+        {
+          "id": "dmsauyq5ragsd",
+          "titulo": "JULIO 2026",
+          "etiqueta": "",
+          "archivado": false,
+          "presentacion": false,
+          "bloques": [
+            {
+              "t": "titulo",
+              "nivel": "h1",
+              "html": "Derivaciones del mes"
+            },
+            {
+              "t": "kpis",
+              "items": [
+                {
+                  "label": "Derivaciones totales",
+                  "valor": "648",
+                  "pie": "+112% vs período anterior",
+                  "tend": "up",
+                  "lead": true
+                },
+                {
+                  "label": "Ventas",
+                  "valor": "11",
+                  "pie": "+10% vs período anterior",
+                  "tend": "up",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "diapo",
+              "titulo": "SUCURSALES",
+              "grupo": "Derivaciones"
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "barras",
+              "items": [
+                {
+                  "label": "CABA",
+                  "valor": "236",
+                  "color": "--c-canning",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "HUDSON",
+                  "valor": "231",
+                  "color": "--c-caba",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "NORCENTER",
+                  "valor": "116",
+                  "color": "--c-hudson",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "CANNING",
+                  "valor": "65",
+                  "color": "--c-warn",
+                  "chip": "",
+                  "tono": "gr"
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "diapo",
+              "titulo": "TOP VENDEDORES",
+              "grupo": ""
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "RANKING DE VENTAS"
+            },
+            {
+              "t": "podio",
+              "items": [
+                {
+                  "puesto": "1°",
+                  "nombre": "MARIO",
+                  "suc": "NORCENTER",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 4,76%",
+                  "lead": false
+                },
+                {
+                  "puesto": "2°",
+                  "nombre": "VIVIANA",
+                  "suc": "CABA",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 2,27%",
+                  "lead": false
+                },
+                {
+                  "puesto": "3°",
+                  "nombre": "AGUSTINA",
+                  "suc": "HUDSON",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 3,57%",
+                  "lead": false
+                },
+                {
+                  "puesto": "4°",
+                  "nombre": "MARIA MARTA",
+                  "suc": "HUDSON",
+                  "valor": "1",
+                  "vlabel": "ventas",
+                  "extra": "conv. 16,67%",
+                  "lead": true
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "diapo",
+              "titulo": "TABLA DE VENDEDORES",
+              "grupo": ""
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "TABLA DE VENDEDORES"
+            },
+            {
+              "t": "tabla",
+              "cols": [
+                {
+                  "h": "Concepto",
+                  "num": false
+                },
+                {
+                  "h": "Derivaciones",
+                  "num": true
+                },
+                {
+                  "h": "ventas",
+                  "num": true
+                },
+                {
+                  "h": "conversión",
+                  "num": true
+                }
+              ],
+              "filas": [
+                {
+                  "celdas": [
+                    "VIVIANA",
+                    "88",
+                    "2",
+                    "2,27%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "Florencia",
+                    "69",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "AGUSTINA",
+                    "56",
+                    "2",
+                    "3,57"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ALEXA",
+                    "49",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GONZALO",
+                    "42",
+                    "1",
+                    "2,38%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIO",
+                    "42",
+                    "2",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ROSANA",
+                    "36",
+                    "1",
+                    "2,78%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARCELO",
+                    "36",
+                    "1",
+                    "2,78%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "DORA",
+                    "32",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MALENA",
+                    "30",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "WALTER",
+                    "21",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "TOMAS",
+                    "16",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "JOAN",
+                    "15",
+                    "1",
+                    "6,67%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ADRIANA",
+                    "8",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARÍA MARTA",
+                    "6",
+                    "1",
+                    "16,67%"
+                  ],
+                  "destaque": "ok"
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ +112% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ +10% vs período anterior</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">MARIO</div>\n      <div class=\"suc\">NORCENTER</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 4,76%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">VIVIANA</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 2,27%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">AGUSTINA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 3,57%</div>\n    </div>\n    <div class=\"pod lead\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">MARIA MARTA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 16,67%</div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Derivaciones</th><th class=\"num\">ventas</th><th class=\"num\">conversión</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td><td class=\"num\">2</td><td class=\"num\">2,27%</td></tr><tr><td>Florencia</td><td class=\"num\">69</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td><td class=\"num\">2</td><td class=\"num\">3,57</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td><td class=\"num\">1</td><td class=\"num\">2,38%</td></tr><tr><td>MARIO</td><td class=\"num\">42</td><td class=\"num\">2</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td><td class=\"num\">1</td><td class=\"num\">2,78%</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td><td class=\"num\">1</td><td class=\"num\">2,78%</td></tr><tr><td>DORA</td><td class=\"num\">32</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">30</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>WALTER</td><td class=\"num\">21</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>TOMAS</td><td class=\"num\">16</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>JOAN</td><td class=\"num\">15</td><td class=\"num\">1</td><td class=\"num\">6,67%</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-ok\"><td>MARÍA MARTA</td><td class=\"num\">6</td><td class=\"num\">1</td><td class=\"num\">16,67%</td></tr></tbody></table></div></div>"
+        },
+        {
           "id": "rep_mar_may_2026",
           "titulo": "Marzo–Mayo 2026",
           "etiqueta": "Trimestral",
-          "archivado": true,
+          "archivado": false,
           "presentacion": false,
           "bloques": [
             {
@@ -1583,637 +2214,6 @@ window.MODULES = [
             }
           ],
           "html": "<div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Reunión de equipo · Marzo – Mayo 2026</span></div></div><div class=\"db\"><div class=\"m-h\">Cómo medimos <b>las derivaciones</b></div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones</div>\n      <div class=\"kv\">992</div>\n      <div class=\"kt\"></div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">43</div>\n      <div class=\"kt\"></div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Sucursales</div>\n      <div class=\"kv\">4</div>\n      <div class=\"kt\"></div>\n    </div></div></div><div class=\"db\"><div class=\"m-tarj cols-4 orient-h\">\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-hudson)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 9l1.5-5h15L21 9\"/><path d=\"M4 9v11h16V9\"/><path d=\"M9 20v-6h6v6\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Hudson</div>\n        <div class=\"tj-p\">GBA Sur</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 9l1.5-5h15L21 9\"/><path d=\"M4 9v11h16V9\"/><path d=\"M9 20v-6h6v6\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">CABA</div>\n        <div class=\"tj-p\">Capital Federal</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-norcenter)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 9l1.5-5h15L21 9\"/><path d=\"M4 9v11h16V9\"/><path d=\"M9 20v-6h6v6\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Norcenter</div>\n        <div class=\"tj-p\">GBA Norte</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 9l1.5-5h15L21 9\"/><path d=\"M4 9v11h16V9\"/><path d=\"M9 20v-6h6v6\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Canning</div>\n        <div class=\"tj-p\">GBA Sur</div>\n      </div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>La idea de hoy</span></div></div><div class=\"db\"><div class=\"m-h\">Por qué estamos acá</div></div><div class=\"db\"><p class=\"m-p\">Tres objetivos, claros y simples</p></div><div class=\"db\"><div class=\"m-tarj cols-3 orient-v\">\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-hudson)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Transparencia</div>\n        <div class=\"tj-p\">Les mostramos cómo vivimos las derivaciones, mes a mes.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">3 meses</div>\n        <div class=\"tj-p\">Cómo fueron llegando las consultas y cómo las derivamos.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Crecer juntos</div>\n        <div class=\"tj-p\">Detectar qué mejorar y darles más herramientas para vender.</div>\n      </div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>El proceso</span></div></div><div class=\"db\"><div class=\"m-h\">Así medimos cada derivación</div></div><div class=\"db\"><p class=\"m-p\">Desde que llega la consulta hasta que se cierra la venta</p></div><div class=\"db\"><div class=\"flow\"><div class=\"step\"><div class=\"si\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 21l1.65-4.8a8.5 8.5 0 1 1 3.4 3.05L3 21z\"/><path d=\"M9 8.5c0 4 2.5 6.5 6.5 6.5l1-1.8-2-1-.9 1c-1.2-.5-2.1-1.4-2.6-2.6l1-.9-1-2-1.5.3a1.5 1.5 0 0 0-.5 1.2z\"/></svg></span></div><div class=\"st\">Consulta</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"9 17 4 12 9 7\"/><path d=\"M20 18v-2a4 4 0 0 0-4-4H4\"/></svg></span></div><div class=\"st\">Respondemos</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-hudson)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><polyline points=\"9 22 9 12 15 12 15 22\"/></svg></span></div><div class=\"st\">Derivamos</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg></span></div><div class=\"st\">Seguimiento</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></div><div class=\"st\">Venta</div><div class=\"sd\"></div></div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Evolución mensual</span></div></div><div class=\"db\"><div class=\"m-h\">Derivaciones por mes</div></div><div class=\"db\"><p class=\"m-p\">Cuántas derivaciones realizamos en cada mes</p></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi\">\n      <div class=\"kl\">Marzo</div>\n      <div class=\"kv\">362</div>\n      <div class=\"kt\"></div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Abril</div>\n      <div class=\"kv\">316</div>\n      <div class=\"kt t-down\">▼ −12,7%</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Mayo</div>\n      <div class=\"kv\">314</div>\n      <div class=\"kt t-flat\">▬ estable</div>\n    </div>\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Trimestre</div>\n      <div class=\"kv\">992</div>\n      <div class=\"kt\">total</div>\n    </div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/></svg></span><div class=\"nt\">Venimos derivando un poco menos cada mes: <b>−13% de marzo a mayo</b>.</div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Sucursales</span></div></div><div class=\"db\"><div class=\"m-h\">¿A qué sucursal derivamos más?</div></div><div class=\"db\"><p class=\"m-p\">Consolidado marzo–mayo, según el/la vendedor/a de cada sucursal</p></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">Hudson</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-hudson)\"><span class=\"bn\">416</span></div></div>\n      <div class=\"br\"><span class=\"bchip g\">1° — más recibe</span></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:84%;background:var(--c-caba)\"><span class=\"bn\">350</span></div></div>\n      <div class=\"br\"><span class=\"bchip y\">2°</span></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">Norcenter</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:26%;background:var(--c-norcenter)\"><span class=\"bn\">110</span></div></div>\n      <div class=\"br\"><span class=\"bchip gr\">3°</span></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">Canning</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:25%;background:var(--c-canning)\"><span class=\"bn\">105</span></div></div>\n      <div class=\"br\"><span class=\"bchip gr\">4°</span></div>\n    </div></div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Por mes</th><th class=\"num\">Marzo</th><th class=\"num\">Abril</th><th class=\"num\">Mayo</th><th class=\"num\">Total</th></tr></thead><tbody><tr><td>Hudson</td><td class=\"num\">163</td><td class=\"num\">112</td><td class=\"num\">141</td><td class=\"num\">416</td></tr><tr><td>CABA</td><td class=\"num\">123</td><td class=\"num\">116</td><td class=\"num\">111</td><td class=\"num\">350</td></tr><tr><td>Norcenter</td><td class=\"num\">26</td><td class=\"num\">48</td><td class=\"num\">36</td><td class=\"num\">110</td></tr><tr><td>Canning</td><td class=\"num\">40</td><td class=\"num\">39</td><td class=\"num\">26</td><td class=\"num\">105</td></tr></tbody></table></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Sucursales · lo que importa</span></div></div><div class=\"db\"><div class=\"m-h\">No es cuánto recibís: es cuánto convertís</div></div><div class=\"db\"><p class=\"m-p\">Tasa de conversión por sucursal (ventas sobre derivaciones) · marzo–mayo</p></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Hudson</div>\n      <div class=\"kv\">6,2%</div>\n      <div class=\"kt\">26 ventas · 416 derivaciones</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Canning</div>\n      <div class=\"kv\">4,8%</div>\n      <div class=\"kt\">5 ventas · 105 derivaciones</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">CABA</div>\n      <div class=\"kv\">2,9%</div>\n      <div class=\"kt\">10 ventas · 350 derivaciones</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Norcenter</div>\n      <div class=\"kv\">1,8%</div>\n      <div class=\"kt\">2 ventas · 110 derivaciones</div>\n    </div></div></div><div class=\"db\"><div class=\"m-tarj cols-2 orient-h\">\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-hudson)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"7\"/><polyline points=\"8.21 13.89 7 23 12 20 17 23 15.79 13.88\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Hudson cierra mejor</div>\n        <div class=\"tj-p\">Recibe más y aun así convierte el doble que CABA. Eso es calidad de asesoramiento.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z\"/><path d=\"M18 8a5 5 0 0 1 0 8\"/><line x1=\"7\" y1=\"14\" x2=\"8\" y2=\"19\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">El que más convierte, gana</div>\n        <div class=\"tj-p\">A la sucursal que mejor cierra le damos más campañas, herramientas y beneficios.</div>\n      </div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Equipo de ventas</span></div></div><div class=\"db\"><div class=\"m-h\">Top 5 · quiénes cerraron más</div></div><div class=\"db\"><p class=\"m-p\">No gana quien más derivaciones recibe, sino quien mejor las trabaja</p></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">Agustina</div>\n      <div class=\"suc\">Hudson</div>\n      <div class=\"sales\">8</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 4,5%</div>\n    </div>\n    <div class=\"pod lead\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">Rosana</div>\n      <div class=\"suc\">Hudson</div>\n      <div class=\"sales\">7</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">★ conv. 12,5%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">Viviana</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">5</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 3,3%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">Gonzalo</div>\n      <div class=\"suc\">Hudson</div>\n      <div class=\"sales\">5</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 6,5%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">5°</div>\n      <div class=\"name\">Matías</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">4</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 5,6%</div>\n    </div></div></div><div class=\"db\"><div class=\"m-tarj cols-2 orient-h\">\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-warn)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"7\"/><polyline points=\"8.21 13.89 7 23 12 20 17 23 15.79 13.88\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Agustina, la más constante</div>\n        <div class=\"tj-p\">8 ventas: el mayor volumen del equipo.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 2l2.3 1.6 2.8-.2 1 2.6 2.3 1.6-.8 2.7.8 2.7-2.3 1.6-1 2.6-2.8-.2L12 22l-2.3-1.6-2.8.2-1-2.6-2.3-1.6.8-2.7-.8-2.7 2.3-1.6 1-2.6 2.8.2L12 2z\"/><path d=\"M9 12l2 2 4-4\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Rosana, la más eficiente</div>\n        <div class=\"tj-p\">Con menos derivaciones, la mejor conversión: 12,5%.</div>\n      </div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Equipo de ventas</span></div></div><div class=\"db\"><div class=\"m-h\">El equipo completo</div></div><div class=\"db\"><p class=\"m-p\">La conversión manda: la barra verde muestra qué tan bien cierra cada uno</p></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Vendedor/a</th><th>Sucursal</th><th class=\"num\">Derivac.</th><th class=\"num\">Ventas</th><th class=\"num\">Conversión</th></tr></thead><tbody><tr class=\"fx-ok\"><td>Agustina</td><td>Hudson</td><td class=\"num\">179</td><td class=\"num\">8</td><td class=\"num\">4,5%</td></tr><tr class=\"fx-ok\"><td>Rosana</td><td>Hudson</td><td class=\"num\">56</td><td class=\"num\">7</td><td class=\"num\">12,5% ★</td></tr><tr><td>Viviana</td><td>CABA</td><td class=\"num\">152</td><td class=\"num\">5</td><td class=\"num\">3,3%</td></tr><tr><td>Gonzalo</td><td>Hudson</td><td class=\"num\">77</td><td class=\"num\">5</td><td class=\"num\">6,5%</td></tr><tr><td>Matías</td><td>CABA</td><td class=\"num\">71</td><td class=\"num\">4</td><td class=\"num\">5,6%</td></tr><tr class=\"fx-ok\"><td>Adriana</td><td>Hudson</td><td class=\"num\">23</td><td class=\"num\">3</td><td class=\"num\">13,0% ★</td></tr><tr><td>Mario</td><td>Norcenter</td><td class=\"num\">51</td><td class=\"num\">2</td><td class=\"num\">3,9%</td></tr><tr><td>María Marta</td><td>Canning</td><td class=\"num\">37</td><td class=\"num\">2</td><td class=\"num\">5,4%</td></tr><tr><td>Alexa</td><td>CABA</td><td class=\"num\">64</td><td class=\"num\">1</td><td class=\"num\">1,6%</td></tr><tr class=\"fx-mal\"><td>Marcelo</td><td>CABA</td><td class=\"num\">63</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-mal\"><td>Flor</td><td>Norcenter</td><td class=\"num\">59</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr></tbody></table></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-warn)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z\"/><path d=\"M18 8a5 5 0 0 1 0 8\"/><line x1=\"7\" y1=\"14\" x2=\"8\" y2=\"19\"/></svg></span><div class=\"nt\">Marcelo y Flor reciben 60+ derivaciones y aún no registran ventas. La oportunidad está en convertir, no en recibir más.</div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Lo que detectamos</span></div></div><div class=\"db\"><div class=\"m-h\">¿Por qué perdemos clientes?</div></div><div class=\"db\"><p class=\"m-p\">El problema casi nunca es el precio. Es la respuesta.</p></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi\">\n      <div class=\"kl\">No respondió</div>\n      <div class=\"kv\">50,7%</div>\n      <div class=\"kt\">de las consultas · solo 6% se pierde por presupuesto</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Cambio de línea</div>\n      <div class=\"kv\">~30%</div>\n      <div class=\"kt\">pasa del canal de la empresa al teléfono personal</div>\n    </div></div></div><div class=\"db\"><p class=\"m-p\">El <b>50,7%</b> de las consultas terminan en <b>“no respondió”</b>. Solo 6% se pierde por presupuesto.</p></div><div class=\"db\"><p class=\"m-p\">Un <b>~30%</b> deja de responder por el <b>cambio de línea</b>: pasa del canal de la empresa al teléfono personal del vendedor.</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-warn)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z\"/><path d=\"M18 8a5 5 0 0 1 0 8\"/><line x1=\"7\" y1=\"14\" x2=\"8\" y2=\"19\"/></svg></span><div class=\"nt\">Cada cliente que cambia de línea es una venta que se nos escapa.</div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>La solución</span></div></div><div class=\"db\"><div class=\"m-h\">Una sola línea verificada para todos</div></div><div class=\"db\"><p class=\"m-p\">El cliente nunca se mueve de la línea oficial: ahí lo atienden ustedes, con nuestro apoyo</p></div><div class=\"db\"><div class=\"m-kicker\"><span>Antes</span></div></div><div class=\"db\"><div class=\"flow\"><div class=\"step\"><div class=\"si\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 21l1.65-4.8a8.5 8.5 0 1 1 3.4 3.05L3 21z\"/><path d=\"M9 8.5c0 4 2.5 6.5 6.5 6.5l1-1.8-2-1-.9 1c-1.2-.5-2.1-1.4-2.6-2.6l1-.9-1-2-1.5.3a1.5 1.5 0 0 0-.5 1.2z\"/></svg></span></div><div class=\"st\">Línea empresa</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-warn)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/></svg></span></div><div class=\"st\">Tel. personal</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-danger)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></span></div><div class=\"st\">El cliente se pierde</div><div class=\"sd\"></div></div></div></div><div class=\"db\"><div class=\"m-kicker\"><span>Ahora</span></div></div><div class=\"db\"><div class=\"flow\"><div class=\"step\"><div class=\"si\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 2l2.3 1.6 2.8-.2 1 2.6 2.3 1.6-.8 2.7.8 2.7-2.3 1.6-1 2.6-2.8-.2L12 22l-2.3-1.6-2.8.2-1-2.6-2.3-1.6.8-2.7-.8-2.7 2.3-1.6 1-2.6 2.8.2L12 2z\"/><path d=\"M9 12l2 2 4-4\"/></svg></span></div><div class=\"st\">Línea verificada</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polygon points=\"12 2 2 7 12 12 22 7 12 2\"/><polyline points=\"2 17 12 22 22 17\"/><polyline points=\"2 12 12 17 22 12\"/></svg></span></div><div class=\"st\">Plataforma</div><div class=\"sd\"></div></div><div class=\"arrow\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></span></div><div class=\"step\"><div class=\"si\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></div><div class=\"st\">El cliente se queda</div><div class=\"sd\"></div></div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-info)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span><div class=\"nt\">El bot pide los datos de forma sutil para que el cliente no se vaya, y marketing los apoya en el cierre.</div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Importante</span></div></div><div class=\"db\"><div class=\"m-h\">Respuesta inmediata · plantillas de Meta</div></div><div class=\"db\"><p class=\"m-p\">El tiempo es todo: una derivación que no se contesta rápido, se pierde</p></div><div class=\"db\"><p class=\"m-lead\">Contestá <b>antes de 24 hs</b> o perdemos la derivación</p></div><div class=\"db\"><div class=\"checklist\"><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>Respondé apenas te llega la derivación.</span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>Pasadas 24 hs, Meta bloquea el chat: hay que enviar una plantilla.</span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>Mejoramos la aprobación: antes 24–48 hs, hoy casi inmediata.</span></div></div></div><div class=\"db\"><div class=\"wa-carousel\"><div class=\"wa-card\"><div class=\"wa-body\">¡Hola! 👋<br>Vimos que consultaste por un sillón. Tenemos una promo especial esta semana con cuotas sin interés. ¿Querés que te pase el catálogo y los precios?</div></div></div></div><div class=\"db\"><div class=\"checklist\"><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span></span><span>Sí, quiero ver el catálogo</span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span></span><span>Hablar con un asesor</span></div></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-info)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg></span><div class=\"nt\">Vista previa de ejemplo · podemos reemplazarla por una plantilla real aprobada por Meta.</div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Base de datos · Email marketing</span></div></div><div class=\"db\"><div class=\"m-h\">Cada email es una venta futura</div></div><div class=\"db\"><p class=\"m-p\">El mail de cada cliente y cada presupuesto es oro: nos deja volver a venderle</p></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Contactos únicos y reales</div>\n      <div class=\"kv\">2.369</div>\n      <div class=\"kt\">listos para recibir campañas (enero–mayo 2026)</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Nuevos contactos por mes</div>\n      <div class=\"kv\">474</div>\n      <div class=\"kt\">en promedio</div>\n    </div></div></div><div class=\"db\"><div class=\"m-tarj cols-3 orient-h\">\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-norcenter)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z\"/><line x1=\"7\" y1=\"7\" x2=\"7.01\" y2=\"7\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Promociones</div>\n        <div class=\"tj-p\">Ofertas exclusivas a quien ya nos consultó.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z\"/><path d=\"M18 8a5 5 0 0 1 0 8\"/><line x1=\"7\" y1=\"14\" x2=\"8\" y2=\"19\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Novedades</div>\n        <div class=\"tj-p\">Productos y lanzamientos directo a su correo.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"7\"/><polyline points=\"8.21 13.89 7 23 12 20 17 23 15.79 13.88\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Incentivos de compra</div>\n        <div class=\"tj-p\">Descuentos y cuotas para reactivar la venta.</div>\n      </div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Base de datos · Email marketing</span></div></div><div class=\"db\"><div class=\"m-h\">Contactos únicos por sucursal</div></div><div class=\"db\"><p class=\"m-p\">Enero a mayo 2026 · contactos únicos (sin repetir) por sucursal</p></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Sucursal</th><th class=\"num\">Enero</th><th class=\"num\">Febrero</th><th class=\"num\">Marzo</th><th class=\"num\">Abril</th><th class=\"num\">Mayo</th><th class=\"num\">Total</th></tr></thead><tbody><tr><td>Belgrano · CABA</td><td class=\"num\">201</td><td class=\"num\">225</td><td class=\"num\">227</td><td class=\"num\">214</td><td class=\"num\">249</td><td class=\"num\">1.116</td></tr><tr><td>Norcenter</td><td class=\"num\">123</td><td class=\"num\">113</td><td class=\"num\">98</td><td class=\"num\">72</td><td class=\"num\">84</td><td class=\"num\">490</td></tr><tr><td>Hudson</td><td class=\"num\">86</td><td class=\"num\">81</td><td class=\"num\">104</td><td class=\"num\">102</td><td class=\"num\">82</td><td class=\"num\">455</td></tr><tr><td>Canning</td><td class=\"num\">82</td><td class=\"num\">58</td><td class=\"num\">70</td><td class=\"num\">41</td><td class=\"num\">56</td><td class=\"num\">307</td></tr><tr><td>Casa Central</td><td class=\"num\">0</td><td class=\"num\">0</td><td class=\"num\">0</td><td class=\"num\">0</td><td class=\"num\">1</td><td class=\"num\">1</td></tr><tr class=\"fx-total\"><td>TOTAL MES</td><td class=\"num\">492</td><td class=\"num\">477</td><td class=\"num\">499</td><td class=\"num\">429</td><td class=\"num\">472</td><td class=\"num\">2.369</td></tr></tbody></table></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span><div class=\"nt\"><b>Belgrano</b> lidera la base real de contactos; <b>Norcenter</b> y <b>Hudson</b> la siguen. Cada email cargado hoy es una venta posible mañana.</div></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-kicker\"><span>Lo que les pedimos</span></div></div><div class=\"db\"><div class=\"m-h\">Lo que necesitamos de ustedes</div></div><div class=\"db\"><p class=\"m-p\">Cuatro cosas concretas para no perder ninguna venta</p></div><div class=\"db\"><div class=\"m-tarj cols-2 orient-h\">\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-hudson)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polygon points=\"12 2 2 7 12 12 22 7 12 2\"/><polyline points=\"2 17 12 22 22 17\"/><polyline points=\"2 12 12 17 22 12\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Usá la plataforma al 100%</div>\n        <div class=\"tj-p\">Fotos, audios y mensajes desde ahí. Nada se pierde y el cliente queda en el canal oficial.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z\"/><path d=\"M18 8a5 5 0 0 1 0 8\"/><line x1=\"7\" y1=\"14\" x2=\"8\" y2=\"19\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Atentos a nuestros avisos</div>\n        <div class=\"tj-p\">Si un cliente te escribe y no lo viste, te avisamos. Acordate del límite de 24 hs.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-warn)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2\"/><line x1=\"1\" y1=\"10\" x2=\"23\" y2=\"10\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Si dice “muy caro”</div>\n        <div class=\"tj-p\">No lo dejes ir: ofrecé otra opción o preguntale con qué presupuesto contaba.</div>\n      </div>\n    </div>\n    <div class=\"tj\">\n      <span class=\"tj-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span></span>\n      <div class=\"tj-b\">\n        <div class=\"tj-t\">Pedinos plantillas</div>\n        <div class=\"tj-p\">¿Salió una promo con descuentos? Pedinos la plantilla y la enviamos a tus clientes derivados.</div>\n      </div>\n    </div></div></div>"
-        },
-        {
-          "id": "dmsauyq5ragsd",
-          "titulo": "JULIO 2026",
-          "etiqueta": "",
-          "archivado": false,
-          "presentacion": false,
-          "bloques": [
-            {
-              "t": "titulo",
-              "nivel": "h1",
-              "html": "Derivaciones del mes"
-            },
-            {
-              "t": "kpis",
-              "items": [
-                {
-                  "label": "Derivaciones totales",
-                  "valor": "648",
-                  "pie": "+112% vs período anterior",
-                  "tend": "up",
-                  "lead": true
-                },
-                {
-                  "label": "Ventas",
-                  "valor": "11",
-                  "pie": "+10% vs período anterior",
-                  "tend": "up",
-                  "lead": false
-                }
-              ]
-            },
-            {
-              "t": "diapo",
-              "titulo": "SUCURSALES",
-              "grupo": "Derivaciones"
-            },
-            {
-              "t": "espacio",
-              "alto": "md"
-            },
-            {
-              "t": "barras",
-              "items": [
-                {
-                  "label": "CABA",
-                  "valor": "236",
-                  "color": "--c-canning",
-                  "chip": "",
-                  "tono": "gr"
-                },
-                {
-                  "label": "HUDSON",
-                  "valor": "231",
-                  "color": "--c-caba",
-                  "chip": "",
-                  "tono": "gr"
-                },
-                {
-                  "label": "NORCENTER",
-                  "valor": "116",
-                  "color": "--c-hudson",
-                  "chip": "",
-                  "tono": "gr"
-                },
-                {
-                  "label": "CANNING",
-                  "valor": "65",
-                  "color": "--c-warn",
-                  "chip": "",
-                  "tono": "gr"
-                }
-              ]
-            },
-            {
-              "t": "espacio",
-              "alto": "md"
-            },
-            {
-              "t": "separador",
-              "grosor": 4
-            },
-            {
-              "t": "diapo",
-              "titulo": "TOP VENDEDORES",
-              "grupo": ""
-            },
-            {
-              "t": "titulo",
-              "nivel": "h2",
-              "html": "RANKING DE VENTAS"
-            },
-            {
-              "t": "podio",
-              "items": [
-                {
-                  "puesto": "1°",
-                  "nombre": "MARIO",
-                  "suc": "NORCENTER",
-                  "valor": "2",
-                  "vlabel": "ventas",
-                  "extra": "conv. 4,76%",
-                  "lead": false
-                },
-                {
-                  "puesto": "2°",
-                  "nombre": "VIVIANA",
-                  "suc": "CABA",
-                  "valor": "2",
-                  "vlabel": "ventas",
-                  "extra": "conv. 2,27%",
-                  "lead": false
-                },
-                {
-                  "puesto": "3°",
-                  "nombre": "AGUSTINA",
-                  "suc": "HUDSON",
-                  "valor": "2",
-                  "vlabel": "ventas",
-                  "extra": "conv. 3,57%",
-                  "lead": false
-                },
-                {
-                  "puesto": "4°",
-                  "nombre": "MARIA MARTA",
-                  "suc": "HUDSON",
-                  "valor": "1",
-                  "vlabel": "ventas",
-                  "extra": "conv. 16,67%",
-                  "lead": true
-                }
-              ]
-            },
-            {
-              "t": "espacio",
-              "alto": "md"
-            },
-            {
-              "t": "separador",
-              "grosor": 4
-            },
-            {
-              "t": "diapo",
-              "titulo": "TABLA DE VENDEDORES",
-              "grupo": ""
-            },
-            {
-              "t": "titulo",
-              "nivel": "h2",
-              "html": "TABLA DE VENDEDORES"
-            },
-            {
-              "t": "tabla",
-              "cols": [
-                {
-                  "h": "Concepto",
-                  "num": false
-                },
-                {
-                  "h": "Derivaciones",
-                  "num": true
-                },
-                {
-                  "h": "ventas",
-                  "num": true
-                },
-                {
-                  "h": "conversión",
-                  "num": true
-                }
-              ],
-              "filas": [
-                {
-                  "celdas": [
-                    "VIVIANA",
-                    "88",
-                    "2",
-                    "2,27%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "Florencia",
-                    "69",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "AGUSTINA",
-                    "56",
-                    "2",
-                    "3,57"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "ALEXA",
-                    "49",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "GONZALO",
-                    "42",
-                    "1",
-                    "2,38%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARIO",
-                    "42",
-                    "2",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "ROSANA",
-                    "36",
-                    "1",
-                    "2,78%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARCELO",
-                    "36",
-                    "1",
-                    "2,78%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "DORA",
-                    "32",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MALENA",
-                    "30",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "WALTER",
-                    "21",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "TOMAS",
-                    "16",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "JOAN",
-                    "15",
-                    "1",
-                    "6,67%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "ADRIANA",
-                    "8",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARÍA MARTA",
-                    "6",
-                    "1",
-                    "16,67%"
-                  ],
-                  "destaque": "ok"
-                }
-              ]
-            }
-          ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ +112% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ +10% vs período anterior</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">MARIO</div>\n      <div class=\"suc\">NORCENTER</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 4,76%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">VIVIANA</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 2,27%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">AGUSTINA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 3,57%</div>\n    </div>\n    <div class=\"pod lead\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">MARIA MARTA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 16,67%</div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Derivaciones</th><th class=\"num\">ventas</th><th class=\"num\">conversión</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td><td class=\"num\">2</td><td class=\"num\">2,27%</td></tr><tr><td>Florencia</td><td class=\"num\">69</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td><td class=\"num\">2</td><td class=\"num\">3,57</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td><td class=\"num\">1</td><td class=\"num\">2,38%</td></tr><tr><td>MARIO</td><td class=\"num\">42</td><td class=\"num\">2</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td><td class=\"num\">1</td><td class=\"num\">2,78%</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td><td class=\"num\">1</td><td class=\"num\">2,78%</td></tr><tr><td>DORA</td><td class=\"num\">32</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">30</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>WALTER</td><td class=\"num\">21</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>TOMAS</td><td class=\"num\">16</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>JOAN</td><td class=\"num\">15</td><td class=\"num\">1</td><td class=\"num\">6,67%</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-ok\"><td>MARÍA MARTA</td><td class=\"num\">6</td><td class=\"num\">1</td><td class=\"num\">16,67%</td></tr></tbody></table></div></div>"
-        },
-        {
-          "id": "dmseye9vycmnr",
-          "titulo": "JUNIO 2026",
-          "etiqueta": "",
-          "archivado": false,
-          "presentacion": false,
-          "bloques": [
-            {
-              "t": "titulo",
-              "nivel": "h1",
-              "html": "Derivaciones del mes"
-            },
-            {
-              "t": "kpis",
-              "items": [
-                {
-                  "label": "Derivaciones totales",
-                  "valor": "299",
-                  "pie": "-7.4% vs período anterior",
-                  "tend": "down",
-                  "lead": true
-                },
-                {
-                  "label": "Ventas",
-                  "valor": "8",
-                  "pie": "",
-                  "tend": "",
-                  "lead": false
-                }
-              ]
-            },
-            {
-              "t": "diapo",
-              "titulo": "SUCURSALES",
-              "grupo": "Derivaciones"
-            },
-            {
-              "t": "espacio",
-              "alto": "md"
-            },
-            {
-              "t": "barras",
-              "items": [
-                {
-                  "label": "HUDSON",
-                  "valor": "123",
-                  "color": "--c-canning",
-                  "chip": "",
-                  "tono": "gr"
-                },
-                {
-                  "label": "CABA",
-                  "valor": "113",
-                  "color": "--c-caba",
-                  "chip": "",
-                  "tono": "gr"
-                },
-                {
-                  "label": "CANNING",
-                  "valor": "33",
-                  "color": "--c-hudson",
-                  "chip": "",
-                  "tono": "gr"
-                },
-                {
-                  "label": "NORCENTER",
-                  "valor": "28",
-                  "color": "--c-warn",
-                  "chip": "",
-                  "tono": "gr"
-                }
-              ]
-            },
-            {
-              "t": "espacio",
-              "alto": "md"
-            },
-            {
-              "t": "separador",
-              "grosor": 4
-            },
-            {
-              "t": "diapo",
-              "titulo": "TOP VENDEDORES",
-              "grupo": ""
-            },
-            {
-              "t": "titulo",
-              "nivel": "h2",
-              "html": "RANKING DE VENTAS"
-            },
-            {
-              "t": "podio",
-              "items": [
-                {
-                  "puesto": "1°",
-                  "nombre": "DORA",
-                  "suc": "HUDSON",
-                  "valor": "3",
-                  "vlabel": "ventas",
-                  "extra": "conv. 25,00%",
-                  "lead": true
-                },
-                {
-                  "puesto": "2°",
-                  "nombre": "MALENA",
-                  "suc": "HUDSON",
-                  "valor": "1",
-                  "vlabel": "ventas",
-                  "extra": "conv. 10,00%",
-                  "lead": false
-                },
-                {
-                  "puesto": "3°",
-                  "nombre": "JOAN",
-                  "suc": "CANNING",
-                  "valor": "1",
-                  "vlabel": "ventas",
-                  "extra": "conv. 8,33%",
-                  "lead": false
-                },
-                {
-                  "puesto": "4°",
-                  "nombre": "GONZALO",
-                  "suc": "HUDSON",
-                  "valor": "1",
-                  "vlabel": "ventas",
-                  "extra": "conv. 5,26%",
-                  "lead": false
-                }
-              ]
-            },
-            {
-              "t": "espacio",
-              "alto": "md"
-            },
-            {
-              "t": "separador",
-              "grosor": 4
-            },
-            {
-              "t": "diapo",
-              "titulo": "TABLA DE VENDEDORES",
-              "grupo": ""
-            },
-            {
-              "t": "titulo",
-              "nivel": "h2",
-              "html": "TABLA DE VENDEDORES"
-            },
-            {
-              "t": "tabla",
-              "cols": [
-                {
-                  "h": "Concepto",
-                  "num": false
-                },
-                {
-                  "h": "Derivaciones",
-                  "num": true
-                },
-                {
-                  "h": "ventas",
-                  "num": true
-                },
-                {
-                  "h": "conversión",
-                  "num": true
-                }
-              ],
-              "filas": [
-                {
-                  "celdas": [
-                    "AGUSTINA",
-                    "35",
-                    "1",
-                    "2,86%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "VIVIANA",
-                    "32",
-                    "1",
-                    "3,13%%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "ALEXA",
-                    "22",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MATÍAS",
-                    "20",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "GONZALO",
-                    "19",
-                    "1",
-                    "5,26%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "FLORENCIA",
-                    "18",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "ROSANA",
-                    "17",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARCELO",
-                    "16",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "DORA",
-                    "12",
-                    "3",
-                    "☆ 25,00%"
-                  ],
-                  "destaque": "ok"
-                },
-                {
-                  "celdas": [
-                    "JOAN",
-                    "12",
-                    "1",
-                    "8,33%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "WALTER",
-                    "10",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MALENA",
-                    "10",
-                    "1",
-                    "10,00%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "TOMAS",
-                    "10",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARIO",
-                    "9",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "ADRIANA",
-                    "6",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                },
-                {
-                  "celdas": [
-                    "MARÍA MARTA",
-                    "2",
-                    "0",
-                    "0%"
-                  ],
-                  "destaque": ""
-                }
-              ]
-            }
-          ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">299</div>\n      <div class=\"kt t-down\">▼ -7.4% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">8</div>\n      <div class=\"kt\"></div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">123</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:92%;background:var(--c-caba)\"><span class=\"bn\">113</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:27%;background:var(--c-hudson)\"><span class=\"bn\">33</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:23%;background:var(--c-warn)\"><span class=\"bn\">28</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod lead\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">DORA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">3</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 25,00%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">MALENA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 10,00%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">JOAN</div>\n      <div class=\"suc\">CANNING</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 8,33%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">GONZALO</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 5,26%</div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Derivaciones</th><th class=\"num\">ventas</th><th class=\"num\">conversión</th></tr></thead><tbody><tr><td>AGUSTINA</td><td class=\"num\">35</td><td class=\"num\">1</td><td class=\"num\">2,86%</td></tr><tr><td>VIVIANA</td><td class=\"num\">32</td><td class=\"num\">1</td><td class=\"num\">3,13%%</td></tr><tr><td>ALEXA</td><td class=\"num\">22</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MATÍAS</td><td class=\"num\">20</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GONZALO</td><td class=\"num\">19</td><td class=\"num\">1</td><td class=\"num\">5,26%</td></tr><tr><td>FLORENCIA</td><td class=\"num\">18</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">17</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARCELO</td><td class=\"num\">16</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-ok\"><td>DORA</td><td class=\"num\">12</td><td class=\"num\">3</td><td class=\"num\">☆ 25,00%</td></tr><tr><td>JOAN</td><td class=\"num\">12</td><td class=\"num\">1</td><td class=\"num\">8,33%</td></tr><tr><td>WALTER</td><td class=\"num\">10</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">10</td><td class=\"num\">1</td><td class=\"num\">10,00%</td></tr><tr><td>TOMAS</td><td class=\"num\">10</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARIO</td><td class=\"num\">9</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ADRIANA</td><td class=\"num\">6</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARÍA MARTA</td><td class=\"num\">2</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr></tbody></table></div></div>"
         }
       ]
     }
