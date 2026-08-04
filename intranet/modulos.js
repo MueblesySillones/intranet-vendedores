@@ -1718,7 +1718,7 @@ window.MODULES = [
             },
             {
               "t": "diapo",
-              "titulo": "",
+              "titulo": "TABLA DE VENDEDORES",
               "grupo": ""
             },
             {
