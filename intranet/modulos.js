@@ -768,7 +768,7 @@ window.MODULES = [
         },
         {
           "id": "dmsauyq5ragsd",
-          "titulo": "Julio 2026",
+          "titulo": "JULIO 2026",
           "etiqueta": "",
           "archivado": false,
           "presentacion": false,
@@ -862,39 +862,39 @@ window.MODULES = [
               "items": [
                 {
                   "puesto": "1°",
-                  "nombre": "DORA",
-                  "suc": "HUDSON",
-                  "valor": "3",
+                  "nombre": "MARIO",
+                  "suc": "NORCENTER",
+                  "valor": "2",
                   "vlabel": "ventas",
-                  "extra": "conv. 9,38%",
-                  "lead": true
+                  "extra": "conv. 4,76%",
+                  "lead": false
                 },
                 {
                   "puesto": "2°",
-                  "nombre": "JOAN",
-                  "suc": "HUDSON",
-                  "valor": "1",
+                  "nombre": "VIVIANA",
+                  "suc": "CABA",
+                  "valor": "2",
                   "vlabel": "ventas",
-                  "extra": "conv. 6,67%",
+                  "extra": "conv. 2,27%",
                   "lead": false
                 },
                 {
                   "puesto": "3°",
-                  "nombre": "MALENA",
-                  "suc": "CANNING",
-                  "valor": "1",
+                  "nombre": "AGUSTINA",
+                  "suc": "HUDSON",
+                  "valor": "2",
                   "vlabel": "ventas",
-                  "extra": "conv. 3,33%",
+                  "extra": "conv. 3,57%",
                   "lead": false
                 },
                 {
                   "puesto": "4°",
-                  "nombre": "GONZALO",
+                  "nombre": "MARIA MARTA",
                   "suc": "HUDSON",
                   "valor": "1",
                   "vlabel": "ventas",
-                  "extra": "conv. 2,38%",
-                  "lead": false
+                  "extra": "conv. 16,67%",
+                  "lead": true
                 }
               ]
             },
@@ -941,8 +941,8 @@ window.MODULES = [
                   "celdas": [
                     "VIVIANA",
                     "88",
-                    "1",
-                    "1,14%"
+                    "2",
+                    "2,27%"
                   ],
                   "destaque": ""
                 },
@@ -959,8 +959,8 @@ window.MODULES = [
                   "celdas": [
                     "AGUSTINA",
                     "56",
-                    "1",
-                    "1,79%"
+                    "2",
+                    "3,57"
                   ],
                   "destaque": ""
                 },
@@ -986,7 +986,7 @@ window.MODULES = [
                   "celdas": [
                     "MARIO",
                     "42",
-                    "0",
+                    "2",
                     "0%"
                   ],
                   "destaque": ""
@@ -995,8 +995,8 @@ window.MODULES = [
                   "celdas": [
                     "ROSANA",
                     "36",
-                    "0",
-                    "0%"
+                    "1",
+                    "2,78%"
                   ],
                   "destaque": ""
                 },
@@ -1004,8 +1004,8 @@ window.MODULES = [
                   "celdas": [
                     "MARCELO",
                     "36",
-                    "0",
-                    "0%"
+                    "1",
+                    "2,78%"
                   ],
                   "destaque": ""
                 },
@@ -1013,17 +1013,17 @@ window.MODULES = [
                   "celdas": [
                     "DORA",
                     "32",
-                    "3",
-                    "☆ 9,38%"
+                    "0",
+                    "0%"
                   ],
-                  "destaque": "ok"
+                  "destaque": ""
                 },
                 {
                   "celdas": [
                     "MALENA",
                     "30",
-                    "1",
-                    "3,33%"
+                    "0",
+                    "0%"
                   ],
                   "destaque": ""
                 },
@@ -1067,15 +1067,15 @@ window.MODULES = [
                   "celdas": [
                     "MARÍA MARTA",
                     "6",
-                    "0",
-                    "0%"
+                    "1",
+                    "16,67%"
                   ],
-                  "destaque": ""
+                  "destaque": "ok"
                 }
               ]
             }
           ],
-          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ +112% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ +10% vs período anterior</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod lead\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">DORA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">3</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 9,38%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">JOAN</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 6,67%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">MALENA</div>\n      <div class=\"suc\">CANNING</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 3,33%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">GONZALO</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 2,38%</div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Derivaciones</th><th class=\"num\">ventas</th><th class=\"num\">conversión</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td><td class=\"num\">1</td><td class=\"num\">1,14%</td></tr><tr><td>Florencia</td><td class=\"num\">69</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td><td class=\"num\">1</td><td class=\"num\">1,79%</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td><td class=\"num\">1</td><td class=\"num\">2,38%</td></tr><tr><td>MARIO</td><td class=\"num\">42</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-ok\"><td>DORA</td><td class=\"num\">32</td><td class=\"num\">3</td><td class=\"num\">☆ 9,38%</td></tr><tr><td>MALENA</td><td class=\"num\">30</td><td class=\"num\">1</td><td class=\"num\">3,33%</td></tr><tr><td>WALTER</td><td class=\"num\">21</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>TOMAS</td><td class=\"num\">16</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>JOAN</td><td class=\"num\">15</td><td class=\"num\">1</td><td class=\"num\">6,67%</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARÍA MARTA</td><td class=\"num\">6</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr></tbody></table></div></div>"
+          "html": "<div class=\"db\"><div class=\"m-h\">Derivaciones del mes</div></div><div class=\"db\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">648</div>\n      <div class=\"kt t-up\">▲ +112% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">11</div>\n      <div class=\"kt t-up\">▲ +10% vs período anterior</div>\n    </div></div></div><div class=\"db\"></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-canning)\"><span class=\"bn\">236</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:98%;background:var(--c-caba)\"><span class=\"bn\">231</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:49%;background:var(--c-hudson)\"><span class=\"bn\">116</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:28%;background:var(--c-warn)\"><span class=\"bn\">65</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\"><div class=\"m-podio\">\n    <div class=\"pod\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">MARIO</div>\n      <div class=\"suc\">NORCENTER</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 4,76%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">VIVIANA</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 2,27%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">AGUSTINA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 3,57%</div>\n    </div>\n    <div class=\"pod lead\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">MARIA MARTA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">1</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 16,67%</div>\n    </div></div></div><div class=\"db\"><div style=\"height:30px\"></div></div><div class=\"db\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\"></div><div class=\"db\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\"><div class=\"m-tabla\"><table><thead><tr><th>Concepto</th><th class=\"num\">Derivaciones</th><th class=\"num\">ventas</th><th class=\"num\">conversión</th></tr></thead><tbody><tr><td>VIVIANA</td><td class=\"num\">88</td><td class=\"num\">2</td><td class=\"num\">2,27%</td></tr><tr><td>Florencia</td><td class=\"num\">69</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>AGUSTINA</td><td class=\"num\">56</td><td class=\"num\">2</td><td class=\"num\">3,57</td></tr><tr><td>ALEXA</td><td class=\"num\">49</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GONZALO</td><td class=\"num\">42</td><td class=\"num\">1</td><td class=\"num\">2,38%</td></tr><tr><td>MARIO</td><td class=\"num\">42</td><td class=\"num\">2</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">36</td><td class=\"num\">1</td><td class=\"num\">2,78%</td></tr><tr><td>MARCELO</td><td class=\"num\">36</td><td class=\"num\">1</td><td class=\"num\">2,78%</td></tr><tr><td>DORA</td><td class=\"num\">32</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">30</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>WALTER</td><td class=\"num\">21</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>TOMAS</td><td class=\"num\">16</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>JOAN</td><td class=\"num\">15</td><td class=\"num\">1</td><td class=\"num\">6,67%</td></tr><tr><td>ADRIANA</td><td class=\"num\">8</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr class=\"fx-ok\"><td>MARÍA MARTA</td><td class=\"num\">6</td><td class=\"num\">1</td><td class=\"num\">16,67%</td></tr></tbody></table></div></div>"
         },
         {
           "id": "rep_mar_may_2026",
