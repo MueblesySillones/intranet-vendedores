@@ -337,6 +337,37 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .manual .m-img.tam-full img{ max-height:none; }
 .manual .m-img figcaption{ font-size:12.5px; color:var(--ink2); text-align:center; margin-top:9px; font-weight:600; line-height:1.35; }
 .manual .m-img .dl-btn{ margin-top:11px; }
+/* ---- bloque VIDEO ----
+   La caja toma la proporcion REAL del video (--arw/--arh que escribe el panel),
+   asi que el video la llena: nunca deforma ni deja franjas negras, filmado
+   vertical u horizontal.
+   El tamano se controla capando el ANCHO derivado del alto (a un <video> con
+   aspect-ratio no se lo puede capar por max-height: la caja igual ocuparia el
+   100% del ancho y quedarian franjas a los costados).
+   --alto = lo que elige el usuario; --tope = el limite de la ventana. Mandan
+   las dos juntas via min(), asi el celular y la presentacion solo pisan --tope.
+   OJO: todo el bloque va JUNTO y en este orden; si la regla de celular quedara
+   antes que la de escritorio, la de escritorio la pisaria (misma especificidad). */
+.manual .m-video{ text-align:center; margin:16px 0 0; --alto:360px; --tope:74vh; }
+.manual .m-video.vert{ --alto:460px; }
+.manual .m-video.tam-ch{ --alto:220px; }
+.manual .m-video.tam-ch.vert{ --alto:300px; }
+.manual .m-video.tam-gr{ --alto:520px; }
+.manual .m-video.tam-gr.vert{ --alto:620px; }
+.manual .m-video.tam-full{ --alto:1200px; }
+.manual .m-video .v-box{ position:relative; margin:0 auto; border-radius:14px; overflow:hidden;
+  background:#000; aspect-ratio:var(--arw,16)/var(--arh,9);
+  /* los fallbacks son OBLIGATORIOS: sin ellos, un m-video al que le falte el
+     style inline deja el max-width invalido y el video se estira a todo lo ancho */
+  max-width:min(100%, calc(min(var(--alto), var(--tope))*var(--arw,16)/var(--arh,9))); }
+.manual .m-video video, .manual .m-video iframe{ position:absolute; inset:0; width:100%; height:100%;
+  border:0; display:block; object-fit:contain; background:#000; }
+.manual .m-video figcaption{ font-size:12.5px; color:var(--ink2); text-align:center; margin-top:9px; font-weight:600; line-height:1.35; }
+.manual .m-video .dl-btn{ margin-top:11px; }
+/* red de seguridad: cualquier <video> suelto que entre por un bloque HTML libre */
+.manual video{ max-width:100%; }
+/* en un celular el video + el pie tienen que entrar sin scrollear */
+@media (max-width:520px){ .manual .m-video{ --tope:66vh; } }
 .manual .m-btn{ text-align:center; padding:10px 0; }
 .manual .report-frame{ border-radius:14px; overflow:hidden; border:1px solid var(--border); margin:14px 0; }
 .manual .report-frame iframe{ width:100%; border:0; display:block; height:460px; }
@@ -488,6 +519,9 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 /* "safe center" centra vertical si entra, y si no entra deja scrollear desde arriba */
 .dk-stage{ flex:1; min-height:0; overflow-y:auto; padding:26px 28px 78px; display:flex; flex-direction:column; justify-content:safe center; }
 .dk-stage .manual{ max-width:1000px; width:100%; margin:0 auto; flex-shrink:0; }
+/* dentro de una diapositiva el alto util ya viene recortado por el padding del
+   escenario (26px+78px): un video tiene que entrar sin empujar el resto afuera */
+.dk-stage .manual .m-video{ --tope:60vh; }
 .dk-bar{ position:absolute; left:0; right:0; bottom:0; display:flex; align-items:center; gap:12px; padding:10px 16px;
   background:linear-gradient(to top, var(--bg) 62%, transparent); }
 .dk-count{ font-size:11px; color:var(--ink3); letter-spacing:1.2px; font-weight:700; flex:0 0 auto; }
