@@ -126,6 +126,24 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .tile .tt{ font-size:17px; font-weight:800; letter-spacing:-.3px; line-height:1.2; }
 .tile .td{ font-size:12.5px; color:var(--ink3); line-height:1.45; font-weight:500; flex:1; }
 .tile .num{ position:absolute; top:18px; right:20px; font-size:13px; font-weight:800; color:var(--ink3); opacity:.55; }
+/* ---- novedades: que se note lo que cambio ---- */
+.novedades{ margin-top:30px; border:1px solid var(--border); border-radius:16px; background:var(--surface); padding:16px 18px; }
+.nv-t{ font-size:10.5px; font-weight:800; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink3); margin-bottom:10px; }
+.nv-lista{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:8px; }
+.nv-item{ display:flex; align-items:center; gap:11px; width:100%; text-align:left; cursor:pointer;
+  background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:10px 12px; font-family:inherit;
+  transition:border-color .15s, transform .15s; }
+.nv-item:hover{ border-color:var(--ink); transform:translateY(-1px); }
+.nv-ic{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
+.nv-ic .ico{ width:17px; height:17px; }
+.nv-tx{ flex:1; min-width:0; }
+.nv-n{ display:block; font-size:13.5px; font-weight:700; color:var(--ink); line-height:1.25; }
+.nv-f{ display:block; font-size:11.5px; color:var(--ink3); margin-top:1px; }
+.nv-fl{ color:var(--ink3); font-size:18px; flex:0 0 auto; }
+.tile.nuevo{ border-color:var(--ink); }
+.tile-nuevo{ position:absolute; top:16px; right:52px; background:var(--ink); color:#fff;
+  font-size:9.5px; font-weight:800; letter-spacing:.7px; text-transform:uppercase;
+  padding:3px 8px; border-radius:20px; }
 .chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:30px; font-size:10.5px; font-weight:700; letter-spacing:.4px; align-self:flex-start; }
 .chip .dot{ width:6px; height:6px; border-radius:50%; }
 .chip.ok{ background:#D4EDDA; color:#145A2E; } .chip.ok .dot{ background:#1A6A3A; }
@@ -424,6 +442,37 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .manual .m-tabla tbody tr.fx-ok td{ background:#E9F6EE; }
 .manual .m-tabla tbody tr.fx-mal td{ background:#FCEDEC; }
 .manual .m-tabla tbody tr.fx-total td{ background:var(--ink); color:#fff; font-weight:800; }
+/* ---- tabla: ordenar tocando el titulo + buscador ----
+   Solo aplica si el panel emitio el envoltorio .m-tablaw. Una tabla vieja no
+   tiene ninguna de estas clases, asi que no cambia ni un pixel. */
+.manual .m-tablaw{ margin:14px 0; }
+.manual .m-tablaw .m-tabla{ margin:0; }
+.manual .tb-bar{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-bottom:9px; }
+.manual .tb-q{ flex:1; min-width:170px; font:inherit; font-size:16px; padding:11px 13px; min-height:44px;
+  border:1px solid var(--border); border-radius:11px; background:var(--surface); color:var(--ink); box-sizing:border-box; }
+.manual .tb-q:focus{ outline:none; border-color:var(--ink); }
+.manual .tb-cont{ font-size:12px; color:var(--ink3); font-weight:700; }
+.manual .tb-limpiar{ font:inherit; font-size:13px; font-weight:600; min-height:44px; padding:0 16px;
+  border:1px solid var(--border); border-radius:11px; background:var(--surface); color:var(--ink2); cursor:pointer; }
+.manual .tb-limpiar:hover{ border-color:var(--ink); color:var(--ink); }
+.manual .tb-pista{ font-size:11.5px; color:var(--ink3); margin:0 0 7px; }
+.manual .tb-nada{ padding:18px; text-align:center; color:var(--ink3); font-size:13.5px;
+  border:1px dashed var(--border); border-radius:12px; }
+/* el titulo pasa a ser un boton de 44px (se toca comodo en el celular) */
+.manual .m-tabla thead th.ord{ padding:0; }
+.manual .m-tabla .th-b{ display:flex; align-items:center; gap:6px; width:100%; min-height:44px;
+  padding:8px 14px; background:none; border:0; cursor:pointer; color:inherit; font:inherit;
+  font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:1.1px; text-align:left; }
+.manual .m-tabla thead th.num .th-b{ justify-content:flex-end; }
+.manual .m-tabla .th-b:hover{ background:rgba(255,255,255,.09); }
+.manual .m-tabla .th-c:before{ content:'\2195'; opacity:.45; font-size:11px; }
+.manual .m-tabla th[aria-sort="descending"] .th-c:before{ content:'\25BC'; opacity:1; }
+.manual .m-tabla th[aria-sort="ascending"] .th-c:before{ content:'\25B2'; opacity:1; }
+.manual .m-tabla th[aria-sort="descending"], .manual .m-tabla th[aria-sort="ascending"]{ color:#fff; }
+/* cebreado repintado por JS: al ocultar filas, nth-child dejaria huecos de color.
+   VA DESPUES de las reglas nth-child de arriba, si no, no gana. */
+.manual .m-tabla tbody tr.z0{ background:var(--surface); }
+.manual .m-tabla tbody tr.z1{ background:var(--bg2); }
 
 .manual .m-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:12px; margin:14px 0; }
 .manual .m-kpis .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 12px; text-align:center; }
@@ -603,6 +652,9 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
       <h1>Todo lo que necesitás, en un solo lugar</h1>
       <p>Elegí una sección para ver la información o descargar el material. Vamos sumando contenido a medida que esté listo.</p>
     </div>
+    <!-- lo que se movió desde la última vez: publicar sin que nadie se entere
+         es la mitad del trabajo tirado -->
+    <div class="novedades" id="novedades" hidden></div>
     <div class="botonera" id="botonera"></div>
   </section>
 
@@ -1153,14 +1205,61 @@ const CONTENT = {
 /* ---- render ---- */
 const botonera = document.getElementById('botonera');
 function seccionLista(t){ return t.ready || ((window.GALLERIES||{})[t.key]||[]).length>0; }
-function renderBotonera(){ botonera.innerHTML = TILES.map(t=>{ const r=seccionLista(t); return `
-  <button class="tile${r?'':' locked'}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
+/* ---- NOVEDADES ----
+   El panel guarda en cada modulo la fecha del ultimo cambio (`actualizado`).
+   Con eso el vendedor ve de un vistazo QUE se movio desde la ultima vez que
+   entro, en vez de tener que abrir todo para descubrirlo. */
+const DIAS_NOVEDAD = 14;
+/* Se comparan DIAS DE CALENDARIO, no milisegundos: si se mezcla la fecha
+   guardada con la hora local, un cambio de hoy puede dar -1 dia y quedar
+   afuera de las novedades. */
+function diasDesde(f){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(f||'')) return null;
+  const p = f.split('-').map(Number);
+  const cuando = Date.UTC(p[0], p[1]-1, p[2]);
+  const h = new Date();
+  const hoy = Date.UTC(h.getFullYear(), h.getMonth(), h.getDate());
+  return Math.round((hoy - cuando) / 86400000);
+}
+function esNovedad(key){
+  const m = MODMAP[key];
+  if(!m) return false;
+  const d = diasDesde(m.actualizado);
+  return d !== null && d <= DIAS_NOVEDAD;   // negativo = guardado hoy en otra franja horaria
+}
+function textoNovedad(key){
+  const d = diasDesde((MODMAP[key]||{}).actualizado);
+  if(d === null) return '';
+  if(d <= 0) return 'Actualizado hoy';
+  if(d === 1) return 'Actualizado ayer';
+  if(d <= 7) return 'Actualizado hace ' + d + ' días';
+  return 'Actualizado hace ' + Math.round(d/7) + ' semanas';
+}
+
+function renderBotonera(){ botonera.innerHTML = TILES.map(t=>{ const r=seccionLista(t); const nv = r && esNovedad(t.key); return `
+  <button class="tile${r?'':' locked'}${nv?' nuevo':''}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
     <span class="num">${String(t.n).padStart(2,'0')}</span>
+    ${nv?'<span class="tile-nuevo">Nuevo</span>':''}
     <div class="icirc" style="background:var(${t.color})">${svg(I[t.icon])}</div>
     <div class="tt">${t.title}</div>
     <div class="td">${t.desc}</div>
     <span class="chip ${r?'ok':'soon'}"><span class="dot"></span>${r?'Disponible':'Próximamente'}</span>
-  </button>`; }).join(''); }
+  </button>`; }).join('');
+  renderNovedades(); }
+
+function renderNovedades(){
+  const caja = document.getElementById('novedades');
+  if(!caja) return;
+  const nuevos = TILES.filter(t => seccionLista(t) && esNovedad(t.key));
+  if(!nuevos.length){ caja.hidden = true; caja.innerHTML = ''; return; }
+  caja.hidden = false;
+  caja.innerHTML = '<div class="nv-t">Novedades</div><div class="nv-lista">' +
+    nuevos.map(t => `<button class="nv-item" onclick="openSection('${t.key}')">
+      <span class="nv-ic" style="background:var(${t.color})">${svg(I[t.icon])}</span>
+      <span class="nv-tx"><span class="nv-n">${esc(t.title)}</span>
+      <span class="nv-f">${esc(textoNovedad(t.key))}</span></span>
+      <span class="nv-fl">›</span></button>`).join('') + '</div>';
+}
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function galleryHTML(items, t){
@@ -1234,6 +1333,138 @@ document.addEventListener('click', function(e){
   const img = e.target.closest && e.target.closest('.manual .m-img img');
   if(img && img.getAttribute('src')) openLightbox(img.getAttribute('src'), img.getAttribute('alt')||'');
 });
+
+/* ---- tablas: ordenar tocando el titulo + buscador ----
+   Todo por delegacion en document: #secBody.innerHTML se reescribe entero en
+   cada navegacion, asi que cualquier listener colgado de un nodo concreto se
+   perderia. Una tabla sin el envoltorio .m-tablaw nunca entra por aca. */
+(function(){
+  function pelado(s){
+    return (s==null?'':String(s)).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  }
+  // "1.116" -> 1116 ; "4,5%" -> 4.5 ; "$ 2.300" -> 2300 ; "Hudson" -> null
+  function aNumero(v){
+    var t = String(v==null?'':v).replace(/\s/g,'').replace(/\./g,'').replace(',','.').replace(/[^\d.\-]/g,'');
+    if(!t || t==='-' || t==='.') return null;
+    var n = parseFloat(t);
+    return isFinite(n) ? n : null;
+  }
+  var esTotal = function(tr){ return tr.classList.contains('fx-total'); };
+
+  function guardarOriginal(tb){
+    if(tb.dataset.ini) return;
+    tb.dataset.ini = '1';
+    [].forEach.call(tb.rows, function(tr,i){ tr.dataset.o = i; });
+  }
+  // si el dueno marco "Son numeros" mandamos eso; si no, se mira el contenido
+  function columnaNumerica(tabla, ci){
+    var th = tabla.querySelectorAll('thead th')[ci];
+    if(th && th.classList.contains('num')) return true;
+    var n=0, tot=0;
+    [].forEach.call(tabla.tBodies[0].rows, function(tr){
+      if(esTotal(tr)) return;
+      var c = tr.cells[ci]; if(!c) return;
+      var t = c.textContent.trim(); if(!t) return;
+      tot++; if(aNumero(t)!==null) n++;
+    });
+    return tot>0 && n/tot >= 0.6;
+  }
+  function cebrear(tb){
+    var k=0;
+    [].forEach.call(tb.rows, function(tr){
+      tr.classList.remove('z0','z1');
+      if(tr.hidden) return;
+      tr.classList.add(k%2 ? 'z1' : 'z0'); k++;
+    });
+  }
+  function ordenar(tabla, ci, dir){
+    var tb = tabla.tBodies[0];
+    guardarOriginal(tb);
+    var num = columnaNumerica(tabla, ci);
+    var normales = [].filter.call(tb.rows, function(tr){ return !esTotal(tr); });
+    var totales  = [].filter.call(tb.rows, esTotal);
+    var orig = function(a,b){ return (+a.dataset.o) - (+b.dataset.o); };
+    if(!dir){ normales.sort(orig); }
+    else {
+      normales.sort(function(a,b){
+        var va = ((a.cells[ci]||{}).textContent||'').trim();
+        var vb = ((b.cells[ci]||{}).textContent||'').trim();
+        if(!va && !vb) return orig(a,b);
+        if(!va) return 1;                       // las vacias SIEMPRE al final
+        if(!vb) return -1;
+        var r;
+        if(num){
+          var na = aNumero(va), nb = aNumero(vb);
+          if(na===null && nb===null) r = 0;
+          else if(na===null) return 1;
+          else if(nb===null) return -1;
+          else r = na - nb;
+        } else {
+          r = pelado(va).localeCompare(pelado(vb), 'es');
+        }
+        if(!r) return orig(a,b);
+        return dir==='asc' ? r : -r;
+      });
+    }
+    normales.concat(totales).forEach(function(tr){ tb.appendChild(tr); });   // la fila TOTAL siempre abajo
+    [].forEach.call(tabla.querySelectorAll('thead th'), function(th,i){
+      th.setAttribute('aria-sort', (i===ci && dir) ? (dir==='asc'?'ascending':'descending') : 'none');
+    });
+    cebrear(tb);
+  }
+  function filtrar(w){
+    var q = w.querySelector('.tb-q');
+    var tabla = w.querySelector('table'); if(!tabla || !tabla.tBodies[0]) return;
+    var tb = tabla.tBodies[0];
+    var palabras = pelado(q ? q.value : '').split(/\s+/).filter(Boolean);
+    var visibles = 0, normales = 0;
+    [].forEach.call(tb.rows, function(tr){
+      // el TOTAL se esconde mientras haya filtro: un total que no suma lo que se ve, miente
+      if(esTotal(tr)){ tr.hidden = palabras.length > 0; return; }
+      normales++;
+      var txt = pelado(tr.textContent);
+      var pasa = palabras.every(function(p){ return txt.indexOf(p) !== -1; });
+      tr.hidden = !pasa;
+      if(pasa) visibles++;
+    });
+    var vacio = palabras.length > 0 && visibles === 0;
+    var cont = w.querySelector('.tb-cont');
+    if(cont) cont.textContent = palabras.length ? (visibles + ' de ' + normales) : '';
+    var lim = w.querySelector('.tb-limpiar');
+    if(lim) lim.hidden = !palabras.length;
+    var nada = w.querySelector('.tb-nada');
+    if(nada) nada.hidden = !vacio;
+    var caja = w.querySelector('.m-tabla');
+    if(caja) caja.hidden = vacio;
+    cebrear(tb);
+  }
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest) return;
+    var b = e.target.closest('.m-tablaw .th-b');
+    if(b){
+      var th = b.closest('th'), tabla = b.closest('table');
+      var ci = [].indexOf.call(th.parentNode.children, th);
+      var est = th.getAttribute('aria-sort');
+      // primer toque: los numeros arrancan de mayor a menor, los textos de A a Z
+      var dir = est==='none' ? (columnaNumerica(tabla, ci) ? 'desc' : 'asc')
+              : (est==='descending' ? 'asc' : (est==='ascending' ? '' : 'desc'));
+      ordenar(tabla, ci, dir);
+      return;
+    }
+    var lim = e.target.closest('.m-tablaw .tb-limpiar');
+    if(lim){
+      var w = lim.closest('.m-tablaw'), q = w.querySelector('.tb-q');
+      if(q){ q.value = ''; q.focus(); }
+      filtrar(w);
+    }
+  });
+  document.addEventListener('input', function(e){
+    if(!e.target.closest) return;
+    var q = e.target.closest('.m-tablaw .tb-q');
+    if(q) filtrar(q.closest('.m-tablaw'));
+  });
+})();
 function closeLightbox(){ document.getElementById('lightbox').hidden=true; }
 /* visor de PDF a pantalla completa (para el bloque PDF en modo tarjeta) */
 function openPdf(src, name){
