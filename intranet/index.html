@@ -719,11 +719,11 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 
 /* la publicacion */
 .mu-post{ background:var(--surface); border:1px solid var(--border); border-radius:16px;
-  margin-bottom:16px; overflow:hidden; transition:.2s; }
+  margin-bottom:18px; overflow:hidden; transition:.2s; }
 .mu-post.oculto{ display:none; }
 .mu-post.nueva{ border-color:rgba(26,74,138,.35); box-shadow:0 0 0 3px rgba(26,74,138,.07); }
 
-.mu-head{ display:flex; align-items:flex-start; gap:12px; padding:15px 17px 0; }
+.mu-head{ display:flex; align-items:flex-start; gap:12px; padding:16px 20px 0; }
 .mu-av{ width:42px; height:42px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center;
   justify-content:center; color:#fff; font-weight:700; font-size:15px; letter-spacing:.5px; }
 .mu-quien{ flex:1; min-width:0; }
@@ -748,21 +748,22 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 
 /* titulo y cuerpo */
 .mu-titulo{ font-size:18px; font-weight:700; line-height:1.32; letter-spacing:-.2px; color:var(--ink);
-  padding:13px 17px 0; text-wrap:balance; }
+  padding:13px 20px 0; text-wrap:balance; }
 .mu-cuerpo .m-p, .mu-cuerpo .m-lead{ text-wrap:pretty; }
-.mu-cuerpo{ padding:10px 17px 2px; position:relative; }
+.mu-cuerpo{ padding:10px 20px 4px; position:relative; }
 .mu-cuerpo .manual{ font-size:14.5px; }
-/* los posts largos se recortan: el feed tiene que poder recorrerse de un vistazo */
-.mu-cuerpo.recortado{ max-height:400px; overflow:hidden; }
-.mu-cuerpo.recortado::after{ content:''; position:absolute; left:0; right:0; bottom:0; height:110px;
-  background:linear-gradient(to bottom, rgba(255,255,255,0), var(--surface) 82%); pointer-events:none; }
+/* El feed muestra un ADELANTO, no la publicación entera: si cada tarjeta ocupa
+   toda la pantalla, no se ve que hay más abajo y nadie baja. */
+.mu-cuerpo.recortado{ max-height:230px; overflow:hidden; }
+.mu-cuerpo.recortado::after{ content:''; position:absolute; left:0; right:0; bottom:0; height:72px;
+  background:linear-gradient(to bottom, rgba(255,255,255,0), var(--surface) 88%); pointer-events:none; }
 .mu-mas{ display:block; width:100%; padding:11px; min-height:44px; border:0; border-top:1px solid var(--border2);
   background:transparent; color:var(--c-caba); font-family:inherit; font-size:13px; font-weight:700;
   cursor:pointer; transition:.2s; }
 .mu-mas:hover{ background:var(--bg2); }
 
 /* acciones */
-.mu-pie{ display:flex; align-items:center; gap:8px; padding:11px 17px 13px; border-top:1px solid var(--border2); }
+.mu-pie{ display:flex; align-items:center; gap:8px; padding:11px 20px 13px; border-top:1px solid var(--border2); }
 .mu-acc{ display:inline-flex; align-items:center; gap:7px; padding:9px 14px; min-height:40px; border-radius:9px;
   border:1px solid var(--border); background:var(--surface); color:var(--ink2); font-family:inherit;
   font-size:12.5px; font-weight:600; cursor:pointer; transition:.2s; }
@@ -786,43 +787,24 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .lobby-t b{ font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ink3); }
 .lobby-t a{ font-size:12.5px; font-weight:600; color:var(--c-caba); cursor:pointer; text-decoration:none; }
 
-/* accesos rapidos (se deslizan) */
-/* misma columna que el feed: si la fila arranca en otro margen, la portada
-   se ve desprolija en escritorio */
-.accesos{ display:flex; gap:10px; overflow-x:auto; padding:2px 0 18px; scroll-snap-type:x proximity;
-  scrollbar-width:none; -webkit-overflow-scrolling:touch; max-width:660px; margin:0 auto; }
-.accesos::-webkit-scrollbar{ display:none; }
-.acc-card{ flex:0 0 auto; width:92px; scroll-snap-align:start; display:flex; flex-direction:column;
-  align-items:center; gap:8px; padding:12px 6px; border-radius:14px; border:1px solid var(--border);
-  background:var(--surface); cursor:pointer; font-family:inherit; transition:.2s; }
-.acc-card:hover{ border-color:var(--ink); transform:translateY(-2px); }
-.acc-card .icirc{ width:44px; height:44px; color:#fff; }
-.acc-card .icirc .ico{ width:21px; height:21px; }
-.acc-t{ font-size:11.5px; font-weight:700; line-height:1.25; text-align:center; color:var(--ink);
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.acc-card.locked{ opacity:.5; cursor:default; }
-/* el ultimo lleva al menu completo */
-.acc-card.mas .icirc{ background:var(--bg2); color:var(--ink); border:1px dashed var(--ink3); }
-
-/* fijados: miniatura chica, para que no tape lo que se va publicando */
-.fijados{ max-width:660px; margin:0 auto 18px; }
+/* FIJADO: una franja fina, no una tarjeta. Se hace notar por el filo de color
+   de la izquierda, no por ocupar lugar: lo del dia a dia tiene que entrar en
+   la primera pantalla. */
+.fijados{ max-width:660px; margin:0 auto 14px; }
 .fijados[hidden]{ display:none; }
-.fix-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x proximity;
-  scrollbar-width:none; }
-.fix-row::-webkit-scrollbar{ display:none; }
-.fix-card{ flex:0 0 auto; width:250px; scroll-snap-align:start; text-align:left; display:flex;
-  align-items:center; gap:10px; padding:11px 12px; border-radius:13px; border:1px solid var(--border);
-  background:var(--surface); cursor:pointer; font-family:inherit; transition:.2s; }
-.fix-card:hover{ border-color:var(--ink); }
-.fix-card.abierta{ border-color:var(--ink); }
-.fix-ic{ width:32px; height:32px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center;
-  justify-content:center; color:#fff; }
+.fix-row{ display:flex; flex-direction:column; gap:7px; }
+.fix-card{ width:100%; text-align:left; display:flex; align-items:center; gap:2px;
+  padding:0 13px 0 0; min-height:46px; border-radius:10px; border:1px solid var(--border);
+  border-left:3px solid var(--fx,#B4231F); background:var(--surface); cursor:pointer;
+  font-family:inherit; transition:.2s; }
+.fix-card:hover{ background:var(--bg2); }
+.fix-ic{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:36px;
+  color:var(--fx,#B4231F); }
 .fix-ic .ico{ width:16px; height:16px; }
-.fix-tx{ flex:1; min-width:0; }
-.fix-t{ font-size:12.5px; font-weight:700; line-height:1.3; color:var(--ink);
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.fix-f{ font-size:10.5px; color:var(--ink3); margin-top:2px; }
-.fix-ch{ flex:0 0 auto; color:var(--ink3); font-size:15px; transition:transform .2s; }
+.fix-t{ flex:1; min-width:0; font-size:13px; font-weight:700; line-height:1.35; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:13px 8px 13px 0; }
+.fix-ch{ flex:0 0 auto; color:var(--ink3); font-size:16px; transition:transform .22s; }
+.fix-card.abierta{ background:var(--bg2); }
 .fix-card.abierta .fix-ch{ transform:rotate(90deg); }
 /* la publicacion fijada se despliega ACA abajo, sin sacarte de la portada */
 .fix-abierto{ margin-top:12px; }
@@ -831,16 +813,18 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 /* burbuja de no leidos en la tarjeta del hub */
 /* va en el mismo lugar que la chapa "Nuevo" (no conviven: en la tarjeta del
    muro la cuenta de sin leer dice mas que un cartel generico) */
-.tile-muro{ position:absolute; top:14px; right:50px; min-width:24px; height:24px; padding:0 7px;
-  border-radius:999px; background:var(--c-danger); color:#fff; font-size:12px; font-weight:700;
-  display:flex; align-items:center; justify-content:center; }
+/* la grilla clasica solo se usa cuando NO hay muro; el atributo hidden tiene
+   que ganarle al display:grid del autor */
+.botonera[hidden]{ display:none; }
 
-/* puntito de novedad sobre el acceso a un modulo */
-.acc-card .icirc{ position:relative; }
-.acc-pto{ position:absolute; top:-1px; right:-1px; width:11px; height:11px; border-radius:50%;
-  background:var(--c-danger); border:2px solid var(--surface); }
-.lobby-n{ display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px;
-  padding:0 6px; border-radius:999px; background:var(--ink); color:#fff; font-size:11px; font-weight:700; }
+/* aviso de novedad sobre un modulo, en el menu (que es por donde se entra) */
+.nav-item{ position:relative; }
+.ni-pto{ position:absolute; top:14px; right:14px; width:9px; height:9px; border-radius:50%;
+  background:var(--c-danger); }
+/* contador de publicaciones sin leer en el boton Modulos */
+.menu-n{ display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px;
+  padding:0 5px; margin-left:2px; border-radius:999px; background:var(--c-danger); color:#fff;
+  font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; }
 
 /* ---- BARRA DE AVISO: "hay algo nuevo en otro modulo" ----
    Vive pegada abajo del encabezado. No interrumpe la lectura del feed, pero
@@ -886,18 +870,24 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 @media(max-width:640px){
   .noti{ max-width:none; top:58px; }
   .muro{ max-width:none; }
-  .lobby-t, .fijados, .accesos{ max-width:none; }
-  /* los accesos y los fijados se salen del margen a proposito: asi se ve que
-     hay mas tarjetas para el costado */
-  .accesos, .fix-row{ margin:0 -18px; padding-left:18px; padding-right:18px; }
-  .acc-card{ width:84px; }
-  .fix-card{ width:min(74vw,262px); }
-  .mu-head{ padding:13px 14px 0; gap:10px; }
+  .lobby-t, .fijados{ max-width:none; }
+  /* en celular las chapas se llevaban el ancho y la fecha salia cortada
+     ("Central · Ay..."): bajan a su propia linea, sangradas con el texto */
+  .mu-head{ padding:14px 16px 0; gap:10px; flex-wrap:wrap; }
+  .mu-marcas{ order:3; width:100%; padding:2px 0 0 48px; }
   .mu-av{ width:38px; height:38px; font-size:14px; }
-  .mu-titulo{ font-size:16.5px; padding:11px 14px 0; }
-  .mu-cuerpo{ padding:9px 14px 2px; }
-  .mu-cuerpo.recortado{ max-height:340px; }
-  .mu-pie{ padding:10px 14px 12px; gap:7px; }
+    /* BUG PREEXISTENTE (lo encontro el test de regresion): con el boton "Volver
+     a la lista" -que solo aparece cuando la presentacion se abre desde una
+     biblioteca- la barra del deck mide 418px en un celular de 390 y "Siguiente"
+     queda cortado contra el borde. Se deja envolver y se achica el volver. */
+  .dk-bar{ flex-wrap:wrap; row-gap:8px; }
+  .dk-volver{ padding:8px 10px; font-size:11px; max-width:48%; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap; }
+  .dk-navs{ margin-left:auto; }
+  .mu-titulo{ font-size:16.5px; padding:12px 16px 0; }
+  .mu-cuerpo{ padding:9px 16px 4px; }
+  .mu-cuerpo.recortado{ max-height:210px; }
+  .mu-pie{ padding:10px 16px 12px; gap:7px; }
   .mu-acc{ padding:9px 12px; font-size:12px; }
   /* en pantallas chicas la marca de tipo baja debajo del autor */
   .mu-marcas{ padding-top:0; }
@@ -943,7 +933,6 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
          portada sigue siendo la grilla de siempre. -->
     <div id="lobby" hidden>
       <div class="noti" id="noti" hidden></div>
-      <div class="accesos" id="accesos"></div>
       <div class="fijados" id="fijados" hidden></div>
       <div id="feed"></div>
     </div>
@@ -1552,20 +1541,15 @@ function textoNovedad(key){
   return 'Actualizado hace ' + Math.round(d/7) + ' semanas';
 }
 
+/* Portada CLASICA (sin muro): la grilla de tarjetas de siempre. */
 function renderBotonera(){ botonera.innerHTML = TILES.map(t=>{ const r=seccionLista(t);
-  /* en la tarjeta del muro manda la cuenta de publicaciones sin leer; en las
-     demas, la chapa "Nuevo" de siempre. Nunca los dos (ocupan el mismo lugar). */
-  const m = MODMAP[t.key];
-  const muro = !!(m && m.content && m.content.tipo === 'muro');
-  const sinLeer = muro && r ? muroNoLeidos() : 0;
-  const nv = r && !muro && esNovedad(t.key); return `
-  <button class="tile${r?'':' locked'}${nv||sinLeer?' nuevo':''}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
+  const nv = r && esNovedad(t.key); return `
+  <button class="tile${r?'':' locked'}${nv?' nuevo':''}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
     <span class="num">${String(t.n).padStart(2,'0')}</span>
-    ${sinLeer?`<span class="tile-muro" title="${sinLeer} sin leer">${sinLeer}</span>`:''}
     ${nv?'<span class="tile-nuevo">Nuevo</span>':''}
     <div class="icirc" style="background:var(${t.color})">${svg(I[t.icon])}</div>
-    <div class="tt">${t.title}</div>
-    <div class="td">${t.desc}</div>
+    <div class="tt">${esc(t.title)}</div>
+    <div class="td">${esc(t.desc)}</div>
     <span class="chip ${r?'ok':'soon'}"><span class="dot"></span>${r?'Disponible':'Próximamente'}</span>
   </button>`; }).join('');
   renderNovedades(); }
@@ -1865,16 +1849,36 @@ function showHub(){
 /* ---- menu de navegacion (mobile) ---- */
 function renderNav(){
   const list = document.getElementById('navList');
+  const muro = moduloMuro();
+  const sinLeer = muro ? muroNoLeidos() : 0;
+  /* con muro, "Inicio" ES el muro: listarlo aparte seria el mismo destino dos veces */
   const inicio = `<button class="nav-item" onclick="navHome()">
-    <span class="ni-ic" style="background:var(--ink)">${svg(I.home)}</span>
-    <span class="ni-tx"><span class="ni-t">Inicio</span><span class="ni-d">Volver al centro de recursos</span></span>
+    <span class="ni-ic" style="background:var(--ink)">${svg(muro ? I.megaphone : I.home)}</span>
+    <span class="ni-tx"><span class="ni-t">Inicio</span><span class="ni-d">${muro
+      ? 'Las novedades de la empresa' : 'Volver al centro de recursos'}</span></span>
+    ${sinLeer ? `<span class="menu-n">${sinLeer}</span>` : ''}
   </button>`;
-  list.innerHTML = inicio + TILES.map(t=>{ const r=seccionLista(t); return `
+  list.innerHTML = inicio + TILES.filter(t => !muro || t.key !== muro.key).map(t=>{
+    const r = seccionLista(t);
+    const nv = r && esNovedad(t.key);
+    return `
     <button class="nav-item${r?'':' locked'}"${r?` onclick="navTo('${t.key}')"`:' aria-disabled="true" disabled'}>
       <span class="ni-ic" style="background:var(${t.color})">${svg(I[t.icon])}</span>
-      <span class="ni-tx"><span class="ni-t">${t.title}</span><span class="ni-d">${t.desc}</span></span>
+      <span class="ni-tx"><span class="ni-t">${esc(t.title)}</span><span class="ni-d">${esc(t.desc)}</span></span>
       <span class="chip ${r?'ok':'soon'}"><span class="dot"></span>${r?'Disponible':'Próximamente'}</span>
+      ${nv ? '<span class="ni-pto" title="Tiene material nuevo"></span>' : ''}
     </button>`; }).join('');
+}
+/* el boton Modulos avisa cuantos modulos tienen material nuevo: ahora que la
+   portada es el muro, el menu es la unica puerta a los modulos */
+function pintarContadorMenu(){
+  const btn = document.getElementById('menuBtn');
+  if(!btn) return;
+  const muro = moduloMuro();
+  const n = TILES.filter(t => (!muro || t.key !== muro.key) && seccionLista(t) && esNovedad(t.key)).length;
+  const vieja = btn.querySelector('.menu-n');
+  if(vieja) vieja.remove();
+  if(n) btn.insertAdjacentHTML('beforeend', `<span class="menu-n">${n}</span>`);
 }
 function openMenu(){ renderNav(); const nm=document.getElementById('navmenu'); nm.hidden=false; document.body.classList.add('menu-open'); void nm.offsetWidth; nm.classList.add('open'); }
 function closeMenu(){ const nm=document.getElementById('navmenu'); if(nm.hidden) return; nm.classList.remove('open'); document.body.classList.remove('menu-open'); setTimeout(()=>{ nm.hidden=true; }, 240); }
@@ -1961,36 +1965,57 @@ function colorDeAutor(nombre){
   for(let i = 0; i < s.length; i++) n = (n + s.charCodeAt(i)) % 997;
   return AVATAR_COLORES[n % AVATAR_COLORES.length];
 }
-const MURO_VISTO = 'mys_muro_visto';     /* fecha de la ultima vez que entro */
+const MURO_LEIDOS = 'mys_muro_leidos';   /* que publicaciones ya vio, una por una */
 let MURO_POSTS = [];                     /* los posts que se estan mostrando */
 let MURO_KEY = null;
 
-/* Orden del feed: lo fijado primero, despues por fecha (lo mas nuevo arriba). */
+/* Orden del feed: lo fijado primero, despues por fecha (lo mas nuevo arriba).
+   Lo fechado a futuro NO se muestra: asi cargar hoy la promo del lunes con la
+   fecha del lunes funciona como una publicacion programada. */
 function postsDelMuro(c){
-  return ((c && c.docs) || []).filter(p => !p.archivado).slice().sort((a,b)=>{
+  return ((c && c.docs) || []).filter(p => {
+    if(p.archivado) return false;
+    const d = diasDesde(p.fecha);
+    return d === null || d >= 0;         /* sin fecha se muestra igual */
+  }).slice().sort((a,b)=>{
     if(!!b.fijado !== !!a.fijado) return b.fijado ? 1 : -1;
     return String(b.fecha||'').localeCompare(String(a.fecha||''));
   });
 }
-/* Un post es "nuevo" si se publico despues de la ultima visita. La primera
-   vez no hay marca guardada: se toman como nuevos los ultimos 7 dias, para
-   no pintar TODO el muro de rojo en el primer ingreso. */
-function muroVisto(){ try{ return localStorage.getItem(MURO_VISTO) || ''; }catch(e){ return ''; } }
+
+/* "Nuevo" se lleva POR PUBLICACION, no por fecha de ultima visita.
+   Con fechas no alcanzaba: si el vendedor entraba a la mañana y se publicaba
+   algo al mediodia (con fecha de hoy), esa publicacion no volvia a contar
+   como nueva NUNCA, porque "hoy" ya no es mayor que "hoy". */
+function idDePost(p){
+  return String(p.id || ((p.fecha || '') + '|' + String(p.titulo || '').slice(0, 60)));
+}
+let LEIDOS = null;
+function leidos(){
+  if(LEIDOS) return LEIDOS;
+  try{ LEIDOS = new Set(JSON.parse(localStorage.getItem(MURO_LEIDOS) || '[]')); }
+  catch(e){ LEIDOS = new Set(); }
+  return LEIDOS;
+}
+function primeraVez(){
+  try{ return localStorage.getItem(MURO_LEIDOS) === null; }catch(e){ return true; }
+}
 function esPostNuevo(p){
-  if(!p.fecha) return false;
-  const v = muroVisto();
-  if(!v){ const d = diasDesde(p.fecha); return d !== null && d <= 7; }
-  return p.fecha > v;
+  if(leidos().has(idDePost(p))) return false;
+  /* el primer ingreso no se pinta entero de rojo: solo lo de la ultima semana */
+  if(primeraVez()){ const d = diasDesde(p.fecha); return d !== null && d >= 0 && d <= 7; }
+  return true;
 }
 function muroNoLeidos(){
-  const mod = (window.MODULES||[]).find(m => m.content && m.content.tipo === 'muro' && !m.hidden);
+  const mod = moduloMuro();
   if(!mod) return 0;
   return postsDelMuro(mod.content).filter(esPostNuevo).length;
 }
 function marcarMuroVisto(){
-  const h = new Date();
-  const hoy = h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0') + '-' + String(h.getDate()).padStart(2,'0');
-  try{ localStorage.setItem(MURO_VISTO, hoy); }catch(e){}
+  const S = leidos();
+  MURO_POSTS.forEach(p => S.add(idDePost(p)));
+  /* se recorta para que la lista no crezca sin fin en el celular */
+  try{ localStorage.setItem(MURO_LEIDOS, JSON.stringify(Array.from(S).slice(-400))); }catch(e){}
 }
 
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -2003,11 +2028,14 @@ function fechaLinda(f){
   if(d < 14) return 'Hace una semana';
   if(d < 31) return 'Hace ' + Math.round(d/7) + ' semanas';
   const p = f.split('-').map(Number);
-  return p[2] + ' de ' + MESES[p[1]-1];
+  /* de otro año lleva el año: si no, una publicacion vieja se lee como reciente */
+  const esteAno = new Date().getFullYear();
+  return p[2] + ' de ' + MESES[p[1]-1] + (p[0] !== esteAno ? ' de ' + p[0] : '');
 }
+const AUTOR_DEFECTO = 'Muebles y Sillones';
 function inicialesDe(nombre){
-  const partes = String(nombre||'?').trim().split(/\s+/).slice(0,2);
-  return partes.map(p => p.charAt(0).toUpperCase()).join('');
+  const partes = String(nombre || AUTOR_DEFECTO).trim().split(/\s+/).slice(0,2);
+  return partes.map(p => p.charAt(0).toUpperCase()).join('') || 'M';
 }
 
 /* Una publicacion. Se usa igual en el feed y al desplegar una fijada. */
@@ -2019,8 +2047,9 @@ function postHTML(p, i){
     <div class="mu-head">
       <span class="mu-av" style="background:var(${colorDeAutor(p.autor)})">${esc(inicialesDe(p.autor))}</span>
       <span class="mu-quien">
-        <span class="mu-autor">${esc(p.autor || 'Muebles y Sillones')}</span>
-        <span class="mu-meta">${p.sucursal ? esc(p.sucursal) + '<span class="mu-sep">·</span>' : ''}${esc(fechaLinda(p.fecha))}</span>
+        <span class="mu-autor">${esc(p.autor || AUTOR_DEFECTO)}</span>
+        <span class="mu-meta">${[p.sucursal, fechaLinda(p.fecha)].filter(Boolean).map(esc)
+          .join('<span class="mu-sep">·</span>') || 'Publicado'}</span>
       </span>
       <span class="mu-marcas">
         ${nuevo ? '<span class="mu-nueva">NUEVO</span>' : ''}
@@ -2044,6 +2073,10 @@ function muroHTML(c, t, opts){
   if(!MURO_POSTS.length) return `<div class="pending"><b>Todavía no hay publicaciones.</b><br>Muy pronto.</div>`;
 
   const enFeed = MURO_POSTS.filter(p => !(opts.fijadosAparte && p.fijado));
+  /* si TODO lo que hay esta fijado (tipico del primer dia), el feed queda sin
+     nada. Sin este cartel la portada muestra "NOVEDADES" y abajo el vacio. */
+  if(!enFeed.length) return `<div class="pending"><b>Todo lo importante está arriba.</b><br>
+    Acá van a aparecer las novedades del día a día.</div>`;
   /* solo se ofrecen los filtros de los tipos que realmente existen en el feed */
   const usados = [];
   enFeed.forEach(p => { const e = p.etiqueta; if(e && MURO_TAGS[e] && usados.indexOf(e) < 0) usados.push(e); });
@@ -2068,7 +2101,7 @@ function initMuro(){
     if(!cuerpo || cuerpo.dataset.medido) return;
     const medir = ()=>{
       if(cuerpo.dataset.abierto) return;
-      if(cuerpo.scrollHeight > 460 && !art.querySelector('.mu-mas')){
+      if(cuerpo.scrollHeight > 260 && !art.querySelector('.mu-mas')){
         cuerpo.classList.add('recortado');
         const b = document.createElement('button');
         b.type = 'button'; b.className = 'mu-mas'; b.textContent = 'Ver publicación completa';
@@ -2136,48 +2169,35 @@ function renderHub(){
   document.getElementById('novedades').hidden = true;
   lobby.hidden = false;
   MURO_KEY = mod.key;
-  renderAccesos();
   document.getElementById('feed').innerHTML =
     `<div class="lobby-t"><b>Novedades</b></div>` +
     muroHTML(mod.content, MAP[mod.key], {fijadosAparte:true});
   renderFijados();
   renderNoti();
+  pintarContadorMenu();
   initMuro();
   animarEntradas(document.getElementById('feed'));
 }
 
-function renderAccesos(){
-  const cont = document.getElementById('accesos');
-  const items = TILES.filter(t => t.key !== MURO_KEY);
-  cont.innerHTML = items.map(t => {
-    const r = seccionLista(t);
-    const nv = r && esNovedad(t.key);
-    return `<button type="button" class="acc-card${r?'':' locked'}"${r?` onclick="openSection('${t.key}')"`:' disabled aria-disabled="true"'}>
-      <span class="icirc" style="background:var(${t.color})">${svg(I[t.icon])}${nv?'<span class="acc-pto"></span>':''}</span>
-      <span class="acc-t">${esc(t.title)}</span>
-    </button>`;
-  }).join('') + `<button type="button" class="acc-card mas" onclick="openMenu()" title="Ver todos los módulos">
-      <span class="icirc">${svg(I.layers)}</span><span class="acc-t">Ver todo</span></button>`;
-}
-
-/* Lo fijado va en MINIATURA: se despliega abajo cuando lo tocan, asi no se
-   come la pantalla ni tapa lo que se publica todos los dias. */
+/* Lo fijado va en una FRANJA FINA: se despliega abajo cuando la tocan. Tiene
+   que llamar la atencion sin ocupar lugar, para que lo del dia a dia quede a
+   la vista apenas entran. */
 let FIX_ABIERTO = null;
 function renderFijados(){
   const cont = document.getElementById('fijados');
+  /* se repinta la caja: si queda dicho que habia una abierta, el primer toque
+     "cierra" una tarjeta que ya no existe y no pasa nada en pantalla */
+  FIX_ABIERTO = null;
   const fij = MURO_POSTS.map((p,i) => ({p,i})).filter(x => x.p.fijado);
   if(!fij.length){ cont.hidden = true; cont.innerHTML = ''; return; }
   cont.hidden = false;
-  cont.innerHTML = `<div class="lobby-t"><b>Importante</b>${fij.length>1?`<span class="lobby-n">${fij.length}</span>`:''}</div>
-    <div class="fix-row">${fij.map(({p,i}) => {
+  cont.innerHTML = `<div class="fix-row">${fij.map(({p,i}) => {
       const tag = MURO_TAGS[p.etiqueta];
-      const color = tag ? tag.c : '--c-hudson';
-      return `<button type="button" class="fix-card" data-i="${i}" onclick="verFijado(${i},this)">
-        <span class="fix-ic" style="background:var(${color})">${svg(I[tag ? tag.i : 'shield'])}</span>
-        <span class="fix-tx">
-          <span class="fix-t">${esc(p.titulo || 'Publicación')}</span>
-          <span class="fix-f">${esc(fechaLinda(p.fecha))}${tag ? ' · ' + esc(tag.t) : ''}</span>
-        </span>
+      const color = tag ? tag.fg : '#B4231F';
+      return `<button type="button" class="fix-card" data-i="${i}" onclick="verFijado(${i},this)"
+        style="--fx:${color}">
+        <span class="fix-ic">${svg(I[tag ? tag.i : 'shield'])}</span>
+        <span class="fix-t">${esc(p.titulo || 'Publicación')}</span>
         <span class="fix-ch">›</span>
       </button>`;
     }).join('')}</div>
