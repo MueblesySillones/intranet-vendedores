@@ -256,6 +256,115 @@ window.MODULES = [
     }
   },
   {
+    "key": "embalaje_especial",
+    "title": "EMBALAJE ESPECIAL",
+    "desc": "para envíos al interior o resto del país",
+    "icon": "box",
+    "color": "--c-norcenter",
+    "ready": true,
+    "builtin": false,
+    "actualizado": "2026-08-11",
+    "content": {
+      "tipo": "bloques",
+      "bloques": [
+        {
+          "t": "titulo",
+          "nivel": "h1",
+          "html": "EMBALAJE PARA ENVIOS DE MARCADERIA A TRAVES DE&nbsp; TRANSPORTES"
+        },
+        {
+          "t": "parrafo",
+          "html": "Dada las normativas de muchas Empresas de transportes y en función de una correctapreservación de la mercadería a despachar, es preciso aplicar diversos elementos deembalaje, a saber:&nbsp;"
+        },
+        {
+          "t": "lista",
+          "items": [
+            {
+              "icono": "check",
+              "color": "--c-success",
+              "html": "- Jaula de Madera y/o placa de MDF que se realiza a medida.&nbsp;<br>"
+            },
+            {
+              "icono": "check",
+              "color": "--c-success",
+              "html": "- Cartón 200 libras, grueso para evitar rayaduras<br>"
+            },
+            {
+              "icono": "check",
+              "color": "--c-success",
+              "html": "- Cinta adhesiva para embalar<br>"
+            },
+            {
+              "icono": "check",
+              "color": "--c-success",
+              "html": "- Hilo de nylon<br>"
+            },
+            {
+              "icono": "check",
+              "color": "--c-success",
+              "html": "- Papel espumado<br>"
+            }
+          ]
+        },
+        {
+          "t": "destacado",
+          "html": "Incluye los símbolos pictóricos según las normas internacionales de embalaje."
+        },
+        {
+          "t": "nota",
+          "icono": "chatBubble",
+          "color": "--c-canning",
+          "html": "NOTA: La forma de cálculo, es tomando como base las medidas de los mueblesespecificadas en las listas correspondientes.&nbsp;"
+        },
+        {
+          "t": "parrafo",
+          "html": "Se calculara el volumen de cada mueble, (largo x ancho x profundidad)En el caso de las sillas, se calculará el volumen sin tener en cuenta el respaldo (como si fuera una banqueta)En el caso de los sillones cabeceros y/o living, se calculara la totalidad del producto incluido el respaldo."
+        },
+        {
+          "t": "kicker",
+          "n": "",
+          "html": "VALOR DE EMBALAJE POR M3 = $70120<br>"
+        },
+        {
+          "t": "titulo",
+          "nivel": "h1",
+          "html": "EMBALAJE PARA ENVÍOS DE MERCADERIA A TRAVES DE VEHÍCULO PROPIO DE LA EMPRESA O DEL CLIENTE"
+        },
+        {
+          "t": "titulo",
+          "nivel": "h2",
+          "html": "&nbsp;((ATENCION!!!!!! NO APTO PARA ENVÍO MEDIANTE EMPRESAS DE TRANSPORTE.))"
+        },
+        {
+          "t": "parrafo",
+          "html": "&nbsp;El siguiente embalaje, es un embalaje más acotado y puede utilizarse, como dijimos, solamente para envíos a través de los vehículos de la empresa o propio del cliente. El mismo consta de:&nbsp;"
+        },
+        {
+          "t": "lista",
+          "items": [
+            {
+              "icono": "check",
+              "color": "--c-success",
+              "html": "- cartón corrugado + streech + cinta adhesiva.<br>"
+            }
+          ]
+        },
+        {
+          "t": "kicker",
+          "n": "",
+          "html": "VALOR DE EMBALAJE POR M3 = $28315<br>"
+        },
+        {
+          "t": "nota",
+          "icono": "chatBubble",
+          "color": "--c-canning",
+          "html": "NOTA: La forma de cálculo es igual al embalaje especial."
+        }
+      ],
+      "html": "<div class=\"db\"><div class=\"m-h\">EMBALAJE PARA ENVIOS DE MARCADERIA A TRAVES DE&nbsp; TRANSPORTES</div></div><div class=\"db\"><p class=\"m-p\">Dada las normativas de muchas Empresas de transportes y en función de una correctapreservación de la mercadería a despachar, es preciso aplicar diversos elementos deembalaje, a saber:&nbsp;</p></div><div class=\"db\"><div class=\"checklist\"><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Jaula de Madera y/o placa de MDF que se realiza a medida.&nbsp;<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Cartón 200 libras, grueso para evitar rayaduras<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Cinta adhesiva para embalar<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Hilo de nylon<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Papel espumado<br></span></div></div></div><div class=\"db\"><p class=\"m-lead\">Incluye los símbolos pictóricos según las normas internacionales de embalaje.</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span><div class=\"nt\">NOTA: La forma de cálculo, es tomando como base las medidas de los mueblesespecificadas en las listas correspondientes.&nbsp;</div></div></div><div class=\"db\"><p class=\"m-p\">Se calculara el volumen de cada mueble, (largo x ancho x profundidad)En el caso de las sillas, se calculará el volumen sin tener en cuenta el respaldo (como si fuera una banqueta)En el caso de los sillones cabeceros y/o living, se calculara la totalidad del producto incluido el respaldo.</p></div><div class=\"db\"><div class=\"m-kicker\"><span>VALOR DE EMBALAJE POR M3 = $70120<br></span></div></div><div class=\"db\"><div class=\"m-h\">EMBALAJE PARA ENVÍOS DE MERCADERIA A TRAVES DE VEHÍCULO PROPIO DE LA EMPRESA O DEL CLIENTE</div></div><div class=\"db\"><div class=\"m-h2\">&nbsp;((ATENCION!!!!!! NO APTO PARA ENVÍO MEDIANTE EMPRESAS DE TRANSPORTE.))</div></div><div class=\"db\"><p class=\"m-p\">&nbsp;El siguiente embalaje, es un embalaje más acotado y puede utilizarse, como dijimos, solamente para envíos a través de los vehículos de la empresa o propio del cliente. El mismo consta de:&nbsp;</p></div><div class=\"db\"><div class=\"checklist\"><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- cartón corrugado + streech + cinta adhesiva.<br></span></div></div></div><div class=\"db\"><div class=\"m-kicker\"><span>VALOR DE EMBALAJE POR M3 = $28315<br></span></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span><div class=\"nt\">NOTA: La forma de cálculo es igual al embalaje especial.</div></div></div>"
+    }
+  },
+  {
     "key": "comunicacion_importante",
     "title": "COMUNICACION IMPORTANTE",
     "desc": "",
@@ -3403,114 +3512,5 @@ window.MODULES = [
     "color": "--c-info",
     "ready": false,
     "builtin": true
-  },
-  {
-    "key": "embalaje_especial",
-    "title": "EMBALAJE ESPECIAL",
-    "desc": "para envíos al interior o resto del país",
-    "icon": "box",
-    "color": "--c-norcenter",
-    "ready": true,
-    "builtin": false,
-    "actualizado": "2026-08-11",
-    "content": {
-      "tipo": "bloques",
-      "bloques": [
-        {
-          "t": "titulo",
-          "nivel": "h1",
-          "html": "EMBALAJE PARA ENVIOS DE MARCADERIA A TRAVES DE&nbsp; TRANSPORTES"
-        },
-        {
-          "t": "parrafo",
-          "html": "Dada las normativas de muchas Empresas de transportes y en función de una correctapreservación de la mercadería a despachar, es preciso aplicar diversos elementos deembalaje, a saber:&nbsp;"
-        },
-        {
-          "t": "lista",
-          "items": [
-            {
-              "icono": "check",
-              "color": "--c-success",
-              "html": "- Jaula de Madera y/o placa de MDF que se realiza a medida.&nbsp;<br>"
-            },
-            {
-              "icono": "check",
-              "color": "--c-success",
-              "html": "- Cartón 200 libras, grueso para evitar rayaduras<br>"
-            },
-            {
-              "icono": "check",
-              "color": "--c-success",
-              "html": "- Cinta adhesiva para embalar<br>"
-            },
-            {
-              "icono": "check",
-              "color": "--c-success",
-              "html": "- Hilo de nylon<br>"
-            },
-            {
-              "icono": "check",
-              "color": "--c-success",
-              "html": "- Papel espumado<br>"
-            }
-          ]
-        },
-        {
-          "t": "destacado",
-          "html": "Incluye los símbolos pictóricos según las normas internacionales de embalaje."
-        },
-        {
-          "t": "nota",
-          "icono": "chatBubble",
-          "color": "--c-canning",
-          "html": "NOTA: La forma de cálculo, es tomando como base las medidas de los mueblesespecificadas en las listas correspondientes.&nbsp;"
-        },
-        {
-          "t": "parrafo",
-          "html": "Se calculara el volumen de cada mueble, (largo x ancho x profundidad)En el caso de las sillas, se calculará el volumen sin tener en cuenta el respaldo (como si fuera una banqueta)En el caso de los sillones cabeceros y/o living, se calculara la totalidad del producto incluido el respaldo."
-        },
-        {
-          "t": "kicker",
-          "n": "",
-          "html": "VALOR DE EMBALAJE POR M3 = $70120<br>"
-        },
-        {
-          "t": "titulo",
-          "nivel": "h1",
-          "html": "EMBALAJE PARA ENVÍOS DE MERCADERIA A TRAVES DE VEHÍCULO PROPIO DE LA EMPRESA O DEL CLIENTE"
-        },
-        {
-          "t": "titulo",
-          "nivel": "h2",
-          "html": "&nbsp;((ATENCION!!!!!! NO APTO PARA ENVÍO MEDIANTE EMPRESAS DE TRANSPORTE.))"
-        },
-        {
-          "t": "parrafo",
-          "html": "&nbsp;El siguiente embalaje, es un embalaje más acotado y puede utilizarse, como dijimos, solamente para envíos a través de los vehículos de la empresa o propio del cliente. El mismo consta de:&nbsp;"
-        },
-        {
-          "t": "lista",
-          "items": [
-            {
-              "icono": "check",
-              "color": "--c-success",
-              "html": "- cartón corrugado + streech + cinta adhesiva.<br>"
-            }
-          ]
-        },
-        {
-          "t": "kicker",
-          "n": "",
-          "html": "VALOR DE EMBALAJE POR M3 = $28315<br>"
-        },
-        {
-          "t": "nota",
-          "icono": "chatBubble",
-          "color": "--c-canning",
-          "html": "NOTA: La forma de cálculo es igual al embalaje especial."
-        }
-      ],
-      "html": "<div class=\"db\"><div class=\"m-h\">EMBALAJE PARA ENVIOS DE MARCADERIA A TRAVES DE&nbsp; TRANSPORTES</div></div><div class=\"db\"><p class=\"m-p\">Dada las normativas de muchas Empresas de transportes y en función de una correctapreservación de la mercadería a despachar, es preciso aplicar diversos elementos deembalaje, a saber:&nbsp;</p></div><div class=\"db\"><div class=\"checklist\"><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Jaula de Madera y/o placa de MDF que se realiza a medida.&nbsp;<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Cartón 200 libras, grueso para evitar rayaduras<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Cinta adhesiva para embalar<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Hilo de nylon<br></span></div><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- Papel espumado<br></span></div></div></div><div class=\"db\"><p class=\"m-lead\">Incluye los símbolos pictóricos según las normas internacionales de embalaje.</p></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span><div class=\"nt\">NOTA: La forma de cálculo, es tomando como base las medidas de los mueblesespecificadas en las listas correspondientes.&nbsp;</div></div></div><div class=\"db\"><p class=\"m-p\">Se calculara el volumen de cada mueble, (largo x ancho x profundidad)En el caso de las sillas, se calculará el volumen sin tener en cuenta el respaldo (como si fuera una banqueta)En el caso de los sillones cabeceros y/o living, se calculara la totalidad del producto incluido el respaldo.</p></div><div class=\"db\"><div class=\"m-kicker\"><span>VALOR DE EMBALAJE POR M3 = $70120<br></span></div></div><div class=\"db\"><div class=\"m-h\">EMBALAJE PARA ENVÍOS DE MERCADERIA A TRAVES DE VEHÍCULO PROPIO DE LA EMPRESA O DEL CLIENTE</div></div><div class=\"db\"><div class=\"m-h2\">&nbsp;((ATENCION!!!!!! NO APTO PARA ENVÍO MEDIANTE EMPRESAS DE TRANSPORTE.))</div></div><div class=\"db\"><p class=\"m-p\">&nbsp;El siguiente embalaje, es un embalaje más acotado y puede utilizarse, como dijimos, solamente para envíos a través de los vehículos de la empresa o propio del cliente. El mismo consta de:&nbsp;</p></div><div class=\"db\"><div class=\"checklist\"><div class=\"ci\"><span class=\"ci-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></span><span>- cartón corrugado + streech + cinta adhesiva.<br></span></div></div></div><div class=\"db\"><div class=\"m-kicker\"><span>VALOR DE EMBALAJE POR M3 = $28315<br></span></div></div><div class=\"db\"><div class=\"note\" style=\"--nota-acc:var(--c-canning)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z\"/><line x1=\"8.5\" y1=\"11\" x2=\"15.5\" y2=\"11\"/><line x1=\"8.5\" y1=\"14\" x2=\"13\" y2=\"14\"/></svg></span><div class=\"nt\">NOTA: La forma de cálculo es igual al embalaje especial.</div></div></div>"
-    }
   }
 ];
