@@ -693,6 +693,100 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .free-content li{ margin:.3em 0; }
 .free-content img{ max-width:100%; height:auto; border-radius:12px; }
 .free-content b,.free-content strong{ font-weight:700; }
+
+/* ===================================================================
+   MURO: el feed de comunicacion interna.
+   Un modulo de tipo "muro" guarda VARIOS posts (mismo formato que los
+   documentos de una biblioteca, con autor y fecha). Se ven todos
+   seguidos, el mas nuevo arriba, como en una red social.
+   TODO el CSS del muro vive en este bloque y en ESTE orden: las reglas
+   de celular van al final, si no las pisan las de escritorio.
+   =================================================================== */
+.muro{ max-width:660px; margin:0 auto; }
+
+/* filtros por tipo de publicacion */
+.mu-filtros{ display:flex; gap:8px; overflow-x:auto; padding:0 0 16px; scrollbar-width:none; }
+.mu-filtros::-webkit-scrollbar{ display:none; }
+.mu-chip{ flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:8px 14px; min-height:38px;
+  border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--ink2);
+  font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; transition:.2s; }
+.mu-chip:hover{ border-color:var(--ink); color:var(--ink); }
+.mu-chip.on{ background:var(--ink); border-color:var(--ink); color:#fff; }
+.mu-chip .pto{ width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+.mu-chip.on .pto{ box-shadow:0 0 0 2px rgba(255,255,255,.5); }
+
+/* la publicacion */
+.mu-post{ background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  margin-bottom:16px; overflow:hidden; transition:.2s; }
+.mu-post.oculto{ display:none; }
+.mu-post.nueva{ border-color:rgba(26,74,138,.35); box-shadow:0 0 0 3px rgba(26,74,138,.07); }
+
+.mu-head{ display:flex; align-items:flex-start; gap:12px; padding:15px 17px 0; }
+.mu-av{ width:42px; height:42px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; color:#fff; font-weight:700; font-size:15px; letter-spacing:.5px; }
+.mu-quien{ flex:1; min-width:0; }
+.mu-autor{ font-size:14px; font-weight:700; color:var(--ink); line-height:1.3; }
+.mu-meta{ font-size:12px; color:var(--ink3); margin-top:2px; display:flex; align-items:center;
+  gap:6px; flex-wrap:wrap; }
+.mu-sep{ opacity:.5; }
+.mu-marcas{ display:flex; align-items:center; gap:6px; flex:0 0 auto; padding-top:2px; }
+.mu-tag{ display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:999px;
+  font-size:11px; font-weight:700; letter-spacing:.3px; color:#fff; white-space:nowrap; }
+.mu-tag .ico{ width:12px; height:12px; }
+.mu-nueva{ display:inline-flex; align-items:center; padding:4px 9px; border-radius:999px;
+  background:var(--c-info); color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.4px; }
+.mu-fijado{ display:inline-flex; align-items:center; gap:6px; padding:7px 17px; background:var(--bg2);
+  border-bottom:1px solid var(--border2); font-size:11px; font-weight:700; color:var(--ink2); letter-spacing:.4px; }
+.mu-fijado .ico{ width:13px; height:13px; }
+
+/* titulo y cuerpo */
+.mu-titulo{ font-size:18px; font-weight:700; line-height:1.35; color:var(--ink); padding:13px 17px 0; }
+.mu-cuerpo{ padding:10px 17px 2px; position:relative; }
+.mu-cuerpo .manual{ font-size:14.5px; }
+/* los posts largos se recortan: el feed tiene que poder recorrerse de un vistazo */
+.mu-cuerpo.recortado{ max-height:400px; overflow:hidden; }
+.mu-cuerpo.recortado::after{ content:''; position:absolute; left:0; right:0; bottom:0; height:110px;
+  background:linear-gradient(to bottom, rgba(255,255,255,0), var(--surface) 82%); pointer-events:none; }
+.mu-mas{ display:block; width:100%; padding:11px; min-height:44px; border:0; border-top:1px solid var(--border2);
+  background:transparent; color:var(--c-caba); font-family:inherit; font-size:13px; font-weight:700;
+  cursor:pointer; transition:.2s; }
+.mu-mas:hover{ background:var(--bg2); }
+
+/* acciones */
+.mu-pie{ display:flex; align-items:center; gap:8px; padding:11px 17px 13px; border-top:1px solid var(--border2); }
+.mu-acc{ display:inline-flex; align-items:center; gap:7px; padding:9px 14px; min-height:40px; border-radius:9px;
+  border:1px solid var(--border); background:var(--surface); color:var(--ink2); font-family:inherit;
+  font-size:12.5px; font-weight:600; cursor:pointer; transition:.2s; }
+.mu-acc:hover{ border-color:var(--ink); color:var(--ink); }
+.mu-acc .ico{ width:15px; height:15px; flex:0 0 auto; }
+/* OJO: la clase va prefijada. Un `.wa` suelto choca con el maquetado del
+   telefono de WhatsApp del manual (`.wa{margin:18px auto}`) y descoloca el pie. */
+.mu-acc.mu-wa:hover{ border-color:#25D366; color:#128C4A; }
+.mu-acc.hecho{ border-color:var(--c-success); color:var(--c-success); }
+
+/* estado vacio (ningun post pasa el filtro) */
+.mu-vacio{ text-align:center; padding:44px 20px; color:var(--ink3); font-size:14px; }
+
+/* burbuja de no leidos en la tarjeta del hub */
+/* va en el mismo lugar que la chapa "Nuevo" (no conviven: en la tarjeta del
+   muro la cuenta de sin leer dice mas que un cartel generico) */
+.tile-muro{ position:absolute; top:14px; right:50px; min-width:24px; height:24px; padding:0 7px;
+  border-radius:999px; background:var(--c-danger); color:#fff; font-size:12px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; }
+
+@media(max-width:640px){
+  .muro{ max-width:none; }
+  .mu-head{ padding:13px 14px 0; gap:10px; }
+  .mu-av{ width:38px; height:38px; font-size:14px; }
+  .mu-titulo{ font-size:16.5px; padding:11px 14px 0; }
+  .mu-cuerpo{ padding:9px 14px 2px; }
+  .mu-cuerpo.recortado{ max-height:340px; }
+  .mu-pie{ padding:10px 14px 12px; gap:7px; }
+  .mu-acc{ padding:9px 12px; font-size:12px; }
+  /* en pantallas chicas la marca de tipo baja debajo del autor */
+  .mu-marcas{ padding-top:0; }
+  .mu-tag{ padding:4px 9px; font-size:10.5px; }
+}
 </style>
 </head>
 <body>
@@ -1332,9 +1426,16 @@ function textoNovedad(key){
   return 'Actualizado hace ' + Math.round(d/7) + ' semanas';
 }
 
-function renderBotonera(){ botonera.innerHTML = TILES.map(t=>{ const r=seccionLista(t); const nv = r && esNovedad(t.key); return `
-  <button class="tile${r?'':' locked'}${nv?' nuevo':''}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
+function renderBotonera(){ botonera.innerHTML = TILES.map(t=>{ const r=seccionLista(t);
+  /* en la tarjeta del muro manda la cuenta de publicaciones sin leer; en las
+     demas, la chapa "Nuevo" de siempre. Nunca los dos (ocupan el mismo lugar). */
+  const m = MODMAP[t.key];
+  const muro = !!(m && m.content && m.content.tipo === 'muro');
+  const sinLeer = muro && r ? muroNoLeidos() : 0;
+  const nv = r && !muro && esNovedad(t.key); return `
+  <button class="tile${r?'':' locked'}${nv||sinLeer?' nuevo':''}"${r?` onclick="openSection('${t.key}')"`:' aria-disabled="true" disabled'}>
     <span class="num">${String(t.n).padStart(2,'0')}</span>
+    ${sinLeer?`<span class="tile-muro" title="${sinLeer} sin leer">${sinLeer}</span>`:''}
     ${nv?'<span class="tile-nuevo">Nuevo</span>':''}
     <div class="icirc" style="background:var(${t.color})">${svg(I[t.icon])}</div>
     <div class="tt">${t.title}</div>
@@ -1582,18 +1683,21 @@ function renderSection(key){
   document.getElementById('secSub').textContent = t.desc;
   const imgs = (window.GALLERIES||{})[key] || [];
   const mod = MODMAP[key];
-  let body, embed = false, presenta = false;
+  let body, embed = false, presenta = false, esMuro = false;
   COL_KEY = (mod && mod.content && mod.content.tipo === 'coleccion') ? key : null;
+  MURO_KEY = (mod && mod.content && mod.content.tipo === 'muro') ? key : null;
   if(mod && mod.content && mod.content.tipo){
     body = renderContent(mod.content, t);
     embed = mod.content.tipo === 'embed';
     presenta = mod.content.tipo === 'bloques' && !!mod.content.presentacion;
+    esMuro = mod.content.tipo === 'muro';
   }
   else if(DOWNLOAD_GROUPS[key]) body = groupsHTML(DOWNLOAD_GROUPS[key]);
   else if(CONTENT[key]) body = CONTENT[key];
   else if(imgs.length) body = galleryHTML(imgs, t);
   else body = pendingHTML(t);
   document.getElementById('secBody').innerHTML = body;
+  if(esMuro) initMuro();
   plegarGalerias(document.getElementById('secBody'), key);
   document.body.classList.toggle('report-mode', embed || presenta || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
   if(presenta) initDeck(); else dkSlides = [];
@@ -1664,6 +1768,10 @@ window.addEventListener('hashchange', route);
    cuerpo (body) de los modulos personalizados a CONTENT. Si modulos.js no existe
    o esta vacio, se usan los TILES por defecto definidos arriba (compatibilidad). */
 function applyModules(){
+  /* muro-demo.js solo existe en la rama donde se esta probando el muro. En
+     produccion el archivo no esta y esto no hace nada. */
+  if(window.MURO_DEMO && Array.isArray(window.MODULES) && !window.MODULES.some(m => m.key === window.MURO_DEMO.key))
+    window.MODULES.unshift(window.MURO_DEMO);
   const M = window.MODULES;
   if(!Array.isArray(M) || !M.length) return;
   TILES = M.filter(m=>!m.hidden).map((m,i)=>({
@@ -1679,6 +1787,7 @@ function applyModules(){
 /* Cuerpo de un módulo cuyo contenido fue definido/reemplazado desde el panel */
 function renderContent(c, t){
   if(!c || !c.tipo) return '';
+  if(c.tipo==='muro')      return muroHTML(c, t);
   if(c.tipo==='coleccion') return indiceHTML(c);
   if(c.tipo==='bloques' && c.presentacion) return deckHTML(c.html||'');
   if(c.tipo==='bloques') return `<div class="manual">${c.html||''}</div>`;
@@ -1689,6 +1798,165 @@ function renderContent(c, t){
       <a class="dl-btn" style="display:inline-flex" href="${esc(c.url||'#')}" target="_blank" rel="noopener">${svg(I.ext)} ${esc(c.texto||'Abrir')}</a>
     </div>`;
   return '';
+}
+
+/* ===================================================================
+   MURO: comunicacion interna en formato feed.
+   Un modulo de tipo "muro" guarda una lista de POSTS. Cada post tiene la
+   misma forma que un documento de biblioteca (titulo + html armado en el
+   panel) mas quien lo publica y cuando. El cuerpo se envuelve en .manual,
+   asi que adentro de un post sirven TODOS los bloques que ya existen
+   (imagenes, galerias, video, PDF, plantillas de WhatsApp...).
+   =================================================================== */
+const MURO_TAGS = {
+  anuncio:      { t:'Anuncio',      c:'--c-hudson',    i:'megaphone' },
+  promo:        { t:'Promoción',    c:'--c-norcenter', i:'tag' },
+  capacitacion: { t:'Capacitación', c:'--c-caba',      i:'book' },
+  logro:        { t:'Logro',        c:'--c-canning',   i:'award' },
+  importante:   { t:'Importante',   c:'--c-danger',    i:'shield' },
+  equipo:       { t:'Equipo',       c:'--c-success',   i:'users' }
+};
+const MURO_VISTO = 'mys_muro_visto';     /* fecha de la ultima vez que entro */
+let MURO_POSTS = [];                     /* los posts que se estan mostrando */
+let MURO_KEY = null;
+
+/* Orden del feed: lo fijado primero, despues por fecha (lo mas nuevo arriba). */
+function postsDelMuro(c){
+  return ((c && c.docs) || []).filter(p => !p.archivado).slice().sort((a,b)=>{
+    if(!!b.fijado !== !!a.fijado) return b.fijado ? 1 : -1;
+    return String(b.fecha||'').localeCompare(String(a.fecha||''));
+  });
+}
+/* Un post es "nuevo" si se publico despues de la ultima visita. La primera
+   vez no hay marca guardada: se toman como nuevos los ultimos 7 dias, para
+   no pintar TODO el muro de rojo en el primer ingreso. */
+function muroVisto(){ try{ return localStorage.getItem(MURO_VISTO) || ''; }catch(e){ return ''; } }
+function esPostNuevo(p){
+  if(!p.fecha) return false;
+  const v = muroVisto();
+  if(!v){ const d = diasDesde(p.fecha); return d !== null && d <= 7; }
+  return p.fecha > v;
+}
+function muroNoLeidos(){
+  const mod = (window.MODULES||[]).find(m => m.content && m.content.tipo === 'muro' && !m.hidden);
+  if(!mod) return 0;
+  return postsDelMuro(mod.content).filter(esPostNuevo).length;
+}
+function marcarMuroVisto(){
+  const h = new Date();
+  const hoy = h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0') + '-' + String(h.getDate()).padStart(2,'0');
+  try{ localStorage.setItem(MURO_VISTO, hoy); }catch(e){}
+}
+
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fechaLinda(f){
+  const d = diasDesde(f);
+  if(d === null) return '';
+  if(d <= 0) return 'Hoy';
+  if(d === 1) return 'Ayer';
+  if(d < 7) return 'Hace ' + d + ' días';
+  if(d < 14) return 'Hace una semana';
+  if(d < 31) return 'Hace ' + Math.round(d/7) + ' semanas';
+  const p = f.split('-').map(Number);
+  return p[2] + ' de ' + MESES[p[1]-1];
+}
+function inicialesDe(nombre){
+  const partes = String(nombre||'?').trim().split(/\s+/).slice(0,2);
+  return partes.map(p => p.charAt(0).toUpperCase()).join('');
+}
+
+function muroHTML(c, t){
+  MURO_POSTS = postsDelMuro(c);
+  if(!MURO_POSTS.length) return `<div class="pending"><b>Todavía no hay publicaciones.</b><br>Muy pronto.</div>`;
+
+  /* solo se ofrecen los filtros de los tipos que realmente existen en el muro */
+  const usados = [];
+  MURO_POSTS.forEach(p => { const e = p.etiqueta; if(e && MURO_TAGS[e] && usados.indexOf(e) < 0) usados.push(e); });
+  const filtros = usados.length > 1 ? `<div class="mu-filtros" id="muFiltros">
+      <button type="button" class="mu-chip on" onclick="muroFiltrar('',this)">Todo</button>
+      ${usados.map(e => `<button type="button" class="mu-chip" onclick="muroFiltrar('${e}',this)">
+        <span class="pto" style="background:var(${MURO_TAGS[e].c})"></span>${esc(MURO_TAGS[e].t)}</button>`).join('')}
+    </div>` : '';
+
+  return `<div class="muro">${filtros}${MURO_POSTS.map((p,i)=>{
+    const tag = MURO_TAGS[p.etiqueta];
+    const color = tag ? tag.c : '--c-hudson';
+    const nuevo = esPostNuevo(p);
+    return `<article class="mu-post${nuevo?' nueva':''}" data-tag="${esc(p.etiqueta||'')}" id="mu-${i}">
+      ${p.fijado ? `<div class="mu-fijado">${svg(I.shield)} FIJADO</div>` : ''}
+      <div class="mu-head">
+        <span class="mu-av" style="background:var(${color})">${esc(inicialesDe(p.autor))}</span>
+        <span class="mu-quien">
+          <span class="mu-autor">${esc(p.autor || 'Muebles y Sillones')}</span>
+          <span class="mu-meta">${p.sucursal ? esc(p.sucursal) + '<span class="mu-sep">·</span>' : ''}${esc(fechaLinda(p.fecha))}</span>
+        </span>
+        <span class="mu-marcas">
+          ${nuevo ? '<span class="mu-nueva">NUEVO</span>' : ''}
+          ${tag ? `<span class="mu-tag" style="background:var(${color})">${svg(I[tag.i])}${esc(tag.t)}</span>` : ''}
+        </span>
+      </div>
+      ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
+      <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
+      <div class="mu-pie">
+        <button type="button" class="mu-acc mu-wa" onclick="muroWhatsApp(${i})">${svg(I.whatsapp)} Compartir</button>
+        <button type="button" class="mu-acc" onclick="muroCopiar(${i},this)">${svg(I.ext)} Copiar link</button>
+      </div>
+    </article>`;
+  }).join('')}<div class="mu-vacio" id="muVacio" hidden>No hay publicaciones de ese tipo.</div></div>`;
+}
+
+/* Recorta los posts largos DESPUES de pintarlos: recien ahi se sabe cuanto
+   miden de verdad (las imagenes pueden no haber cargado, por eso tambien se
+   vuelve a medir cuando terminan). */
+function initMuro(){
+  const posts = document.querySelectorAll('.mu-post');
+  posts.forEach(art => {
+    const cuerpo = art.querySelector('.mu-cuerpo');
+    if(!cuerpo || cuerpo.dataset.medido) return;
+    const medir = ()=>{
+      if(cuerpo.dataset.abierto) return;
+      if(cuerpo.scrollHeight > 460 && !art.querySelector('.mu-mas')){
+        cuerpo.classList.add('recortado');
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'mu-mas'; b.textContent = 'Ver publicación completa';
+        b.onclick = ()=>{ cuerpo.classList.remove('recortado'); cuerpo.dataset.abierto = '1'; b.remove(); };
+        cuerpo.insertAdjacentElement('afterend', b);
+      }
+    };
+    medir();
+    cuerpo.querySelectorAll('img').forEach(im => { if(!im.complete) im.addEventListener('load', medir, {once:true}); });
+    cuerpo.dataset.medido = '1';
+  });
+  /* se marca como visto con un respiro, asi alcanza a ver las chapas "NUEVO" */
+  setTimeout(marcarMuroVisto, 2500);
+}
+
+function muroFiltrar(tag, btn){
+  document.querySelectorAll('#muFiltros .mu-chip').forEach(c => c.classList.toggle('on', c === btn));
+  let visibles = 0;
+  document.querySelectorAll('.mu-post').forEach(a => {
+    const ok = !tag || a.dataset.tag === tag;
+    a.classList.toggle('oculto', !ok);
+    if(ok) visibles++;
+  });
+  const v = document.getElementById('muVacio');
+  if(v) v.hidden = visibles > 0;
+}
+function linkDelPost(i){
+  return location.href.split('#')[0] + '#' + encodeURIComponent(MURO_KEY || '') + (i ? '' : '');
+}
+function muroWhatsApp(i){
+  const p = MURO_POSTS[i]; if(!p) return;
+  const txt = (p.titulo ? p.titulo + '\n' : '') + linkDelPost(i);
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+}
+function muroCopiar(i, btn){
+  const txt = linkDelPost(i);
+  const ok = ()=>{ const o = btn.innerHTML; btn.classList.add('hecho'); btn.innerHTML = svg(I.check) + ' Copiado';
+                   setTimeout(()=>{ btn.classList.remove('hecho'); btn.innerHTML = o; }, 1800); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(()=>{});
+  else { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta);
+         ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} ta.remove(); }
 }
 
 /* ===================================================================
@@ -1851,10 +2119,18 @@ document.addEventListener('keydown', e=>{
     g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; applyModules(); renderBotonera(); route(); };
     document.head.appendChild(g);
   }
+  /* contenido de prueba del muro: existe solo en la rama de trabajo */
+  function loadMuroDemo(){
+    var d=document.createElement('script');
+    d.src='muro-demo.js?v='+(new Date().getTime());
+    d.onload=loadGalerias;
+    d.onerror=loadGalerias;      /* en produccion el archivo no existe: se sigue igual */
+    document.head.appendChild(d);
+  }
   var m=document.createElement('script');
   m.src='modulos.js?v='+(new Date().getTime());
-  m.onload=loadGalerias;
-  m.onerror=loadGalerias;
+  m.onload=loadMuroDemo;
+  m.onerror=loadMuroDemo;
   document.head.appendChild(m);
 })();
 </script>
