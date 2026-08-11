@@ -437,7 +437,6 @@ window.MODULES = [
     "color": "--c-success",
     "ready": true,
     "builtin": true,
-    "actualizado": "2026-08-09",
     "content": {
       "tipo": "bloques",
       "bloques": [
@@ -3413,6 +3412,7 @@ window.MODULES = [
     "color": "--c-norcenter",
     "ready": true,
     "builtin": false,
+    "actualizado": "2026-08-11",
     "content": {
       "tipo": "bloques",
       "bloques": [
