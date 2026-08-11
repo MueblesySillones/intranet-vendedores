@@ -57,7 +57,9 @@ html,body{ font-family:'Montserrat',sans-serif; background:var(--bg); color:var(
 .home-btn:hover{ background:var(--ink); color:#fff; }
 .home-btn .ico{ width:15px; height:15px; }
 /* boton menu (solo mobile) */
-.menu-btn{ display:none; align-items:center; gap:8px; padding:11px 16px; min-height:44px; border-radius:8px; border:1.5px solid var(--ink);
+/* el menu es la via principal a los modulos ahora que la portada es el muro:
+   tiene que estar SIEMPRE, tambien en escritorio */
+.menu-btn{ display:inline-flex; align-items:center; gap:8px; padding:11px 16px; min-height:44px; border-radius:8px; border:1.5px solid var(--ink);
   background:transparent; color:var(--ink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; letter-spacing:.4px; transition:.2s; }
 .menu-btn:hover{ background:var(--ink); color:#fff; }
 .menu-btn .ico{ width:18px; height:18px; }
@@ -726,21 +728,28 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   justify-content:center; color:#fff; font-weight:700; font-size:15px; letter-spacing:.5px; }
 .mu-quien{ flex:1; min-width:0; }
 .mu-autor{ font-size:14px; font-weight:700; color:var(--ink); line-height:1.3; }
-.mu-meta{ font-size:12px; color:var(--ink3); margin-top:2px; display:flex; align-items:center;
-  gap:6px; flex-wrap:wrap; }
-.mu-sep{ opacity:.5; }
+/* una sola linea SIEMPRE: si no entra se recorta con puntos suspensivos. Si se
+   deja envolver, el separador queda colgando solo al final del renglon. */
+.mu-meta{ font-size:12px; color:var(--ink3); margin-top:2px; display:block;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mu-sep{ opacity:.5; margin:0 5px; }
 .mu-marcas{ display:flex; align-items:center; gap:6px; flex:0 0 auto; padding-top:2px; }
 .mu-tag{ display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:999px;
-  font-size:11px; font-weight:700; letter-spacing:.3px; color:#fff; white-space:nowrap; }
+  font-size:11px; font-weight:700; letter-spacing:.5px; white-space:nowrap; }
 .mu-tag .ico{ width:12px; height:12px; }
-.mu-nueva{ display:inline-flex; align-items:center; padding:4px 9px; border-radius:999px;
-  background:var(--c-info); color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.4px; }
+/* "NUEVO" avisa, no grita: si va en azul pleno le compite a la etiqueta de
+   tipo y la pantalla queda con dos colores fuertes peleando. */
+.mu-nueva{ display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px;
+  background:#E9EDF6; color:#1A4A8A; font-size:10.5px; font-weight:700; letter-spacing:.5px; }
+.mu-nueva::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--c-info); }
 .mu-fijado{ display:inline-flex; align-items:center; gap:6px; padding:7px 17px; background:var(--bg2);
   border-bottom:1px solid var(--border2); font-size:11px; font-weight:700; color:var(--ink2); letter-spacing:.4px; }
 .mu-fijado .ico{ width:13px; height:13px; }
 
 /* titulo y cuerpo */
-.mu-titulo{ font-size:18px; font-weight:700; line-height:1.35; color:var(--ink); padding:13px 17px 0; }
+.mu-titulo{ font-size:18px; font-weight:700; line-height:1.32; letter-spacing:-.2px; color:var(--ink);
+  padding:13px 17px 0; text-wrap:balance; }
+.mu-cuerpo .m-p, .mu-cuerpo .m-lead{ text-wrap:pretty; }
 .mu-cuerpo{ padding:10px 17px 2px; position:relative; }
 .mu-cuerpo .manual{ font-size:14.5px; }
 /* los posts largos se recortan: el feed tiene que poder recorrerse de un vistazo */
@@ -767,6 +776,58 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 /* estado vacio (ningun post pasa el filtro) */
 .mu-vacio{ text-align:center; padding:44px 20px; color:var(--ink3); font-size:14px; }
 
+/* ---- LOBBY: la portada ES el muro ----
+   Arriba una fila de accesos a los modulos que se desliza con el dedo (el
+   menu completo sigue estando en las tres rayitas), despues lo fijado en
+   miniatura, y abajo el feed. */
+#lobby[hidden]{ display:none; }
+.lobby-t{ display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  max-width:660px; margin:0 auto 10px; }
+.lobby-t b{ font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ink3); }
+.lobby-t a{ font-size:12.5px; font-weight:600; color:var(--c-caba); cursor:pointer; text-decoration:none; }
+
+/* accesos rapidos (se deslizan) */
+/* misma columna que el feed: si la fila arranca en otro margen, la portada
+   se ve desprolija en escritorio */
+.accesos{ display:flex; gap:10px; overflow-x:auto; padding:2px 0 18px; scroll-snap-type:x proximity;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch; max-width:660px; margin:0 auto; }
+.accesos::-webkit-scrollbar{ display:none; }
+.acc-card{ flex:0 0 auto; width:92px; scroll-snap-align:start; display:flex; flex-direction:column;
+  align-items:center; gap:8px; padding:12px 6px; border-radius:14px; border:1px solid var(--border);
+  background:var(--surface); cursor:pointer; font-family:inherit; transition:.2s; }
+.acc-card:hover{ border-color:var(--ink); transform:translateY(-2px); }
+.acc-card .icirc{ width:44px; height:44px; color:#fff; }
+.acc-card .icirc .ico{ width:21px; height:21px; }
+.acc-t{ font-size:11.5px; font-weight:700; line-height:1.25; text-align:center; color:var(--ink);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.acc-card.locked{ opacity:.5; cursor:default; }
+/* el ultimo lleva al menu completo */
+.acc-card.mas .icirc{ background:var(--bg2); color:var(--ink); border:1px dashed var(--ink3); }
+
+/* fijados: miniatura chica, para que no tape lo que se va publicando */
+.fijados{ max-width:660px; margin:0 auto 18px; }
+.fijados[hidden]{ display:none; }
+.fix-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x proximity;
+  scrollbar-width:none; }
+.fix-row::-webkit-scrollbar{ display:none; }
+.fix-card{ flex:0 0 auto; width:250px; scroll-snap-align:start; text-align:left; display:flex;
+  align-items:center; gap:10px; padding:11px 12px; border-radius:13px; border:1px solid var(--border);
+  background:var(--surface); cursor:pointer; font-family:inherit; transition:.2s; }
+.fix-card:hover{ border-color:var(--ink); }
+.fix-card.abierta{ border-color:var(--ink); }
+.fix-ic{ width:32px; height:32px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; color:#fff; }
+.fix-ic .ico{ width:16px; height:16px; }
+.fix-tx{ flex:1; min-width:0; }
+.fix-t{ font-size:12.5px; font-weight:700; line-height:1.3; color:var(--ink);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.fix-f{ font-size:10.5px; color:var(--ink3); margin-top:2px; }
+.fix-ch{ flex:0 0 auto; color:var(--ink3); font-size:15px; transition:transform .2s; }
+.fix-card.abierta .fix-ch{ transform:rotate(90deg); }
+/* la publicacion fijada se despliega ACA abajo, sin sacarte de la portada */
+.fix-abierto{ margin-top:12px; }
+.fix-abierto:empty{ display:none; }
+
 /* burbuja de no leidos en la tarjeta del hub */
 /* va en el mismo lugar que la chapa "Nuevo" (no conviven: en la tarjeta del
    muro la cuenta de sin leer dice mas que un cartel generico) */
@@ -774,8 +835,63 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   border-radius:999px; background:var(--c-danger); color:#fff; font-size:12px; font-weight:700;
   display:flex; align-items:center; justify-content:center; }
 
+/* puntito de novedad sobre el acceso a un modulo */
+.acc-card .icirc{ position:relative; }
+.acc-pto{ position:absolute; top:-1px; right:-1px; width:11px; height:11px; border-radius:50%;
+  background:var(--c-danger); border:2px solid var(--surface); }
+.lobby-n{ display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px;
+  padding:0 6px; border-radius:999px; background:var(--ink); color:#fff; font-size:11px; font-weight:700; }
+
+/* ---- BARRA DE AVISO: "hay algo nuevo en otro modulo" ----
+   Vive pegada abajo del encabezado. No interrumpe la lectura del feed, pero
+   no se puede ignorar. Se cierra y no vuelve a molestar por ese cambio. */
+.noti{ position:sticky; top:64px; z-index:40; display:flex; align-items:center; gap:11px;
+  max-width:660px; margin:0 auto 16px; padding:12px 14px; border-radius:13px;
+  background:var(--c-hudson); color:#fff; box-shadow:0 8px 24px rgba(26,26,46,.20);
+  animation:notiEntra .42s cubic-bezier(.2,.9,.3,1) both; }
+.noti[hidden]{ display:none; }
+.noti-ic{ width:30px; height:30px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; background:rgba(255,255,255,.16); }
+.noti-ic .ico{ width:16px; height:16px; }
+.noti-tx{ flex:1; min-width:0; font-size:13px; line-height:1.35; }
+.noti-tx b{ font-weight:700; }
+.noti-ver{ flex:0 0 auto; padding:8px 14px; min-height:38px; border-radius:9px; border:0;
+  background:#fff; color:var(--c-hudson); font-family:inherit; font-size:12.5px; font-weight:700;
+  cursor:pointer; transition:.2s; }
+.noti-ver:hover{ transform:translateY(-1px); }
+.noti-x{ flex:0 0 auto; width:32px; height:32px; border-radius:8px; border:0; background:transparent;
+  color:rgba(255,255,255,.75); font-size:17px; cursor:pointer; transition:.2s; }
+.noti-x:hover{ background:rgba(255,255,255,.14); color:#fff; }
+.noti.sale{ animation:notiSale .3s ease-in forwards; }
+@keyframes notiEntra{ from{ opacity:0; transform:translateY(-14px) } to{ opacity:1; transform:none } }
+@keyframes notiSale{ to{ opacity:0; transform:translateY(-10px); margin-bottom:-56px } }
+
+/* ---- MOVIMIENTO ----
+   Poco y sobrio: las publicaciones aparecen al entrar en pantalla, y lo que
+   se despliega entra desde arriba. Nada gira ni rebota. */
+@keyframes postEntra{ from{ opacity:0; transform:translateY(14px) } to{ opacity:1; transform:none } }
+.mu-post.entra{ animation:postEntra .42s cubic-bezier(.2,.9,.3,1) both; }
+.mu-post.asoma{ opacity:0; }
+.mu-post.asomo{ animation:postEntra .5s cubic-bezier(.2,.9,.3,1) both; }
+.acc-card, .fix-card, .mu-chip, .mu-acc{ -webkit-tap-highlight-color:transparent; }
+.acc-card:active, .fix-card:active{ transform:scale(.97); }
+.mu-acc:active{ transform:scale(.96); }
+/* quien pidió menos movimiento en su celular, no lo tiene */
+@media(prefers-reduced-motion:reduce){
+  .mu-post.entra, .mu-post.asomo, .noti{ animation:none; }
+  .mu-post.asoma{ opacity:1; }
+  .acc-card:active, .fix-card:active, .mu-acc:active{ transform:none; }
+}
+
 @media(max-width:640px){
+  .noti{ max-width:none; top:58px; }
   .muro{ max-width:none; }
+  .lobby-t, .fijados, .accesos{ max-width:none; }
+  /* los accesos y los fijados se salen del margen a proposito: asi se ve que
+     hay mas tarjetas para el costado */
+  .accesos, .fix-row{ margin:0 -18px; padding-left:18px; padding-right:18px; }
+  .acc-card{ width:84px; }
+  .fix-card{ width:min(74vw,262px); }
   .mu-head{ padding:13px 14px 0; gap:10px; }
   .mu-av{ width:38px; height:38px; font-size:14px; }
   .mu-titulo{ font-size:16.5px; padding:11px 14px 0; }
@@ -808,7 +924,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
       <span class="ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> <span class="hb-tx">Inicio</span>
     </button>
     <button class="menu-btn" id="menuBtn" onclick="openMenu()" aria-label="Abrir menú de navegación">
-      <span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Menú
+      <span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Módulos
     </button>
   </div>
 </header>
@@ -816,10 +932,20 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 <main>
   <!-- HUB -->
   <section id="hub">
-    <div class="hero">
+    <div class="hero" id="hero">
       <div class="eyebrow">Centro de recursos</div>
       <h1>Todo lo que necesitás, en un solo lugar</h1>
       <p>Elegí una sección para ver la información o descargar el material. Vamos sumando contenido a medida que esté listo.</p>
+    </div>
+    <!-- LOBBY: cuando hay un modulo de tipo muro, la portada ES el muro.
+         Arriba los accesos a los modulos (deslizables) y lo fijado en
+         miniatura; abajo, el feed. Si no hay muro, esto queda vacio y la
+         portada sigue siendo la grilla de siempre. -->
+    <div id="lobby" hidden>
+      <div class="noti" id="noti" hidden></div>
+      <div class="accesos" id="accesos"></div>
+      <div class="fijados" id="fijados" hidden></div>
+      <div id="feed"></div>
     </div>
     <!-- lo que se movió desde la última vez: publicar sin que nadie se entere
          es la mitad del trabajo tirado -->
@@ -846,7 +972,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   <div class="nav-ov" onclick="closeMenu()"></div>
   <aside class="nav-panel">
     <div class="nav-head">
-      <span class="nh-t">Navegación</span>
+      <span class="nh-t">Módulos</span>
       <button class="nav-close" onclick="closeMenu()" aria-label="Cerrar menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="nav-list" id="navList"></div>
@@ -1697,7 +1823,7 @@ function renderSection(key){
   else if(imgs.length) body = galleryHTML(imgs, t);
   else body = pendingHTML(t);
   document.getElementById('secBody').innerHTML = body;
-  if(esMuro) initMuro();
+  if(esMuro){ initMuro(); animarEntradas(document.getElementById('secBody')); }
   plegarGalerias(document.getElementById('secBody'), key);
   document.body.classList.toggle('report-mode', embed || presenta || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
   if(presenta) initDeck(); else dkSlides = [];
@@ -1759,7 +1885,13 @@ function route(){
   closeMenu();
   const key = decodeURIComponent(location.hash.slice(1));
   if(key && MAP[key]) renderSection(key);
-  else { document.body.classList.remove('report-mode'); document.getElementById('view').hidden=true; document.getElementById('hub').hidden=false; pintarNavHeader(); }
+  else {
+    document.body.classList.remove('report-mode');
+    document.getElementById('view').hidden=true;
+    document.getElementById('hub').hidden=false;
+    renderHub();                 /* al volver a la portada, el muro se repinta */
+    pintarNavHeader();
+  }
 }
 window.addEventListener('hashchange', route);
 
@@ -1808,14 +1940,27 @@ function renderContent(c, t){
    asi que adentro de un post sirven TODOS los bloques que ya existen
    (imagenes, galerias, video, PDF, plantillas de WhatsApp...).
    =================================================================== */
+/* Las chapas van TINTADAS (fondo suave + texto al color pleno), no saturadas:
+   con 6 tipos de colores fuertes la pantalla parece un semáforo y se deja de
+   leer lo que importa. El rojo queda reservado para "Importante", y "Equipo"
+   directamente va en neutro. */
 const MURO_TAGS = {
-  anuncio:      { t:'Anuncio',      c:'--c-hudson',    i:'megaphone' },
-  promo:        { t:'Promoción',    c:'--c-norcenter', i:'tag' },
-  capacitacion: { t:'Capacitación', c:'--c-caba',      i:'book' },
-  logro:        { t:'Logro',        c:'--c-canning',   i:'award' },
-  importante:   { t:'Importante',   c:'--c-danger',    i:'shield' },
-  equipo:       { t:'Equipo',       c:'--c-success',   i:'users' }
+  anuncio:      { t:'Anuncio',      c:'--c-hudson',    bg:'#E9EDF6', fg:'#1A4A8A', i:'megaphone' },
+  promo:        { t:'Promoción',    c:'--c-norcenter', bg:'#F5EDE3', fg:'#8A5A2C', i:'tag' },
+  capacitacion: { t:'Capacitación', c:'--c-caba',      bg:'#E7F0F4', fg:'#255C74', i:'book' },
+  logro:        { t:'Logro',        c:'--c-canning',   bg:'#E6F1EA', fg:'#1A6A3A', i:'award' },
+  importante:   { t:'Importante',   c:'--c-danger',    bg:'#FBEAE9', fg:'#B4231F', i:'shield' },
+  equipo:       { t:'Equipo',       c:'--c-hudson',    bg:'#EFEDE9', fg:'#5A554D', i:'users' }
 };
+/* El color del avatar identifica a QUIEN publica, no al tipo de publicación:
+   el mismo nombre saca siempre el mismo color. */
+const AVATAR_COLORES = ['--c-hudson', '--c-caba', '--c-canning', '--c-norcenter'];
+function colorDeAutor(nombre){
+  const s = String(nombre || 'MyS');
+  let n = 0;
+  for(let i = 0; i < s.length; i++) n = (n + s.charCodeAt(i)) % 997;
+  return AVATAR_COLORES[n % AVATAR_COLORES.length];
+}
 const MURO_VISTO = 'mys_muro_visto';     /* fecha de la ultima vez que entro */
 let MURO_POSTS = [];                     /* los posts que se estan mostrando */
 let MURO_KEY = null;
@@ -1865,44 +2010,52 @@ function inicialesDe(nombre){
   return partes.map(p => p.charAt(0).toUpperCase()).join('');
 }
 
-function muroHTML(c, t){
+/* Una publicacion. Se usa igual en el feed y al desplegar una fijada. */
+function postHTML(p, i){
+  const tag = MURO_TAGS[p.etiqueta];
+  const nuevo = esPostNuevo(p);
+  return `<article class="mu-post${nuevo?' nueva':''}" data-tag="${esc(p.etiqueta||'')}" id="mu-${i}">
+    ${p.fijado ? `<div class="mu-fijado">${svg(I.shield)} FIJADO</div>` : ''}
+    <div class="mu-head">
+      <span class="mu-av" style="background:var(${colorDeAutor(p.autor)})">${esc(inicialesDe(p.autor))}</span>
+      <span class="mu-quien">
+        <span class="mu-autor">${esc(p.autor || 'Muebles y Sillones')}</span>
+        <span class="mu-meta">${p.sucursal ? esc(p.sucursal) + '<span class="mu-sep">·</span>' : ''}${esc(fechaLinda(p.fecha))}</span>
+      </span>
+      <span class="mu-marcas">
+        ${nuevo ? '<span class="mu-nueva">NUEVO</span>' : ''}
+        ${tag ? `<span class="mu-tag" style="background:${tag.bg};color:${tag.fg}">${svg(I[tag.i])}${esc(tag.t)}</span>` : ''}
+      </span>
+    </div>
+    ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
+    <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
+    <div class="mu-pie">
+      <button type="button" class="mu-acc mu-wa" onclick="muroWhatsApp(${i})">${svg(I.whatsapp)} Compartir</button>
+      <button type="button" class="mu-acc" onclick="muroCopiar(${i},this)">${svg(I.ext)} Copiar link</button>
+    </div>
+  </article>`;
+}
+
+/* El feed. Con `fijadosAparte` las publicaciones fijadas NO se listan acá:
+   van arriba en miniatura (asi no tapan lo que se va publicando). */
+function muroHTML(c, t, opts){
+  opts = opts || {};
   MURO_POSTS = postsDelMuro(c);
   if(!MURO_POSTS.length) return `<div class="pending"><b>Todavía no hay publicaciones.</b><br>Muy pronto.</div>`;
 
-  /* solo se ofrecen los filtros de los tipos que realmente existen en el muro */
+  const enFeed = MURO_POSTS.filter(p => !(opts.fijadosAparte && p.fijado));
+  /* solo se ofrecen los filtros de los tipos que realmente existen en el feed */
   const usados = [];
-  MURO_POSTS.forEach(p => { const e = p.etiqueta; if(e && MURO_TAGS[e] && usados.indexOf(e) < 0) usados.push(e); });
+  enFeed.forEach(p => { const e = p.etiqueta; if(e && MURO_TAGS[e] && usados.indexOf(e) < 0) usados.push(e); });
   const filtros = usados.length > 1 ? `<div class="mu-filtros" id="muFiltros">
       <button type="button" class="mu-chip on" onclick="muroFiltrar('',this)">Todo</button>
       ${usados.map(e => `<button type="button" class="mu-chip" onclick="muroFiltrar('${e}',this)">
         <span class="pto" style="background:var(${MURO_TAGS[e].c})"></span>${esc(MURO_TAGS[e].t)}</button>`).join('')}
     </div>` : '';
 
-  return `<div class="muro">${filtros}${MURO_POSTS.map((p,i)=>{
-    const tag = MURO_TAGS[p.etiqueta];
-    const color = tag ? tag.c : '--c-hudson';
-    const nuevo = esPostNuevo(p);
-    return `<article class="mu-post${nuevo?' nueva':''}" data-tag="${esc(p.etiqueta||'')}" id="mu-${i}">
-      ${p.fijado ? `<div class="mu-fijado">${svg(I.shield)} FIJADO</div>` : ''}
-      <div class="mu-head">
-        <span class="mu-av" style="background:var(${color})">${esc(inicialesDe(p.autor))}</span>
-        <span class="mu-quien">
-          <span class="mu-autor">${esc(p.autor || 'Muebles y Sillones')}</span>
-          <span class="mu-meta">${p.sucursal ? esc(p.sucursal) + '<span class="mu-sep">·</span>' : ''}${esc(fechaLinda(p.fecha))}</span>
-        </span>
-        <span class="mu-marcas">
-          ${nuevo ? '<span class="mu-nueva">NUEVO</span>' : ''}
-          ${tag ? `<span class="mu-tag" style="background:var(${color})">${svg(I[tag.i])}${esc(tag.t)}</span>` : ''}
-        </span>
-      </div>
-      ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
-      <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
-      <div class="mu-pie">
-        <button type="button" class="mu-acc mu-wa" onclick="muroWhatsApp(${i})">${svg(I.whatsapp)} Compartir</button>
-        <button type="button" class="mu-acc" onclick="muroCopiar(${i},this)">${svg(I.ext)} Copiar link</button>
-      </div>
-    </article>`;
-  }).join('')}<div class="mu-vacio" id="muVacio" hidden>No hay publicaciones de ese tipo.</div></div>`;
+  return `<div class="muro">${filtros}${MURO_POSTS.map((p,i)=>
+      (opts.fijadosAparte && p.fijado) ? '' : postHTML(p, i)
+    ).join('')}<div class="mu-vacio" id="muVacio" hidden>No hay publicaciones de ese tipo.</div></div>`;
 }
 
 /* Recorta los posts largos DESPUES de pintarlos: recien ahi se sabe cuanto
@@ -1957,6 +2110,186 @@ function muroCopiar(i, btn){
   if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(()=>{});
   else { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta);
          ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} ta.remove(); }
+}
+
+/* ===================================================================
+   LOBBY: si hay un modulo de tipo muro, LA PORTADA ES EL MURO.
+   Arriba los accesos a los modulos (se deslizan con el dedo) y lo fijado
+   en miniatura; abajo el feed. El menu de las tres rayitas sigue teniendo
+   TODO, que es como se encuentra algo puntual rapido.
+   Si no hay muro, la portada sigue siendo la grilla de siempre.
+   =================================================================== */
+function moduloMuro(){
+  return (window.MODULES || []).find(m => m.content && m.content.tipo === 'muro' && !m.hidden) || null;
+}
+function renderHub(){
+  const mod = moduloMuro();
+  const lobby = document.getElementById('lobby');
+  const hero  = document.getElementById('hero');
+  const bot   = document.getElementById('botonera');
+  if(!mod){                                  /* sin muro: portada clasica */
+    lobby.hidden = true; hero.hidden = false; bot.hidden = false;
+    renderBotonera();
+    return;
+  }
+  hero.hidden = true; bot.hidden = true;
+  document.getElementById('novedades').hidden = true;
+  lobby.hidden = false;
+  MURO_KEY = mod.key;
+  renderAccesos();
+  document.getElementById('feed').innerHTML =
+    `<div class="lobby-t"><b>Novedades</b></div>` +
+    muroHTML(mod.content, MAP[mod.key], {fijadosAparte:true});
+  renderFijados();
+  renderNoti();
+  initMuro();
+  animarEntradas(document.getElementById('feed'));
+}
+
+function renderAccesos(){
+  const cont = document.getElementById('accesos');
+  const items = TILES.filter(t => t.key !== MURO_KEY);
+  cont.innerHTML = items.map(t => {
+    const r = seccionLista(t);
+    const nv = r && esNovedad(t.key);
+    return `<button type="button" class="acc-card${r?'':' locked'}"${r?` onclick="openSection('${t.key}')"`:' disabled aria-disabled="true"'}>
+      <span class="icirc" style="background:var(${t.color})">${svg(I[t.icon])}${nv?'<span class="acc-pto"></span>':''}</span>
+      <span class="acc-t">${esc(t.title)}</span>
+    </button>`;
+  }).join('') + `<button type="button" class="acc-card mas" onclick="openMenu()" title="Ver todos los módulos">
+      <span class="icirc">${svg(I.layers)}</span><span class="acc-t">Ver todo</span></button>`;
+}
+
+/* Lo fijado va en MINIATURA: se despliega abajo cuando lo tocan, asi no se
+   come la pantalla ni tapa lo que se publica todos los dias. */
+let FIX_ABIERTO = null;
+function renderFijados(){
+  const cont = document.getElementById('fijados');
+  const fij = MURO_POSTS.map((p,i) => ({p,i})).filter(x => x.p.fijado);
+  if(!fij.length){ cont.hidden = true; cont.innerHTML = ''; return; }
+  cont.hidden = false;
+  cont.innerHTML = `<div class="lobby-t"><b>Importante</b>${fij.length>1?`<span class="lobby-n">${fij.length}</span>`:''}</div>
+    <div class="fix-row">${fij.map(({p,i}) => {
+      const tag = MURO_TAGS[p.etiqueta];
+      const color = tag ? tag.c : '--c-hudson';
+      return `<button type="button" class="fix-card" data-i="${i}" onclick="verFijado(${i},this)">
+        <span class="fix-ic" style="background:var(${color})">${svg(I[tag ? tag.i : 'shield'])}</span>
+        <span class="fix-tx">
+          <span class="fix-t">${esc(p.titulo || 'Publicación')}</span>
+          <span class="fix-f">${esc(fechaLinda(p.fecha))}${tag ? ' · ' + esc(tag.t) : ''}</span>
+        </span>
+        <span class="fix-ch">›</span>
+      </button>`;
+    }).join('')}</div>
+    <div class="fix-abierto" id="fixAbierto"></div>`;
+}
+function verFijado(i, btn){
+  const caja = document.getElementById('fixAbierto');
+  document.querySelectorAll('.fix-card').forEach(c => c.classList.toggle('abierta', c === btn && FIX_ABIERTO !== i));
+  if(FIX_ABIERTO === i){                    /* segunda vez: se cierra */
+    FIX_ABIERTO = null; caja.innerHTML = '';
+    return;
+  }
+  FIX_ABIERTO = i;
+  caja.innerHTML = postHTML(MURO_POSTS[i], i);
+  const art = caja.querySelector('.mu-post');
+  if(art) art.classList.add('entra');
+  initMuro();
+}
+
+/* ---- BARRA DE AVISO ----
+   Una sola a la vez, y la que se ve es la que el vendedor NO puede descubrir
+   solo: si cambió algo en otro modulo, no lo ve en la portada. Las
+   publicaciones nuevas ya se ven abajo, asi que solo se avisan si son varias.
+   Cerrarla la calla hasta que haya un cambio distinto. */
+const NOTI_CERRADA = 'mys_noti_cerrada';
+function renderNoti(){
+  const caja = document.getElementById('noti');
+  if(!caja) return;
+  const mods = TILES.filter(t => t.key !== MURO_KEY && seccionLista(t) && esNovedad(t.key));
+  const nuevas = MURO_POSTS.filter(esPostNuevo).length;
+  let firma = '', ico = 'megaphone', texto = '', accion = '';
+  if(mods.length){
+    firma = 'm:' + mods.map(t => t.key + ':' + (MODMAP[t.key]||{}).actualizado).join('|');
+    ico = 'refresh';
+    texto = mods.length === 1
+      ? `Hay material nuevo en <b>${esc(mods[0].title)}</b>`
+      : `Hay material nuevo en <b>${mods.length} módulos</b>`;
+    accion = mods.length === 1
+      ? `<button type="button" class="noti-ver" onclick="openSection('${mods[0].key}')">Ver</button>`
+      : `<button type="button" class="noti-ver" onclick="openMenu()">Ver</button>`;
+  } else if(nuevas > 1){
+    firma = 'p:' + nuevas + ':' + (MURO_POSTS[0]||{}).fecha;
+    texto = `<b>${nuevas} publicaciones nuevas</b> desde la última vez`;
+    accion = `<button type="button" class="noti-ver" onclick="irAPrimeraNueva()">Ver</button>`;
+  }
+  let cerrada = '';
+  try{ cerrada = localStorage.getItem(NOTI_CERRADA) || ''; }catch(e){}
+  if(!firma || firma === cerrada){ caja.hidden = true; caja.innerHTML = ''; return; }
+  caja.dataset.firma = firma;
+  caja.hidden = false;
+  caja.innerHTML = `<span class="noti-ic">${svg(I[ico])}</span>
+    <span class="noti-tx">${texto}</span>${accion}
+    <button type="button" class="noti-x" onclick="cerrarNoti()" aria-label="Cerrar aviso">✕</button>`;
+}
+function cerrarNoti(){
+  const caja = document.getElementById('noti');
+  try{ localStorage.setItem(NOTI_CERRADA, caja.dataset.firma || ''); }catch(e){}
+  caja.classList.add('sale');
+  setTimeout(()=>{ caja.hidden = true; caja.classList.remove('sale'); caja.innerHTML = ''; }, 300);
+}
+function irAPrimeraNueva(){
+  const art = document.querySelector('.mu-post.nueva');
+  if(art) art.scrollIntoView({behavior:'smooth', block:'start'});
+  cerrarNoti();
+}
+
+/* ---- las publicaciones aparecen al entrar en pantalla ----
+   Se hace con IntersectionObserver y NO con un timer: si el vendedor no
+   llego hasta ahi, no hay animacion que correr. La clase se SACA al ver la
+   tarjeta, asi que si el navegador no soporta nada, el feed igual se ve. */
+let muroObs = null;
+function revelar(el, animar){
+  el.classList.remove('asoma');
+  if(animar) el.classList.add('asomo');
+  if(muroObs) muroObs.unobserve(el);
+}
+/* RED DE SEGURIDAD (esto ya rompio una vez): si el scroll salta de golpe -por
+   un ancla, un scrollIntoView o un flick fuerte-, el observer NO ve las
+   tarjetas que pasaron de largo entre dos cuadros y quedaban INVISIBLES para
+   siempre. Asi que todo lo que ya llego a la altura de la ventana se revela
+   si o si, lo haya visto el observer o no. */
+function revelarPasadas(){
+  document.querySelectorAll('.mu-post.asoma').forEach(el=>{
+    if(el.getBoundingClientRect().top < window.innerHeight + 80) revelar(el, true);
+  });
+}
+let revPend = false;
+function pedirRevelar(){
+  if(revPend) return;
+  revPend = true;
+  requestAnimationFrame(()=>{ revPend = false; revelarPasadas(); });
+}
+window.addEventListener('scroll', pedirRevelar, {passive:true});
+window.addEventListener('resize', pedirRevelar, {passive:true});
+
+function animarEntradas(cont){
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce || !('IntersectionObserver' in window)) return;
+  if(!muroObs){
+    muroObs = new IntersectionObserver((entradas)=>{
+      entradas.forEach(en=>{ if(en.isIntersecting) revelar(en.target, true); });
+    }, {threshold:0, rootMargin:'0px 0px -40px 0px'});
+  }
+  cont.querySelectorAll('.mu-post:not(.asomo)').forEach((el, i)=>{
+    if(el.dataset.obs) return;
+    el.dataset.obs = '1';
+    el.classList.add('asoma');
+    el.style.animationDelay = Math.min(i, 4) * 55 + 'ms';   /* escalonado corto */
+    muroObs.observe(el);
+  });
+  /* ultimo seguro: pase lo que pase, a los 2s no queda nada escondido */
+  setTimeout(()=>{ cont.querySelectorAll('.mu-post.asoma').forEach(el => revelar(el, true)); }, 2000);
 }
 
 /* ===================================================================
@@ -2115,8 +2448,8 @@ document.addEventListener('keydown', e=>{
   function loadGalerias(){
     var g=document.createElement('script');
     g.src='galerias.js?v='+(new Date().getTime());
-    g.onload=function(){ applyModules(); renderBotonera(); route(); };
-    g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; applyModules(); renderBotonera(); route(); };
+    g.onload=function(){ applyModules(); renderHub(); route(); };
+    g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; applyModules(); renderHub(); route(); };
     document.head.appendChild(g);
   }
   /* contenido de prueba del muro: existe solo en la rama de trabajo */
