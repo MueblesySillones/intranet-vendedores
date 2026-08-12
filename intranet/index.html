@@ -950,25 +950,40 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   .bu-body{ padding:12px 14px 30px; }
 }
 
-/* ---- "ENTERADO": acuse de lectura ----
-   Se distingue del resto por el fondo: no es una accion mas del pie, es
-   algo que la empresa te esta pidiendo. */
-.mu-ok{ display:flex; align-items:center; gap:12px; margin:12px 20px 0; padding:13px 15px;
-  border-radius:12px; background:#FBF6E7; border:1px solid rgba(154,106,0,.28); }
-.mu-ok-tx{ flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--ink); }
-.mu-ok-d{ color:var(--ink3); font-size:12.5px; }
-.mu-ok-btn{ flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:10px 16px;
-  min-height:42px; border-radius:9px; border:0; background:var(--c-warn); color:#fff;
-  font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap;
-  transition:.18s; }
-.mu-ok-btn:hover{ filter:brightness(1.08); }
-.mu-ok-btn .ico{ width:15px; height:15px; }
-.mu-ok.hecho{ background:#EAF3EC; border-color:rgba(26,106,58,.28); }
-.mu-ok-ic{ width:30px; height:30px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center;
-  justify-content:center; background:var(--c-success); color:#fff; }
-.mu-ok-ic .ico{ width:15px; height:15px; }
-.mu-ok.recien{ animation:okEntra .4s cubic-bezier(.2,.9,.3,1) both; }
-@keyframes okEntra{ from{ transform:scale(.97); opacity:.4 } }
+/* ---- lectura obligatoria: una CHAPA CHICA, no una caja ----
+   Se marca sola cuando la publicación se queda un rato en pantalla; el
+   toque queda como atajo para quien quiera dejarlo hecho enseguida. */
+.mu-lec{ display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:999px;
+  border:1px solid rgba(154,106,0,.35); background:#FBF6E7; color:#8A6000;
+  font-family:inherit; font-size:11px; font-weight:700; letter-spacing:.3px; cursor:pointer;
+  white-space:nowrap; transition:.18s; }
+.mu-lec:hover{ background:#F6EDD6; }
+.mu-lec .ico{ width:12px; height:12px; }
+.mu-lec.ok{ background:#EAF3EC; border-color:rgba(26,106,58,.3); color:var(--c-success); cursor:default; }
+.mu-lec.recien{ animation:lecOk .45s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes lecOk{ 45%{ transform:scale(1.12) } 100%{ transform:scale(1) } }
+
+/* el anillo que se llena mientras la publicación está a la vista: cuando
+   termina de dar la vuelta, se da por leída y se convierte en un tilde */
+.lec-ring{ margin-left:auto; width:26px; height:26px; flex:0 0 auto; position:relative;
+  opacity:0; transform:scale(.7); transition:opacity .2s, transform .2s; pointer-events:none; }
+.lec-ring.viendo{ opacity:1; transform:none; }
+.lec-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+.lec-ring circle{ fill:none; stroke-width:3; }
+.lec-ring .pista{ stroke:var(--border); }
+.lec-ring .prog{ stroke:var(--c-warn); stroke-linecap:round;
+  stroke-dasharray:94.2; stroke-dashoffset:94.2; }
+.lec-ring.viendo .prog{ animation:lecCarga var(--tlec,2000ms) linear forwards; }
+@keyframes lecCarga{ to{ stroke-dashoffset:0 } }
+.lec-ok{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--c-success); opacity:0; transform:scale(.5); }
+.lec-ok .ico{ width:15px; height:15px; }
+.lec-ring.listo .prog{ stroke:var(--c-success); animation:none; stroke-dashoffset:0; }
+.lec-ring.listo .lec-ok{ opacity:1; transform:none; transition:.28s cubic-bezier(.2,1.5,.4,1); }
+.lec-ring.listo{ opacity:1; transform:none; }
+@media(prefers-reduced-motion:reduce){
+  .lec-ring, .lec-ring.viendo .prog{ transition:none; }
+}
 
 /* aviso arriba de todo: te faltan confirmar cosas */
 .pendientes{ display:flex; align-items:center; gap:11px; max-width:660px; margin:0 auto 14px;
@@ -2028,7 +2043,7 @@ function renderSection(key){
   else if(imgs.length) body = galleryHTML(imgs, t);
   else body = pendingHTML(t);
   document.getElementById('secBody').innerHTML = body;
-  if(esMuro){ initMuro(); animarEntradas(document.getElementById('secBody')); }
+  if(esMuro){ initMuro(); animarEntradas(document.getElementById('secBody')); vigilarLectura(); }
   plegarGalerias(document.getElementById('secBody'), key);
   document.body.classList.toggle('report-mode', embed || presenta || (key==='reporte' && !(mod && mod.content && mod.content.tipo)));
   if(presenta) initDeck(); else dkSlides = [];
@@ -2336,31 +2351,91 @@ function entendidos(){
   return ENTENDIDO;
 }
 function yaEntendido(p){ return entendidos().has(idDePost(p)); }
-function cajaEntendido(p, i){
+/* Una CHAPA CHICA en la cabecera, al lado del tipo. Antes era una caja
+   grande con un botón y se comía media publicación para decir algo que
+   se entiende con dos palabras. */
+function chapaLectura(p, i){
   if(!p.confirmar) return '';
   const ok = yaEntendido(p);
-  return `<div class="mu-ok${ok ? ' hecho' : ''}" id="ok-${i}">
-    ${ok ? `<span class="mu-ok-ic">${svg(I.check)}</span>
-        <span class="mu-ok-tx"><b>Confirmaste que lo leíste.</b><br>
-          <span class="mu-ok-d">Quedó registrado. Gracias.</span></span>`
-      : `<span class="mu-ok-tx"><b>Esta comunicación es de lectura obligatoria.</b><br>
-          <span class="mu-ok-d">Tocá el botón para dejar constancia de que la leíste.</span></span>
-        <button type="button" class="mu-ok-btn" onclick="confirmarLeido(${i})">${svg(I.check)} Entendido</button>`}
-  </div>`;
+  return ok
+    ? `<span class="mu-lec ok" id="lec-${i}" title="Quedó registrado que la leíste">${svg(I.check)} Leído</span>`
+    : `<button type="button" class="mu-lec" id="lec-${i}" onclick="confirmarLeido(${i})"
+        title="Lectura obligatoria. Se marca sola cuando la leas, o tocá acá.">${svg(I.shield)} Confirmar lectura</button>`;
 }
 function confirmarLeido(i){
-  const p = MURO_POSTS[i]; if(!p) return;
+  const p = MURO_POSTS[i]; if(!p || yaEntendido(p)) return;
   const S = entendidos();
   S.add(idDePost(p));
   try{ localStorage.setItem(MURO_OK, JSON.stringify(Array.from(S).slice(-400))); }catch(e){}
-  const caja = document.getElementById('ok-' + i);
-  if(caja){
-    caja.outerHTML = cajaEntendido(p, i);
-    const nueva = document.getElementById('ok-' + i);
+  const vieja = document.getElementById('lec-' + i);
+  if(vieja){
+    vieja.outerHTML = chapaLectura(p, i);
+    const nueva = document.getElementById('lec-' + i);
     if(nueva && !sinMovimiento()) nueva.classList.add('recien');
   }
-  pintarPendientes();
+  /* el aviso de arriba solo se re-dibuja si el vendedor está mirando el
+     principio: si no, la portada le da un salto justo mientras lee */
+  if(window.scrollY < 220) pintarPendientes();
 }
+
+/* ---- LECTURA AUTOMÁTICA ----
+   Si la publicación se queda quieta en pantalla el tiempo suficiente, se
+   da por leída sola. Si el vendedor pasa de largo deslizando, no. Así no
+   hace falta tocar un botón para cada comunicación.
+   Se exige: que la pestaña esté a la vista, que se vea una parte grande
+   de la publicación, y que se mantenga TIEMPO_LECTURA sin salirse. */
+const TIEMPO_LECTURA = 2000;
+let obsLectura = null;
+const relojes = new Map();
+function vigilarLectura(){
+  if(!('IntersectionObserver' in window)) return;
+  if(!obsLectura){
+    obsLectura = new IntersectionObserver(entradas => {
+      entradas.forEach(en => {
+        const el = en.target, i = Number(el.dataset.lecIdx);
+        const alto = en.boundingClientRect.height || 1;
+        /* "se ve bien" = más de la mitad de la publicación, o media pantalla
+           si la publicación es más alta que la ventana */
+        const visible = en.intersectionRect.height;
+        const suficiente = en.isIntersecting &&
+          visible >= Math.min(alto * 0.55, window.innerHeight * 0.45);
+        const anillo = el.querySelector('.lec-ring');
+        if(suficiente && !document.hidden){
+          if(!relojes.has(el)){
+            if(anillo){ anillo.style.setProperty('--tlec', TIEMPO_LECTURA + 'ms'); anillo.classList.add('viendo'); }
+            relojes.set(el, setTimeout(()=>{
+              relojes.delete(el);
+              if(anillo) anillo.classList.add('listo');
+              confirmarLeido(i);
+              /* el tilde se muestra un momento y se va: el estado ya queda
+                 arriba, en la chapa verde */
+              setTimeout(()=>{ if(anillo) anillo.classList.remove('viendo', 'listo'); }, 1600);
+            }, TIEMPO_LECTURA));
+          }
+        } else if(relojes.has(el)){
+          clearTimeout(relojes.get(el)); relojes.delete(el);   /* pasó de largo */
+          if(anillo) anillo.classList.remove('viendo');        /* vuelve a cero */
+        }
+      });
+    }, { threshold:[0, .25, .45, .55, .75, 1] });
+  }
+  document.querySelectorAll('.mu-post').forEach(art => {
+    const chapa = art.querySelector('.mu-lec:not(.ok)');
+    if(!chapa || art.dataset.vigilada) return;
+    art.dataset.vigilada = '1';
+    art.dataset.lecIdx = (chapa.id || '').replace('lec-', '');
+    obsLectura.observe(art);
+  });
+}
+/* si se va a otra app o cambia de pestaña, los relojes se frenan */
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden) return;
+  relojes.forEach((t, el)=>{
+    clearTimeout(t);
+    const a = el.querySelector('.lec-ring'); if(a) a.classList.remove('viendo');
+  });
+  relojes.clear();
+});
 /* cuantas comunicaciones obligatorias le faltan confirmar */
 function pendientesDeConfirmar(){
   const mod = moduloMuro();
@@ -2480,12 +2555,12 @@ function postHTML(p, i){
       </span>
       <span class="mu-marcas">
         ${nuevo ? '<span class="mu-nueva">NUEVO</span>' : ''}
+        ${chapaLectura(p, i)}
         ${tag ? `<span class="mu-tag" style="background:${tag.bg};color:${tag.fg}">${svg(I[tag.i])}${esc(tag.t)}</span>` : ''}
       </span>
     </div>
     ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
     <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
-    ${cajaEntendido(p, i)}
     ${resumenReacciones(p, i)}
     <div class="mu-pie">
       ${botonReaccion(p, i)}
@@ -2493,6 +2568,10 @@ function postHTML(p, i){
         >${svg(I.whatsapp)}<span class="re-t"> Compartir</span></button>
       <button type="button" class="mu-acc solo-ic" title="Copiar el link" aria-label="Copiar el link"
         onclick="muroCopiar(${i},this)">${svg(I.ext)}</button>
+      ${p.confirmar && !yaEntendido(p) ? `<span class="lec-ring" id="ring-${i}" aria-hidden="true">
+        <svg viewBox="0 0 36 36"><circle class="pista" cx="18" cy="18" r="15"/>
+          <circle class="prog" cx="18" cy="18" r="15"/></svg>
+        <span class="lec-ok">${svg(I.check)}</span></span>` : ''}
     </div>
   </article>`;
 }
@@ -2845,6 +2924,7 @@ function renderHub(){
   pintarContadorMenu();
   initMuro();
   animarEntradas(document.getElementById('feed'));
+  vigilarLectura();
 }
 
 /* Lo fijado va en una FRANJA FINA: se despliega abajo cuando la tocan. Tiene
@@ -2883,6 +2963,7 @@ function verFijado(i, btn){
   const art = caja.querySelector('.mu-post');
   if(art) art.classList.add('entra');
   initMuro();
+  vigilarLectura();      /* la fijada suele ser justo la que pide confirmación */
 }
 
 /* ---- BARRA DE AVISO ----
@@ -2956,7 +3037,13 @@ let revPend = false;
 function pedirRevelar(){
   if(revPend) return;
   revPend = true;
-  requestAnimationFrame(()=>{ revPend = false; revelarPasadas(); });
+  requestAnimationFrame(()=>{
+    revPend = false;
+    revelarPasadas();
+    /* el aviso de lecturas pendientes se pone al dia cuando volvés arriba:
+       actualizarlo mientras leés abajo le daría un salto a la pantalla */
+    if(window.scrollY < 120) pintarPendientes();
+  });
 }
 window.addEventListener('scroll', pedirRevelar, {passive:true});
 window.addEventListener('resize', pedirRevelar, {passive:true});
