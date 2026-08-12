@@ -873,6 +873,42 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; }
 
 /* ===================================================================
+   BARRA DE ABAJO (solo celular)
+   La navegación no se puede perder nunca: el vendedor entra 40 segundos
+   entre un cliente y otro. Inicio / Buscar / Módulos siempre al alcance
+   del pulgar.
+   =================================================================== */
+.tabbar{ display:none; }
+@media(max-width:640px){
+  .tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:60; display:flex;
+    background:rgba(255,255,255,.94); backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);
+    padding-bottom:env(safe-area-inset-bottom,0px); }   /* barra del iPhone */
+  .tab{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; padding:9px 4px 8px; min-height:56px; border:0; background:transparent;
+    color:var(--ink3); font-family:inherit; cursor:pointer; position:relative;
+    -webkit-tap-highlight-color:transparent; transition:color .18s; }
+  .tab-ic{ width:23px; height:23px; }
+  .tab-ic svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.8;
+    stroke-linecap:round; stroke-linejoin:round; }
+  .tab-t{ font-size:10.5px; font-weight:700; letter-spacing:.2px; }
+  .tab.on{ color:var(--ink); }
+  .tab.on .tab-ic svg{ stroke-width:2.1; }
+  .tab:active .tab-ic{ transform:scale(.9); }
+  .tab-n{ position:absolute; top:5px; left:50%; margin-left:5px; min-width:17px; height:17px;
+    padding:0 5px; border-radius:999px; background:var(--c-danger); color:#fff; font-size:10px;
+    font-weight:700; display:flex; align-items:center; justify-content:center;
+    font-variant-numeric:tabular-nums; }
+  .tab-n[hidden]{ display:none; }
+  /* que la barra no tape el final del contenido */
+  main{ padding-bottom:calc(78px + env(safe-area-inset-bottom,0px)); }
+  /* en celular la navegacion vive abajo: arriba queda solo la marca */
+  .top-r .buscar-btn, .top-r .menu-btn{ display:none; }
+  /* la presentacion tiene su propia barra abajo */
+  body.report-mode .tabbar{ display:none; }
+}
+
+/* ===================================================================
    BUSCADOR
    La idea es que RESPONDA: arriba va el fragmento de texto donde está lo
    que buscabas, no una lista de links que hay que ir abriendo. El
@@ -1189,6 +1225,25 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
     <div class="nav-list" id="navList"></div>
   </aside>
 </div>
+
+<!-- BARRA DE ABAJO (celular): la navegacion siempre a mano, como en una app.
+     No aparece en escritorio ni dentro de una presentacion, que tiene la suya. -->
+<nav class="tabbar" id="tabbar">
+  <button type="button" class="tab" id="tabInicio" onclick="tabIr('inicio')">
+    <span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+    <span class="tab-t">Inicio</span>
+    <span class="tab-n" id="tabNInicio" hidden></span>
+  </button>
+  <button type="button" class="tab" id="tabBuscar" onclick="tabIr('buscar')">
+    <span class="tab-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+    <span class="tab-t">Buscar</span>
+  </button>
+  <button type="button" class="tab" id="tabModulos" onclick="tabIr('modulos')">
+    <span class="tab-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg></span>
+    <span class="tab-t">Módulos</span>
+    <span class="tab-n" id="tabNModulos" hidden></span>
+  </button>
+</nav>
 
 <!-- BUSCADOR: responde con el texto, no con una lista de links -->
 <div id="buscador" class="buscador" hidden>
@@ -2119,8 +2174,8 @@ function pintarContadorMenu(){
   if(vieja) vieja.remove();
   if(n) btn.insertAdjacentHTML('beforeend', `<span class="menu-n">${n}</span>`);
 }
-function openMenu(){ renderNav(); const nm=document.getElementById('navmenu'); nm.hidden=false; document.body.classList.add('menu-open'); void nm.offsetWidth; nm.classList.add('open'); }
-function closeMenu(){ const nm=document.getElementById('navmenu'); if(nm.hidden) return; nm.classList.remove('open'); document.body.classList.remove('menu-open'); setTimeout(()=>{ nm.hidden=true; }, 240); }
+function openMenu(){ renderNav(); const nm=document.getElementById('navmenu'); nm.hidden=false; document.body.classList.add('menu-open'); void nm.offsetWidth; nm.classList.add('open'); pintarTabs(); }
+function closeMenu(){ const nm=document.getElementById('navmenu'); if(nm.hidden) return; nm.classList.remove('open'); document.body.classList.remove('menu-open'); setTimeout(()=>{ nm.hidden=true; pintarTabs(); }, 240); }
 function navTo(key){ closeMenu(); location.hash = key; }
 function navHome(){ closeMenu(); showHub(); }
 
@@ -2378,7 +2433,8 @@ function confirmarLeido(i){
   }
   /* el aviso de arriba solo se re-dibuja si el vendedor está mirando el
      principio: si no, la portada le da un salto justo mientras lee */
-  if(window.scrollY < 220) pintarPendientes();
+  if(window.scrollY < 220){ pintarPendientes(); renderNoti(); }
+  pintarTabs();
 }
 
 /* ---- LECTURA AUTOMÁTICA ----
@@ -2867,6 +2923,31 @@ function destacar(el){
   setTimeout(()=>el.classList.remove('destacado'), 2000);
 }
 
+/* ---- barra de abajo ---- */
+function tabIr(a){
+  if(a === 'inicio'){ cerrarBuscador(); closeMenu(); showHub(); window.scrollTo({top:0, behavior:'smooth'}); }
+  else if(a === 'buscar') abrirBuscador();
+  else if(a === 'modulos'){ cerrarBuscador(); openMenu(); }
+  pintarTabs();
+}
+function pintarTabs(){
+  const enHub = !document.getElementById('hub').hidden;
+  const buscando = !document.getElementById('buscador').hidden;
+  const menu = !document.getElementById('navmenu').hidden;
+  const marcar = (id, on) => { const e = document.getElementById(id); if(e) e.classList.toggle('on', on); };
+  marcar('tabInicio', enHub && !buscando && !menu);
+  marcar('tabBuscar', buscando);
+  marcar('tabModulos', menu || (!enHub && !buscando));
+  /* los mismos avisos que arriba: sin leer en el muro, y modulos con material nuevo */
+  const sinLeer = moduloMuro() ? muroNoLeidos() : 0;
+  const bi = document.getElementById('tabNInicio');
+  if(bi){ bi.hidden = !sinLeer; bi.textContent = sinLeer > 9 ? '9+' : sinLeer; }
+  const muro = moduloMuro();
+  const nMod = TILES.filter(t => (!muro || t.key !== muro.key) && seccionLista(t) && esNovedad(t.key)).length;
+  const bm = document.getElementById('tabNModulos');
+  if(bm){ bm.hidden = !nMod; bm.textContent = nMod > 9 ? '9+' : nMod; }
+}
+
 function abrirBuscador(){
   closeMenu();
   BU_INDICE = null;                 /* se arma con lo que hay publicado ahora */
@@ -2877,12 +2958,14 @@ function abrirBuscador(){
   const inp = document.getElementById('buInput');
   inp.value = '';
   setTimeout(()=>inp.focus(), 60);
+  pintarTabs();
 }
 function cerrarBuscador(){
   const b = document.getElementById('buscador');
   if(b.hidden) return;
   b.hidden = true;
   document.body.classList.remove('menu-open');
+  pintarTabs();
 }
 document.addEventListener('DOMContentLoaded', ()=>{
   const inp = document.getElementById('buInput');
@@ -2978,6 +3061,9 @@ const NOTI_CERRADA = 'mys_noti_cerrada';
 function renderNoti(){
   const caja = document.getElementById('noti');
   if(!caja) return;
+  /* UNA sola alerta a la vez. Si hay comunicaciones obligatorias sin
+     confirmar, eso manda: apilar dos avisos hace que no se lea ninguno. */
+  if(pendientesDeConfirmar().length){ caja.hidden = true; caja.innerHTML = ''; return; }
   const mods = TILES.filter(t => t.key !== MURO_KEY && seccionLista(t) && esNovedad(t.key));
   const nuevas = MURO_POSTS.filter(esPostNuevo).length;
   let firma = '', ico = 'megaphone', texto = '', accion = '';
@@ -3097,6 +3183,7 @@ function pintarNavHeader(){
   document.getElementById('listaBtn').hidden = !enDoc;
   document.getElementById('backBtn').hidden  = !enSeccion || enDoc;
   document.getElementById('homeBtn').hidden  = !enSeccion;
+  try{ pintarTabs(); }catch(e){}      /* la barra de abajo sigue lo mismo */
 }
 function docsVisibles(c){ return ((c && c.docs) || []).filter(d => !d.archivado); }
 function resumenDoc(d){
