@@ -878,32 +878,35 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
    entre un cliente y otro. Inicio / Buscar / Módulos siempre al alcance
    del pulgar.
    =================================================================== */
+/* APAGADA por ahora: en la web el menú de arriba alcanza y la barra de abajo
+   se come pantalla. Queda entera para cuando esto sea una app: se prende
+   poniendo BARRA_ABAJO = true en el script (agrega `con-tabbar` al body). */
 .tabbar{ display:none; }
 @media(max-width:640px){
-  .tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:60; display:flex;
+  body.con-tabbar .tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:60; display:flex;
     background:rgba(255,255,255,.94); backdrop-filter:blur(12px);
     border-top:1px solid var(--border);
     padding-bottom:env(safe-area-inset-bottom,0px); }   /* barra del iPhone */
-  .tab{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  body.con-tabbar .tab{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:3px; padding:9px 4px 8px; min-height:56px; border:0; background:transparent;
     color:var(--ink3); font-family:inherit; cursor:pointer; position:relative;
     -webkit-tap-highlight-color:transparent; transition:color .18s; }
-  .tab-ic{ width:23px; height:23px; }
-  .tab-ic svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.8;
+  body.con-tabbar .tab-ic{ width:23px; height:23px; }
+  body.con-tabbar .tab-ic svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.8;
     stroke-linecap:round; stroke-linejoin:round; }
-  .tab-t{ font-size:10.5px; font-weight:700; letter-spacing:.2px; }
-  .tab.on{ color:var(--ink); }
-  .tab.on .tab-ic svg{ stroke-width:2.1; }
-  .tab:active .tab-ic{ transform:scale(.9); }
-  .tab-n{ position:absolute; top:5px; left:50%; margin-left:5px; min-width:17px; height:17px;
+  body.con-tabbar .tab-t{ font-size:10.5px; font-weight:700; letter-spacing:.2px; }
+  body.con-tabbar .tab.on{ color:var(--ink); }
+  body.con-tabbar .tab.on .tab-ic svg{ stroke-width:2.1; }
+  body.con-tabbar .tab:active .tab-ic{ transform:scale(.9); }
+  body.con-tabbar .tab-n{ position:absolute; top:5px; left:50%; margin-left:5px; min-width:17px; height:17px;
     padding:0 5px; border-radius:999px; background:var(--c-danger); color:#fff; font-size:10px;
     font-weight:700; display:flex; align-items:center; justify-content:center;
     font-variant-numeric:tabular-nums; }
-  .tab-n[hidden]{ display:none; }
+  body.con-tabbar .tab-n[hidden]{ display:none; }
   /* que la barra no tape el final del contenido */
-  main{ padding-bottom:calc(78px + env(safe-area-inset-bottom,0px)); }
+  body.con-tabbar main{ padding-bottom:calc(78px + env(safe-area-inset-bottom,0px)); }
   /* en celular la navegacion vive abajo: arriba queda solo la marca */
-  .top-r .buscar-btn, .top-r .menu-btn{ display:none; }
+  body.con-tabbar .top-r .buscar-btn, body.con-tabbar .top-r .menu-btn{ display:none; }
   /* la presentacion tiene su propia barra abajo */
   body.report-mode .tabbar{ display:none; }
 }
@@ -2923,7 +2926,15 @@ function destacar(el){
   setTimeout(()=>el.classList.remove('destacado'), 2000);
 }
 
-/* ---- barra de abajo ---- */
+/* ---- barra de abajo ----
+   APAGADA mientras esto sea una web: el menú de arriba alcanza y la barra
+   ocupa lugar de pantalla. Está entera y probada para el día que sea una
+   app; se prende cambiando esta línea a `true`. */
+const BARRA_ABAJO = false;
+if(BARRA_ABAJO) document.documentElement.classList.add('quiere-tabbar');
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(BARRA_ABAJO) document.body.classList.add('con-tabbar');
+});
 function tabIr(a){
   if(a === 'inicio'){ cerrarBuscador(); closeMenu(); showHub(); window.scrollTo({top:0, behavior:'smooth'}); }
   else if(a === 'buscar') abrirBuscador();
