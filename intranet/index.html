@@ -753,8 +753,11 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .mu-cuerpo{ padding:10px 20px 4px; position:relative; }
 .mu-cuerpo .manual{ font-size:14.5px; }
 /* El feed muestra un ADELANTO, no la publicación entera: si cada tarjeta ocupa
-   toda la pantalla, no se ve que hay más abajo y nadie baja. */
+   toda la pantalla, no se ve que hay más abajo y nadie baja.
+   Con foto o video se corta más abajo: con el tope del texto se veía una
+   franja de imagen sin sentido. */
 .mu-cuerpo.recortado{ max-height:230px; overflow:hidden; }
+.mu-cuerpo.recortado.con-media{ max-height:430px; }
 .mu-cuerpo.recortado::after{ content:''; position:absolute; left:0; right:0; bottom:0; height:72px;
   background:linear-gradient(to bottom, rgba(255,255,255,0), var(--surface) 88%); pointer-events:none; }
 .mu-mas{ display:block; width:100%; padding:11px; min-height:44px; border:0; border-top:1px solid var(--border2);
@@ -829,7 +832,10 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 /* ---- BARRA DE AVISO: "hay algo nuevo en otro modulo" ----
    Vive pegada abajo del encabezado. No interrumpe la lectura del feed, pero
    no se puede ignorar. Se cierra y no vuelve a molestar por ese cambio. */
-.noti{ position:sticky; top:64px; z-index:40; display:flex; align-items:center; gap:11px;
+/* NO va pegada al scroll: quedaba flotando sobre el feed y tapaba el
+   encabezado de la publicación que estabas leyendo. Es un aviso, no una
+   barra de navegación: se lee al entrar y se va. */
+.noti{ display:flex; align-items:center; gap:11px;
   max-width:660px; margin:0 auto 16px; padding:12px 14px; border-radius:13px;
   background:var(--c-hudson); color:#fff; box-shadow:0 8px 24px rgba(26,26,46,.20);
   animation:notiEntra .42s cubic-bezier(.2,.9,.3,1) both; }
@@ -871,6 +877,38 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   .noti{ max-width:none; top:58px; }
   .muro{ max-width:none; }
   .lobby-t, .fijados{ max-width:none; }
+
+  /* ---- EN CELULAR EL FEED VA DE BORDE A BORDE ----
+     Nada de tarjetas flotando con aire a los costados: la publicación ocupa
+     todo el ancho de la pantalla, y lo que separa una de otra es un espacio
+     de fondo y una línea. En ESCRITORIO no cambia nada: esto vive solo acá
+     adentro. El -18px sale del padding lateral de `main` en pantalla chica. */
+  .muro{ margin-left:-18px; margin-right:-18px; }
+  /* los filtros y los carteles no: siguen alineados con el resto */
+  .mu-filtros{ padding-left:18px; padding-right:18px; }
+  .muro > .pending, .mu-vacio{ margin-left:18px; margin-right:18px; }
+
+  .mu-post{ border-radius:0; border-left:0; border-right:0; border-top:0;
+    border-bottom:1px solid var(--border); margin-bottom:0; }
+  .mu-post + .mu-post{ margin-top:10px; }      /* el espacio entre publicaciones */
+  /* sin bordes laterales, "sin leer" se marca con un filo en toda la
+     publicación (marcar solo el título dejaba una rayita suelta al costado) */
+  .mu-post.nueva{ box-shadow:inset 3px 0 0 var(--c-info); }
+
+  /* las fotos llegan hasta el filo de la pantalla */
+  .mu-cuerpo .m-img{ margin-left:-16px; margin-right:-16px; }
+  .mu-cuerpo .m-img img{ max-width:none; width:100%; max-height:none; border-radius:0;
+    margin-top:14px; }
+  .mu-cuerpo .m-video{ margin-left:-16px; margin-right:-16px; }
+  .mu-cuerpo .m-video video, .mu-cuerpo .m-video iframe{ border-radius:0; }
+  /* las placas para descargar también, pero conservando su pie con el botón.
+     Va scopeado a .mu-cuerpo: el módulo "Material descargable" no se toca. */
+  .mu-cuerpo .gallery{ margin-left:-16px; margin-right:-16px; gap:10px; }
+  .mu-cuerpo .gcard{ border-radius:0; border-left:0; border-right:0; }
+  .mu-cuerpo .gcard .gimg{ aspect-ratio:auto; max-height:70vh; object-fit:contain; }
+  /* la fijada, al desplegarse, se ve igual que una publicación del feed */
+  .fix-abierto{ margin-left:-18px; margin-right:-18px; }
+  .fix-abierto .mu-post{ border-top:1px solid var(--border); }
   /* en celular las chapas se llevaban el ancho y la fecha salia cortada
      ("Central · Ay..."): bajan a su propia linea, sangradas con el texto */
   .mu-head{ padding:14px 16px 0; gap:10px; flex-wrap:wrap; }
@@ -887,6 +925,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   .mu-titulo{ font-size:16.5px; padding:12px 16px 0; }
   .mu-cuerpo{ padding:9px 16px 4px; }
   .mu-cuerpo.recortado{ max-height:210px; }
+  .mu-cuerpo.recortado.con-media{ max-height:390px; }
   .mu-pie{ padding:10px 16px 12px; gap:7px; }
   .mu-acc{ padding:9px 12px; font-size:12px; }
   /* en pantallas chicas la marca de tipo baja debajo del autor */
@@ -2099,15 +2138,23 @@ function initMuro(){
   posts.forEach(art => {
     const cuerpo = art.querySelector('.mu-cuerpo');
     if(!cuerpo || cuerpo.dataset.medido) return;
+    /* con foto/video el recorte es mas generoso: cortar a la altura del texto
+       dejaba una franja de imagen que no se entiende */
+    if(cuerpo.querySelector('img, video, iframe')) cuerpo.classList.add('con-media');
+    /* Se recorta y se mide LO QUE QUEDA TAPADO con el tope real del CSS (que
+       cambia entre celular y escritorio, y según tenga foto o no). Si lo
+       tapado es poco, no se recorta: el botón "Ver publicación completa"
+       ocupa 44px, así que esconder 30px de texto para agregarlo dejaba la
+       publicación MAS ALTA recortada que entera. */
     const medir = ()=>{
-      if(cuerpo.dataset.abierto) return;
-      if(cuerpo.scrollHeight > 260 && !art.querySelector('.mu-mas')){
-        cuerpo.classList.add('recortado');
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'mu-mas'; b.textContent = 'Ver publicación completa';
-        b.onclick = ()=>{ cuerpo.classList.remove('recortado'); cuerpo.dataset.abierto = '1'; b.remove(); };
-        cuerpo.insertAdjacentElement('afterend', b);
-      }
+      if(cuerpo.dataset.abierto || art.querySelector('.mu-mas')) return;
+      cuerpo.classList.add('recortado');
+      const tapado = cuerpo.scrollHeight - cuerpo.clientHeight;
+      if(tapado < 110){ cuerpo.classList.remove('recortado'); return; }
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'mu-mas'; b.textContent = 'Ver publicación completa';
+      b.onclick = ()=>{ cuerpo.classList.remove('recortado'); cuerpo.dataset.abierto = '1'; b.remove(); };
+      cuerpo.insertAdjacentElement('afterend', b);
     };
     medir();
     cuerpo.querySelectorAll('img').forEach(im => { if(!im.complete) im.addEventListener('load', medir, {once:true}); });

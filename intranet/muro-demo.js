@@ -59,6 +59,18 @@ window.MURO_DEMO = {
   </div>`
 },
 
+/* ---------- ANUNCIO con foto a todo el ancho ---------- */
+{
+  id: 'entregas-nuevo-camion',
+  titulo: 'Sumamos un camión más al servicio de entregas',
+  autor: 'Logística',
+  sucursal: 'Central',
+  fecha: '2026-08-09',
+  etiqueta: 'anuncio',
+  html: `<p class="m-p">Desde esta semana sale una unidad más todos los días. Podés confirmarle al cliente la entrega con más margen.</p>
+  <div class="m-img"><img src="assets/entregas/Servicio de entregas integral.jpg" alt="Servicio de entregas" loading="lazy" onclick="openLightbox('assets/entregas/Servicio de entregas integral.jpg','Servicio de entregas')"></div>`
+},
+
 /* ---------- LOGRO ---------- */
 {
   id: 'julio-record',
