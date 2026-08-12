@@ -2133,6 +2133,20 @@ function muroHTML(c, t, opts){
 /* Recorta los posts largos DESPUES de pintarlos: recien ahi se sabe cuanto
    miden de verdad (las imagenes pueden no haber cargado, por eso tambien se
    vuelve a medir cuando terminan). */
+/* el mismo umbral que usa el CSS del feed */
+const MQ_CELULAR = window.matchMedia ? window.matchMedia('(max-width:640px)') : null;
+function enCelular(){ return MQ_CELULAR ? MQ_CELULAR.matches : window.innerWidth <= 640; }
+/* si se agranda o achica la ventana (o giran el telefono) se vuelve a decidir
+   si corresponde recortar */
+if(MQ_CELULAR){
+  const alCambiar = ()=>{
+    document.querySelectorAll('.mu-post .mu-cuerpo').forEach(c => { delete c.dataset.medido; });
+    initMuro();
+  };
+  if(MQ_CELULAR.addEventListener) MQ_CELULAR.addEventListener('change', alCambiar);
+  else if(MQ_CELULAR.addListener) MQ_CELULAR.addListener(alCambiar);   /* navegadores viejos */
+}
+
 function initMuro(){
   const posts = document.querySelectorAll('.mu-post');
   posts.forEach(art => {
@@ -2141,13 +2155,21 @@ function initMuro(){
     /* con foto/video el recorte es mas generoso: cortar a la altura del texto
        dejaba una franja de imagen que no se entiende */
     if(cuerpo.querySelector('img, video, iframe')) cuerpo.classList.add('con-media');
-    /* Se recorta y se mide LO QUE QUEDA TAPADO con el tope real del CSS (que
-       cambia entre celular y escritorio, y según tenga foto o no). Si lo
-       tapado es poco, no se recorta: el botón "Ver publicación completa"
-       ocupa 44px, así que esconder 30px de texto para agregarlo dejaba la
-       publicación MAS ALTA recortada que entera. */
+    /* EN ESCRITORIO NO SE RECORTA: la pantalla es grande y la publicación
+       entra entera, así que se lee de corrido sin tener que abrir nada.
+       El recorte es cosa del celular.
+       Y cuando se recorta, se mide LO QUE QUEDA TAPADO con el tope real del
+       CSS: si es poco no vale la pena, porque el botón "Ver publicación
+       completa" ocupa 44px y la publicación terminaba MAS ALTA recortada
+       que entera. */
     const medir = ()=>{
-      if(cuerpo.dataset.abierto || art.querySelector('.mu-mas')) return;
+      if(cuerpo.dataset.abierto) return;
+      if(!enCelular()){                        /* escritorio: siempre completa */
+        cuerpo.classList.remove('recortado');
+        const viejo = art.querySelector('.mu-mas'); if(viejo) viejo.remove();
+        return;
+      }
+      if(art.querySelector('.mu-mas')) return;
       cuerpo.classList.add('recortado');
       const tapado = cuerpo.scrollHeight - cuerpo.clientHeight;
       if(tapado < 110){ cuerpo.classList.remove('recortado'); return; }
