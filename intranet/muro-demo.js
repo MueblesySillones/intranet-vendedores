@@ -28,6 +28,7 @@ window.MURO_DEMO = {
   fecha: '2026-08-04',
   etiqueta: 'importante',
   fijado: true,
+  confirmar: true,      /* pide 'Entendido' */
   html: `<p class="m-lead">Repasamos las reglas de atención por WhatsApp. Son las mismas de siempre, pero hubo consultas repetidas sobre los tiempos de respuesta.</p>
   <div class="checklist">
     <div class="ci"><div class="ci-ic" style="background:var(--c-success)"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div><b>Responder dentro de la hora</b> en el horario del local.</div></div>
@@ -40,6 +41,7 @@ window.MURO_DEMO = {
 /* ---------- PROMO con galeria real ---------- */
 {
   id: 'placas-agosto',
+  vence: '2026-08-31',   /* se archiva sola a fin de mes */
   reacciones: { like: 12, heart: 5, clap: 1 },
   titulo: 'Ya están las placas de promociones bancarias de agosto',
   autor: 'Marketing',
@@ -109,6 +111,7 @@ window.MURO_DEMO = {
 /* ---------- ANUNCIO ---------- */
 {
   id: 'plazos-living',
+  confirmar: true,
   reacciones: { like: 4, wow: 3 },
   titulo: 'Cambio en los plazos de entrega de living',
   autor: 'Logística',

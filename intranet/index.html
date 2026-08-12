@@ -872,6 +872,118 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   padding:0 5px; margin-left:2px; border-radius:999px; background:var(--c-danger); color:#fff;
   font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; }
 
+/* ===================================================================
+   BUSCADOR
+   La idea es que RESPONDA: arriba va el fragmento de texto donde está lo
+   que buscabas, no una lista de links que hay que ir abriendo. El
+   vendedor lo usa parado frente al cliente.
+   =================================================================== */
+.buscar-btn{ display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px;
+  border-radius:8px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink2);
+  cursor:pointer; padding:0; transition:.2s; }
+.buscar-btn:hover{ border-color:var(--ink); color:var(--ink); }
+.buscar-btn .ico{ width:19px; height:19px; }
+
+.buscador{ position:fixed; inset:0; z-index:120; }
+.buscador[hidden]{ display:none; }
+.bu-ov{ position:absolute; inset:0; background:rgba(17,17,17,.45); backdrop-filter:blur(2px);
+  animation:buOv .2s ease both; }
+@keyframes buOv{ from{ opacity:0 } }
+.bu-panel{ position:absolute; left:50%; top:0; transform:translateX(-50%); width:min(720px,100%);
+  max-height:100%; display:flex; flex-direction:column; background:var(--bg);
+  border-radius:0 0 18px 18px; box-shadow:0 24px 60px rgba(0,0,0,.28);
+  animation:buIn .24s cubic-bezier(.2,.9,.3,1) both; }
+@keyframes buIn{ from{ opacity:0; transform:translateX(-50%) translateY(-14px) } }
+.bu-head{ display:flex; align-items:center; gap:10px; padding:14px 16px; background:var(--surface);
+  border-bottom:1px solid var(--border); border-radius:0 0 0 0; }
+.bu-lupa{ width:20px; height:20px; color:var(--ink3); flex:0 0 auto; }
+.bu-lupa svg{ width:100%; height:100%; }
+.bu-input{ flex:1; min-width:0; border:0; background:transparent; font-family:inherit; font-size:16px;
+  font-weight:600; color:var(--ink); outline:none; }
+.bu-input::placeholder{ color:var(--ink3); font-weight:500; }
+.bu-x{ flex:0 0 auto; width:36px; height:36px; border-radius:8px; border:0; background:var(--bg2);
+  color:var(--ink2); font-size:15px; cursor:pointer; }
+.bu-x:hover{ background:var(--ink); color:#fff; }
+.bu-body{ overflow-y:auto; padding:14px 16px 22px; -webkit-overflow-scrolling:touch; }
+
+/* la respuesta: el pedazo de texto donde está lo que buscaba */
+.bu-resp{ background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--c-canning);
+  border-radius:14px; padding:15px 17px; margin-bottom:16px; }
+.bu-resp-d{ font-size:11px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase;
+  color:var(--c-canning); margin-bottom:8px; }
+.bu-resp-t{ font-size:15.5px; font-weight:700; color:var(--ink); line-height:1.35; }
+.bu-resp-x{ font-size:14.5px; line-height:1.6; color:var(--ink2); margin-top:8px; }
+.bu-ir{ display:inline-flex; align-items:center; gap:7px; margin-top:12px; padding:9px 15px; min-height:40px;
+  border-radius:9px; border:0; background:var(--ink); color:#fff; font-family:inherit; font-size:12.5px;
+  font-weight:700; cursor:pointer; }
+.bu-ir .ico{ width:14px; height:14px; }
+
+.bu-t{ font-size:11px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:var(--ink3);
+  margin:16px 2px 8px; }
+.bu-item{ width:100%; text-align:left; display:flex; align-items:flex-start; gap:11px; padding:12px 14px;
+  border-radius:12px; border:1px solid var(--border); background:var(--surface); cursor:pointer;
+  font-family:inherit; margin-bottom:8px; transition:.15s; }
+.bu-item:hover{ border-color:var(--ink); }
+.bu-ic{ width:34px; height:34px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; color:#fff; }
+.bu-ic .ico{ width:16px; height:16px; }
+.bu-img{ width:44px; height:44px; border-radius:8px; object-fit:cover; flex:0 0 auto; background:var(--bg2); }
+.bu-tx{ flex:1; min-width:0; }
+.bu-n{ font-size:13.5px; font-weight:700; color:var(--ink); line-height:1.3; }
+/* el fragmento de un resultado de la lista se queda en 3 renglones: si no,
+   un modulo largo se come toda la pantalla y tapa a los demas */
+.bu-d{ font-size:12.5px; color:var(--ink3); line-height:1.45; margin-top:3px;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+/* la X nativa del campo de búsqueda sobra: ya hay una para cerrar */
+.bu-input::-webkit-search-cancel-button, .bu-input::-webkit-search-decoration{ -webkit-appearance:none; }
+.bu-body mark{ background:#FFF0B3; color:inherit; border-radius:3px; padding:0 2px; }
+.bu-vacio{ text-align:center; color:var(--ink3); font-size:14px; padding:32px 16px; }
+/* al llegar desde el buscador, la publicación se señala sola un momento */
+.mu-post.destacado{ box-shadow:0 0 0 3px rgba(58,122,85,.5); }
+.bu-tip{ font-size:12.5px; color:var(--ink3); line-height:1.6; }
+.bu-tip b{ color:var(--ink2); }
+
+@media(max-width:640px){
+  .bu-panel{ height:100%; max-height:none; border-radius:0; }
+  .bu-head{ padding:12px 14px; }
+  .bu-input{ font-size:16px; }   /* menos de 16px hace que iOS haga zoom al tocar */
+  .bu-body{ padding:12px 14px 30px; }
+}
+
+/* ---- "ENTERADO": acuse de lectura ----
+   Se distingue del resto por el fondo: no es una accion mas del pie, es
+   algo que la empresa te esta pidiendo. */
+.mu-ok{ display:flex; align-items:center; gap:12px; margin:12px 20px 0; padding:13px 15px;
+  border-radius:12px; background:#FBF6E7; border:1px solid rgba(154,106,0,.28); }
+.mu-ok-tx{ flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--ink); }
+.mu-ok-d{ color:var(--ink3); font-size:12.5px; }
+.mu-ok-btn{ flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:10px 16px;
+  min-height:42px; border-radius:9px; border:0; background:var(--c-warn); color:#fff;
+  font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap;
+  transition:.18s; }
+.mu-ok-btn:hover{ filter:brightness(1.08); }
+.mu-ok-btn .ico{ width:15px; height:15px; }
+.mu-ok.hecho{ background:#EAF3EC; border-color:rgba(26,106,58,.28); }
+.mu-ok-ic{ width:30px; height:30px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; background:var(--c-success); color:#fff; }
+.mu-ok-ic .ico{ width:15px; height:15px; }
+.mu-ok.recien{ animation:okEntra .4s cubic-bezier(.2,.9,.3,1) both; }
+@keyframes okEntra{ from{ transform:scale(.97); opacity:.4 } }
+
+/* aviso arriba de todo: te faltan confirmar cosas */
+.pendientes{ display:flex; align-items:center; gap:11px; max-width:660px; margin:0 auto 14px;
+  padding:12px 14px; border-radius:13px; background:#FBF6E7; border:1px solid rgba(154,106,0,.3); }
+.pendientes[hidden]{ display:none; }
+.pe-ic{ width:32px; height:32px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; background:var(--c-warn); color:#fff; }
+.pe-ic .ico{ width:16px; height:16px; }
+.pe-tx{ flex:1; min-width:0; font-size:13px; line-height:1.4; color:var(--ink); }
+.pe-d{ display:block; font-size:12px; color:var(--ink3); white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; margin-top:1px; }
+.pe-btn{ flex:0 0 auto; padding:9px 15px; min-height:38px; border-radius:9px; border:0;
+  background:var(--c-warn); color:#fff; font-family:inherit; font-size:12.5px; font-weight:700;
+  cursor:pointer; }
+
 /* ---- BARRA DE AVISO: "hay algo nuevo en otro modulo" ----
    Vive pegada abajo del encabezado. No interrumpe la lectura del feed, pero
    no se puede ignorar. Se cierra y no vuelve a molestar por ese cambio. */
@@ -1001,6 +1113,9 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
     <button class="home-btn" id="homeBtn" onclick="showHub()" hidden>
       <span class="ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> <span class="hb-tx">Inicio</span>
     </button>
+    <button class="buscar-btn" id="buscarBtn" onclick="abrirBuscador()" aria-label="Buscar en toda la intranet" title="Buscar">
+      <span class="ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+    </button>
     <button class="menu-btn" id="menuBtn" onclick="openMenu()" aria-label="Abrir menú de navegación">
       <span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Módulos
     </button>
@@ -1020,6 +1135,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
          miniatura; abajo, el feed. Si no hay muro, esto queda vacio y la
          portada sigue siendo la grilla de siempre. -->
     <div id="lobby" hidden>
+      <div class="pendientes" id="pendientes" hidden></div>
       <div class="noti" id="noti" hidden></div>
       <div class="fijados" id="fijados" hidden></div>
       <div id="feed"></div>
@@ -1054,6 +1170,21 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
     </div>
     <div class="nav-list" id="navList"></div>
   </aside>
+</div>
+
+<!-- BUSCADOR: responde con el texto, no con una lista de links -->
+<div id="buscador" class="buscador" hidden>
+  <div class="bu-ov" onclick="cerrarBuscador()"></div>
+  <div class="bu-panel" role="dialog" aria-label="Buscar en la intranet">
+    <div class="bu-head">
+      <span class="bu-lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input type="search" id="buInput" class="bu-input" autocomplete="off" enterkeyhint="search"
+        placeholder="Buscá lo que necesites… ej: cuotas Galicia, plazo de entrega">
+      <button class="bu-x" onclick="cerrarBuscador()" aria-label="Cerrar la búsqueda">✕</button>
+    </div>
+    <div class="bu-body" id="buBody"></div>
+  </div>
 </div>
 
 <div id="lightbox" hidden onclick="closeLightbox()"><img id="lbimg" src="" alt="Vista ampliada"></div>
@@ -2065,6 +2196,11 @@ let MURO_KEY = null;
 function postsDelMuro(c){
   return ((c && c.docs) || []).filter(p => {
     if(p.archivado) return false;
+    /* se archiva sola: `vence` es el ULTIMO dia que se ve. Asi la promo de
+       agosto desaparece el 1 de septiembre sin que nadie haga nada, que es
+       la razon numero uno por la que estas paginas se llenan de cosas
+       viejas y la gente les deja de creer. */
+    if(p.vence){ const dv = diasDesde(p.vence); if(dv !== null && dv > 0) return false; }
     const d = diasDesde(p.fecha);
     return d === null || d >= 0;         /* sin fecha se muestra igual */
   }).slice().sort((a,b)=>{
@@ -2184,6 +2320,76 @@ function resumenReacciones(p, i){
       usadas.map(x => `<span title="${esc(RE_TIPOS[x.t].t)}">${RE_TIPOS[x.t].e}</span>`).join('')
     }</span><span class="mu-sum-n${mia ? ' mu-sum-yo' : ''}">${esc(txt)}</span></div>`;
 }
+/* ===================================================================
+   "ENTERADO" — acuse de lectura (VISTA PREVIA)
+   Una publicacion marcada como `confirmar:true` pide que el vendedor
+   toque "Entendido". Sin base de datos la confirmacion se guarda en su
+   telefono; el dia que haya base, ademas se manda al servidor y el panel
+   muestra QUIEN falta. La pantalla del vendedor no cambia.
+   =================================================================== */
+const MURO_OK = 'mys_muro_entendido';
+let ENTENDIDO = null;
+function entendidos(){
+  if(ENTENDIDO) return ENTENDIDO;
+  try{ ENTENDIDO = new Set(JSON.parse(localStorage.getItem(MURO_OK) || '[]')); }
+  catch(e){ ENTENDIDO = new Set(); }
+  return ENTENDIDO;
+}
+function yaEntendido(p){ return entendidos().has(idDePost(p)); }
+function cajaEntendido(p, i){
+  if(!p.confirmar) return '';
+  const ok = yaEntendido(p);
+  return `<div class="mu-ok${ok ? ' hecho' : ''}" id="ok-${i}">
+    ${ok ? `<span class="mu-ok-ic">${svg(I.check)}</span>
+        <span class="mu-ok-tx"><b>Confirmaste que lo leíste.</b><br>
+          <span class="mu-ok-d">Quedó registrado. Gracias.</span></span>`
+      : `<span class="mu-ok-tx"><b>Esta comunicación es de lectura obligatoria.</b><br>
+          <span class="mu-ok-d">Tocá el botón para dejar constancia de que la leíste.</span></span>
+        <button type="button" class="mu-ok-btn" onclick="confirmarLeido(${i})">${svg(I.check)} Entendido</button>`}
+  </div>`;
+}
+function confirmarLeido(i){
+  const p = MURO_POSTS[i]; if(!p) return;
+  const S = entendidos();
+  S.add(idDePost(p));
+  try{ localStorage.setItem(MURO_OK, JSON.stringify(Array.from(S).slice(-400))); }catch(e){}
+  const caja = document.getElementById('ok-' + i);
+  if(caja){
+    caja.outerHTML = cajaEntendido(p, i);
+    const nueva = document.getElementById('ok-' + i);
+    if(nueva && !sinMovimiento()) nueva.classList.add('recien');
+  }
+  pintarPendientes();
+}
+/* cuantas comunicaciones obligatorias le faltan confirmar */
+function pendientesDeConfirmar(){
+  const mod = moduloMuro();
+  if(!mod) return [];
+  return postsDelMuro(mod.content).filter(p => p.confirmar && !yaEntendido(p));
+}
+function pintarPendientes(){
+  const caja = document.getElementById('pendientes');
+  if(!caja) return;
+  const faltan = pendientesDeConfirmar();
+  if(!faltan.length){ caja.hidden = true; caja.innerHTML = ''; return; }
+  caja.hidden = false;
+  caja.innerHTML = `<span class="pe-ic">${svg(I.shield)}</span>
+    <span class="pe-tx"><b>${faltan.length === 1 ? 'Tenés 1 comunicación sin confirmar'
+      : 'Tenés ' + faltan.length + ' comunicaciones sin confirmar'}</b>
+      <span class="pe-d">${esc(faltan[0].titulo || '')}${faltan.length > 1 ? ' y ' + (faltan.length-1) + ' más' : ''}</span></span>
+    <button type="button" class="pe-btn" onclick="irAConfirmar()">Ver</button>`;
+}
+function irAConfirmar(){
+  const faltan = pendientesDeConfirmar();
+  if(!faltan.length) return;
+  const id = idDePost(faltan[0]);
+  const art = document.querySelector('[data-pid="' + CSS.escape(id) + '"]');
+  if(art){ art.scrollIntoView({behavior:'smooth', block:'center'}); destacar(art); return; }
+  /* si esta fijada no aparece en el feed: se abre la fijada */
+  const fx = document.querySelector('.fix-card');
+  if(fx) fx.click();
+}
+
 /* El boton del pie: dice "Reaccionar", o muestra la tuya si ya reaccionaste */
 function botonReaccion(p, i){
   const mia = miReaccion(p);
@@ -2262,7 +2468,8 @@ function sinMovimiento(){
 function postHTML(p, i){
   const tag = MURO_TAGS[p.etiqueta];
   const nuevo = esPostNuevo(p);
-  return `<article class="mu-post${nuevo?' nueva':''}" data-tag="${esc(p.etiqueta||'')}" id="mu-${i}">
+  return `<article class="mu-post${nuevo?' nueva':''}" data-tag="${esc(p.etiqueta||'')}" id="mu-${i}"
+    data-pid="${esc(idDePost(p))}">
     ${p.fijado ? `<div class="mu-fijado">${svg(I.shield)} FIJADO</div>` : ''}
     <div class="mu-head">
       <span class="mu-av" style="background:var(${colorDeAutor(p.autor)})">${esc(inicialesDe(p.autor))}</span>
@@ -2278,6 +2485,7 @@ function postHTML(p, i){
     </div>
     ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
     <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
+    ${cajaEntendido(p, i)}
     ${resumenReacciones(p, i)}
     <div class="mu-pie">
       ${botonReaccion(p, i)}
@@ -2400,6 +2608,211 @@ function muroCopiar(i, btn){
 }
 
 /* ===================================================================
+   BUSCADOR
+   Busca DENTRO de todo: publicaciones del muro, módulos, documentos de
+   las bibliotecas y placas para descargar. Y lo importante: contesta con
+   el pedazo de texto donde está la respuesta, para que el vendedor la
+   lea ahi mismo sin tener que abrir y buscar de nuevo.
+   =================================================================== */
+/* se normaliza SIN cambiar el largo del texto: asi las posiciones que
+   encuentra la busqueda sirven para recortar y resaltar el original */
+const BU_MAPA = {'á':'a','é':'e','í':'i','ó':'o','ú':'u','ü':'u','ñ':'n','à':'a','è':'e','ì':'i','ò':'o','ù':'u'};
+function norm(s){ return String(s||'').toLowerCase().replace(/[áéíóúüñàèìòù]/g, c => BU_MAPA[c] || c); }
+function textoDe(html){
+  /* los tags se cambian por un espacio ANTES de leer el texto: si no, el
+     final de un elemento y el principio del otro quedan pegados y se lee
+     "DescargarMonterosso". El div sigue haciendo falta para que &amp; y
+     compañía vuelvan a ser caracteres normales. */
+  const d = document.createElement('div');
+  d.innerHTML = String(html || '').replace(/<[^>]+>/g, ' ');
+  return (d.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+let BU_INDICE = null, BU_RES = [];
+function armarIndice(){
+  const idx = [];
+  const mods = window.MODULES || [];
+  const agregar = e => { if(e.titulo || e.texto) idx.push(e); };
+  (mods.length ? mods : []).forEach(m => {
+    if(m.hidden) return;
+    const t = MAP[m.key] || {};
+    const base = { key:m.key, icon:(I[m.icon] ? m.icon : (t.icon || 'layers')), color:m.color || t.color || '--c-hudson' };
+    const c = m.content;
+    if(c && c.tipo === 'muro'){
+      postsDelMuro(c).forEach(p => agregar(Object.assign({}, base, {
+        tipo:'publicacion', pid:idDePost(p), titulo:p.titulo || 'Publicación',
+        texto:textoDe(p.html), extra:(p.autor || '') + ' · ' + fechaLinda(p.fecha)
+      })));
+      return;
+    }
+    /* el modulo en si (nombre + subtitulo) */
+    agregar(Object.assign({}, base, { tipo:'modulo', titulo:m.title || t.title || m.key,
+      texto:(m.desc || t.desc || '') + ' ' + (c && c.tipo === 'bloques' ? textoDe(c.html) :
+            (CONTENT[m.key] ? textoDe(CONTENT[m.key]) : '')) }));
+    if(c && c.tipo === 'coleccion'){
+      (c.docs || []).forEach((d, di) => { if(!d.archivado) agregar(Object.assign({}, base, {
+        tipo:'documento', doc:di, titulo:d.titulo || '', texto:textoDe(d.html),
+        extra:(m.title || '') + (d.etiqueta ? ' · ' + d.etiqueta : '')
+      })); });
+    }
+    /* placas para descargar: se busca por su nombre */
+    ((window.GALLERIES || {})[m.key] || []).forEach(g => agregar(Object.assign({}, base, {
+      tipo:'placa', titulo:g.title || '', texto:'Placa para descargar de ' + (m.title || ''),
+      img:g.file, extra:m.title || ''
+    })));
+  });
+  return idx;
+}
+
+function buscarEnTodo(q){
+  if(!BU_INDICE) BU_INDICE = armarIndice();
+  const palabras = norm(q).split(/\s+/).filter(p => p.length > 1);
+  if(!palabras.length) return [];
+  return BU_INDICE.map(e => {
+    const nt = norm(e.titulo), nx = norm(e.texto);
+    let puntos = 0, todas = true;
+    palabras.forEach(p => {
+      const enT = nt.indexOf(p) >= 0, enX = nx.indexOf(p) >= 0;
+      if(!enT && !enX) todas = false;
+      if(enT) puntos += 12;
+      if(enX) puntos += 3;
+    });
+    if(!todas) return null;
+    if(nt.indexOf(norm(q)) >= 0) puntos += 20;       /* el titulo dice justo eso */
+    if(nx.indexOf(norm(q)) >= 0) puntos += 8;
+    if(e.tipo === 'publicacion') puntos += 2;        /* lo del muro suele ser lo mas actual */
+    return { e, puntos, corte:fragmento(e.texto, palabras) };
+  }).filter(Boolean).sort((a,b) => b.puntos - a.puntos).slice(0, 24);
+}
+
+/* el pedazo de texto donde aparece lo buscado, con la palabra resaltada */
+function fragmento(texto, palabras){
+  const n = norm(texto);
+  let pos = -1;
+  palabras.forEach(p => { const i = n.indexOf(p); if(i >= 0 && (pos < 0 || i < pos)) pos = i; });
+  if(pos < 0) return '';
+  let desde = Math.max(0, pos - 90), hasta = Math.min(texto.length, pos + 230);
+  if(desde > 0){ const e = texto.indexOf(' ', desde); if(e > 0 && e < pos) desde = e + 1; }
+  if(hasta < texto.length){ const e = texto.lastIndexOf(' ', hasta); if(e > pos) hasta = e; }
+  const trozo = texto.slice(desde, hasta);
+  /* se resalta por POSICION sobre el trozo original (asi no se pierden tildes) */
+  const nt = norm(trozo);
+  const marcas = [];
+  palabras.forEach(p => {
+    let i = nt.indexOf(p);
+    while(i >= 0){ marcas.push([i, i + p.length]); i = nt.indexOf(p, i + p.length); }
+  });
+  marcas.sort((a,b) => a[0] - b[0]);
+  let out = '', cursor = 0;
+  marcas.forEach(([a, b]) => {
+    if(a < cursor) return;
+    out += esc(trozo.slice(cursor, a)) + '<mark>' + esc(trozo.slice(a, b)) + '</mark>';
+    cursor = b;
+  });
+  out += esc(trozo.slice(cursor));
+  return (desde > 0 ? '…' : '') + out + (hasta < texto.length ? '…' : '');
+}
+
+const BU_ROTULO = { publicacion:'Publicación del muro', modulo:'Módulo', documento:'Documento', placa:'Placa' };
+function pintarBusqueda(){
+  const q = document.getElementById('buInput').value.trim();
+  const caja = document.getElementById('buBody');
+  if(q.length < 2){
+    caja.innerHTML = `<div class="bu-vacio"><p class="bu-tip">Escribí lo que estás buscando y te muestro
+      <b>dónde está la respuesta</b>, no una lista de links.<br><br>
+      Probá con <b>cuotas</b>, <b>plazo de entrega</b>, <b>derivación</b> o el nombre de una placa.</p></div>`;
+    return;
+  }
+  BU_RES = buscarEnTodo(q);
+  if(!BU_RES.length){
+    caja.innerHTML = `<div class="bu-vacio"><b>No encontré nada con “${esc(q)}”.</b>
+      <p class="bu-tip" style="margin-top:8px">Probá con una sola palabra, o con otra manera de decirlo.</p></div>`;
+    return;
+  }
+  /* la RESPUESTA: el mejor resultado que tenga texto para leer */
+  const mejor = BU_RES.find(r => r.corte) || BU_RES[0];
+  const otros = BU_RES.filter(r => r !== mejor);
+  const im = BU_RES.indexOf(mejor);
+  caja.innerHTML = `
+    <div class="bu-resp">
+      <div class="bu-resp-d">${esc(BU_ROTULO[mejor.e.tipo] || '')}${mejor.e.extra ? ' · ' + esc(mejor.e.extra) : ''}</div>
+      <div class="bu-resp-t">${esc(mejor.e.titulo)}</div>
+      ${mejor.corte ? `<div class="bu-resp-x">${mejor.corte}</div>` : ''}
+      ${mejor.e.img ? `<img class="bu-img" style="width:100%;height:auto;max-height:220px;object-fit:contain;margin-top:10px" src="${esc(mejor.e.img)}" alt="">` : ''}
+      <button type="button" class="bu-ir" onclick="irAResultado(${im})">${svg(I.ext)} Abrir</button>
+    </div>
+    ${otros.length ? `<div class="bu-t">También encontré</div>` : ''}
+    ${otros.map(r => {
+      const j = BU_RES.indexOf(r);
+      return `<button type="button" class="bu-item" onclick="irAResultado(${j})">
+        ${r.e.img ? `<img class="bu-img" src="${esc(r.e.img)}" alt="" loading="lazy">`
+                  : `<span class="bu-ic" style="background:var(${r.e.color})">${svg(I[r.e.icon])}</span>`}
+        <span class="bu-tx">
+          <span class="bu-n">${esc(r.e.titulo)}</span>
+          <span class="bu-d">${r.corte || esc(BU_ROTULO[r.e.tipo] || '')}</span>
+        </span></button>`;
+    }).join('')}`;
+}
+
+function irAResultado(n){
+  const r = BU_RES[n]; if(!r) return;
+  const e = r.e;
+  cerrarBuscador();
+  if(e.tipo === 'publicacion'){
+    const muro = moduloMuro();
+    /* si la portada es el muro se vuelve ahi; si no, se abre el modulo */
+    if(muro && muro.key === e.key) showHub(); else location.hash = e.key;
+    setTimeout(()=>{
+      const art = document.querySelector('[data-pid="' + CSS.escape(e.pid) + '"]');
+      if(art){ art.scrollIntoView({behavior:'smooth', block:'center'}); destacar(art); }
+    }, 420);
+    return;
+  }
+  if(e.tipo === 'documento'){
+    location.hash = e.key;
+    setTimeout(()=>{ verDoc(e.doc); }, 380);
+    return;
+  }
+  if(e.tipo === 'placa'){
+    location.hash = e.key;
+    setTimeout(()=>{ openLightbox(e.img, e.titulo); }, 400);
+    return;
+  }
+  location.hash = e.key;
+}
+function destacar(el){
+  el.classList.add('destacado');
+  setTimeout(()=>el.classList.remove('destacado'), 2000);
+}
+
+function abrirBuscador(){
+  closeMenu();
+  BU_INDICE = null;                 /* se arma con lo que hay publicado ahora */
+  const b = document.getElementById('buscador');
+  b.hidden = false;
+  document.body.classList.add('menu-open');    /* frena el scroll del fondo */
+  pintarBusqueda();
+  const inp = document.getElementById('buInput');
+  inp.value = '';
+  setTimeout(()=>inp.focus(), 60);
+}
+function cerrarBuscador(){
+  const b = document.getElementById('buscador');
+  if(b.hidden) return;
+  b.hidden = true;
+  document.body.classList.remove('menu-open');
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const inp = document.getElementById('buInput');
+  if(inp) inp.addEventListener('input', pintarBusqueda);
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') cerrarBuscador();
+  /* atajo de teclado para quien la usa desde la compu */
+  if((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey)){ e.preventDefault(); abrirBuscador(); }
+});
+
+/* ===================================================================
    LOBBY: si hay un modulo de tipo muro, LA PORTADA ES EL MURO.
    Arriba los accesos a los modulos (se deslizan con el dedo) y lo fijado
    en miniatura; abajo el feed. El menu de las tres rayitas sigue teniendo
@@ -2428,6 +2841,7 @@ function renderHub(){
     muroHTML(mod.content, MAP[mod.key], {fijadosAparte:true});
   renderFijados();
   renderNoti();
+  pintarPendientes();
   pintarContadorMenu();
   initMuro();
   animarEntradas(document.getElementById('feed'));
