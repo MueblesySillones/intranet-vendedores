@@ -2416,7 +2416,7 @@ function yaEntendido(p){ return entendidos().has(idDePost(p)); }
    grande con un botón y se comía media publicación para decir algo que
    se entiende con dos palabras. */
 function chapaLectura(p, i){
-  if(!p.confirmar) return '';
+  if(!FLAGS.lectura || !p.confirmar) return '';
   const ok = yaEntendido(p);
   return ok
     ? `<span class="mu-lec ok" id="lec-${i}" title="Quedó registrado que la leíste">${svg(I.check)} Leído</span>`
@@ -2450,7 +2450,7 @@ const TIEMPO_LECTURA = 2000;
 let obsLectura = null;
 const relojes = new Map();
 function vigilarLectura(){
-  if(!('IntersectionObserver' in window)) return;
+  if(!FLAGS.lectura || !('IntersectionObserver' in window)) return;
   if(!obsLectura){
     obsLectura = new IntersectionObserver(entradas => {
       entradas.forEach(en => {
@@ -2500,6 +2500,7 @@ document.addEventListener('visibilitychange', ()=>{
 });
 /* cuantas comunicaciones obligatorias le faltan confirmar */
 function pendientesDeConfirmar(){
+  if(!FLAGS.lectura) return [];
   const mod = moduloMuro();
   if(!mod) return [];
   return postsDelMuro(mod.content).filter(p => p.confirmar && !yaEntendido(p));
@@ -2623,14 +2624,14 @@ function postHTML(p, i){
     </div>
     ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
     <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
-    ${resumenReacciones(p, i)}
+    ${FLAGS.reacciones ? resumenReacciones(p, i) : ''}
     <div class="mu-pie">
-      ${botonReaccion(p, i)}
+      ${FLAGS.reacciones ? botonReaccion(p, i) : ''}
       <button type="button" class="mu-acc mu-wa" onclick="muroWhatsApp(${i})" title="Compartir por WhatsApp"
         >${svg(I.whatsapp)}<span class="re-t"> Compartir</span></button>
       <button type="button" class="mu-acc solo-ic" title="Copiar el link" aria-label="Copiar el link"
         onclick="muroCopiar(${i},this)">${svg(I.ext)}</button>
-      ${p.confirmar && !yaEntendido(p) ? `<span class="lec-ring" id="ring-${i}" aria-hidden="true">
+      ${FLAGS.lectura && p.confirmar && !yaEntendido(p) ? `<span class="lec-ring" id="ring-${i}" aria-hidden="true">
         <svg viewBox="0 0 36 36"><circle class="pista" cx="18" cy="18" r="15"/>
           <circle class="prog" cx="18" cy="18" r="15"/></svg>
         <span class="lec-ok">${svg(I.check)}</span></span>` : ''}
@@ -2926,14 +2927,29 @@ function destacar(el){
   setTimeout(()=>el.classList.remove('destacado'), 2000);
 }
 
-/* ---- barra de abajo ----
-   APAGADA mientras esto sea una web: el menú de arriba alcanza y la barra
-   ocupa lugar de pantalla. Está entera y probada para el día que sea una
-   app; se prende cambiando esta línea a `true`. */
-const BARRA_ABAJO = false;
-if(BARRA_ABAJO) document.documentElement.classList.add('quiere-tabbar');
+/* ===================================================================
+   INTERRUPTORES
+   Cosas hechas y probadas que NO se muestran todavía. Están guardadas
+   acá, no borradas: prender una es cambiar su `false` por `true`.
+
+   - reacciones  Me gusta / Me encanta / etc. Sin base de datos cada uno
+                 ve SOLO las suyas: no son compartidas.
+   - lectura     "Confirmar lectura" + la marca automática. Sin identidad
+                 nadie puede saber QUIÉN leyó, así que hoy no le sirve a
+                 quien gestiona.
+   - tabbar      Barra de abajo (Inicio/Buscar/Módulos). Para cuando esto
+                 sea una app; en la web el menú de arriba alcanza.
+
+   Para verlas sin tocar el código, se pueden pedir por la dirección:
+   ...?ver=reacciones,lectura
+   =================================================================== */
+const FLAGS = { reacciones:false, lectura:false, tabbar:false };
+try{
+  (new URLSearchParams(location.search).get('ver') || '').split(',')
+    .forEach(f => { f = f.trim(); if(f in FLAGS) FLAGS[f] = true; });
+}catch(e){}
 document.addEventListener('DOMContentLoaded', ()=>{
-  if(BARRA_ABAJO) document.body.classList.add('con-tabbar');
+  if(FLAGS.tabbar) document.body.classList.add('con-tabbar');
 });
 function tabIr(a){
   if(a === 'inicio'){ cerrarBuscador(); closeMenu(); showHub(); window.scrollTo({top:0, behavior:'smooth'}); }
