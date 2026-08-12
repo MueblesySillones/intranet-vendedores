@@ -21,6 +21,7 @@ window.MURO_DEMO = {
 /* ---------- FIJADO ---------- */
 {
   id: 'normas-whatsapp',
+  reacciones: { like: 9, heart: 1 },
   titulo: 'Normas de atención por WhatsApp: lectura obligatoria',
   autor: 'Marketing',
   sucursal: 'Central',
@@ -39,6 +40,7 @@ window.MURO_DEMO = {
 /* ---------- PROMO con galeria real ---------- */
 {
   id: 'placas-agosto',
+  reacciones: { like: 12, heart: 5 },
   titulo: 'Ya están las placas de promociones bancarias de agosto',
   autor: 'Marketing',
   sucursal: 'Central',
@@ -62,6 +64,7 @@ window.MURO_DEMO = {
 /* ---------- ANUNCIO con foto a todo el ancho ---------- */
 {
   id: 'entregas-nuevo-camion',
+  reacciones: { like: 7, heart: 2 },
   titulo: 'Sumamos un camión más al servicio de entregas',
   autor: 'Logística',
   sucursal: 'Central',
@@ -74,6 +77,7 @@ window.MURO_DEMO = {
 /* ---------- LOGRO ---------- */
 {
   id: 'julio-record',
+  reacciones: { like: 14, heart: 11 },
   titulo: 'Julio cerró con el mejor mes de derivaciones del año',
   autor: 'Ezequiel',
   sucursal: 'Marketing',
@@ -87,6 +91,7 @@ window.MURO_DEMO = {
 /* ---------- CAPACITACION ---------- */
 {
   id: 'chatbot-derivar',
+  reacciones: { like: 6 },
   titulo: 'Cómo derivar una consulta desde el chatbot Lucy',
   autor: 'Marketing',
   sucursal: 'Central',
@@ -104,6 +109,7 @@ window.MURO_DEMO = {
 /* ---------- ANUNCIO ---------- */
 {
   id: 'plazos-living',
+  reacciones: { like: 4 },
   titulo: 'Cambio en los plazos de entrega de living',
   autor: 'Logística',
   sucursal: 'Central',
@@ -116,6 +122,7 @@ window.MURO_DEMO = {
 /* ---------- EQUIPO ---------- */
 {
   id: 'bienvenida-carla',
+  reacciones: { like: 10, heart: 8 },
   titulo: 'Se suma Carla al equipo de Canning',
   autor: 'Recursos Humanos',
   sucursal: 'Central',
