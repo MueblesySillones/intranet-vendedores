@@ -770,23 +770,38 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
    solo aparece cuando VOS reaccionaste: en reposo son grises, así una
    pantalla con diez publicaciones no se llena de azules y rojos. */
 .mu-sum{ display:flex; align-items:center; gap:7px; padding:10px 20px 0; }
-.mu-sum-ic{ display:flex; }
-.mu-sum-ic span{ width:21px; height:21px; border-radius:50%; display:flex; align-items:center;
-  justify-content:center; border:2px solid var(--surface); }
-.mu-sum-ic span + span{ margin-left:-7px; }
-.mu-sum-ic .ico{ width:11px; height:11px; }
-.mu-sum-ic .re-like{ background:var(--c-info); color:#fff; }
-.mu-sum-ic .re-heart{ background:var(--c-danger); color:#fff; }
+.mu-sum-ic{ display:flex; align-items:center; }
+.mu-sum-ic span{ font-size:14px; line-height:1; }
+.mu-sum-ic span + span{ margin-left:-2px; }
 .mu-sum-n{ font-size:12.5px; color:var(--ink3); font-weight:600; font-variant-numeric:tabular-nums; }
 .mu-sum-yo{ color:var(--ink2); }
 
-.re-b .ico{ transition:transform .22s cubic-bezier(.2,1.5,.4,1); }
-.re-b.on{ font-weight:700; }
-.re-b.on .ico svg{ fill:currentColor; }
-.re-b[data-r="like"].on{ color:var(--c-info); border-color:rgba(26,74,138,.35); background:#F2F6FC; }
-.re-b[data-r="heart"].on{ color:var(--c-danger); border-color:rgba(180,35,31,.3); background:#FDF3F2; }
-.re-b.late .ico{ transform:scale(1.35); }
-.re-n{ font-variant-numeric:tabular-nums; font-weight:700; }
+/* ---- barrita flotante de reacciones (como la de WhatsApp) ---- */
+.re-wrap{ position:relative; display:inline-flex; }
+.re-abrir.on{ font-weight:700; color:var(--ink); border-color:var(--ink3); background:var(--bg2); }
+.re-emo{ font-size:15px; line-height:1; }
+.re-abrir.late .re-emo{ display:inline-block; animation:reLate .3s cubic-bezier(.2,1.6,.4,1); }
+@keyframes reLate{ 40%{ transform:scale(1.45) } 100%{ transform:scale(1) } }
+
+.re-bar{ position:absolute; bottom:calc(100% + 8px); left:-4px; z-index:30; display:flex; gap:2px;
+  padding:6px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+  box-shadow:0 10px 30px rgba(0,0,0,.16); animation:reBarIn .18s cubic-bezier(.2,.9,.3,1) both; }
+.re-bar.sale{ animation:reBarOut .14s ease-in forwards; }
+@keyframes reBarIn{ from{ opacity:0; transform:translateY(8px) scale(.9) } to{ opacity:1; transform:none } }
+@keyframes reBarOut{ to{ opacity:0; transform:translateY(5px) scale(.95) } }
+.re-op{ width:40px; height:40px; border:0; border-radius:50%; background:transparent; cursor:pointer;
+  font-size:21px; line-height:1; display:flex; align-items:center; justify-content:center;
+  transition:background .15s, transform .15s cubic-bezier(.2,1.5,.4,1);
+  animation:reOpIn .22s cubic-bezier(.2,1.4,.4,1) both; animation-delay:var(--d,0ms); }
+@keyframes reOpIn{ from{ opacity:0; transform:scale(.4) translateY(6px) } to{ opacity:1; transform:none } }
+.re-op:hover{ background:var(--bg2); transform:scale(1.18); }
+.re-op:active{ transform:scale(.94); }
+.re-op.on{ background:var(--bg2); box-shadow:inset 0 0 0 2px var(--ink); }
+@media(prefers-reduced-motion:reduce){
+  .re-bar, .re-op{ animation:none; }
+  .re-op:hover{ transform:none; }
+  .re-abrir.late .re-emo{ animation:none; }
+}
 /* el link se queda en su ícono: con cuatro botones el pie no entra en un celular */
 .mu-acc.solo-ic{ padding:9px 11px; }
 .mu-acc.solo-ic .ico{ width:16px; height:16px; }
@@ -2122,57 +2137,117 @@ function inicialesDe(nombre){
    escribe; esta pantalla queda igual.
    =================================================================== */
 const MURO_REACC = 'mys_muro_reacciones';
-const RE_TIPOS = { like:{t:'Me gusta', i:'like'}, heart:{t:'Me encanta', i:'heart'} };
+/* Como en WhatsApp: UNA reaccion por persona. Elegir otra la reemplaza,
+   elegir la misma la saca. */
+const RE_TIPOS = {
+  like:  { e:'👍', t:'Me gusta' },
+  heart: { e:'❤️', t:'Me encanta' },
+  wow:   { e:'😮', t:'Me sorprende' },
+  haha:  { e:'😂', t:'Me divierte' },
+  clap:  { e:'👏', t:'Aplausos' }
+};
+const RE_ORDEN = ['like', 'heart', 'wow', 'haha', 'clap'];
 let REACC = null;
 function reacciones(){
   if(REACC) return REACC;
   try{ REACC = JSON.parse(localStorage.getItem(MURO_REACC) || '{}'); }catch(e){ REACC = {}; }
   return REACC;
 }
-function miReaccion(p, tipo){
-  const r = reacciones()[idDePost(p)];
-  return !!(r && r[tipo]);
+/* Antes se guardaba {like:1, heart:1} (se podian poner varias). Ahora es una
+   sola: de lo viejo se toma la primera que valga. */
+function miReaccion(p){
+  const v = reacciones()[idDePost(p)];
+  if(typeof v === 'string') return RE_TIPOS[v] ? v : null;
+  if(v && typeof v === 'object'){
+    const k = RE_ORDEN.find(x => v[x]);
+    return k || null;
+  }
+  return null;
 }
 function cuentaReaccion(p, tipo){
   const base = Math.max(0, Number((p.reacciones||{})[tipo]) || 0);
-  return base + (miReaccion(p, tipo) ? 1 : 0);
+  return base + (miReaccion(p) === tipo ? 1 : 0);
 }
-function chapaN(n){ return n ? ` <b class="re-n">${n}</b>` : ''; }
+function totalReacciones(p){
+  return RE_ORDEN.reduce((s, t) => s + cuentaReaccion(p, t), 0);
+}
 function resumenReacciones(p, i){
-  const l = cuentaReaccion(p, 'like'), h = cuentaReaccion(p, 'heart');
-  if(!(l + h)) return '';
-  /* se descuentan TODAS las mias: si puse las dos, yo valgo 2 en el total */
-  const mias = (miReaccion(p, 'like') ? 1 : 0) + (miReaccion(p, 'heart') ? 1 : 0);
-  const yo = mias > 0;
-  const otros = l + h - mias;
-  const txt = yo ? (otros ? 'Vos y ' + otros + ' más' : 'Reaccionaste') : String(l + h);
+  const total = totalReacciones(p);
+  if(!total) return '';
+  /* se muestran hasta 3 caritas, las mas usadas primero */
+  const usadas = RE_ORDEN.map(t => ({t, n:cuentaReaccion(p, t)})).filter(x => x.n)
+    .sort((a,b) => b.n - a.n).slice(0, 3);
+  const mia = miReaccion(p);
+  const otros = total - (mia ? 1 : 0);
+  const txt = mia ? (otros ? 'Vos y ' + otros + ' más' : 'Reaccionaste') : String(total);
   return `<div class="mu-sum"><span class="mu-sum-ic">${
-      l ? `<span class="re-like">${svg(I.like)}</span>` : ''}${
-      h ? `<span class="re-heart">${svg(I.heart)}</span>` : ''
-    }</span><span class="mu-sum-n${yo ? ' mu-sum-yo' : ''}">${esc(txt)}</span></div>`;
+      usadas.map(x => `<span title="${esc(RE_TIPOS[x.t].t)}">${RE_TIPOS[x.t].e}</span>`).join('')
+    }</span><span class="mu-sum-n${mia ? ' mu-sum-yo' : ''}">${esc(txt)}</span></div>`;
 }
-function reaccionar(i, tipo, btn){
+/* El boton del pie: dice "Reaccionar", o muestra la tuya si ya reaccionaste */
+function botonReaccion(p, i){
+  const mia = miReaccion(p);
+  return `<span class="re-wrap">
+    <button type="button" class="mu-acc re-abrir${mia ? ' on' : ''}" aria-expanded="false"
+      aria-haspopup="true" onclick="abrirReacciones(${i}, this)">${
+      mia ? `<span class="re-emo">${RE_TIPOS[mia].e}</span> ${esc(RE_TIPOS[mia].t)}`
+          : `${svg(I.like)} Reaccionar`}</button>
+  </span>`;
+}
+
+/* ---- la barrita flotante ---- */
+let RE_ABIERTA = null;
+function cerrarReacciones(){
+  const b = document.querySelector('.re-bar');
+  if(!b) return;
+  const btn = b.parentElement.querySelector('.re-abrir');
+  if(btn) btn.setAttribute('aria-expanded', 'false');
+  b.classList.add('sale');
+  setTimeout(()=>{ if(b.parentElement) b.remove(); }, 140);
+  RE_ABIERTA = null;
+}
+function abrirReacciones(i, btn){
+  const abierta = RE_ABIERTA === i;
+  cerrarReacciones();
+  if(abierta) return;                     /* segundo toque: se cierra */
+  const p = MURO_POSTS[i]; if(!p) return;
+  const mia = miReaccion(p);
+  const bar = document.createElement('div');
+  bar.className = 're-bar';
+  bar.setAttribute('role', 'menu');
+  bar.innerHTML = RE_ORDEN.map((t, n) => `
+    <button type="button" class="re-op${mia === t ? ' on' : ''}" role="menuitem"
+      style="--d:${n * 28}ms" title="${esc(RE_TIPOS[t].t)}" aria-label="${esc(RE_TIPOS[t].t)}"
+      onclick="elegirReaccion(${i},'${t}')">${RE_TIPOS[t].e}</button>`).join('');
+  btn.parentElement.appendChild(bar);
+  btn.setAttribute('aria-expanded', 'true');
+  RE_ABIERTA = i;
+}
+/* se cierra sola al tocar en cualquier otro lado, o con Escape */
+document.addEventListener('click', e => {
+  if(RE_ABIERTA !== null && !e.target.closest('.re-wrap')) cerrarReacciones();
+}, true);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') cerrarReacciones(); });
+
+function elegirReaccion(i, tipo){
   const p = MURO_POSTS[i]; if(!p || !RE_TIPOS[tipo]) return;
   const id = idDePost(p), R = reacciones();
-  const mia = R[id] || (R[id] = {});
-  if(mia[tipo]) delete mia[tipo]; else mia[tipo] = 1;
-  if(!Object.keys(mia).length) delete R[id];
+  if(miReaccion(p) === tipo) delete R[id];   /* la misma otra vez: se saca */
+  else R[id] = tipo;
   try{ localStorage.setItem(MURO_REACC, JSON.stringify(R)); }catch(e){}
+  cerrarReacciones();
 
   /* se repinta SOLO esta publicacion: volver a dibujar el feed entero haria
      saltar el scroll justo cuando tocaste el boton */
-  const puesta = miReaccion(p, tipo);
-  btn.classList.toggle('on', puesta);
-  const n = cuentaReaccion(p, tipo);
-  const vieja = btn.querySelector('.re-n');
-  if(n && vieja) vieja.textContent = n;
-  else if(n) btn.insertAdjacentHTML('beforeend', ' <b class="re-n">' + n + '</b>');
-  else if(vieja) vieja.remove();
-  if(puesta && !sinMovimiento()){          /* el ícono late una vez */
-    btn.classList.add('late');
-    setTimeout(()=>btn.classList.remove('late'), 240);
+  const art = document.getElementById('mu-' + i);
+  if(!art) return;
+  const wrap = art.querySelector('.re-wrap');
+  if(wrap) wrap.outerHTML = botonReaccion(p, i);
+  const nuevoBtn = art.querySelector('.re-abrir');
+  if(nuevoBtn && miReaccion(p) && !sinMovimiento()){
+    nuevoBtn.classList.add('late');
+    setTimeout(()=>nuevoBtn.classList.remove('late'), 300);
   }
-  const art = btn.closest('.mu-post');
   const sumVieja = art.querySelector('.mu-sum');
   const sumNueva = resumenReacciones(p, i);
   if(sumVieja && sumNueva) sumVieja.outerHTML = sumNueva;
@@ -2205,10 +2280,7 @@ function postHTML(p, i){
     <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
     ${resumenReacciones(p, i)}
     <div class="mu-pie">
-      <button type="button" class="mu-acc re-b${miReaccion(p,'like')?' on':''}" data-r="like"
-        onclick="reaccionar(${i},'like',this)">${svg(I.like)} Me gusta${chapaN(cuentaReaccion(p,'like'))}</button>
-      <button type="button" class="mu-acc re-b${miReaccion(p,'heart')?' on':''}" data-r="heart"
-        onclick="reaccionar(${i},'heart',this)">${svg(I.heart)} Me encanta${chapaN(cuentaReaccion(p,'heart'))}</button>
+      ${botonReaccion(p, i)}
       <button type="button" class="mu-acc mu-wa" onclick="muroWhatsApp(${i})" title="Compartir por WhatsApp"
         >${svg(I.whatsapp)}<span class="re-t"> Compartir</span></button>
       <button type="button" class="mu-acc solo-ic" title="Copiar el link" aria-label="Copiar el link"
