@@ -340,6 +340,150 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .note svg{ width:20px; height:20px; color:var(--nota-acc, var(--ink)); flex:0 0 auto; margin-top:1px; }
 .note .nt{ font-size:13.5px; color:var(--ink2); line-height:1.5; } .note .nt b{ color:var(--ink); }
 
+/* SEÑALAR UN MÓDULO — el muro es un tablero de avisos: en vez de duplicar lo
+   que ya vive en un módulo, la publicación lo apunta y el vendedor va derecho.
+   Clases prefijadas mr- porque .ref o .card ya chocarían con medio maquetado. */
+.m-ref{ display:flex; align-items:center; gap:13px; margin-top:14px; padding:13px 14px;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  text-decoration:none; color:inherit; transition:border-color .16s, transform .16s, box-shadow .16s; }
+.m-ref:hover{ border-color:rgba(0,0,0,.20); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.07); }
+.m-ref:active{ transform:none; }
+.mr-ic{ flex:0 0 auto; width:42px; height:42px; border-radius:11px; display:grid; place-items:center; color:#fff; }
+/* ICO() envuelve en <span class="ico">, y .ico svg vale width:100% — el tamaño
+   va en .ico, como en todo el resto del maquetado. Dimensionar el svg a secas
+   es el bug de los iconos gigantes de .wa-btn, otra vez. */
+.mr-ic .ico{ width:21px; height:21px; }
+.mr-ic > svg{ width:21px; height:21px; stroke:currentColor; fill:none; stroke-width:2;
+  stroke-linecap:round; stroke-linejoin:round; }
+.mr-tx{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.mr-t{ font-size:14.5px; font-weight:650; color:var(--ink); line-height:1.3;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mr-sub{ font-weight:500; color:var(--ink2); }
+.mr-sub::before{ content:" › "; color:var(--ink3); }
+.mr-d{ font-size:12.5px; color:var(--ink3); line-height:1.35;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* --- la tarjeta que MUESTRA lo que señala ---
+   Un renglón de texto no dice nada de un video ni de una galería. Cuando la
+   pieza señalada se puede mostrar, la vista previa va arriba y el renglón de
+   siempre queda abajo como pie. Tocar la tarjeta lleva al módulo igual. */
+.m-ref.con-previa{ flex-direction:column; align-items:stretch; gap:0; padding:0;
+  overflow:hidden; }
+.m-ref.con-previa .mr-fila{ display:flex; align-items:center; gap:13px; padding:11px 13px; }
+.m-ref:not(.con-previa) .mr-fila{ display:contents; }
+
+.mr-pv{ position:relative; display:block; background:var(--bg2); overflow:hidden; }
+.mr-pv .mr-vid, .mr-pv .mr-img{ display:block; width:100%; height:100%;
+  object-fit:cover; background:var(--bg2); }
+/* --- la previa se ADAPTA a la forma del archivo ---
+   Horizontal y cuadrado: manda el ancho, ocupan toda la tarjeta.
+   Vertical: manda el ALTO. Un 9:16 a 660px de ancho mediría 1170px de alto:
+   media pantalla para una sola publicación. Sizeándolo por altura, la caja
+   toma exactamente la forma del video, queda centrada y no se recorta nada. */
+.con-video .mr-pv, .con-foto .mr-pv{ width:100%;
+  aspect-ratio:var(--arw, 16) / var(--arh, 9); max-height:420px; }
+.con-video .mr-pv{ background:#0d0d0d; }
+
+/* El cuadrado NO lleva tope: a ancho completo da 616x616 en escritorio y
+   356x356 en celular, que es como lo muestran Instagram y Facebook. Poniéndole
+   un máximo de alto dejaba de ser cuadrado. El tope hace falta solo para el
+   vertical, donde un 9:16 a 660px de ancho mediría 1170px. */
+.m-ref.cuadrado .mr-pv{ max-height:none; }
+
+.m-ref.vertical .mr-pv{ width:auto; max-width:100%; max-height:none;
+  height:min(520px, 68vh); margin:0 auto; }
+/* 'midiendo' es solo una marca: la forma ya viene declarada desde el panel y
+   la caja NO se toca hasta confirmar con las medidas reales del archivo. Si
+   forzara 16/9 acá, todo vertical pegaría un salto al terminar de cargar. */
+
+.con-foto .mr-img{ object-fit:cover; }
+.m-ref.vertical .mr-img, .m-ref.vertical .mr-vid{ object-fit:contain; }
+
+/* el botón de sonido: chico, arriba a la derecha, y NO navega */
+.mr-son{ position:absolute; right:9px; bottom:9px; width:32px; height:32px;
+  border-radius:50%; display:grid; place-items:center; cursor:pointer;
+  background:rgba(0,0,0,.55); color:#fff; backdrop-filter:blur(3px);
+  transition:background .16s, transform .16s; }
+.mr-son:hover{ background:rgba(0,0,0,.75); transform:scale(1.07); }
+.mr-son svg{ width:16px; height:16px; }
+/* con sonido puesto, se tacha la cruz (el mismo ícono sin las rayas) */
+.mr-son.suena svg line{ display:none; }
+
+/* la galería: una tira de miniaturas */
+.mr-tira{ display:flex; gap:2px; }
+.mr-tira img{ flex:1 1 0; min-width:0; height:132px; object-fit:cover; }
+.mr-mas{ position:absolute; right:8px; bottom:8px; padding:3px 9px; border-radius:999px;
+  background:rgba(0,0,0,.62); color:#fff; font-size:12px; font-weight:650;
+  backdrop-filter:blur(3px); }
+
+@media(max-width:560px){
+  .con-video .mr-pv, .con-foto .mr-pv{ max-height:340px; }
+  /* en el celular un vertical puede darse el lujo de ser alto: es su forma */
+  .m-ref.vertical .mr-pv{ height:min(72vh, 560px); }
+  .mr-tira img{ height:104px; }
+}
+
+.mr-go{ flex:0 0 auto; color:var(--ink3); display:grid; place-items:center; }
+.mr-go .ico{ width:17px; height:17px; }
+.mr-go > svg{ width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2;
+  stroke-linecap:round; stroke-linejoin:round; }
+.m-ref:hover .mr-go{ color:var(--ink); }
+@media(max-width:560px){
+  .m-ref{ gap:11px; padding:11px 12px; }
+  .mr-ic{ width:38px; height:38px; border-radius:10px; }
+  .mr-t{ font-size:13.5px; } .mr-d{ font-size:12px; }
+}
+
+/* ===================================================================
+   COLUMNA DE MODULOS — solo escritorio
+   En un monitor, la mitad de la pantalla era margen: 54% en una notebook
+   de 1440, 66% en una de 1920. Los módulos pasan al costado y el feed
+   queda igual de ancho que antes, no más angosto.
+   Abajo de 1100px NO existe: en celular los módulos siguen en el menú,
+   porque ahí sí le comían lugar a lo que se publica.
+   =================================================================== */
+.lat{ display:none; }
+
+@media(min-width:1100px){
+  /* 72px de separación, no 30: pegadas, la lista de módulos se leía como
+     parte de la publicación y era demasiada cosa junta. El aire es lo que
+     dice "esto es navegación, aquello es lo que tenés que leer". */
+  #lobby:not([hidden]){ display:grid; grid-template-columns:252px minmax(0,660px);
+    gap:72px; justify-content:center; align-items:start; }
+  .lat{ display:block; position:sticky; top:84px; }
+  /* adentro de la columna del medio ya no hace falta auto-centrar: la grilla
+     ubica, y si no se pisan los margenes automaticos con el grid */
+  .lobby-centro .muro, .lobby-centro .lobby-t, .lobby-centro .fijados,
+  .lobby-centro .pendientes, .lobby-centro .noti{ max-width:none; margin-left:0; margin-right:0; }
+}
+
+.lat-t{ font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:var(--ink3); padding:0 12px; margin-bottom:16px; }
+.lat-lista{ display:flex; flex-direction:column; gap:6px; }
+.lat-i{ display:flex; align-items:center; gap:12px; width:100%; padding:11px 12px;
+  border:0; background:transparent; border-radius:11px; cursor:pointer;
+  font-family:inherit; text-align:left; position:relative;
+  transition:background .16s, transform .16s cubic-bezier(.22,.9,.3,1); }
+.lat-i:hover{ background:var(--surface); }
+.lat-i:active{ transform:scale(.985); }
+.lat-ic{ width:32px; height:32px; border-radius:9px; flex:0 0 auto; display:grid;
+  place-items:center; color:#fff; transition:transform .18s cubic-bezier(.22,.9,.3,1); }
+.lat-ic .ico{ width:17px; height:17px; }
+.lat-i:hover .lat-ic{ transform:scale(1.07); }
+/* Los nombres largos ("COMUNICACION IMPORTANTE", "Programa de Embajadores")
+   se cortaban con puntos suspensivos. En una lista para navegar, no poder leer
+   a dónde vas es peor que un renglón de más: se permiten dos. */
+.lat-tx{ flex:1; min-width:0; font-size:13.5px; font-weight:600; color:var(--ink);
+  line-height:1.28; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; overflow-wrap:anywhere; }
+/* el mismo punto que usa el menú para "tiene material nuevo" */
+.lat-pto{ width:8px; height:8px; border-radius:50%; background:var(--c-danger);
+  flex:0 0 auto; }
+.lat-i.locked{ cursor:default; opacity:.5; }
+.lat-i.locked:hover{ background:transparent; }
+.lat-i.locked:hover .lat-ic{ transform:none; }
+.lat-soon{ font-size:10.5px; font-weight:600; color:var(--ink3); flex:0 0 auto;
+  letter-spacing:.2px; }
+
 /* tutorial chatbot (pasos con captura) */
 .tut-fig{ margin:14px 0 0; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center; }
 .tut-fig img{ max-width:100%; max-height:440px; border-radius:9px; box-shadow:0 4px 18px rgba(0,0,0,.10); cursor:zoom-in; transition:transform .15s; }
@@ -750,7 +894,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .mu-titulo{ font-size:18px; font-weight:700; line-height:1.32; letter-spacing:-.2px; color:var(--ink);
   padding:13px 20px 0; text-wrap:balance; }
 .mu-cuerpo .m-p, .mu-cuerpo .m-lead{ text-wrap:pretty; }
-.mu-cuerpo{ padding:10px 20px 4px; position:relative; }
+.mu-cuerpo{ --pad:20px; padding:10px var(--pad) 4px; position:relative; }
 .mu-cuerpo .manual{ font-size:14.5px; }
 /* El feed muestra un ADELANTO, no la publicación entera: si cada tarjeta ocupa
    toda la pantalla, no se ve que hay más abajo y nadie baja.
@@ -1135,7 +1279,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
     text-overflow:ellipsis; white-space:nowrap; }
   .dk-navs{ margin-left:auto; }
   .mu-titulo{ font-size:16.5px; padding:12px 16px 0; }
-  .mu-cuerpo{ padding:9px 16px 4px; }
+  .mu-cuerpo{ --pad:16px; padding:9px var(--pad) 4px; }
   .mu-cuerpo.recortado{ max-height:210px; }
   .mu-cuerpo.recortado.con-media{ max-height:390px; }
   .mu-pie{ padding:10px 16px 12px; gap:7px; }
@@ -1150,6 +1294,52 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   .mu-marcas{ padding-top:0; }
   .mu-tag{ padding:4px 9px; font-size:10.5px; }
 }
+
+/* ⚠️ Este bloque va al FINAL de la hoja a propósito. Sus selectores empatan en
+   especificidad con los de `.manual .m-video` (ambos 0,2,0), así que decide el
+   orden de aparición: puesto antes, el maquetado del módulo lo pisaba y el
+   medio quedaba con el ancho y los márgenes de una página de módulo. */
+/* ===================================================================
+   EL MEDIO ADJUNTO, DE BORDE A BORDE
+   Una foto o un video con márgenes a los costados se lee como "un archivo
+   adjunto"; sin márgenes, se lee como la publicación misma. En celular ya
+   era así por el maquetado de borde a borde; esto lo lleva al escritorio.
+   Ojo: SOLO adentro de .mu-cuerpo. En la página de un módulo el medio sigue
+   centrado y con sus esquinas, que ahí es lo correcto.
+   =================================================================== */
+.mu-cuerpo .m-video, .mu-cuerpo .m-img, .mu-cuerpo .dl-section{
+  margin-left:calc(-1 * var(--pad)); margin-right:calc(-1 * var(--pad));
+  width:calc(100% + 2 * var(--pad)); max-width:none; }
+/* ⚠️ .gallery vive ADENTRO de .dl-section y en celular ya traía su propio
+   margen negativo: los dos se sumaban, la galería salía 32px afuera de cada
+   lado y .mu-post{overflow:hidden} le comía las tarjetas. El que corre el
+   borde es el padre; el hijo se queda quieto. */
+.mu-cuerpo .dl-section .gallery{ margin-left:0; margin-right:0; width:100%; }
+.mu-cuerpo .m-video{ margin-top:12px; }
+.mu-cuerpo .m-video .v-box{ border-radius:0; margin:0; max-width:100%; }
+.mu-cuerpo .m-video video{ object-fit:contain; }
+/* el vertical manda por altura, igual que en la tarjeta de señalar: a ancho
+   completo un 9:16 mediría 1170px y se comería la pantalla */
+.mu-cuerpo .m-video.vertical .v-box{ width:auto; max-width:100%;
+  height:min(520px, 68vh); margin:0 auto; }
+/* max-height:360px de `.manual .m-img img` deforma la foto en el feed: con
+   `width:100%` y sin object-fit, una imagen alta se aplasta. En celular ya
+   estaba reseteado; en escritorio faltaba, y esa asimetría delataba el olvido. */
+.mu-cuerpo .m-img img{ border-radius:0; width:100%; max-width:none; max-height:none;
+  height:auto; margin:0; }
+/* ⚠️ Sacar aquel max-height arregló la deformación pero se llevó puesto el
+   ÚNICO límite de altura: una foto de celular (2250x4000) pasó a ocupar
+   1170px, el 130% de la pantalla. El video vertical ya tenía su tope; la foto
+   no. Mismo criterio para las dos: manda la altura y no se recorta nada. */
+.mu-cuerpo .m-img.vertical img{ width:auto; max-width:100%;
+  height:min(520px, 68vh); object-fit:contain; margin:0 auto; }
+.mu-cuerpo .m-video figcaption, .mu-cuerpo .m-img figcaption{ padding:0 20px; }
+@media(max-width:640px){
+  /* el ancho lo calcula --pad: en celular el cuerpo respira 16px, no 20 */
+  .mu-cuerpo .m-video.vertical .v-box{ height:min(72vh, 560px); }
+  .mu-cuerpo .m-img.vertical img{ height:min(72vh, 560px); }
+}
+
 </style>
 </head>
 <body>
@@ -1192,10 +1382,15 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
          miniatura; abajo, el feed. Si no hay muro, esto queda vacio y la
          portada sigue siendo la grilla de siempre. -->
     <div id="lobby" hidden>
-      <div class="pendientes" id="pendientes" hidden></div>
-      <div class="noti" id="noti" hidden></div>
-      <div class="fijados" id="fijados" hidden></div>
-      <div id="feed"></div>
+      <!-- la columna de módulos vive SOLO en escritorio: en celular los
+           módulos siguen en el menú, para que nada le compita a lo publicado -->
+      <aside class="lat" id="lateral"></aside>
+      <div class="lobby-centro">
+        <div class="pendientes" id="pendientes" hidden></div>
+        <div class="noti" id="noti" hidden></div>
+        <div class="fijados" id="fijados" hidden></div>
+        <div id="feed"></div>
+      </div>
     </div>
     <!-- lo que se movió desde la última vez: publicar sin que nadie se entere
          es la mitad del trabajo tirado -->
@@ -2092,12 +2287,12 @@ function renderSection(key){
   const mod = MODMAP[key];
   let body, embed = false, presenta = false, esMuro = false;
   COL_KEY = (mod && mod.content && mod.content.tipo === 'coleccion') ? key : null;
-  MURO_KEY = (mod && mod.content && mod.content.tipo === 'muro') ? key : null;
+  MURO_KEY = (mod && esCartelera(mod.content)) ? key : null;
   if(mod && mod.content && mod.content.tipo){
     body = renderContent(mod.content, t);
     embed = mod.content.tipo === 'embed';
     presenta = mod.content.tipo === 'bloques' && !!mod.content.presentacion;
-    esMuro = mod.content.tipo === 'muro';
+    esMuro = esCartelera(mod.content);
   }
   else if(DOWNLOAD_GROUPS[key]) body = groupsHTML(DOWNLOAD_GROUPS[key]);
   else if(CONTENT[key]) body = CONTENT[key];
@@ -2152,10 +2347,10 @@ function renderNav(){
   const inicio = `<button class="nav-item" onclick="navHome()">
     <span class="ni-ic" style="background:var(--ink)">${svg(muro ? I.megaphone : I.home)}</span>
     <span class="ni-tx"><span class="ni-t">Inicio</span><span class="ni-d">${muro
-      ? 'Las novedades de la empresa' : 'Volver al centro de recursos'}</span></span>
+      ? 'La cartelera de la empresa' : 'Volver al centro de recursos'}</span></span>
     ${sinLeer ? `<span class="menu-n">${sinLeer}</span>` : ''}
   </button>`;
-  list.innerHTML = inicio + TILES.filter(t => !muro || t.key !== muro.key).map(t=>{
+  list.innerHTML = inicio + TILES.filter(t => !esCarteleraKey(t.key)).map(t=>{
     const r = seccionLista(t);
     const nv = r && esNovedad(t.key);
     return `
@@ -2220,7 +2415,7 @@ function applyModules(){
 /* Cuerpo de un módulo cuyo contenido fue definido/reemplazado desde el panel */
 function renderContent(c, t){
   if(!c || !c.tipo) return '';
-  if(c.tipo==='muro')      return muroHTML(c, t);
+  if(esCartelera(c))       return muroHTML(c, t);
   if(c.tipo==='coleccion') return indiceHTML(c);
   if(c.tipo==='bloques' && c.presentacion) return deckHTML(c.html||'');
   if(c.tipo==='bloques') return `<div class="manual">${c.html||''}</div>`;
@@ -2780,7 +2975,7 @@ function armarIndice(){
     const t = MAP[m.key] || {};
     const base = { key:m.key, icon:(I[m.icon] ? m.icon : (t.icon || 'layers')), color:m.color || t.color || '--c-hudson' };
     const c = m.content;
-    if(c && c.tipo === 'muro'){
+    if(esCartelera(c)){
       postsDelMuro(c).forEach(p => agregar(Object.assign({}, base, {
         tipo:'publicacion', pid:idDePost(p), titulo:p.titulo || 'Publicación',
         texto:textoDe(p.html), extra:(p.autor || '') + ' · ' + fechaLinda(p.fecha)
@@ -3011,9 +3206,208 @@ document.addEventListener('keydown', e => {
    TODO, que es como se encuentra algo puntual rapido.
    Si no hay muro, la portada sigue siendo la grilla de siempre.
    =================================================================== */
-function moduloMuro(){
-  return (window.MODULES || []).find(m => m.content && m.content.tipo === 'muro' && !m.hidden) || null;
+/* Se llamaba 'muro' hasta agosto de 2026. Lo guardado con el nombre viejo
+   se sigue leyendo: nadie tiene que migrar nada a mano. */
+function esCartelera(c){ return !!c && (c.tipo === 'cartelera' || c.tipo === 'muro'); }
+/* NINGUNA cartelera se lista como módulo: es la portada, no una sección.
+   Se pregunta por todas y no solo por la primera — con dos carteleras
+   cargadas, la segunda se colaba en el menú y en la columna del costado. */
+function esCarteleraKey(key){
+  return (window.MODULES || []).some(m => m.key === key && esCartelera(m.content));
 }
+function moduloMuro(){
+  return (window.MODULES || []).find(m => esCartelera(m.content) && !m.hidden) || null;
+}
+/* ===================================================================
+   VIDEO DE LA TARJETA SEÑALADA
+   Arranca mudo y se reproduce SOLO mientras está a la vista: con varias
+   publicaciones abiertas, dejar todos los videos corriendo se come los
+   datos del vendedor. Al salir de pantalla se pausa.
+   El botón de sonido no navega — la tarjeta entera es un link.
+   =================================================================== */
+/* La forma REAL, leída del archivo. El panel guarda un `ar` que puede estar
+   mal (queda 16/9 por omisión aunque el video sea vertical), así que se mide
+   lo que de verdad llegó: videoWidth/videoHeight y naturalWidth/naturalHeight.
+   Se ajusta solo, sin que nadie tenga que declarar el formato. */
+function medirPrevia(el, an, al){
+  if(!an || !al) return;
+  /* Sirve para las dos cosas: la tarjeta de "señalar" (.m-ref/.mr-pv) y un
+     medio adjunto a la publicación (.m-video/.v-box). La forma se declara en
+     el mismo lugar donde el maquetado la lee. */
+  const caja = el.closest('.mr-pv') || el.closest('.v-box');
+  const marco = el.closest('.m-ref') || el.closest('.m-video') || el.closest('.m-img');
+  if(caja){ caja.style.setProperty('--arw', an); caja.style.setProperty('--arh', al); }
+  if(!marco) return;
+  const r = an / al;
+  marco.classList.remove('midiendo', 'vertical', 'cuadrado', 'horizontal');
+  marco.classList.add(r < .88 ? 'vertical' : (r <= 1.2 ? 'cuadrado' : 'horizontal'));
+}
+/* si la imagen de la previa ya no existe, la tarjeta vuelve a su forma
+   compacta en vez de mostrar el ícono de imagen rota */
+function cuidarPrevias(){
+  /* un video de previa que ya no existe dejaba una caja negra para siempre */
+  document.querySelectorAll('.m-ref .mr-vid').forEach(v => {
+    if(v.dataset.cuidada) return;
+    v.dataset.cuidada = '1';
+    v.addEventListener('error', () => {
+      const t = v.closest('.m-ref');
+      if(t) t.classList.remove('con-previa','con-video','vertical','cuadrado','horizontal','midiendo');
+      const pv = v.closest('.mr-pv');
+      if(pv) pv.remove();
+    }, { once:true });
+  });
+  document.querySelectorAll('.mr-img').forEach(i => {
+    if(i.dataset.cuidada) return;
+    i.dataset.cuidada = '1';
+    i.addEventListener('error', () => {
+      const t = i.closest('.m-ref');
+      if(t) t.classList.remove('con-previa','con-foto','vertical','cuadrado','horizontal');
+      const pv = i.closest('.mr-pv');
+      if(pv) pv.remove();
+    }, { once:true });
+  });
+}
+
+function medirTodo(){
+  cuidarPrevias();
+  /* .mr-vid la llevan las dos: la tarjeta de señalar y el video adjunto.
+     ⚠️ La marca se pone ANTES de enganchar, no adentro del callback: si el
+     archivo todavía no cargó, cada re-render sumaba otro listener sobre el
+     mismo elemento. Con un 404 se acumulaban para siempre. */
+  document.querySelectorAll('.mr-vid').forEach(v => {
+    if(v.dataset.medido) return;
+    v.dataset.medido = '1';
+    const listo = () => medirPrevia(v, v.videoWidth, v.videoHeight);
+    if(v.videoWidth) listo();
+    else v.addEventListener('loadedmetadata', listo, { once:true });
+  });
+  document.querySelectorAll('.mr-img').forEach(i => {
+    if(i.dataset.medido) return;
+    i.dataset.medido = '1';
+    const listo = () => medirPrevia(i, i.naturalWidth, i.naturalHeight);
+    if(i.complete && i.naturalWidth) listo();
+    else i.addEventListener('load', listo, { once:true });
+  });
+}
+
+/* En la cartelera un video adjunto se comporta COMO EL FEED, no como una
+   página de módulo: arranca mudo, se reproduce solo mientras está a la vista y
+   el sonido se prende con el botón. Los controles del navegador quedan para
+   adentro del módulo, que es donde el vendedor fue a mirarlo a propósito.
+   Se le pone la clase .mr-vid para que lo agarren el mismo observador y el
+   mismo medidor que las tarjetas de "señalar". */
+const SON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+  'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+  '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>' +
+  '<line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+
+function videosDelFeed(){
+  /* ⚠️ Las FOTOS adjuntas también tienen que pasar por el medidor. Sin esto
+     nunca reciben la clase `vertical` y una foto de celular (2250x4000) se
+     pinta a 1170px de alto: el 130% de la pantalla para una sola publicación.
+     El tope de altura que sí tenían los videos verticales no las alcanzaba. */
+  document.querySelectorAll('#feed .m-img img, #fixAbierto .m-img img')
+    .forEach(i => i.classList.add('mr-img'));
+
+  document.querySelectorAll('#feed .m-video video, #fixAbierto .m-video video')
+    .forEach(v => {
+      if(v.dataset.feed) return;
+      v.dataset.feed = '1';
+      v.removeAttribute('controls');
+      v.muted = true; v.loop = true; v.playsInline = true;
+      if(v.preload === 'none') v.preload = 'metadata';
+      v.classList.add('mr-vid');
+      const caja = v.closest('.v-box');
+      if(caja && !caja.querySelector('.mr-son')){
+        const b = document.createElement('span');
+        b.className = 'mr-son';
+        b.setAttribute('role', 'button');
+        b.setAttribute('tabindex', '0');
+        b.setAttribute('aria-label', 'Activar sonido');
+        b.innerHTML = SON_SVG;
+        caja.appendChild(b);
+      }
+    });
+}
+
+let VID_OBS = null;
+function vigilarVideos(){
+  videosDelFeed();
+  medirTodo();
+  const vids = document.querySelectorAll('.mr-vid');
+  if(!vids.length) return;
+  if(!VID_OBS){
+    VID_OBS = new IntersectionObserver(es => {
+      es.forEach(e => {
+        const v = e.target;
+        if(e.isIntersecting){
+          const t = v.play(); if(t && t.catch) t.catch(()=>{});   /* si el navegador lo frena, no pasa nada */
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: .35 });
+  }
+  /* ⚠️ renderHub() y verFijado() reescriben el HTML entero: los <video> de la
+     vuelta anterior ya no están en la página, pero el observer los seguía
+     reteniendo (y con ellos su decoder). Se suelta todo y se vuelve a mirar
+     lo que hay AHORA. */
+  VID_OBS.disconnect();
+  vids.forEach(v => VID_OBS.observe(v));
+}
+
+/* el sonido se prende de a uno: dos videos hablando a la vez no se entiende
+   ninguno. Prender uno apaga el que estaba sonando. */
+document.addEventListener('click', function(e){
+  const b = e.target.closest('.mr-son');
+  if(!b) return;
+  e.preventDefault(); e.stopPropagation();     /* la tarjeta es un link: no navegar */
+  const v = b.parentElement.querySelector('.mr-vid');
+  if(!v) return;
+  const prender = v.muted;
+  if(prender){
+    document.querySelectorAll('.mr-vid').forEach(o => { if(o !== v){ o.muted = true; } });
+    document.querySelectorAll('.mr-son.suena').forEach(o => {
+      o.classList.remove('suena'); o.setAttribute('aria-label','Activar sonido');
+    });
+  }
+  v.muted = !prender;
+  b.classList.toggle('suena', prender);
+  b.setAttribute('aria-label', prender ? 'Silenciar' : 'Activar sonido');
+  const t = v.play(); if(t && t.catch) t.catch(()=>{});
+});
+/* con el teclado, Enter o espacio hacen lo mismo */
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  const b = e.target.closest && e.target.closest('.mr-son');
+  if(!b) return;
+  e.preventDefault(); b.click();
+});
+
+/* la lista de módulos del costado. Reusa TILES y esNovedad(), los mismos que
+   alimentan el menú: si algún día cambia qué módulos hay, cambia en los dos
+   lados de una. */
+function renderLateral(){
+  const caja = document.getElementById('lateral');
+  if(!caja) return;
+  const muro = moduloMuro();
+  const items = TILES.filter(t => !esCarteleraKey(t.key));
+  if(!items.length){ caja.innerHTML = ''; return; }
+  caja.innerHTML = '<div class="lat-t">Módulos</div><nav class="lat-lista">' +
+    items.map(t => {
+      const listo = seccionLista(t);
+      const nuevo = listo && esNovedad(t.key);
+      return `<button class="lat-i${listo?'':' locked'}"${listo
+          ? ` onclick="navTo('${t.key}')"`
+          : ' aria-disabled="true" disabled'} title="${esc(t.desc || t.title)}">
+        <span class="lat-ic" style="background:var(${t.color})">${svg(I[t.icon])}</span>
+        <span class="lat-tx">${esc(t.title)}</span>
+        ${nuevo ? '<span class="lat-pto" title="Tiene material nuevo"></span>' : ''}
+        ${listo ? '' : '<span class="lat-soon">Pronto</span>'}
+      </button>`;
+    }).join('') + '</nav>';
+}
+
 function renderHub(){
   const mod = moduloMuro();
   const lobby = document.getElementById('lobby');
@@ -3029,8 +3423,10 @@ function renderHub(){
   lobby.hidden = false;
   MURO_KEY = mod.key;
   document.getElementById('feed').innerHTML =
-    `<div class="lobby-t"><b>Novedades</b></div>` +
+    `<div class="lobby-t"><b>Cartelera</b></div>` +
     muroHTML(mod.content, MAP[mod.key], {fijadosAparte:true});
+  renderLateral();
+  vigilarVideos();
   renderFijados();
   renderNoti();
   pintarPendientes();
@@ -3076,6 +3472,7 @@ function verFijado(i, btn){
   const art = caja.querySelector('.mu-post');
   if(art) art.classList.add('entra');
   initMuro();
+  vigilarVideos();       /* la fijada se inyecta ahora: sus videos todavía no estaban */
   vigilarLectura();      /* la fijada suele ser justo la que pide confirmación */
 }
 
