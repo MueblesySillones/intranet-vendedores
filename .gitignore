@@ -5,3 +5,6 @@ memoria-diseno/
 .claude/
 *.bat
 LEEME.md
+
+# Contenido de prueba del muro: vive solo en tu disco, nunca en produccion
+intranet/muro-demo.js
