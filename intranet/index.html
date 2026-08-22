@@ -3344,8 +3344,12 @@ document.addEventListener('keydown', e=>{
     g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; applyModules(); renderHub(); route(); };
     document.head.appendChild(g);
   }
-  /* contenido de prueba del muro: existe solo en la rama de trabajo */
+  /* contenido de prueba del muro: existe solo en la maquina de trabajo.
+     En produccion no esta, y pedirlo igual cuesta un 404 en el camino
+     critico (va antes de galerias.js), asi que solo se busca en local. */
   function loadMuroDemo(){
+    var local = ['localhost','127.0.0.1','::1',''].indexOf(location.hostname) >= 0;
+    if(!local){ loadGalerias(); return; }
     var d=document.createElement('script');
     d.src='muro-demo.js?v='+(new Date().getTime());
     d.onload=loadGalerias;
