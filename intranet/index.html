@@ -933,6 +933,20 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .mu-post.oculto{ display:none; }
 .mu-post.nueva{ border-color:rgba(26,74,138,.35); box-shadow:0 0 0 3px rgba(26,74,138,.07); }
 
+/* LA PUBLICACIÓN A LA QUE APUNTA UN LINK COMPARTIDO.
+   El que llega por WhatsApp cae en medio del feed: sin una marca no sabe cuál
+   de todas le mandaron. Late dos veces y se apaga sola — queda claro cuál es
+   sin dejar la pantalla pintada para siempre. */
+.mu-post.apuntada{ animation:apuntar 1.3s ease-out 2; }
+@keyframes apuntar{
+  0%,100%{ box-shadow:0 0 0 0 rgba(26,74,138,0); }
+  30%    { box-shadow:0 0 0 4px rgba(26,74,138,.22); }
+}
+@media (prefers-reduced-motion:reduce){
+  /* sin latido: se marca fijo y se va cuando se le saca la clase */
+  .mu-post.apuntada{ animation:none; box-shadow:0 0 0 3px rgba(26,74,138,.22); }
+}
+
 .mu-head{ display:flex; align-items:flex-start; gap:12px; padding:16px 20px 0; }
 .mu-av{ width:42px; height:42px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center;
   justify-content:center; color:#fff; font-weight:700; font-size:15px; letter-spacing:.5px; }
@@ -2856,15 +2870,54 @@ function navHome(){ closeMenu(); showHub(); }
 
 function route(){
   closeMenu();
-  const key = decodeURIComponent(location.hash.slice(1));
-  if(key && MAP[key]) renderSection(key);
+  /* El hash puede traer DOS cosas: "modulo" o "cartelera/idDeLaPublicacion".
+     Se parte por la primera barra y nada más: los key de módulo son slugs y
+     nunca tienen barra, así que no hay ambigüedad posible. */
+  const crudo = location.hash.slice(1);
+  const corte = crudo.indexOf('/');
+  const key = decodeURIComponent(corte < 0 ? crudo : crudo.slice(0, corte));
+  const pid = corte < 0 ? '' : decodeURIComponent(crudo.slice(corte + 1));
+  if(key && MAP[key] && !esCarteleraKey(key)) renderSection(key);
   else {
     document.body.classList.remove('report-mode');
     document.getElementById('view').hidden=true;
     document.getElementById('hub').hidden=false;
     renderHub();                 /* al volver a la portada, el muro se repinta */
     pintarNavHeader();
+    /* despues de pintar: la publicacion recien existe en el DOM ahora */
+    if(pid) enfocarPost(pid);
   }
+}
+
+/* Lleva a la publicación que pide un link compartido y la deja ABIERTA.
+   Tres casos, porque una publicación puede estar en tres lugares distintos:
+   fijada arriba (se despliega su tarjeta), recortada en celular (se expande),
+   o entera en el feed (solo se va hasta ella). En los tres se le da un
+   resaltado corto: sin eso, en un feed largo, el que llega por el link no
+   sabe cuál de todas es la que le compartieron. */
+function enfocarPost(pid){
+  if(!pid || !Array.isArray(MURO_POSTS)) return;
+  const i = MURO_POSTS.findIndex(p => p && idDePost(p) === pid);
+  if(i < 0) return;                       /* se borró o venció: queda la portada */
+  setTimeout(()=>{
+    let art = document.querySelector('#feed .mu-post[data-pid="' + CSS.escape(pid) + '"]');
+    if(!art){
+      /* está fijada: no se repite en el feed, hay que abrir su tarjeta */
+      const card = document.querySelector('.fix-card[data-i="' + i + '"]');
+      if(card){ verFijado(i, card); art = document.querySelector('#fixAbierto .mu-post'); }
+    }
+    if(!art) return;
+    const cuerpo = art.querySelector('.mu-cuerpo');
+    if(cuerpo && cuerpo.classList.contains('recortado')){
+      cuerpo.classList.remove('recortado');
+      cuerpo.dataset.abierto = '1';
+      const mas = art.querySelector('.mu-mas'); if(mas) mas.remove();
+    }
+    try{ art.scrollIntoView({behavior:'smooth', block:'start'}); }
+    catch(e){ art.scrollIntoView(); }
+    art.classList.add('apuntada');
+    setTimeout(()=> art.classList.remove('apuntada'), 2600);
+  }, 90);
 }
 window.addEventListener('hashchange', route);
 
@@ -3409,8 +3462,30 @@ function muroFiltrar(tag, btn){
   const v = document.getElementById('muVacio');
   if(v) v.hidden = visibles > 0;
 }
+/* ===================================================================
+   EL LINK DE UNA PUBLICACIÓN
+
+   ⚠️ Antes esto devolvía SIEMPRE el mismo link. El `(i ? '' : '')` del final
+   agregaba cadena vacía en los dos casos, así que compartir la primera
+   publicación o la quinta daba exactamente el mismo enlace: la portada.
+   El que lo recibía tenía que buscar de qué le estaban hablando.
+
+   Ahora el link lleva el id de la publicación, que es el mismo que guarda el
+   panel y no cambia si se agregan o se borran otras. Se usa el id y NO la
+   posición: la posición se corre sola en cuanto se publica algo nuevo, y un
+   link compartido ayer terminaría abriendo otra publicación.
+
+       …/intranet/#cartelera/dmtd1i0c59u4z
+
+   Sin id —una publicación vieja que nunca pasó por el panel— cae al link de
+   la cartelera, que es lo que hacía antes.
+   =================================================================== */
 function linkDelPost(i){
-  return location.href.split('#')[0] + '#' + encodeURIComponent(MURO_KEY || '') + (i ? '' : '');
+  const base = location.href.split('#')[0] + '#' + encodeURIComponent(MURO_KEY || '');
+  const p = MURO_POSTS[i];
+  /* la MISMA identidad que usa el resto (el "leído", el resaltado, data-pid):
+     dos formas distintas de nombrar una publicación se desincronizan solas */
+  return p ? base + '/' + encodeURIComponent(idDePost(p)) : base;
 }
 function muroWhatsApp(i){
   const p = MURO_POSTS[i]; if(!p) return;
