@@ -1354,12 +1354,19 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   .mu-cuerpo.recortado{ max-height:210px; }
   .mu-cuerpo.recortado.con-media{ max-height:390px; }
   .mu-pie{ padding:10px 16px 12px; gap:7px; }
-  .mu-acc{ padding:9px 12px; font-size:12px; }
-  /* con cuatro botones no entran los cuatro rotulos: "Compartir" se queda con
-     su icono de WhatsApp, que se reconoce solo. Los de reaccion SI conservan
-     el texto: son los que hay que aprender a usar. */
-  .mu-wa .re-t{ display:none; }
-  .mu-wa{ padding:9px 11px; }
+  /* 44px de alto: es el minimo para el dedo, y estos son los botones que mas
+     se tocan del feed. Venian de 40 y el de copiar link medía 39 de ancho. */
+  .mu-acc{ padding:10px 12px; font-size:12px; min-height:44px; }
+  .mu-acc.solo-ic{ min-width:44px; justify-content:center; }
+  /* CON las reacciones prendidas son cuatro botones y los cuatro rotulos no
+     entran: "Compartir" se queda con su icono de WhatsApp, que se reconoce
+     solo. Los de reaccion SI conservan el texto: son los que hay que aprender
+     a usar.
+     APAGADAS (que es como esta hoy en produccion) quedan dos botones y sobra
+     lugar: el rotulo vuelve, porque dos iconos pelados uno al lado del otro
+     no se entienden. */
+  body.con-reacciones .mu-wa .re-t{ display:none; }
+  body.con-reacciones .mu-wa{ padding:10px 11px; min-width:44px; justify-content:center; }
   .mu-sum{ padding:10px 16px 0; }
   /* en pantallas chicas la marca de tipo baja debajo del autor */
   .mu-marcas{ padding-top:0; }
@@ -3658,6 +3665,9 @@ try{
 }catch(e){}
 document.addEventListener('DOMContentLoaded', ()=>{
   if(FLAGS.tabbar) document.body.classList.add('con-tabbar');
+  /* el pie de cada publicacion se aprieta solo cuando las reacciones suman
+     dos botones mas; sin ellas hay lugar para el rotulo "Compartir" */
+  if(FLAGS.reacciones) document.body.classList.add('con-reacciones');
 });
 function tabIr(a){
   if(a === 'inicio'){ cerrarBuscador(); closeMenu(); showHub(); window.scrollTo({top:0, behavior:'smooth'}); }
