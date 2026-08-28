@@ -3,6 +3,84 @@
    desde el panel); builtin:false = modulo creado en el panel, su texto esta en "body". */
 window.MODULES = [
   {
+    "key": "cartelera",
+    "title": "Cartelera",
+    "desc": "Todo lo nuevo del equipo, en un solo lugar",
+    "icon": "megaphone",
+    "color": "--c-hudson",
+    "ready": true,
+    "builtin": false,
+    "content": {
+      "tipo": "cartelera",
+      "docs": [
+        {
+          "id": "dmtd1i0c59u4z",
+          "titulo": "Les presentamos el nuevo espacio de NOVEDADES",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-08-28",
+          "etiqueta": "anuncio",
+          "fijado": true,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. \n\nLo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.\n  \n   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.\n   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.\n   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos."
+            }
+          ],
+          "html": "<div class=\"db\"><p class=\"m-p\">Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>"
+        }
+      ],
+      "papelera": [
+        {
+          "id": "dmtd1hbkbx4b1",
+          "titulo": "Les presentamos el nuevo espacio de NOVEDADES",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-08-28",
+          "etiqueta": "anuncio",
+          "fijado": true,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "*Les presentamos el nuevo espacio de NOVEDADES*\n \nLes contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. \n\nLo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.\n  \n   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.\n   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.\n   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos."
+            }
+          ],
+          "html": "<div class=\"db\"><p class=\"m-p\">*Les presentamos el nuevo espacio de NOVEDADES*<br> <br>Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>",
+          "borradoEl": "2026-08-28"
+        },
+        {
+          "id": "dmtd1gmm6qvlu",
+          "titulo": "Les presentamos el nuevo espacio de NOVEDADES",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-08-28",
+          "etiqueta": "anuncio",
+          "fijado": true,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "*Les presentamos el nuevo espacio de NOVEDADES*\n \nLes contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. \n\nLo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.\n  \n   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.\n   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.\n   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos."
+            }
+          ],
+          "html": "<div class=\"db\"><p class=\"m-p\">*Les presentamos el nuevo espacio de NOVEDADES*<br> <br>Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>",
+          "borradoEl": "2026-08-28"
+        }
+      ]
+    }
+  },
+  {
     "key": "descargables",
     "title": "Material descargable",
     "desc": "Promos bancarias, vigentes y envíos.",
