@@ -201,6 +201,12 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
   background:var(--ink); color:#fff; text-decoration:none; font-size:13px; font-weight:700; letter-spacing:.3px; transition:.2s; }
 .dl-btn:hover{ opacity:.88; }
 .dl-btn .ico{ width:16px; height:16px; }
+/* Mientras trae el archivo. Un video de 7,5 MB tarda unos segundos y antes la
+   pantalla no cambiaba nada: el botón parecía muerto y se tocaba de nuevo. */
+.dl-btn.trabajando{ opacity:.72; pointer-events:none; }
+.dl-btn.trabajando .ico{ animation:dlLatido 1s ease-in-out infinite; }
+@keyframes dlLatido{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(2px); } }
+@media (prefers-reduced-motion:reduce){ .dl-btn.trabajando .ico{ animation:none; } }
 /* secciones de galería plegables (para que los vendedores oculten lo que no usan) */
 .m-kicker.plegable{ cursor:pointer; user-select:none; display:flex; align-items:center; gap:9px; }
 .m-kicker.plegable:hover{ opacity:.82; }
@@ -3500,6 +3506,157 @@ function muroCopiar(i, btn){
   else { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta);
          ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} ta.remove(); }
 }
+
+/* ===================================================================
+   ENVIAR UNA PIEZA (video, placa, PDF) — o bajarla
+
+   EL PROBLEMA
+   `<a download>` con un video de 7,5 MB en un celular no "descarga al
+   toque": el navegador se lo baja en silencio, la pantalla no cambia NADA,
+   y recién aparece una notificación del sistema. Para el vendedor el botón
+   quedó muerto. Y aunque el archivo llegue, todavía le falta el paso que
+   importa: abrir WhatsApp y adjuntarlo a mano.
+
+   LO QUE SE HACE AHORA
+   Si el teléfono sabe compartir archivos (`navigator.canShare`), el botón
+   abre la hoja de compartir del sistema con el ARCHIVO adentro: se elige
+   WhatsApp y el video llega como video, no como link.
+
+   ⚠️ `wa.me` NO sirve para esto. Solo acepta texto: no se le puede
+   adjuntar un archivo desde una página. Por eso va el share nativo, que es
+   la única forma de que el cliente reciba el video de verdad.
+
+   En una computadora —donde no hay hoja de compartir— hace exactamente lo
+   que hacía antes: descarga. Y en los dos casos el botón AVISA que está
+   trabajando, que era la mitad de la queja.
+
+   ⚠️ SE ENGANCHA POR DELEGACIÓN, no cambiando el HTML de cada botón. Ese
+   HTML vive guardado adentro de modulos.js —lo escribió el panel— y
+   tocarlo obligaría a volver a guardar todos los módulos.
+
+   ⚠️ EL ARCHIVO SE EMPIEZA A BAJAR EN `pointerdown`, antes del click.
+   iOS solo deja abrir la hoja de compartir mientras dura el "permiso" que
+   deja un toque, y ese permiso no sobrevive a un fetch largo. Arrancando
+   antes, cuando llega el click el archivo suele estar listo y la hoja abre.
+   =================================================================== */
+const DL_ETIQUETA = { descargar:'Descargar', enviar:'Enviar' };
+let DL_PRE = null;                 /* {href, promesa} de lo que se precargó */
+
+function puedeEnviarArchivos(){
+  try{
+    return !!(navigator.canShare && navigator.share &&
+              navigator.canShare({ files: [new File([new Blob([1])], 'x.txt', { type:'text/plain' })] }));
+  }catch(e){ return false; }
+}
+
+function nombreDeDescarga(a){
+  const n = (a.getAttribute('download') || '').trim();
+  if(n) return n;
+  try{ return decodeURIComponent(a.getAttribute('href').split('/').pop().split('?')[0]) || 'archivo'; }
+  catch(e){ return 'archivo'; }
+}
+
+/* El rótulo dice lo que el botón va a hacer EN ESTE teléfono. Se corrige
+   sobre lo ya dibujado —incluido el HTML que viene de modulos.js— porque
+   la pantalla se repinta muchas veces y perseguir cada punto de render es
+   la forma seguridad de olvidarse de uno. */
+function pintarBotonesDescarga(){
+  if(!puedeEnviarArchivos()) return;
+  document.querySelectorAll('a.dl-btn:not([data-envio])').forEach(a => {
+    a.dataset.envio = '1';
+    for(const n of a.childNodes){
+      if(n.nodeType === 3 && n.nodeValue.trim() === DL_ETIQUETA.descargar){
+        n.nodeValue = n.nodeValue.replace(DL_ETIQUETA.descargar, DL_ETIQUETA.enviar);
+        break;
+      }
+    }
+    a.title = 'Enviar por WhatsApp o guardar en el teléfono';
+  });
+}
+
+function bajarBlob(href){
+  return fetch(href, { credentials:'same-origin' }).then(r => {
+    if(!r.ok) throw new Error('No se pudo traer el archivo (' + r.status + ')');
+    return r.blob();
+  });
+}
+
+document.addEventListener('pointerdown', e => {
+  const a = e.target.closest && e.target.closest('a.dl-btn');
+  if(!a || !puedeEnviarArchivos()) return;
+  const href = a.getAttribute('href');
+  if(!href || (DL_PRE && DL_PRE.href === href)) return;
+  /* .catch vacío: si falla, el click lo vuelve a intentar y ahí sí se avisa */
+  DL_PRE = { href, promesa: bajarBlob(href).catch(()=>null) };
+}, true);
+
+document.addEventListener('click', async e => {
+  const a = e.target.closest && e.target.closest('a.dl-btn');
+  if(!a) return;
+  const href = a.getAttribute('href');
+  if(!href) return;
+  if(!puedeEnviarArchivos()) return;    /* escritorio: el <a download> de siempre */
+  e.preventDefault();
+  e.stopPropagation();
+  if(a.dataset.ocupado === '1') return;
+
+  const nombre = nombreDeDescarga(a);
+  const original = a.innerHTML;
+  a.dataset.ocupado = '1';
+  a.classList.add('trabajando');
+  a.innerHTML = svg(I.download) + ' Preparando…';
+  try{
+    const blob = (DL_PRE && DL_PRE.href === href ? await DL_PRE.promesa : null)
+                 || await bajarBlob(href);
+    const file = new File([blob], nombre, { type: blob.type || 'application/octet-stream' });
+    if(navigator.canShare({ files:[file] })){
+      await navigator.share({ files:[file] });
+    }else{
+      guardarBlob(blob, nombre);
+    }
+  }catch(err){
+    /* cancelar la hoja de compartir NO es un error: el vendedor se arrepintió */
+    if(err && (err.name === 'AbortError' || err.name === 'NotAllowedError')){
+      if(err.name === 'NotAllowedError'){
+        /* iOS perdió el permiso del toque: se guarda, que es mejor que nada */
+        try{ guardarBlob(await bajarBlob(href), nombre); }catch(e2){}
+      }
+    }else{
+      console.error('Enviar/descargar:', err);
+      a.innerHTML = svg(I.download) + ' No se pudo';
+      setTimeout(()=>{ a.innerHTML = original; }, 2200);
+      a.classList.remove('trabajando');
+      delete a.dataset.ocupado;
+      return;
+    }
+  }
+  a.innerHTML = original;
+  a.classList.remove('trabajando');
+  delete a.dataset.ocupado;
+}, true);
+
+function guardarBlob(blob, nombre){
+  const url = URL.createObjectURL(blob);
+  const t = document.createElement('a');
+  t.href = url; t.download = nombre;
+  document.body.appendChild(t); t.click(); t.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 60000);
+}
+
+/* La pantalla se repinta desde muchos lados (portada, módulo, lightbox,
+   fijadas que se despliegan). En vez de acordarse de llamar al rótulo en
+   cada uno —y olvidarse de alguno—, se mira el DOM y listo. El trabajo
+   real es un querySelectorAll con `:not([data-envio])`, así que cada
+   pasada toca solo lo que acaba de aparecer. */
+if(typeof MutationObserver === 'function'){
+  let pendiente = false;
+  new MutationObserver(() => {
+    if(pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => { pendiente = false; pintarBotonesDescarga(); });
+  }).observe(document.documentElement, { childList:true, subtree:true });
+}
+document.addEventListener('DOMContentLoaded', pintarBotonesDescarga);
 
 /* ===================================================================
    BUSCADOR
