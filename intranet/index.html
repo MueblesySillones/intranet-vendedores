@@ -1506,6 +1506,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
    de 32px, que hacia cada renglon de 54. */
 .lat-lista{ display:grid; grid-template-columns:1fr; gap:6px; flex:0 0 auto; }
 .lat-i{ display:flex; align-items:center; gap:8px; min-height:46px; width:100%;
+  border-radius:10px;
   padding:9px 12px; border:0; border-left:3px solid var(--mc,transparent);
   background:var(--surface); border-radius:10px; cursor:pointer;
   font-family:inherit; text-align:left; position:relative;
@@ -1625,7 +1626,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
    con la misma especificidad, asi que decide el orden de aparicion.
    Si algun dia se quiere volver a las curvas, se borra este bloque entero.
    ===================================================================== */
-.mu-post, .lat-i, .arch-i, .gcard, .tile, .novedades, .nv-item, .nv-ic,
+.mu-post, .arch-i, .gcard, .tile, .novedades, .nv-item, .nv-ic,
 .note, .situ, .checklist .ci, .benefit, .flow .step, .col-card, .report-frame,
 .tut-fig, .tut-fig img, .flyer, .flyer img, .pending, .empty-cat, .m-ref,
 .mr-pv, .dl-btn, .ind, .ind-l button, .m-video .v-box, .m-img img,
@@ -1652,23 +1653,23 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .mu-post.nueva{ border-color:var(--border);
   box-shadow:inset 3px 0 0 var(--c-info); }
 
-/* ---- los modulos, con el color que les corresponde ----
-   El criterio del sistema, el mismo que usan las chapas de tipo y los avisos:
-   fondo al 8%, filo al 22%, texto al 100%. Diez plaquetas blancas con un filo
-   de 3px se leian todas iguales; asi cada modulo se reconoce por el color
-   antes de leerse el nombre. El `background` plano de la primera linea es el
-   respaldo para navegadores sin color-mix. */
-.lat-i{ background:var(--surface);
-  background:color-mix(in srgb, var(--mc) 8%, #fff);
-  border:1px solid var(--border2);
-  border-color:color-mix(in srgb, var(--mc) 22%, transparent);
-  border-left:3px solid var(--mc); }
-.lat-i .lat-tx{ color:var(--ink);
-  color:color-mix(in srgb, var(--mc) 88%, #111); font-weight:600; }
-.lat-i:hover{ background:color-mix(in srgb, var(--mc) 14%, #fff);
+/* ---- los modulos, con un punto del color que les corresponde ----
+   Antes el color iba en CUATRO lugares a la vez: fondo al 8%, filo al 22%,
+   barra izquierda al 100% y hasta el texto al 88%. Diez plaquetas asi, cada
+   una de un color distinto, convertian la columna en un arcoiris que competia
+   con la cartelera que tiene al lado.
+   Ahora el color va en un punto de 7px y nada mas. Alcanza para reconocer el
+   modulo de reojo, y el papel vuelve a ser papel. */
+.lat-i{ background:var(--surface); border:1px solid var(--border2);
+  position:relative; padding-left:26px; }
+.lat-i::before{ content:""; position:absolute; left:11px; top:50%;
+  width:7px; height:7px; border-radius:50%; background:var(--mc);
+  transform:translateY(-50%); }
+.lat-i .lat-tx{ color:var(--ink2); font-weight:500; }
+.lat-i:hover{ background:var(--surface); border-color:var(--border);
   box-shadow:none; transform:none; }
-.lat-i.locked{ background:transparent; border-color:var(--border2);
-  border-left-color:var(--border); }
+.lat-i.locked{ background:transparent; border-color:var(--border2); }
+.lat-i.locked::before{ background:rgba(0,0,0,.18); }
 .lat-i.locked .lat-tx{ color:var(--ink3); }
 
 
