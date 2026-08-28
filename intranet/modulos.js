@@ -14,6 +14,43 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmtdd1eb6vs8f",
+          "titulo": "VIDEO DE EMBALAJE ESPECIAL",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-08-28",
+          "etiqueta": "anuncio",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Ya está el video del embalaje especial para que lo puedan descargar y enviar a clientes.\nTambién van a encontrar toda la información del mismo"
+            },
+            {
+              "t": "ref",
+              "key": "embalaje_especial",
+              "mod": "EMBALAJE ESPECIAL",
+              "sub": "Embalaje especial",
+              "clase": "video",
+              "detalle": "",
+              "prev": {
+                "t": "video",
+                "src": "assets/_modulos/embalaje_especial_video_1787932020222.mp4",
+                "poster": "",
+                "ar": "1440/2560",
+                "orient": "vert"
+              },
+              "icon": "box",
+              "color": "--c-norcenter"
+            }
+          ],
+          "html": "<div class=\"db\"><p class=\"m-p\">Ya está el video del embalaje especial para que lo puedan descargar y enviar a clientes.<br>También van a encontrar toda la información del mismo</p></div><div class=\"db\"><a class=\"m-ref con-previa con-video midiendo vertical\" href=\"#embalaje_especial\"><span class=\"mr-pv\" style=\"--arw:1440;--arh:2560\"><video class=\"mr-vid\" src=\"assets/_modulos/embalaje_especial_video_1787932020222.mp4#t=0.1\" muted loop playsinline preload=\"metadata\"></video><span class=\"mr-son\" role=\"button\" tabindex=\"0\" aria-label=\"Activar sonido\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"11 5 6 9 2 9 2 15 6 15 11 19 11 5\"/><line x1=\"23\" y1=\"9\" x2=\"17\" y2=\"15\"/><line x1=\"17\" y1=\"9\" x2=\"23\" y2=\"15\"/></svg></span></span><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-norcenter)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"/><polyline points=\"3.27 6.96 12 12.01 20.73 6.96\"/><line x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">EMBALAJE ESPECIAL<span class=\"mr-sub\">Embalaje especial</span></span><span class=\"mr-d\">video</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
+        },
+        {
           "id": "dmtd1i0c59u4z",
           "titulo": "Les presentamos el nuevo espacio de NOVEDADES",
           "autor": "Marketing",
