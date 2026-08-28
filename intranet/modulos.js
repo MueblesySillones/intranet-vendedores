@@ -20,7 +20,7 @@ window.MODULES = [
           "sucursal": "",
           "fecha": "2026-08-28",
           "etiqueta": "anuncio",
-          "fijado": true,
+          "fijado": false,
           "confirmar": false,
           "vence": "",
           "archivado": false,
