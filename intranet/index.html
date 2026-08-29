@@ -101,7 +101,11 @@ html,body{ font-family:'Montserrat','Montserrat-respaldo',sans-serif; background
 .lista-btn:hover{ border-color:var(--ink); color:var(--ink); }
 .lista-btn .ico{ width:16px; height:16px; flex:0 0 auto; }
 .brand{ grid-column:2; justify-self:center; display:flex; align-items:center; cursor:pointer; }
-.brand img{ width:104px; filter:brightness(0); opacity:.9; display:block; }
+.brand img{ width:104px; height:auto; filter:brightness(0); opacity:.9; display:block; }
+/* height:auto es OBLIGATORIO: el <img> lleva width/height como atributos para
+   reservar el lugar antes del CSS, y sin esto el height=127 quedaba fijo
+   mientras el ancho se clampaba a 92px en celular: el logo salia estrujado
+   (0,72 de proporcion contra los 2,2 reales, lo marco Lighthouse). */
 .top-r{ grid-column:3; justify-self:end; display:flex; align-items:center; gap:10px; }
 .home-btn{ display:flex; align-items:center; gap:8px; padding:9px 18px; border-radius:8px; border:1.5px solid var(--ink);
   background:transparent; color:var(--ink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; letter-spacing:.4px; transition:.2s; }
