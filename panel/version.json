@@ -1,8 +1,8 @@
 {
-  "version": 21,
-  "label": "2026.08f - el actualizador trabaja sin ventana negra",
-  "notes": "Al actualizar el panel ya no aparece la ventana negra del sistema: el cambio de version se hace en silencio y el panel se reabre solo. Y si alguna vez una actualizacion quedo cortada a la mitad (ventana cerrada a mano, corte de luz), la proxima ya no queda trabada: se limpia sola y sigue. Incluye lo anterior: ventana propia, barra de progreso al traer la ultima version y actualizaciones por internet sin depender de la PC central.",
-  "sha256": "cbd54d3d34cd138b66bf116b029d3f2f8b453ec2b71b2fa727b651d2cfb246fd",
-  "size": 19594818,
-  "url": "panel/PanelMyS-v21.zip"
+  "version": 22,
+  "label": "2026.08g - el panel muestra su numero de version",
+  "notes": "Abajo del logo, donde decia Muebles y Sillones, el panel ahora muestra su numero de version: con un vistazo se sabe si esta computadora ya tiene la ultima o le falta actualizar. Incluye todo lo reciente: ventana propia, barra de progreso al traer, clave que se corrige sola y actualizador silencioso.",
+  "sha256": "272dc90ccfbdd35d253e86d07679c28911bd7a529cd37357cb59df227af156f8",
+  "size": 19592491,
+  "url": "panel/PanelMyS-v22.zip"
 }
