@@ -280,6 +280,53 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .m-sub{ font-size:13px; color:var(--ink3); margin-top:3px; }
 .m-p{ font-size:14.5px; color:var(--ink2); line-height:1.6; margin-top:12px; } .m-p b{ color:var(--ink); }
 
+/* ---- Fase 2C: columna de lectura ----
+   El cuerpo del manual media 105 caracteres por renglon (760px a 14,5px) y el
+   rango legible es 60-75: al volver a la izquierda se perdia el hilo. Medido
+   en Chromium con la Montserrat ya cargada, el caracter promedio del cuerpo
+   mide 7,47px, asi que 545px = ~73 caracteres reales (~57ch CSS). Se limita
+   el TEXTO y no el contenedor: galerias, tablas, videos, imagenes, KPIs,
+   barras y tarjetas siguen usando los 760px, y el texto queda alineado a la
+   izquierda a proposito (una columna centrada entre medios anchos se lee
+   como error de maquetado).
+   Va scopeado a #secBody > .manual (la pagina de un modulo, unico lugar donde
+   .manual es hijo directo): el feed de la cartelera (.mu-cuerpo .manual) ya
+   tiene su tope de 62ch, y el deck (.dk-stage .manual) compone aparte. */
+#secBody > .manual{ --col-texto:545px; }
+#secBody > .manual :where(.m-lead, .m-p, .m-h, .m-h2, .m-sub, .m-kicker:not(.plegable), .note, .m-warn, .checklist, ul, ol){ max-width:var(--col-texto); }
+
+/* Subtitulo de los bloques del panel (.m-h2): el contenido lo trae desde
+   siempre pero la intranet nunca lo estilo y se veia como texto comun.
+   Espejo exacto de la regla del panel (web2/styles.css linea 578). */
+.manual .m-h2{ font-size:16px; font-weight:700; color:var(--ink); letter-spacing:-.2px; }
+
+/* ---- Fase 2C: ritmo vertical ----
+   Los bloques del panel llegan como <div class="db"> y varios elementos no
+   traian margen de arriba: medido en vivo habia saltos de 0px (checklist ->
+   destacado, parrafo -> kicker, titulo -> subtitulo, checklist -> kicker).
+   Piso de 12px entre bloques: como los .db no tienen borde ni padding, el
+   margen colapsa con el del contenido y gana el mayor, asi que los espacios
+   grandes que ya existian se respetan solos. */
+#secBody > .manual > .db + .db{ margin-top:12px; }
+/* Un titulo abre seccion: MAS aire arriba (26/18px) que hacia el texto que
+   encabeza (los 12px de siempre). El kicker no lleva la excepcion .plegable
+   porque el de una galeria (.dl-section) tambien la abre. */
+#secBody > .manual :where(.m-kicker){ margin-top:26px; }
+#secBody > .manual :where(.m-h){ margin-top:18px; }
+#secBody > .manual :where(.m-h2){ margin-top:16px; }
+#secBody > .manual :where(.m-lead){ margin-top:14px; } /* destacado en medio del documento */
+/* pares que van pegados: el kicker etiqueta al titulo que lo sigue y el
+   subtitulo pertenece a su titulo. Primero el par suelto (plantillas de esta
+   pagina), despues el mismo par cuando cada pieza viene en su propio .db. */
+#secBody > .manual :where(.m-kicker + .m-h, .m-kicker + .m-h2){ margin-top:0; }
+#secBody > .manual :where(.m-h + .m-h2){ margin-top:4px; }
+#secBody > .manual > .db:has(> .m-kicker) + .db > :where(.m-h:first-child, .m-h2:first-child){ margin-top:0; }
+#secBody > .manual > .db:has(> .m-h) + .db:has(> .m-h2){ margin-top:0; }
+#secBody > .manual > .db:has(> .m-h) + .db > .m-h2:first-child{ margin-top:4px; }
+/* el primer bloque no empuja: el aire contra la cabecera lo pone .sec-body */
+#secBody > .manual > .db:first-child > :first-child,
+#secBody > .manual > :first-child{ margin-top:0; }
+
 /* proceso con flechas */
 .flow{ display:flex; align-items:stretch; margin-top:4px; }
 .flow .step{ flex:1; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 12px; text-align:center; }
@@ -372,6 +419,17 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .note{ margin-top:14px; display:flex; gap:12px; background:#F4F1EA; border:1px solid var(--border); border-left:3px solid var(--nota-acc, var(--ink)); border-radius:12px; padding:13px 15px; }
 .note svg{ width:20px; height:20px; color:var(--nota-acc, var(--ink)); flex:0 0 auto; margin-top:1px; }
 .note .nt{ font-size:13.5px; color:var(--ink2); line-height:1.5; } .note .nt b{ color:var(--ink); }
+
+/* ---- Fase 2C: bloque de ADVERTENCIA (.m-warn) ----
+   Distinto de la nota informativa verde de arriba (.note): esto es un
+   "NO APTO PARA...", y tiene que verse inconfundible. Texto #5A2620 sobre
+   #FBEFEC = contraste 10,8:1 (AA sobrado). CONTRATO COMPARTIDO con el
+   editor del panel, que tiene el espejo exacto de estas cuatro reglas:
+   si se toca algo aca, hay que tocarlo alla tambien. */
+.manual .m-warn{ display:flex; gap:12px; align-items:flex-start; background:#FBEFEC; border:1px solid #E8C5BD; border-left:4px solid #B4231F; border-radius:12px; padding:14px 16px; margin:18px 0; color:#5A2620; }
+.manual .m-warn .ico{ flex:0 0 auto; width:20px; height:20px; color:#B4231F; margin-top:1px; }
+.manual .m-warn .ico svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.manual .m-warn .mw-tx{ font-size:14.5px; line-height:1.55; font-weight:600; }
 
 /* SEÑALAR UN MÓDULO — el muro es un tablero de avisos: en vez de duplicar lo
    que ya vive en un módulo, la publicación lo apunta y el vendedor va derecho.
@@ -1710,6 +1768,43 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   body.con-mesa #menuBtn{ display:none; }
 }
 
+
+/* ===================================================================
+   Fase 2C: IMPRESION. Antes no habia @media print y un modulo salia como
+   pantalla: fondo crema, botones muertos, barra pegajosa repetida. Esto
+   imprime lo que importa (el contenido) en blanco y tinta. El page.pdf()
+   de Chromium usa estas mismas reglas.
+   =================================================================== */
+@media print{
+  @page{ margin:12mm; }
+  /* tokens a tinta: el crema de pantalla ensucia el papel y baja contraste */
+  :root{ --bg:#fff; --bg2:#fff; --surface:#fff; --ink:#000; --ink2:#111111;
+         --ink3:#3D3A35; --border:rgba(0,0,0,.30); --border2:rgba(0,0,0,.18); }
+  html, body{ background:#fff; color:#000; }
+  *, *::before, *::after{ box-shadow:none !important; text-shadow:none !important; }
+  /* cromo de pantalla: navegacion, buscador, lightbox y todo lo tocable */
+  .top, .tabbar, .navmenu, .buscador, #lightbox, .botonera, .novedades, .noti,
+  .mu-filtros, .mu-pie, .mu-mas, .mu-sum, .mu-lec, .mu-nueva, .col-back,
+  .lista-btn, .cta, .dl-btn, .buscar-btn, .mr-son, .mr-tocar,
+  .dk-prog, .dk-idx, .dk-bar, .dk-menu{ display:none !important; }
+  main{ max-width:none; padding:0; }
+  body.con-tabbar main{ padding-bottom:0; }
+  /* el recorte "Ver publicacion completa" no existe en papel: todo abierto */
+  .mu-cuerpo.recortado, .mu-cuerpo.recortado.con-media{ max-height:none; overflow:visible; }
+  .mu-cuerpo.recortado::after{ display:none; }
+  /* galerias: grilla simple de 3 y las secciones plegadas se abren (el
+     titulo sin sus placas en papel no dice nada) */
+  .dl-section.cerrada .gallery, .m-block.cerrada .gallery{ display:grid; }
+  .gallery{ grid-template-columns:repeat(3,1fr) !important; gap:10px !important; }
+  /* que una pieza no quede cortada entre dos hojas (los posts largos si
+     pueden seguir en la hoja siguiente, por eso no estan aca) */
+  .gcard, .note, .manual .m-warn, .m-ref, .flow .step, .m-tabla,
+  .checklist .ci, .m-tarj .tj, .m-img, .chat{ break-inside:avoid; }
+  /* la barrita de controles del reproductor no es tinta: se imprime solo
+     el cuadro del video */
+  video::-webkit-media-controls-enclosure,
+  video::-webkit-media-controls{ display:none !important; }
+}
 </style>
 </head>
 <body>
