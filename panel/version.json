@@ -1,8 +1,8 @@
 {
-  "version": 24,
-  "label": "2026.08i - instalador sin preguntas y programa identificado",
+  "version": 25,
+  "label": "2026.08j - elegir por bloque, selector compacto",
   "notes": "Al señalar un módulo en la Cartelera ahora elegís el BLOQUE puntual (la imagen, la galería, el video o el documento), no el módulo entero. La ventana es mucho más compacta, con buscador arriba: tocás el módulo, se despliegan sus bloques, elegís uno y confirmás con Adjuntar. Incluye todo lo anterior.",
-  "sha256": "6c03cf4b679228c6fb61a3b227b46885a2bc1429d023a45456e54e1d13830501",
-  "size": 19597010,
-  "url": "panel/PanelMyS-v24.zip"
+  "sha256": "257a135bf50084fc5dd385500fb5563b1dad920f0db7be1ff2902e8c5379b550",
+  "size": 19597845,
+  "url": "panel/PanelMyS-v25.zip"
 }
