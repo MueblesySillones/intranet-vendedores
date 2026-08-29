@@ -1,8 +1,8 @@
 {
-  "version": 23,
-  "label": "2026.08h - traer e instalar dejan todo limpio",
-  "notes": "Limpieza automatica: al traer la ultima version tambien se borran los archivos que ya no forman parte de la intranet (nada de basura vieja acumulada), y el instalador limpia el programa anterior y los restos de actualizaciones antes de poner el nuevo. La configuracion y la clave de cada computadora no se tocan nunca.",
-  "sha256": "6f9d05aa471fa79c81ee8770806c1116f3473a8d0b531054052005fc66cb5488",
-  "size": 19596112,
-  "url": "panel/PanelMyS-v23.zip"
+  "version": 24,
+  "label": "2026.08i - instalador sin preguntas y programa identificado",
+  "notes": "El instalador ya no pregunta nada (una sola computadora es la central, y ya esta configurada): instalar deja todo listo solo, sin tocar la clave ni la configuracion de cada maquina. El programa ahora lleva su identidad (Muebles y Sillones) adentro, para que Windows lo reconozca como una app legitima. Incluye lo reciente: limpieza automatica, ventana propia y barra de progreso.",
+  "sha256": "9d626fd1e007322a0c17eee67480b50da175850aae60d30049e6c55e4d9917da",
+  "size": 19595142,
+  "url": "panel/PanelMyS-v24.zip"
 }
