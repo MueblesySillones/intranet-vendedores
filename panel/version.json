@@ -1,8 +1,8 @@
 {
-  "version": 20,
-  "label": "2026.08e - ventana propia y traer con progreso",
-  "notes": "El panel ahora abre en su propia ventana, como un programa (sin pestanas ni barra del navegador), con el mismo acceso directo de siempre. Traer ultima version muestra una barra flotante que va contando el paso a paso (conectando, descargando con los MB, instalando) y al terminar recarga el panel solo. Y sigue todo lo de la version anterior: actualizaciones por internet directo, sin depender de Tailscale ni de la PC central.",
-  "sha256": "32a55b8f6797045f196f03f3856cfa3749a6da047ceda5013a8146c206c331e5",
-  "size": 19594864,
-  "url": "panel/PanelMyS-v20.zip"
+  "version": 21,
+  "label": "2026.08f - el actualizador trabaja sin ventana negra",
+  "notes": "Al actualizar el panel ya no aparece la ventana negra del sistema: el cambio de version se hace en silencio y el panel se reabre solo. Y si alguna vez una actualizacion quedo cortada a la mitad (ventana cerrada a mano, corte de luz), la proxima ya no queda trabada: se limpia sola y sigue. Incluye lo anterior: ventana propia, barra de progreso al traer la ultima version y actualizaciones por internet sin depender de la PC central.",
+  "sha256": "cbd54d3d34cd138b66bf116b029d3f2f8b453ec2b71b2fa727b651d2cfb246fd",
+  "size": 19594818,
+  "url": "panel/PanelMyS-v21.zip"
 }
