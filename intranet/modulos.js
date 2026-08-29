@@ -27,6 +27,10 @@ window.MODULES = [
           "archivar": "",
           "bloques": [
             {
+              "t": "parrafo",
+              "texto": "Les dejamos la placa para subir a historias y enviar a cliente con la nueva fecha de envío\n¡Muchas gracias!"
+            },
+            {
               "t": "ref",
               "key": "descargables",
               "mod": "Material descargable",
@@ -46,7 +50,7 @@ window.MODULES = [
               "color": "--c-caba"
             }
           ],
-          "html": "<div class=\"db\"><a class=\"m-ref con-previa con-fotos\" href=\"#descargables\"><span class=\"mr-pv mr-tira\"><img src=\"assets/_modulos/descargables_gal_1784651074033_0.png\" alt=\"\" loading=\"lazy\"><img src=\"assets/_modulos/descargables_gal_1786113395187_0.png\" alt=\"\" loading=\"lazy\"><img src=\"assets/_modulos/descargables_gal_1788025977900_0.png\" alt=\"\" loading=\"lazy\"></span><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Material descargable<span class=\"mr-sub\">Placas de envío</span></span><span class=\"mr-d\">galería · 3 imágenes</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
+          "html": "<div class=\"db\"><p class=\"m-p\">Les dejamos la placa para subir a historias y enviar a cliente con la nueva fecha de envío<br>¡Muchas gracias!</p></div><div class=\"db\"><a class=\"m-ref con-previa con-fotos\" href=\"#descargables\"><span class=\"mr-pv mr-tira\"><img src=\"assets/_modulos/descargables_gal_1784651074033_0.png\" alt=\"\" loading=\"lazy\"><img src=\"assets/_modulos/descargables_gal_1786113395187_0.png\" alt=\"\" loading=\"lazy\"><img src=\"assets/_modulos/descargables_gal_1788025977900_0.png\" alt=\"\" loading=\"lazy\"></span><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Material descargable<span class=\"mr-sub\">Placas de envío</span></span><span class=\"mr-d\">galería · 3 imágenes</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
         },
         {
           "id": "dmtdd1eb6vs8f",
