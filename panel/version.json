@@ -1,8 +1,8 @@
 {
   "version": 24,
   "label": "2026.08i - instalador sin preguntas y programa identificado",
-  "notes": "El instalador ya no pregunta nada (una sola computadora es la central, y ya esta configurada): instalar deja todo listo solo, sin tocar la clave ni la configuracion de cada maquina. El programa ahora lleva su identidad (Muebles y Sillones) adentro, para que Windows lo reconozca como una app legitima. Incluye lo reciente: limpieza automatica, ventana propia y barra de progreso.",
-  "sha256": "9d626fd1e007322a0c17eee67480b50da175850aae60d30049e6c55e4d9917da",
-  "size": 19595142,
+  "notes": "Al señalar un módulo en la Cartelera ahora elegís el BLOQUE puntual (la imagen, la galería, el video o el documento), no el módulo entero. La ventana es mucho más compacta, con buscador arriba: tocás el módulo, se despliegan sus bloques, elegís uno y confirmás con Adjuntar. Incluye todo lo anterior.",
+  "sha256": "6c03cf4b679228c6fb61a3b227b46885a2bc1429d023a45456e54e1d13830501",
+  "size": 19597010,
   "url": "panel/PanelMyS-v24.zip"
 }
