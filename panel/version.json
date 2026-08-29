@@ -1,8 +1,8 @@
 {
-  "version": 22,
-  "label": "2026.08g - el panel muestra su numero de version",
-  "notes": "Abajo del logo, donde decia Muebles y Sillones, el panel ahora muestra su numero de version: con un vistazo se sabe si esta computadora ya tiene la ultima o le falta actualizar. Incluye todo lo reciente: ventana propia, barra de progreso al traer, clave que se corrige sola y actualizador silencioso.",
-  "sha256": "272dc90ccfbdd35d253e86d07679c28911bd7a529cd37357cb59df227af156f8",
-  "size": 19592491,
-  "url": "panel/PanelMyS-v22.zip"
+  "version": 23,
+  "label": "2026.08h - traer e instalar dejan todo limpio",
+  "notes": "Limpieza automatica: al traer la ultima version tambien se borran los archivos que ya no forman parte de la intranet (nada de basura vieja acumulada), y el instalador limpia el programa anterior y los restos de actualizaciones antes de poner el nuevo. La configuracion y la clave de cada computadora no se tocan nunca.",
+  "sha256": "6f9d05aa471fa79c81ee8770806c1116f3473a8d0b531054052005fc66cb5488",
+  "size": 19596112,
+  "url": "panel/PanelMyS-v23.zip"
 }
