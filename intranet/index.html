@@ -5,7 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Intranet · Vendedores · Mueblesysillones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- La hoja de Google Fonts era EL unico recurso que bloqueaba el primer pintado:
+     medido, el primer render esperaba 1:1 a que respondiera fonts.googleapis.com
+     (una vez tardo 14 segundos y la pagina quedo BLANCA todo ese tiempo).
+     Se carga sin bloquear (media=print hasta que llega) y mientras tanto el texto
+     sale con el respaldo de metricas ajustadas de aca abajo. El peso 300 se saco
+     porque no lo usa nadie (los usados son 400-800). -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<script>
+/* ARRANQUE TEMPRANO DE LOS DATOS. Antes, modulos.js (257 KB) recien se pedia
+   cuando el navegador terminaba de parsear TODO este documento, y galerias.js
+   esperaba en fila a que terminara modulos.js: dos viajes en serie, al final.
+   Medido, ese era el grueso del "element render delay" del LCP (1,5 s en el
+   modulo Descargables). Aca se disparan los dos pedidos YA y en paralelo;
+   recien se pinta cuando el documento este parseado Y los datos hayan llegado
+   (la compuerta __mysArrancar vive al final del <body>, donde ya existen
+   applyModules/renderHub/route).
+   Tambien se fue el ?v=timestamp: ese numero cambiaba EN CADA VISITA, asi que
+   el navegador volvia a bajar los 257 KB completos aunque nada hubiera
+   cambiado. Sin el sufijo, Vercel manda ETag y max-age=0 must-revalidate:
+   cada visita PREGUNTA igual al servidor si hay version nueva (frescura
+   intacta) pero si no la hay la respuesta es un 304 vacio, no el archivo
+   entero. */
+(function(){
+  window.__mysCarga = { faltan:2, listo:false, corrido:false };
+  function hecho(){
+    if(--window.__mysCarga.faltan > 0) return;
+    window.__mysCarga.listo = true;
+    if(window.__mysArrancar) window.__mysArrancar();
+  }
+  function traer(src, alTerminar){
+    var s = document.createElement('script');
+    s.src = src; s.onload = alTerminar; s.onerror = alTerminar;
+    document.head.appendChild(s);
+  }
+  /* contenido de prueba del muro: existe solo en la maquina de trabajo.
+     En produccion no esta, y pedirlo igual cuesta un 404 en el camino
+     critico, asi que solo se busca en local. Se conserva el orden
+     modulos -> muro-demo porque el demo pisa cosas de MODULES. */
+  var local = ['localhost','127.0.0.1','::1',''].indexOf(location.hostname) >= 0;
+  traer('modulos.js', function(){
+    if(local) traer('muro-demo.js', hecho); else hecho();
+  });
+  traer('galerias.js', function(){
+    window.GALLERIES = window.GALLERIES || {};   /* si fallo, que no rompa */
+    hecho();
+  });
+})();
+</script>
 <!-- icono de pantalla de inicio / PWA (logo Muebles y Sillones) -->
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -16,6 +65,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MyS Vendedores">
 <style>
+/* Respaldo tipografico con METRICAS AJUSTADAS: es Arial estirada para ocupar
+   lo mismo que Montserrat. Mientras baja la fuente real, el texto se pinta con
+   esto y cuando llega el .woff2 casi no se mueve nada: el salto del pie de
+   pagina al cambiar de fuente era EL 80% del CLS medido (0,058 de 0,073). */
+@font-face{
+  font-family:'Montserrat-respaldo';
+  src:local('Arial');
+  size-adjust:112.65%;
+  ascent-override:85.79%;
+  descent-override:22.36%;
+  line-gap-override:0%;
+}
 *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
 :root{
   --bg:#F0EDE8; --bg2:#E8E4DF; --surface:#FFFFFF;
@@ -24,7 +85,7 @@
   --c-hudson:#1A1A2E; --c-caba:#2C6E8A; --c-canning:#3A7A55; --c-norcenter:#8A5A2C;
   --c-success:#1A6A3A; --c-warn:#9A6A00; --c-danger:#B4231F; --c-info:#1A4A8A;
 }
-html,body{ font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--ink); min-height:100%; }
+html,body{ font-family:'Montserrat','Montserrat-respaldo',sans-serif; background:var(--bg); color:var(--ink); min-height:100%; }
 .ico svg{ width:100%; height:100%; display:block; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .icirc{ border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--border); color:var(--ink); flex:0 0 auto; }
 
@@ -120,7 +181,18 @@ body.menu-open{ overflow:hidden; }
   .menu-btn{ padding:11px 10px; }
 }
 
-main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
+/* min-height + columna: antes de que llegue el contenido (la pagina se pinta
+   por JS) el main estaba casi vacio y el pie quedaba A LA VISTA arriba de
+   todo; cuando el feed aparecia, el pie salia disparado para abajo. Ese
+   empujon era EL layout shift de la carga (0,06-0,14 de CLS medido, atribuido
+   al div.footer). El pie es el ULTIMO HIJO de main: para que nazca abajo del
+   pliegue hace falta que main mida una pantalla Y que el pie se vaya al fondo
+   (columna flex + margin-top:auto en .footer). Asi el contenido aparece en el
+   lugar reservado y no mueve nada que este en pantalla. */
+main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; min-height:100vh;
+  display:flex; flex-direction:column; }
+main > *{ width:100%; }
+.footer{ margin-top:auto; }
 
 /* hero */
 .hero .eyebrow{ font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--ink3); margin-bottom:12px; }
@@ -197,6 +269,32 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .gcard .gimg{ width:100%; aspect-ratio:4/5; object-fit:contain; background:var(--bg2); cursor:zoom-in; display:block; }
 .gcard .gmeta{ padding:14px 16px; display:flex; flex-direction:column; gap:11px; }
 .gcard .gtitle{ font-size:13px; font-weight:700; color:var(--ink); line-height:1.3; }
+/* ── Esqueletos de carga ──────────────────────────────────────────────
+   Mientras una imagen baja, su caja respira con un brillo suave hecho con los
+   grises de la casa, en vez de mostrarse en seco. El JS marca cada <img> con
+   la clase `lista` al terminar (o fallar) y el brillo se apaga solo. Con
+   preferencia de menos movimiento no hay animacion: queda el gris plano. */
+@keyframes mys-brillo{
+  from{ background-position:200% 0; }
+  to{ background-position:-200% 0; }
+}
+.gcard .gimg:not(.lista),
+.mu-cuerpo .gallery .gimg:not(.lista),
+.mu-cuerpo .m-img img:not(.lista){
+  background-image:linear-gradient(100deg, var(--bg2) 42%, #F7F5F1 50%, var(--bg2) 58%);
+  background-size:220% 100%;
+  background-color:var(--bg2);
+  animation:mys-brillo 1.8s ease-in-out infinite;
+}
+/* la foto suelta del feed no trae proporcion escrita: mientras baja se le
+   reserva un alto discreto para que el esqueleto tenga cuerpo (y el acomodo
+   al llegar la foto sea mas corto). `lista` lo suelta al cargar. */
+.mu-cuerpo .m-img img:not(.lista){ min-height:170px; }
+@media (prefers-reduced-motion: reduce){
+  .gcard .gimg:not(.lista),
+  .mu-cuerpo .gallery .gimg:not(.lista),
+  .mu-cuerpo .m-img img:not(.lista){ animation:none; background-image:none; }
+}
 .dl-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 12px; border-radius:10px;
   background:var(--ink); color:#fff; text-decoration:none; font-size:13px; font-weight:700; letter-spacing:.3px; transition:.2s; }
 .dl-btn:hover{ opacity:.88; }
@@ -514,8 +612,11 @@ main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; }
 .mr-play.andando .ic-play{ display:none; }
 .mr-play.andando .ic-pausa{ display:block; }
 
-.mr-linea{ flex:1; min-width:0; height:20px; display:flex; align-items:center;
+.mr-linea{ flex:1; min-width:0; height:24px; display:flex; align-items:center;
   cursor:pointer; touch-action:none; }
+  /* 24px y no 20: es el minimo de area tactil de WCAG 2.2 AA (2.5.8) y lo
+     marcaban axe y Lighthouse. El riel VISIBLE sigue siendo la linea finita
+     de 3-5px centrada: solo crece la zona donde ataja el dedo. */
 .mr-riel{ width:100%; height:3px; border-radius:3px; background:rgba(255,255,255,.34);
   position:relative; transition:height .16s; }
 .mr-linea:hover .mr-riel{ height:5px; }
@@ -1816,7 +1917,10 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
     </button>
   </div>
   <div class="brand" onclick="showHub()">
-    <img src="logo.png" alt="Mueblesysillones">
+    <!-- logo-nav.png es logo.png achicado a 280px (lo que se muestra son 104px
+         CSS, o sea 280px alcanza hasta @2.7x): 18 KB en vez de 151 KB en cada
+         carga. El logo.png original queda intacto (otros lugares lo usan). -->
+    <img src="assets/logo-nav.png" alt="Mueblesysillones" width="280" height="127">
   </div>
   <div class="top-r">
     <button class="back-btn" id="backBtn" onclick="volverAtras()" hidden aria-label="Volver atrás" title="Volver atrás">
@@ -3429,7 +3533,38 @@ function sinMovimiento(){
 }
 
 /* Una publicacion. Se usa igual en el feed y al desplegar una fijada. */
-function postHTML(p, i){
+/* Ajustes de CARGA sobre el HTML que escribio el panel (modulos.js no se toca:
+   se corrige el string antes de pintarlo).
+   - Toda <img> decodifica fuera del hilo principal (decoding=async).
+   - La primera imagen del PRIMER post visible pierde el lazy y pide prioridad
+     alta: esta arriba del pliegue y puede ser el elemento LCP; con
+     loading=lazy el navegador la dejaba para lo ultimo.
+   - En celular, un <video> cuya proporcion ya viene escrita (--arw/--arh en el
+     figure) arranca con preload=none. El preload=metadata del marcado
+     disparaba la descarga (2 pedidos de 65 KB, medido) ANTES de que
+     videosDelFeed() llegara a apagarlo: la etiqueta ya estaba en el DOM. */
+function mediosDelPanel(html, primero){
+  if(!html) return '';
+  html = html.replace(/<img\b(?![^>]*\bdecoding=)/g, '<img decoding="async" ');
+  if(primero){
+    let hecha = false;
+    html = html.replace(/<img\b[^>]*>/, m => {
+      if(hecha) return m; hecha = true;
+      m = m.replace(/\sloading="lazy"/, '');
+      if(!/fetchpriority=/.test(m)) m = m.replace(/^<img\b/, '<img fetchpriority="high" loading="eager"');
+      return m;
+    });
+  }
+  if(enCelular()){
+    /* cubre los dos envoltorios que escribe el panel: figure.m-video > .v-box > video
+       y a.m-ref > span.mr-pv > video (la previa de video del feed) */
+    html = html.replace(/(<[a-z]+\b[^>]*--arw[^>]*>(?:\s*<[^>]*>)*?\s*<video\b[^>]*?)preload="metadata"/g,
+      '$1preload="none"');
+  }
+  return html;
+}
+
+function postHTML(p, i, primero){
   const tag = MURO_TAGS[p.etiqueta];
   const nuevo = esPostNuevo(p);
   return `<article class="mu-post${nuevo?' nueva':''}" data-tag="${esc(p.etiqueta||'')}" id="mu-${i}"
@@ -3449,7 +3584,7 @@ function postHTML(p, i){
       </span>
     </div>
     ${p.titulo ? `<div class="mu-titulo">${esc(p.titulo)}</div>` : ''}
-    <div class="mu-cuerpo"><div class="manual">${p.html || ''}</div></div>
+    <div class="mu-cuerpo"><div class="manual">${mediosDelPanel(p.html || '', primero)}</div></div>
     ${FLAGS.reacciones ? resumenReacciones(p, i) : ''}
     <div class="mu-pie">
       ${FLAGS.reacciones ? botonReaccion(p, i) : ''}
@@ -3487,7 +3622,7 @@ function muroHTML(c, t, opts){
     </div>` : '';
 
   return `<div class="muro">${filtros}${MURO_POSTS.map((p,i)=>
-      (opts.fijadosAparte && p.fijado) ? '' : postHTML(p, i)
+      (opts.fijadosAparte && p.fijado) ? '' : postHTML(p, i, p === enFeed[0])
     ).join('')}<div class="mu-vacio" id="muVacio" hidden>No hay publicaciones de ese tipo.</div></div>`;
 }
 
@@ -3507,6 +3642,24 @@ if(MQ_CELULAR){
   if(MQ_CELULAR.addEventListener) MQ_CELULAR.addEventListener('change', alCambiar);
   else if(MQ_CELULAR.addListener) MQ_CELULAR.addListener(alCambiar);   /* navegadores viejos */
 }
+
+/* Apaga el esqueleto de carga: marca cada <img> con `lista` cuando su archivo
+   llego (o fallo, para no dejar un brillo eterno sobre un 404). El load de una
+   imagen no burbujea: se caza en fase de captura. Las que entran por innerHTML
+   ya completas (cache) se barren apenas se insertan, via MutationObserver. */
+(function(){
+  const lista = i => i.classList.add('lista');
+  document.addEventListener('load',  e => { if(e.target && e.target.tagName === 'IMG') lista(e.target); }, true);
+  document.addEventListener('error', e => { if(e.target && e.target.tagName === 'IMG') lista(e.target); }, true);
+  const barrer = raiz => { if(raiz.querySelectorAll) raiz.querySelectorAll('img').forEach(i => {
+    if(i.complete && i.naturalWidth > 0) lista(i); }); };
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => {
+    if(n.nodeType !== 1) return;
+    if(n.tagName === 'IMG'){ if(n.complete && n.naturalWidth > 0) lista(n); }
+    else barrer(n);
+  }))).observe(document.documentElement, { childList:true, subtree:true });
+  barrer(document);
+})();
 
 function initMuro(){
   const posts = document.querySelectorAll('.mu-post');
@@ -4573,7 +4726,7 @@ function verFijado(i, btn){
     return;
   }
   FIX_ABIERTO = i;
-  caja.innerHTML = postHTML(MURO_POSTS[i], i);
+  caja.innerHTML = postHTML(MURO_POSTS[i], i, true);  /* recien abierto: esta EN pantalla */
   const art = caja.querySelector('.mu-post');
   if(art) art.classList.add('entra');
   initMuro();
@@ -4837,33 +4990,17 @@ document.addEventListener('keydown', e=>{
   else if(e.key==='ArrowLeft' || e.key==='PageUp'){ e.preventDefault(); dkMover(-1); }
 });
 
-/* carga modulos y galerias siempre frescos (evita cache al actualizar) */
-(function(){
-  function loadGalerias(){
-    var g=document.createElement('script');
-    g.src='galerias.js?v='+(new Date().getTime());
-    g.onload=function(){ applyModules(); renderHub(); route(); };
-    g.onerror=function(){ window.GALLERIES=window.GALLERIES||{}; applyModules(); renderHub(); route(); };
-    document.head.appendChild(g);
-  }
-  /* contenido de prueba del muro: existe solo en la maquina de trabajo.
-     En produccion no esta, y pedirlo igual cuesta un 404 en el camino
-     critico (va antes de galerias.js), asi que solo se busca en local. */
-  function loadMuroDemo(){
-    var local = ['localhost','127.0.0.1','::1',''].indexOf(location.hostname) >= 0;
-    if(!local){ loadGalerias(); return; }
-    var d=document.createElement('script');
-    d.src='muro-demo.js?v='+(new Date().getTime());
-    d.onload=loadGalerias;
-    d.onerror=loadGalerias;      /* en produccion el archivo no existe: se sigue igual */
-    document.head.appendChild(d);
-  }
-  var m=document.createElement('script');
-  m.src='modulos.js?v='+(new Date().getTime());
-  m.onload=loadMuroDemo;
-  m.onerror=loadMuroDemo;
-  document.head.appendChild(m);
-})();
+/* La otra mitad del arranque temprano del <head>: los pedidos de modulos.js y
+   galerias.js ya estan volando desde alla arriba. Aca —cuando el documento
+   termino de parsear y por fin existen applyModules/renderHub/route— se pinta,
+   ya sea porque los datos llegaron antes (llamada directa de abajo) o cuando
+   terminen de llegar (los onload del <head> llaman a __mysArrancar). */
+window.__mysArrancar = function(){
+  if(!window.__mysCarga || !window.__mysCarga.listo || window.__mysCarga.corrido) return;
+  window.__mysCarga.corrido = true;
+  applyModules(); renderHub(); route();
+};
+window.__mysArrancar();
 </script>
 </body>
 </html>
