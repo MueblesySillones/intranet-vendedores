@@ -1,0 +1,8 @@
+{
+  "version": 19,
+  "label": "2026.08d - actualizar y traer ultima version por internet",
+  "notes": "Actualizar el panel y Traer ultima version ahora van por internet directo: ya no hace falta Tailscale ni que la PC central este prendida; con wifi alcanza. Si internet falla, se intenta con la central como antes. Ademas, la clave de publicacion se corrige sola si se pego con el nombre adelante, y si no es valida el panel la vuelve a pedir en el momento.",
+  "sha256": "5db183c639f839affa566db113831ce028e41abff3ecfa3635e6ebd1f4d7d0bd",
+  "size": 19585155,
+  "url": "panel/PanelMyS-v19.zip"
+}
