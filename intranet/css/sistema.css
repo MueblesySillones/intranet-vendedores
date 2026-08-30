@@ -1,0 +1,147 @@
+/* ============================================================================
+   SISTEMA — los tokens del PAPEL
+   ============================================================================
+   Esto es lo que se PUBLICA: el sitio que ve el vendedor y el espejo que el
+   panel dibuja adentro del editor. Los dos leen ESTE archivo, así que lo que
+   se ve editando es lo que sale publicado.
+
+   La distinción viene del propio panel, que ya la tenía a medias:
+       MESA  = la herramienta (barras, botones, sidebar del panel)  -> no está acá
+       HOJA  = lo que se publica (el documento, la Cartelera)       -> está acá
+
+   Por qué existe este archivo (30-ago-2026): el panel mantenía a mano una copia
+   del CSS del sitio bajo `.doc-preview`. Con el tiempo los valores se
+   desincronizaron: el editor dibujaba el texto en #2C2A26 sobre #F4F1EC y el
+   sitio lo publicaba en #111111 sobre #F0EDE8. Siete de dieciséis tokens
+   compartidos habían divergido. Una sola fuente lo vuelve imposible.
+
+   REGLA: acá no va nada que sea exclusivo de la herramienta. Si un color solo
+   se usa en un botón del panel, va en el CSS del panel, no acá.
+
+   POR QUÉ EL SELECTOR ES DOBLE
+   En el sitio, los tokens tienen que valer para toda la página: `:root`.
+   En el panel NO, porque ahí el papel es solo un rectángulo adentro de la
+   herramienta, y la herramienta tiene sus propios `--bg` e `--ink` (más claros,
+   más cálidos) que no se pueden pisar. Declarando el mismo bloque en
+   `:root, .doc-preview`, el sitio lo toma global y el panel lo toma acotado al
+   lienzo del documento. Un archivo, dos usos, cero colisión.
+   ========================================================================== */
+
+:root,
+.doc-preview {
+
+  /* --- SUPERFICIES ------------------------------------------------------ */
+  --bg:        #F0EDE8;   /* el papel */
+  --bg2:       #E8E4DF;   /* papel hundido: cajas de ejemplo, zonas quietas */
+  --surface:   #FFFFFF;   /* la tarjeta que se levanta del papel */
+
+  /* --- TINTA -------------------------------------------------------------
+     --ink3 fue #6E6E6E hasta la auditoría de agosto: daba 4,0-4,4:1 sobre el
+     papel y reprobaba AA en ~30 nodos. #67635B da 5,1:1. No subirlo de nuevo. */
+  --ink:       #111111;   /* títulos y texto principal */
+  --ink2:      #444444;   /* cuerpo largo */
+  --ink3:      #67635B;   /* ayudas, fechas, epígrafes. NO bajar el contraste */
+
+  /* --- LÍNEAS ----------------------------------------------------------- */
+  --border:    rgba(0,0,0,0.10);
+  --border2:   rgba(0,0,0,0.06);
+
+  /* --- MARCA: las sucursales -------------------------------------------- */
+  --c-hudson:    #1A1A2E;
+  --c-caba:      #2C6E8A;
+  --c-canning:   #3A7A55;
+  --c-norcenter: #8A5A2C;
+
+  /* --- SEMÁNTICOS: significan algo, no decoran -------------------------- */
+  --c-success: #1A6A3A;
+  --c-warn:    #9A6A00;
+  --c-danger:  #B4231F;
+  --c-info:    #1A4A8A;
+
+  /* --- TIPOGRAFÍA --------------------------------------------------------
+     Eran 27 tamaños sueltos entre 9,5px y 38px, ocho de ellos separados por
+     medio píxel. La escala sale de los datos, no del gusto: cada paso es el
+     valor DOMINANTE de su grupo real de uso, así ningún texto del sitio se
+     mueve más de medio píxel al adoptarla. 86% de los usos caen en los
+     primeros seis pasos.
+
+     Cómo elegir: el nombre dice el ROL, no el tamaño. Si dudás entre dos,
+     mirá qué papel cumple el texto, no cuántos píxeles medía antes. */
+  --t-nano:   10px;    /* chapitas, contadores */
+  --t-micro:  11px;    /* etiquetas en mayúscula, metadatos */
+  --t-mini:   12.5px;  /* pies, ayudas, fechas */
+  --t-sm:     13.5px;  /* texto secundario, botones chicos */
+  --t-base:   14.5px;  /* CUERPO: el tamaño por defecto de lectura */
+  --t-md:     15.5px;  /* cuerpo destacado, entradilla */
+  --t-lg:     17px;    /* subtítulos */
+  --t-xl:     21px;    /* títulos de sección */
+  --t-2xl:    26px;    /* título de módulo */
+  --t-3xl:    32px;    /* título de portada */
+  --t-hero:   38px;    /* el hero, una sola vez por pantalla */
+
+  /* alto de línea: cuerpo cómodo, títulos ajustados */
+  --lh-texto:  1.62;
+  --lh-titulo: 1.18;
+
+  /* --- ANCHO DE LECTURA --------------------------------------------------
+     La medida que decide si un texto se lee o se abandona. El objetivo es
+     66-75 caracteres por línea. Los módulos ya lo cumplían (75); la Cartelera
+     no (82), porque la regla se aplicó a `.manual` y el feed quedó afuera. */
+  --medida: 34em;   /* ~68 caracteres con Montserrat */
+
+  /* --- ESPACIADO: base 4 ------------------------------------------------- */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  24px;
+  --sp-6:  32px;
+  --sp-7:  48px;
+
+  /* --- RADIOS (eran 16) -------------------------------------------------- */
+  --r-xs:   6px;
+  --r-sm:   8px;    /* el más usado: tarjetas chicas, botones */
+  --r-md:   10px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-2xl:  20px;
+  --r-full: 999px;
+
+  /* --- SOMBRAS (eran 31) -------------------------------------------------
+     Todas tintadas en la tinta del papel, nunca negro puro: una sombra negra
+     sobre un fondo cálido se ve gris sucio. */
+  --sombra-1: 0 1px 2px rgba(40,35,28,.05), 0 6px 18px -12px rgba(40,35,28,.20);
+  --sombra-2: 0 2px 6px rgba(40,35,28,.07), 0 12px 28px -16px rgba(40,35,28,.24);
+  --sombra-3: 0 18px 42px rgba(40,35,28,.26);
+  --sombra-4: 0 30px 70px rgba(40,35,28,.34);
+
+  /* --- CAPAS -------------------------------------------------------------
+     Eran diez números sueltos (3,4,5,9,30,50,60,120,200,210) y ya provocaron
+     dos peleas: un toast tapado por el editor y un modal detrás de su propio
+     fondo. Seis capas con nombre. Nada de z-index literales fuera de acá. */
+  --z-base:    1;    /* apilado dentro de un componente */
+  --z-sticky:  10;   /* cabeceras que se pegan al hacer scroll */
+  --z-nav:     20;   /* la barra de arriba */
+  --z-drawer:  30;   /* menú lateral y su fondo */
+  --z-modal:   40;   /* visor de imágenes, lector de PDF */
+  --z-aviso:   50;   /* toasts: SIEMPRE arriba de todo, o no se ven */
+
+  /* --- MOVIMIENTO --------------------------------------------------------
+     Dos velocidades y un techo. Si algo pide más de 360ms, se repiensa.
+     La curva de entrada frena suave; la de salida acelera y no saluda. */
+  --dur-1: 140ms;   /* lo que responde al dedo: hover, foco */
+  --dur-2: 240ms;   /* aparecer y desaparecer: modales, desplegables */
+  --dur-3: 360ms;   /* techo absoluto */
+  --mov:      cubic-bezier(.22,.61,.36,1);
+  --ease-in:  cubic-bezier(.4,0,1,1);
+
+  /* --- TÁCTIL ------------------------------------------------------------
+     44px es el mínimo de Apple y Android para algo que se toca con el dedo.
+     El vendedor usa esto parado en el local, con una mano. */
+  --tap: 44px;
+}
+
+/* Quien pide menos movimiento, recibe menos movimiento. No es opcional. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; --dur-3: 0ms; }
+}
