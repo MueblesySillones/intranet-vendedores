@@ -1,8 +1,8 @@
 {
-  "version": 25,
-  "label": "2026.08j - elegir por bloque, selector compacto",
-  "notes": "Al señalar un módulo en la Cartelera ahora elegís el BLOQUE puntual (la imagen, la galería, el video o el documento), no el módulo entero. La ventana es mucho más compacta, con buscador arriba: tocás el módulo, se despliegan sus bloques, elegís uno y confirmás con Adjuntar. Incluye todo lo anterior.",
-  "sha256": "257a135bf50084fc5dd385500fb5563b1dad920f0db7be1ff2902e8c5379b550",
-  "size": 19597845,
-  "url": "panel/PanelMyS-v25.zip"
+  "version": 26,
+  "label": "1.2.2 - iconos en vector, numeros parejos y la vista previa arreglada",
+  "notes": "Los botones ahora usan iconos dibujados en vez de simbolos de texto: se ven iguales en cualquier computadora y no cambian de tamano solos. Los numeros de los contadores dejaron de moverse cuando cambia la cifra. Arriba a la izquierda dice Intranet MyS con el numero de version. Y se arreglo la vista previa de las publicaciones, que se veia sin formato despues del cambio de estilos del sitio.",
+  "sha256": "fdec97baef49e2aa057c15679d84eecf3fc119b595425790aac6c7ac0e940b46",
+  "size": 21085300,
+  "url": "panel/PanelMyS-v26.zip"
 }
