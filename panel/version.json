@@ -1,8 +1,8 @@
 {
-  "version": 33,
-  "label": "1.3.3 - se acabaron las pantallas viejas",
-  "notes": "Cada version del panel ahora firma sus propios archivos de pantalla: el navegador no puede volver a mostrar una pantalla guardada de una version anterior, ni siquiera de antes de este arreglo. Ya no hace falta apretar Ctrl+Shift+R despues de actualizar. Incluye el redisenio completo en blanco y la apertura como pestania del navegador.",
-  "sha256": "5b0c66609d1584ac927962b1b2b1c8d8477c97b597c13a9a3e3e9e5734268a5d",
-  "size": 19614822,
-  "url": "panel/PanelMyS-v33.zip"
+  "version": 34,
+  "label": "1.4.0 - el panel nuevo",
+  "notes": "El panel se renovo entero, con el redisenio aprobado: la cartelera es un muro con su publicador en ventana, los modulos son tarjetas, el editor tiene el papel al centro y la paleta de bloques con miniaturas al costado, y aparecen Archivadas (con la papelera adentro) y Metricas (vista previa). Todo lo de siempre sigue en su lugar: publicar, historial, avisar novedad y las actualizaciones automaticas.",
+  "sha256": "769102e7f1b965ca6bcf87c247a51c4e75da17bbac738417987d0486a1c71206",
+  "size": 20006447,
+  "url": "panel/PanelMyS-v34.zip"
 }
