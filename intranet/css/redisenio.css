@@ -1,0 +1,202 @@
+/* ============================================================================
+   REDISEÑO 2026 — la capa de arriba
+   ============================================================================
+   Se carga DESPUÉS de sistema.css y sitio.css y sólo redefine lo que cambia.
+   La estructura del HTML no se toca: esto pisa tokens y componentes.
+
+   Por qué una capa y no una reescritura: sitio.css tiene 128 KB y lo lee
+   también el panel de marketing para dibujar su vista previa. Reescribirlo
+   entero es cambiar el piso abajo de los pies de las 7 sucursales. Una capa
+   se revierte sacando UNA línea del index.html.
+
+   Lo que cambia, y por qué (decidido mirando la maqueta con Mus, 30/31-ago):
+   1. Color: de crema a blanco limpio tipo app. El crema quedaba para la web
+      pública; adentro es una herramienta de trabajo.
+   2. El feed deja de parecer una red social: se va el avatar + "Marketing" +
+      "hace 2 días". Una publicación interna es un AVISO DE LA EMPRESA, no un
+      posteo de alguien. Manda la etiqueta y el título.
+   3. Espaciado parejo: un solo padding adentro de la tarjeta.
+   4. El botón del menú dice "Menú" y sólo existe en celular; en escritorio la
+      columna de módulos ya está a la vista.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------- 1. COLOR */
+:root{
+  --bg:        #F7F7F8;
+  --bg2:       #FAFAFB;
+  --surface:   #FFFFFF;
+  --ink:       #18181B;
+  --ink2:      #52525B;
+  --ink3:      #8B8B93;
+  --border:    #E7E7EA;
+  --border-fuerte:#D6D6DB;
+}
+
+/* El logo del proyecto es BLANCO (está hecho para header oscuro). Sobre el
+   fondo claro no se leía: brightness(0) lo pinta negro respetando el alfa. */
+.top-l img, .topbar img[src*="logo"]{ filter:brightness(0); opacity:.88; }
+
+/* ------------------------------------------------- 2. LA BARRA DE ARRIBA */
+.topbar{ background:rgba(247,247,248,.92); border-bottom:1px solid var(--border); }
+
+/* El buscador deja de ser un botoncito en la esquina y pasa a ser lo que
+   más se usa: el vendedor entra a BUSCAR material para mandarle al cliente. */
+.buscar-btn{
+  border-radius:999px !important;
+  border:1px solid var(--border) !important;
+  background:var(--surface) !important;
+  color:var(--ink3) !important;
+  height:40px; padding:0 15px;
+  min-width:min(440px, 42vw);
+  justify-content:flex-start !important;
+  gap:9px;
+  font-weight:500;
+}
+.buscar-btn:hover{ border-color:var(--border-fuerte) !important; }
+
+/* El botón de menú: rótulo visible y sólo en celular. */
+.menu-btn, .home-btn{
+  height:40px; border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface); color:var(--ink);
+  font-weight:600;
+}
+.home-btn{ background:var(--ink); color:#fff; border-color:var(--ink); }
+.home-btn .ico svg{ stroke:#fff; }
+@media(min-width:1200px){
+  /* En escritorio los módulos ya están en la columna de al lado. */
+  .menu-btn{ display:none !important; }
+}
+
+/* ------------------------------------------------ 3. LA PUBLICACIÓN */
+.mu-post{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 1px 2px rgba(24,24,27,.04), 0 4px 14px rgba(24,24,27,.045);
+  padding:18px;
+  transition:box-shadow .18s ease, border-color .18s ease;
+}
+.mu-post:hover{
+  border-color:var(--border-fuerte);
+  box-shadow:0 1px 2px rgba(24,24,27,.05), 0 8px 22px rgba(24,24,27,.07);
+}
+/* La barra de acento pegada al costado que se veía "desprolija": se va. */
+.mu-post::before, .mu-post::after{ display:none !important; }
+
+/* Una publicación NO es "Marketing posteó": es un aviso de la empresa. */
+.mu-av, .mu-autor{ display:none !important; }
+.mu-head{ display:flex; align-items:center; gap:8px; padding:0; margin-bottom:10px; }
+.mu-quien{ display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
+.mu-meta{ font-size:12px; color:var(--ink3); white-space:nowrap; }
+
+.mu-tag{
+  display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 9px;
+  border-radius:999px; background:#F0F0F2; color:var(--ink2);
+  font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+}
+/* La chapita NUEVO va negra, como en el resto del sitio (.tile-nuevo). */
+.mu-nueva{
+  background:var(--ink) !important; color:#fff !important;
+  font-weight:800; letter-spacing:.06em; border-radius:999px; padding:3px 8px;
+}
+
+.mu-titulo{ font-size:17px; font-weight:700; letter-spacing:-.015em; line-height:1.32;
+  margin:0; text-transform:none; }
+.mu-cuerpo{ margin-top:8px; }
+
+/* Un solo aire adentro de la tarjeta: nada de medios de borde a borde. */
+.mu-cuerpo img, .mu-cuerpo .gallery, .mu-cuerpo .v-box{ border-radius:10px; }
+
+.mu-pie, .mu-acc{ margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+
+/* La acción principal del vendedor es MANDAR el material por WhatsApp. */
+.mu-wa, .mu-acc .btn-wa{
+  background:#128C4A !important; color:#fff !important; border-color:#128C4A !important;
+  font-weight:600;
+}
+.mu-wa:hover{ background:#0E7038 !important; }
+
+/* ------------------------------------------------------- 4. LOS MÓDULOS */
+.tile{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 1px 2px rgba(24,24,27,.04);
+  transition:box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+}
+.tile:hover{
+  border-color:var(--border-fuerte); transform:translateY(-2px);
+  box-shadow:0 8px 22px rgba(24,24,27,.07);
+}
+.tile.nuevo{ border-color:var(--ink); border-width:1.5px; }
+.tile-nuevo{ background:var(--ink); color:#fff; font-weight:800; }
+
+/* En la columna lateral los módulos son EL menú, y el equipo tiene gente
+   mayor: la fila y la letra se agrandan. */
+#lobby .nv-item, .nav-list .nv-item{ min-height:52px; font-size:15px; }
+#lobby .nv-n, .nav-list .nv-n{ font-size:15px; }
+#lobby .nv-ic, .nav-list .nv-ic{ width:34px; height:34px; }
+
+/* ------------------------------------------------------- 5. MOVIMIENTO */
+@keyframes rd-entra{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+.nav-panel:not([hidden]) .nv-item{ animation:rd-entra .3s cubic-bezier(.2,.8,.2,1) both; }
+.nav-panel:not([hidden]) .nv-item:nth-child(1){ animation-delay:.03s }
+.nav-panel:not([hidden]) .nv-item:nth-child(2){ animation-delay:.055s }
+.nav-panel:not([hidden]) .nv-item:nth-child(3){ animation-delay:.08s }
+.nav-panel:not([hidden]) .nv-item:nth-child(4){ animation-delay:.105s }
+.nav-panel:not([hidden]) .nv-item:nth-child(5){ animation-delay:.13s }
+.nav-panel:not([hidden]) .nv-item:nth-child(6){ animation-delay:.155s }
+.nav-panel:not([hidden]) .nv-item:nth-child(7){ animation-delay:.18s }
+.nav-panel:not([hidden]) .nv-item:nth-child(8){ animation-delay:.205s }
+.nav-panel:not([hidden]) .nv-item:nth-child(9){ animation-delay:.23s }
+.nav-panel:not([hidden]) .nv-item:nth-child(10){ animation-delay:.255s }
+
+@media(prefers-reduced-motion:reduce){
+  .nav-panel:not([hidden]) .nv-item{ animation:none; }
+}
+
+/* ------------------------------ 6. LA COLUMNA DE MÓDULOS (#lateral) --------
+   Estructura real: aside#lateral.lat > nav.lat-lista > button.lat-i
+   Quedaba en crema mientras el resto pasaba a blanco, y con la letra chica.
+   El equipo tiene gente mayor: la fila y el nombre se agrandan. */
+#lateral.lat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 1px 2px rgba(24,24,27,.04);
+  padding:14px;
+}
+#lateral .lat-lista{ display:flex; flex-direction:column; gap:0; }
+#lateral .lat-i{
+  /* ⚠️ display:flex + gap OBLIGATORIOS: sin ellos el punto de color de la
+     sucursal se monta sobre la primera letra del nombre ("■aterial
+     descargable"). Lo rompí al cambiar el padding y lo vi en la primera
+     pasada de QA. */
+  display:flex; align-items:center; gap:11px;
+  min-height:52px;
+  /* ⚠️ El padding-left NO puede bajar de 26px: sitio.css define .lat-i DOS
+     veces (líneas 1673 y 1828) y la segunda cuelga un ::before absoluto en
+     left:11px para el punto de la sucursal. Si le achicás el padding, el
+     punto se monta sobre la primera letra ("■aterial descargable"). */
+  padding:9px 12px 9px 28px;
+  margin:0;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  font-size:15px;
+  font-weight:500;
+  color:var(--ink);
+  transition:background .16s ease;
+}
+#lateral .lat-i + .lat-i{ border-top:1px solid var(--border); border-radius:0; }
+#lateral .lat-i:first-child{ border-radius:10px 10px 0 0; }
+#lateral .lat-i:last-child{ border-radius:0 0 10px 10px; }
+#lateral .lat-i:hover{ background:var(--bg2); }
+
+/* El módulo con novedad se marca con el borde negro, no con relleno de color
+   (es la misma regla que ya usa .tile.nuevo en el resto del sitio). */
+#lateral .lat-i.nuevo{
+  border:1.5px solid var(--ink);
+  border-radius:10px;
+}
