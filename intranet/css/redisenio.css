@@ -339,3 +339,46 @@ html, body{ overflow-x:clip; max-width:100%; }
 /* Las medidas reales de los iPhone en uso, para que no haya que adivinar:
    16 Pro Max 440 · 16 Plus / 15 Pro Max 430 · 16 Pro 402 · 16 / 15 Pro 393
    SE y mini 375 · Android chico 360. Probado en los siete. */
+
+/* ============================================================================
+   13. LA BARRA, COMO EN LA MAQUETA: logo · buscador centrado · menú
+   ============================================================================
+   En producción el header es un grid con el LOGO en la celda del medio y el
+   buscador pegado al borde derecho. En la maqueta el logo va a la izquierda y
+   lo que manda —el buscador— queda centrado.
+
+   Se probó con `position:absolute; left:50%`: NO sirve. Medido, el buscador
+   quedaba corrido 213px a la derecha del centro y en el teléfono se montaba
+   25px sobre el botón Menú. El absoluto se centra respecto del contenedor
+   posicionado, no de la pantalla, y encima sale del flujo, así que nadie le
+   hace lugar.
+
+   Lo que sí funciona son dos layouts según el ancho:
+
+   ≥1200px — grid de tres celdas `1fr auto 1fr`. El buscador vive en la del
+   medio, así que queda centrado EN LA PANTALLA, no en el espacio que sobra.
+   `display:contents` en .top-r hace que sus hijos entren al grid del header.
+   El corte es 1200 y no 900 a propósito: arriba de 1200 el botón Menú ya está
+   oculto, así que en la tercera celda queda sólo "Inicio" y nada se apila.
+
+   <1200px — flujo normal: logo · buscador que se estira · menú. No puede pisar
+   nada porque los tres se reparten el ancho en vez de superponerse.
+   ============================================================================ */
+.top-l{ display:none; }                 /* venía vacío, ocupando una celda */
+
+@media(min-width:1200px){
+  header.top{ display:grid; grid-template-columns:1fr minmax(0,auto) 1fr;
+              align-items:center; }
+  .brand{ grid-column:1; justify-self:start; }
+  .top-r{ display:contents; }
+  .buscar-btn{ grid-column:2; justify-self:center; width:min(440px, 40vw); }
+  .home-btn, .back-btn, .menu-btn{ grid-column:3; justify-self:end; }
+}
+
+@media(max-width:1199px){
+  header.top{ display:flex; align-items:center; gap:10px; }
+  .brand{ flex:0 0 auto; }
+  .top-r{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; }
+  .buscar-btn{ flex:1; min-width:0; width:auto; }
+  .menu-btn, .home-btn, .back-btn{ flex:0 0 auto; }
+}
