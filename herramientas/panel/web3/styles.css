@@ -1,0 +1,1365 @@
+:root{
+  /* ---- identidad de marca: NO se toca ---- */
+  --bg:#F4F1EC; --panel:#FBFAF7; --ink:#2C2A26; --ink2:#5B574F;
+  --line:#E4DFD6; --accent:#7C6A55; --accent2:#9C8B73; --ok:#5B7A5B; --warn:#B07A4A;
+  --danger:#B5503F;
+
+  /* ---- legibilidad ----
+     --ink3 era #8A857B = 3,26:1 sobre el fondo: por debajo del minimo legible, y
+     lo usan TODOS los textos de ayuda y los grips ⠿ (que son la unica pista de
+     que algo se puede arrastrar). Ahora 4,84:1.
+     OJO: .doc-preview redefine --ink3 localmente, asi que el espejo de la
+     intranet NO se toca con esto. */
+  --ink3:#6E6960;
+  --linea-int:var(--accent2);   /* borde de un control AISLADO: 3,30:1 sobre blanco */
+  --foco:2px solid var(--accent);
+  --tap:32px;                   /* area tactil minima comoda con trackpad */
+
+  /* ---- superficies: mesa / hoja / herramienta ---- */
+  --mesa:#E9E3D9;               /* fondo del lienzo: "aca afuera es la herramienta" */
+  --hoja:#F0EDE8;               /* el papel: "aca adentro es lo que se publica" */
+
+  /* ---- escala tipografica (eran 21 tamaños distintos) ---- */
+  --t-xs:11px; --t-sm:12.5px; --t-md:13.5px; --t-lg:15px; --t-xl:17px; --t-2xl:20px;
+
+  /* ---- radios (eran 16) ---- */
+  --r-xs:6px; --r-sm:9px; --r-md:12px; --r-lg:16px; --r-full:999px;
+  --radius:var(--r-md);
+
+  /* ---- espaciado (base 4) ----
+     Declarada para consolidar de a poco: se adopta cuando una linea ya se toca
+     por otra razon. NO hacer un barrido masivo de paddings de una sola vez:
+     el riesgo de mover todo el layout junto es mas caro que la deuda. */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+
+  /* ---- sombras (eran 22), todas en tinta calida ---- */
+  --sombra-1:0 1px 3px rgba(40,35,28,.06), 0 8px 24px rgba(40,35,28,.05);
+  --sombra-2:0 4px 14px rgba(40,35,28,.10);
+  --sombra-3:0 18px 42px rgba(40,35,28,.26);
+  --sombra-4:0 30px 70px rgba(40,35,28,.34);
+  --shadow:var(--sombra-1);
+
+  /* ---- movimiento (fase 4) ----
+     Dos velocidades y un techo, en vez de nueve numeros sueltos:
+       --dur-1 micro (hover, fades, lo que responde al dedo)
+       --dur-2 aparicion / cambio de layout (modales, despliegues)
+       --dur-3 techo absoluto: si algo pide mas de 360ms, se repiensa.
+     La curva de ENTRADA es --mov (declarada en rediseno.css: frena suave).
+     --ease-in es la de SALIDA: lo que se retira acelera y no saluda. */
+  --dur-1:140ms; --dur-2:240ms; --dur-3:360ms;
+  --ease-in:cubic-bezier(.4,0,1,1);
+}
+*{box-sizing:border-box}
+/* el atributo hidden siempre gana (si no, .modal/.console con display propio quedan visibles) */
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  font-family:'Montserrat',-apple-system,Segoe UI,Roboto,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:14px; line-height:1.5;
+}
+button{font-family:inherit}
+
+/* ---- top bar ---- */
+.top{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 22px; background:var(--panel); border-bottom:1px solid var(--line);
+  position:sticky; top:0; z-index:20;
+}
+.brand{display:flex; align-items:center; gap:14px}
+.logo-img{ height:34px; width:auto; display:block; filter:brightness(0); opacity:.84 }
+.top h1{font-size:16px; margin:0; font-weight:600}
+.sub{margin:1px 0 0; color:var(--ink3); font-size:12px}
+.top-right{display:flex; align-items:center; gap:12px}
+.git{
+  display:flex; align-items:center; gap:8px; font-size:var(--t-sm); color:var(--ink2);
+  background:#fff; border:1px solid var(--line); padding:7px 13px; border-radius:var(--r-full);
+}
+.git .dot{width:8px;height:8px;border-radius:50%;background:var(--ink3)}
+.git.clean .dot{background:var(--ok)}
+.git.dirty .dot{background:var(--warn)}
+
+/* ---- layout ---- */
+.panel-main{min-height:calc(100vh - 71px)}
+.layout{display:grid; grid-template-columns:248px 1fr; min-height:calc(100vh - 71px)}
+.side{
+  background:var(--panel); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; padding:16px 12px;
+}
+.side-title{font-size:var(--t-xs); text-transform:uppercase; letter-spacing:.12em; color:var(--ink3); padding:6px 10px 10px}
+#nav{display:flex; flex-direction:column; gap:3px; flex:1}
+.nav-item{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:10px 12px; border-radius:var(--r-sm); cursor:pointer; border:1px solid transparent;
+  color:var(--ink2); font-size:var(--t-md); text-align:left; background:none; width:100%;
+}
+.nav-item:hover{background:#fff}
+.nav-item.active{background:#fff; border-color:var(--line); color:var(--ink); font-weight:600; box-shadow:var(--shadow)}
+.nav-item .count{
+  font-size:var(--t-xs); min-width:22px; text-align:center; padding:2px 7px; border-radius:var(--r-full);
+  background:var(--line); color:var(--ink2);
+}
+.nav-item.active .count{background:var(--accent); color:#fff}
+.side-foot{padding:12px 6px 4px; border-top:1px solid var(--line); margin-top:10px}
+.hint{font-size:var(--t-xs); color:var(--ink3); margin:8px 2px 0; line-height:1.4}
+
+/* ---- main ---- */
+.main{padding:24px 28px 60px; max-width:1080px; margin:0 auto}
+.main-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px}
+.main-head h2{margin:0; font-size:var(--t-2xl); font-weight:600}
+.muted{color:var(--ink3); font-size:var(--t-sm); margin:3px 0 0}
+.head-actions{display:flex; gap:8px}
+
+/* ---- buttons ---- */
+.btn{
+  border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer;
+  padding:9px 16px; border-radius:var(--r-sm); font-size:var(--t-md); font-weight:500; transition:var(--dur-1);
+}
+.btn:hover:not(:disabled){border-color:var(--accent2)}
+.btn-ghost{background:transparent}
+.btn-pub{background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; padding:10px 18px}
+.btn-pub:hover:not(:disabled){background:#6b5a47}
+.btn.active{background:var(--ink); color:#fff; border-color:var(--ink)}
+/* estado "hecho": Guardado / Publicado (verde, sin acción pendiente) */
+.btn.btn-done{background:#E7F1E7 !important; color:#2E5E2E !important; border:1px solid #BCD8BC !important; font-weight:700}
+.btn.btn-done:hover{background:#dcebdc !important}
+.link{background:none; border:none; color:var(--accent); cursor:pointer; text-decoration:underline; padding:0; font-size:inherit}
+
+/* ---- dropzone ---- */
+.dropzone{
+  border:2px dashed var(--line); border-radius:var(--radius); background:var(--panel);
+  padding:26px; text-align:center; transition:var(--dur-1); margin-bottom:22px; cursor:pointer;
+}
+.dropzone.over{border-color:var(--accent); background:#fff}
+.dz-ico{font-size:26px; color:var(--accent2)}
+.dropzone p{margin:6px 0}
+.dz-note{color:var(--ink3); font-size:12px}
+
+/* ---- grid ---- */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px}
+.card{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;
+}
+.card.dragging{opacity:.4}
+.card.drop-target{outline:2px solid var(--accent)}
+.thumb{aspect-ratio:1/1; background:#EEEAE2; display:grid; place-items:center; overflow:hidden}
+.thumb img{width:100%; height:100%; object-fit:cover; display:block}
+.card-body{padding:10px 12px; display:flex; flex-direction:column; gap:8px}
+.card-title{font-size:var(--t-sm); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.card-file{font-size:var(--t-xs); color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.card-actions{display:flex; justify-content:space-between; align-items:center; margin-top:2px}
+.del{background:none; border:none; color:var(--danger); cursor:pointer; font-size:12px; padding:2px}
+.del:hover{text-decoration:underline}
+.handle{cursor:grab; color:var(--ink3); font-size:var(--t-lg); user-select:none}
+.reorder .card{cursor:grab}
+.reorder .del{display:none}
+.pos{font-size:var(--t-xs); color:var(--accent); font-weight:600}
+
+.empty{padding:40px; text-align:center; color:var(--ink3); border:1px dashed var(--line); border-radius:var(--radius)}
+
+/* ---- console ---- */
+.console{
+  position:fixed; right:18px; bottom:18px; width:min(560px,92vw); max-height:60vh;
+  background:#2C2A26; color:#EDE8DF; border-radius:var(--r-md); box-shadow:var(--sombra-3);
+  display:flex; flex-direction:column; z-index:40; overflow:hidden;
+}
+.console-head{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #44403a; font-size:var(--t-md)}
+.console-head .link{color:#C9BBA4}
+.console pre{margin:0; padding:12px 14px; overflow:auto; font-size:12px; line-height:1.5; white-space:pre-wrap; font-family:Consolas,Menlo,monospace}
+
+/* ---- toast ---- */
+.toast{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+  background:var(--ink); color:#fff; padding:11px 20px; border-radius:var(--r-full);
+  font-size:var(--t-md); z-index:200; box-shadow:var(--sombra-3);   /* 2B: el editor es un overlay fijo con z-index:90 — con 50, TODOS los
+      toasts (Autoguardado, Publicando, el Deshacer de borrado) quedaban
+      tapados mientras se edita. 200 lo pone arriba de modales (120-140). */
+}
+.toast.err{background:var(--danger)}
+
+/* barra flotante de "Traer última versión": misma familia visual que el toast,
+   pero persistente y con progreso real (la maneja traerUltima en app.js) */
+.traer-bar{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+  display:flex; align-items:center; gap:14px; min-width:320px;
+  max-width:min(460px, calc(100vw - 32px));
+  background:var(--ink); color:#fff; padding:14px 20px; border-radius:var(--r-2);
+  box-shadow:var(--sombra-3); z-index:210; font-size:var(--t-md);
+  animation:movEntraAbajo var(--dur-2) var(--mov);
+}
+.traer-bar[hidden]{display:none}
+.traer-giro{
+  width:20px; height:20px; border-radius:50%; flex:none;
+  border:3px solid rgba(255,255,255,.28); border-top-color:#fff;
+  animation:traerGira .9s linear infinite;
+}
+@keyframes traerGira{to{transform:rotate(360deg)}}
+.traer-cuerpo{flex:1; min-width:0}
+.traer-txt{font-weight:600; margin-bottom:7px}
+.traer-pista{height:6px; border-radius:var(--r-full); background:rgba(255,255,255,.22); overflow:hidden}
+.traer-relleno{height:100%; width:0; border-radius:var(--r-full); background:#fff;
+  transition:width var(--dur-2) var(--mov)}
+.traer-relleno.sin-total{width:34%; animation:traerVaiven 1.1s ease-in-out infinite alternate}
+@keyframes traerVaiven{from{transform:translateX(-70%)}to{transform:translateX(260%)}}
+.toast.ok{background:var(--ok)}
+/* 2B: toast con accion inline ("Bloque eliminado — Deshacer") */
+.toast .toast-btn{border:none; background:none; color:#fff; font:inherit; font-weight:800; text-decoration:underline; text-underline-offset:3px; cursor:pointer; margin-left:10px; padding:2px 4px; border-radius:var(--r-xs)}
+.toast .toast-btn:hover{opacity:.85}
+
+/* ---- tabs ---- */
+.tabs{display:flex; gap:6px; padding:2px 4px 14px}
+.tab{
+  flex:1; padding:9px 10px; border-radius:var(--r-sm); border:1px solid var(--line);
+  background:#fff; cursor:pointer; font-size:var(--t-md); color:var(--ink2); font-weight:500;
+}
+.tab.active{background:var(--ink); color:#fff; border-color:var(--ink)}
+
+/* ---- lista de modulos ---- */
+.mod-list{display:flex; flex-direction:column; gap:10px}
+.mod-card{
+  display:flex; align-items:center; gap:14px; background:#fff; border:1px solid var(--line);
+  border-radius:var(--r-md); padding:12px 14px; box-shadow:var(--shadow);
+}
+.mod-card{cursor:pointer; transition:border-color var(--dur-1)}
+.mod-card:hover{border-color:var(--accent2)}
+.mod-card.dragging{opacity:.4}
+/* "oculto" es una DECISION, no un modulo roto ni a medio cargar: se dice con
+   borde punteado e icono gris, pero el titulo queda legible para encontrarlo */
+.mod-card.hidden-mod{background:var(--bg); border-style:dashed}
+.mod-card.hidden-mod .mod-ic{filter:grayscale(1); opacity:.5}
+.mod-card.hidden-mod .mod-t{color:var(--ink2)}
+.mod-card.hidden-mod .mod-open{opacity:.7}
+/* fila punteada que cierra la lista: el modulo nuevo aparece JUSTO ahi */
+.mod-add{display:block; width:100%; margin-top:10px; padding:14px;
+  border:2px dashed var(--line); border-radius:var(--r-md); background:none;
+  color:var(--ink3); font:inherit; font-size:var(--t-md); font-weight:600; cursor:pointer;
+  transition:border-color var(--dur-1), color var(--dur-1), background var(--dur-1)}
+.mod-add:hover{border-color:var(--accent2); color:var(--accent); background:#fff}
+.mod-open{color:var(--ink3); font-size:var(--t-md); white-space:nowrap; font-weight:600}
+.mod-grip{cursor:grab; color:var(--ink3); font-size:16px; user-select:none}
+.mod-ic{width:42px; height:42px; border-radius:var(--r-md); display:grid; place-items:center; flex:none}
+.mod-ic svg{width:22px; height:22px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.mod-info{flex:1; min-width:0}
+.mod-t{font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px}
+.mod-d{color:var(--ink3); font-size:var(--t-sm); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* La UNICA chapa con color es la que pide una accion, y usa exactamente el
+   color del boton Publicar. El resto son decisiones ya tomadas: gris. */
+.mod-badges{display:flex; gap:6px; flex:none}
+.badge{font-size:var(--t-xs); padding:2px 8px; border-radius:var(--r-full);
+  background:var(--line); color:var(--ink2); font-weight:600; white-space:nowrap}
+.badge.pend{display:inline-flex; align-items:center; gap:5px;
+  background:var(--accent); color:#fff; font-weight:700}
+.badge.pend:before{content:''; width:5px; height:5px; border-radius:50%; background:#fff; opacity:.85}
+.badge.soon{background:#ECE9E3; color:var(--ink2)}
+.badge.hid{background:#EDE6DE; color:var(--ink2)}
+.mod-acts{display:flex; gap:6px; flex:none}
+.mod-acts .btn{padding:7px 11px; font-size:var(--t-sm)}
+.icon-pos{font-size:var(--t-xs); color:var(--accent); font-weight:700; width:18px; text-align:center}
+
+/* ---- modal ---- */
+.modal{position:fixed; inset:0; z-index:130; display:grid; place-items:center}
+.modal-ov{position:absolute; inset:0; background:rgba(40,35,28,.42)}
+.modal-box{
+  position:relative; width:min(560px,94vw); max-height:90vh; overflow:auto;
+  background:var(--panel); border-radius:var(--r-lg); box-shadow:var(--sombra-4);
+}
+.modal-head{display:flex; justify-content:space-between; align-items:center; padding:18px 22px 6px}
+.modal-head h3{margin:0; font-size:var(--t-xl)}
+.modal-body{padding:8px 22px 4px; display:flex; flex-direction:column; gap:16px}
+.modal-foot{display:flex; justify-content:flex-end; gap:10px; padding:16px 22px 20px; position:sticky; bottom:0; background:var(--panel)}
+.preview-tile{
+  border:1px solid var(--line); border-radius:var(--r-md); padding:16px; display:flex; align-items:center; gap:14px; background:#fff;
+}
+.preview-tile .mod-ic{width:48px; height:48px}
+.fld{display:flex; flex-direction:column; gap:7px; font-size:var(--t-md)}
+.fld>span{font-weight:600; color:var(--ink2)}
+.fld.row{flex-direction:row; align-items:center; gap:10px}
+.fld input[type=text], .fld textarea{
+  border:1px solid var(--line); border-radius:var(--r-sm); padding:10px 12px; font-family:inherit; font-size:var(--t-md); width:100%;
+}
+.fld textarea{resize:vertical; line-height:1.5}
+.fld-note{font-size:var(--t-xs); color:var(--ink3); margin:0}
+/* interruptor de dos opciones (Página / Presentación) */
+.seg{display:flex; gap:3px; background:var(--bg); border:1px solid var(--line); border-radius:var(--r-sm); padding:3px}
+.seg-b{flex:1; border:none; background:none; cursor:pointer; padding:8px 10px; border-radius:var(--r-sm); font-size:var(--t-sm); font-weight:600; color:var(--ink2)}
+.seg-b.active{background:#fff; color:var(--ink); box-shadow:var(--shadow)}
+.fld-note code, .note-box code{background:#EEEAE2; padding:1px 5px; border-radius:4px; font-size:var(--t-xs)}  /* 4px a proposito: chip de una linea; --r-xs (6px) lo hace pastilla */
+.note-box{background:#F2EFE9; border:1px solid var(--line); border-radius:var(--r-sm); padding:12px 14px; font-size:var(--t-sm); color:var(--ink2); line-height:1.5}
+.icon-grid{display:grid; grid-template-columns:repeat(9,1fr); gap:6px}
+.icon-opt{
+  aspect-ratio:1; border:1px solid var(--line); border-radius:var(--r-sm); background:#fff; cursor:pointer;
+  display:grid; place-items:center;
+}
+.icon-opt svg{width:20px; height:20px; fill:none; stroke:var(--ink2); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.icon-opt.sel{border-color:var(--accent); background:#F3EFE8; box-shadow:0 0 0 2px var(--accent2) inset}
+.icon-opt.sel svg{stroke:var(--accent)}
+/* ---- pantalla de detalle de módulo ---- */
+.back-btn{margin-bottom:14px}
+.btn-danger{color:var(--danger); border-color:#E6C9C3}
+.btn-danger:hover{background:#FBEFEC; border-color:var(--danger)}
+.det-head{display:flex; align-items:center; gap:16px; margin-bottom:18px}
+.det-head .preview-tile{flex:1}
+.det-head-acts{display:flex; gap:8px}
+.card-sec{background:#fff; border:1px solid var(--line); border-radius:var(--r-lg); padding:20px 22px; box-shadow:var(--shadow); margin-bottom:18px}
+.card-sec-t{margin:0 0 16px; font-size:var(--t-lg); font-weight:700}
+.card-sec-t .muted{font-weight:400}
+.det-foot{display:flex; align-items:center; gap:10px; position:sticky; bottom:0; background:linear-gradient(transparent,var(--bg) 30%); padding:14px 0 6px}
+
+/* ---- editor de módulo a pantalla completa ---- */
+.editor-full{position:fixed; inset:0; z-index:90; max-width:none; margin:0; padding:0; background:var(--bg); display:flex; flex-direction:column}
+.editor-bar{display:flex; align-items:center; gap:10px; padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line); flex:none}
+.editor-bar-t{font-weight:700; font-size:var(--t-lg); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.editor-bar-acts{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+/* 2B: ESTADO ≠ ACCION — el boton dice siempre lo que HACE ("Guardar"); lo que
+   PASO ("Guardado ✓ / Publicado ✓") vive aca, en un chip no clickeable.
+   Una sola decision de color: verde = estado, acento = accion y seleccion.
+   Texto #3F5A3C sobre el verde al 10%: 6,5:1 (medido). */
+.chip-estado{display:inline-flex; align-items:center; height:28px; padding:0 11px; border-radius:var(--r-full); background:rgba(91,122,91,.10); color:#3F5A3C; font-size:var(--t-xs); font-weight:700; letter-spacing:.02em; white-space:nowrap}
+.editor-bar-sep{width:1px; height:24px; background:var(--line); margin:0 2px}
+.editor-subbar{display:flex; align-items:center; gap:10px; padding:9px 18px; background:#fff; border-bottom:1px solid var(--line); flex:none; flex-wrap:wrap}
+.editor-subbar-lbl{font-size:var(--t-sm); font-weight:600; color:var(--ink3)}
+.editor-body{flex:1; overflow:auto; min-height:0}
+.editor-inner{max-width:1180px; margin:0 auto; padding:18px 22px 40px}
+body.editing{overflow:hidden}
+@media(max-width:760px){
+  .editor-bar{flex-wrap:wrap}
+  .editor-bar-t{order:-1; flex-basis:100%}
+}
+
+/* ---- acordeón (apariencia) ---- */
+.accordion .acc-head{display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; cursor:pointer; padding:0; text-align:left}
+.acc-title{font-size:var(--t-lg); font-weight:700; color:var(--ink)}
+.acc-meta{font-size:12px; color:var(--ink3); flex:1}
+.acc-chev{transition:transform var(--dur-1); color:var(--ink3); font-size:var(--t-md)}
+.accordion.open .acc-chev{transform:rotate(180deg)}
+.acc-body{display:none; margin-top:16px}
+.accordion.open .acc-body{display:block}
+
+/* ---- constructor por bloques ---- */
+.blocks-wrap{display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start}
+@media(max-width:900px){.blocks-wrap{grid-template-columns:1fr}}
+.blocks-palette{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+.blocks-palette button{padding:7px 11px; border:1px solid var(--line); background:#fff; border-radius:var(--r-full); cursor:pointer; font-size:var(--t-sm); color:var(--ink2)}
+.blocks-palette button:hover{border-color:var(--accent2)}
+.blocks-list{display:flex; flex-direction:column; gap:10px}
+.blocks-empty{color:var(--ink3); font-size:var(--t-md); text-align:center; padding:22px; border:1px dashed var(--line); border-radius:var(--r-md)}
+.bk{border:1px solid var(--line); border-radius:var(--r-md); background:#fff; overflow:hidden}
+.bk-head{display:flex; align-items:center; gap:6px; padding:8px 10px; background:var(--panel); border-bottom:1px solid var(--line)}
+.bk-name{font-size:var(--t-xs); font-weight:700; color:var(--ink2); flex:1; text-transform:uppercase; letter-spacing:.04em}
+.bk-head button{border:none; background:none; cursor:pointer; color:var(--ink3); font-size:14px; width:26px; height:26px; border-radius:var(--r-xs)}
+.bk-head button:hover{background:#fff; color:var(--ink)}
+.bk-head .bk-del:hover{color:var(--danger)}
+.bk-body{padding:12px; display:flex; flex-direction:column; gap:8px}
+.bk-body textarea, .bk-body input[type=text]{width:100%; border:1px solid var(--line); border-radius:var(--r-sm); padding:8px 10px; font-family:inherit; font-size:var(--t-md); resize:vertical; box-sizing:border-box}
+.bk-body .bk-lbl{font-size:var(--t-xs); color:var(--ink3); font-weight:600}
+.bk-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.bk-iconmini{display:flex; gap:4px; flex-wrap:wrap}
+.bk-iconmini button{width:30px; height:30px; border:1px solid var(--line); border-radius:var(--r-xs); background:#fff; cursor:pointer; display:grid; place-items:center}
+.bk-iconmini button svg{width:17px; height:17px; fill:none; stroke:var(--ink2); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.bk-iconmini button.sel{border-color:var(--accent); background:#F3EFE8}
+.bk-iconmini button.sel svg{stroke:var(--accent)}
+.bk-cdot{width:24px; height:24px; border-radius:var(--r-xs); cursor:pointer; border:2px solid transparent}
+.bk-cdot.sel{border-color:var(--ink)}
+.bp-label{font-size:var(--t-xs); text-transform:uppercase; letter-spacing:.08em; color:var(--ink3); margin-bottom:8px}
+.blocks-preview-col{position:sticky; top:14px}
+
+/* ---- vista previa con el DISEÑO REAL de la intranet (copia de componentes) ---- */
+.doc-preview{
+  /* Los tokens del papel (tinta, superficies, colores de sucursal, escalas)
+     los define intranet/css/sistema.css, que este panel carga en su <head>.
+     Ese archivo declara `:root, .doc-preview`, asi que aca adentro valen los
+     MISMOS valores que se publican, sin copiarlos. Antes estaban duplicados a
+     mano y siete de ellos habian divergido del sitio. */ 
+  background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:18px 20px; min-height:160px; max-height:72vh; overflow:auto; color:var(--ink);
+}
+.doc-preview .db{margin-top:18px} .doc-preview .db:first-child{margin-top:0}
+.doc-preview .ico{display:inline-flex} .doc-preview .ico svg{width:100%; height:100%; display:block; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+.doc-preview .m-lead{font-size:16px; color:var(--ink2); line-height:1.6} .doc-preview .m-lead b{color:var(--ink)}
+.doc-preview .m-h{font-size:20px; font-weight:800; letter-spacing:-.5px; color:var(--ink)}
+.doc-preview .m-kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--ink3); display:flex; align-items:center; gap:9px}
+.doc-preview .m-kicker .n{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--ink); color:#fff; font-size:11px; font-weight:800}
+.doc-preview .m-p{font-size:14.5px; color:var(--ink2); line-height:1.6} .doc-preview .m-p b{color:var(--ink)}
+.doc-preview .flow{display:flex; align-items:stretch}
+.doc-preview .flow .step{flex:1; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 12px; text-align:center}
+.doc-preview .flow .step .si{width:36px; height:36px; margin:0 auto 9px; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center}
+.doc-preview .flow .step .si svg{width:18px; height:18px}
+.doc-preview .flow .step .st{font-size:12.5px; font-weight:800; color:var(--ink); line-height:1.2}
+.doc-preview .flow .step .sd{font-size:11px; color:var(--ink3); margin-top:4px; line-height:1.35}
+.doc-preview .flow .arrow{display:flex; align-items:center; justify-content:center; color:var(--ink3); padding:0 6px}
+.doc-preview .flow .arrow svg{width:20px; height:20px}
+.doc-preview .chat{background:#E7E0D7; border:1px solid var(--border); border-radius:16px; padding:15px 14px; display:flex; flex-direction:column; gap:9px}
+.doc-preview .chat .blabel{font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--ink3)}
+.doc-preview .bubble{max-width:84%; padding:10px 13px; border-radius:14px; font-size:14px; line-height:1.45; box-shadow:0 1px 1px rgba(0,0,0,.07)}
+.doc-preview .bubble.out{align-self:flex-end; background:#D7FBCB; border-top-right-radius:4px; color:#0d1b0d}
+.doc-preview .bubble.in{align-self:flex-start; background:#fff; border-top-left-radius:4px; color:var(--ink)}
+/* plantilla WhatsApp (carrusel) en el preview */
+.doc-preview .wa-carousel{display:flex; gap:12px; overflow-x:auto; padding:4px 2px 10px}
+.doc-preview .wa-card{flex:0 0 280px; max-width:280px; background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.doc-preview .wa-img{aspect-ratio:1.9/1; background:#EDE7DE; overflow:hidden}
+.doc-preview .wa-img img{width:100%; height:100%; object-fit:cover; display:block}
+.doc-preview .wa-img-ph{display:grid; place-items:center; color:var(--ink3); font-size:12px}
+.doc-preview .wa-body{padding:12px 14px; font-size:13.5px; line-height:1.5; color:var(--ink); min-height:30px; outline:none}
+.doc-preview .wa-btn{display:block; text-align:center; padding:11px; border-top:1px solid var(--border); color:#2C6E8A; font-weight:700; font-size:13.5px; text-decoration:none}
+.doc-preview .bubble .time{display:block; font-size:9.5px; color:rgba(0,0,0,.42); text-align:right; margin-top:4px}
+.doc-preview .checklist{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+.doc-preview .checklist .ci{display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px 13px; font-size:13.5px; font-weight:600; color:var(--ink)}
+.doc-preview .checklist .ci svg{width:17px; height:17px; color:var(--c-success); flex:0 0 auto}
+.doc-preview .checklist .ci .ci-ic{width:26px; height:26px; border-radius:8px; display:grid; place-items:center; flex:0 0 auto}
+.doc-preview .checklist .ci .ci-ic svg{width:15px; height:15px; color:#fff}
+.doc-preview .note{display:flex; gap:12px; background:#F4F1EA; border:1px solid var(--border); border-left:3px solid var(--nota-acc, var(--ink)); border-radius:12px; padding:13px 15px}
+.doc-preview .note .ico{width:20px; height:20px; flex:0 0 auto; color:var(--nota-acc, var(--ink))}
+.doc-preview .note .nt{font-size:13.5px; color:var(--ink2); line-height:1.5} .doc-preview .note .nt b{color:var(--ink)}
+/* BLOQUE ADVERTENCIA — espejo de intranet/index.html — si tocás una, tocá la otra */
+.doc-preview .m-warn{ display:flex; gap:12px; align-items:flex-start; background:#FBEFEC; border:1px solid #E8C5BD; border-left:4px solid #B4231F; border-radius:12px; padding:14px 16px; margin:18px 0; color:#5A2620; }
+.doc-preview .m-warn .ico{ flex:0 0 auto; width:20px; height:20px; color:#B4231F; margin-top:1px; }
+.doc-preview .m-warn .ico svg{ width:100%; height:100%; }
+.doc-preview .m-warn .mw-tx{ font-size:14.5px; line-height:1.55; font-weight:600; }
+/* situación (tarjeta con etiqueta + respuesta) */
+.doc-preview .situ{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px}
+.doc-preview .situ .sit-head{display:flex; align-items:flex-start; gap:10px; font-size:14px; font-weight:800; color:var(--ink); line-height:1.3}
+.doc-preview .situ .sit-tag{font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:#fff; background:var(--c-warn); padding:3px 9px; border-radius:20px; flex:0 0 auto; margin-top:1px}
+.doc-preview .situ .sit-arrow{display:flex; align-items:center; gap:7px; color:var(--c-success); font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; margin:13px 0 0}
+.doc-preview .situ .sit-arrow .ico{width:16px; height:16px} .doc-preview .situ .sit-arrow svg{width:16px; height:16px}
+.doc-preview .situ .chat{margin-top:12px}
+
+/* ---- biblioteca: lista de documentos de un módulo ---- */
+.coleccion-wrap{padding:18px 20px; max-width:900px; margin:0 auto; width:100%}
+.col-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px}
+.col-head h3{margin:0 0 3px; font-size:16px}
+.col-head .muted{margin:0; font-size:var(--t-sm)}
+.col-palabra{display:inline-flex; align-items:center; gap:7px; margin-top:8px; font-size:12px; color:var(--ink3)}
+.col-palabra input{border:1px solid var(--line); border-radius:var(--r-sm); padding:5px 9px; font:inherit; font-size:var(--t-sm);
+  width:130px; color:var(--ink)}
+.col-list{display:flex; flex-direction:column; gap:8px}
+.col-item{display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--r-md); padding:11px 13px; box-shadow:var(--shadow)}
+.col-item.archivado{opacity:.6; background:var(--bg)}
+.col-grip{border:none; background:none; cursor:grab; touch-action:none; color:var(--ink3); font-size:var(--t-lg); padding:4px 2px}
+.col-grip:active{cursor:grabbing}
+.col-info{flex:1; min-width:0; cursor:pointer}
+.col-t{font-size:14.5px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.col-d{font-size:12px; color:var(--ink3); margin-top:2px}
+/* 9.5px queda literal: rotulo minimo dentro de la fila; --t-xs (11px) lo agranda 1.5px y deja de ser discreto (criterio C1) */
+.col-badge{font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#fff;
+  background:var(--ok); border-radius:var(--r-full); padding:3px 8px}  /* capsula: con ~18px de alto, 20px ya redondeaba al maximo */
+.col-badge.arch{background:var(--ink3)}
+.col-av{color:var(--danger); font-weight:700}
+.col-act{border:1px solid var(--line); background:#fff; border-radius:var(--r-sm); padding:7px 11px; cursor:pointer;
+  font:inherit; font-size:var(--t-sm); color:var(--ink2); white-space:nowrap}
+.col-act:hover{border-color:var(--accent); color:var(--ink)}
+.col-act.col-del{color:var(--danger); padding:7px 10px}
+@media(max-width:620px){ .col-act.col-arch{display:none} }
+
+/* ---- listas ordenables (reportes y modulos): arrastre con vida ----
+   .ord-hueco = el lugar donde va a caer (respeta el gap de la lista sin saltos)
+   .ord-flota = la copia que sigue la mano, fuera del flujo */
+.ord-hueco{border:2px dashed var(--accent); border-radius:var(--r-md); background:rgba(0,0,0,.025);
+  box-sizing:border-box; animation:ordAparece var(--dur-1) ease}
+@keyframes ordAparece{from{opacity:0; transform:scale(.98)} to{opacity:1; transform:none}}
+.ord-flota{position:fixed; left:0; top:0; z-index:200; margin:0 !important; pointer-events:none;
+  box-sizing:border-box; opacity:.97; will-change:transform;
+  box-shadow:var(--sombra-2); transition:box-shadow var(--dur-1) ease}
+.ord-flota.alzada{box-shadow:var(--sombra-3)}
+body.ord-arrastrando{user-select:none}
+body.ord-arrastrando *{cursor:grabbing !important}
+/* que en pantalla tactil arrastrar el ⠿ no scrollee la pagina */
+.mod-grip{touch-action:none}
+.mod-grip:active{cursor:grabbing}
+
+/* barra del documento abierto dentro de una biblioteca */
+.doc-bar{display:flex; align-items:center; gap:9px; padding:9px 14px; background:var(--panel);
+  border-bottom:1px solid var(--line); flex-wrap:wrap}
+.doc-bar-in{border:1px solid var(--line); border-radius:var(--r-sm); padding:8px 10px; font:inherit; font-size:var(--t-md)}
+.doc-bar-t{flex:1; min-width:180px; font-weight:700}
+.doc-bar-e{width:170px}
+/* datos de la publicacion (modo MURO): quien, cuando, de que tipo */
+.doc-muro{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+.doc-muro[hidden]{display:none}
+.doc-muro-a{width:200px}
+.doc-muro-s{width:150px}
+.doc-muro-f{width:150px}
+.doc-muro-t{width:150px; background:#fff}
+.doc-muro-fij{display:inline-flex; align-items:center; gap:7px; padding:8px 11px; border-radius:var(--r-sm);
+  border:1px solid var(--line); font-size:var(--t-sm); font-weight:600; color:var(--ink2); cursor:pointer;
+  white-space:nowrap; user-select:none}
+.doc-muro-fij:hover{border-color:var(--ink)}
+.doc-muro-fij input{margin:0; cursor:pointer}
+/* la publicacion fijada se distingue en la lista */
+.col-badge.fij{background:var(--accent); color:#fff}
+.doc-vence{display:inline-flex; align-items:center; gap:7px}
+.doc-muro-v{width:160px; background:#fff}
+.col-badge.conf{background:var(--warn)}
+.col-pv{color:var(--warn)}          /* le queda poco */
+/* en el muro no se arrastra: el reloj recuerda que se ordenan por fecha */
+.col-grip.apagado{display:flex; align-items:center; justify-content:center; color:var(--ink3);
+  cursor:default; opacity:.6; font-size:14px}
+.seg-sm .seg-b{padding:6px 10px; font-size:var(--t-xs)}
+
+/* ---- bloques de datos (tabla / números / barras / podio / tarjetas) ----
+   Mismas reglas que la intranet (ver .manual en intranet/index.html): si tocás
+   una, tocá la otra. */
+.doc-preview .m-tabla{border:1px solid var(--border); border-radius:12px; overflow:hidden; overflow-x:auto}
+.doc-preview .m-tabla table{width:100%; border-collapse:collapse; min-width:380px}
+.doc-preview .m-tabla thead{background:var(--ink)}
+.doc-preview .m-tabla thead th{padding:11px 14px; color:rgba(255,255,255,.72); text-align:left; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:1.1px; white-space:nowrap}
+.doc-preview .m-tabla thead th.num{text-align:right}
+.doc-preview .m-tabla tbody tr:nth-child(odd){background:var(--surface)}
+.doc-preview .m-tabla tbody tr:nth-child(even){background:var(--bg2)}
+.doc-preview .m-tabla tbody td{padding:10px 14px; color:var(--ink); border-bottom:1px solid rgba(0,0,0,.06); font-size:13.5px; font-weight:500}
+.doc-preview .m-tabla tbody td.num{text-align:right; font-weight:700; white-space:nowrap}
+.doc-preview .m-tabla tbody tr.fx-ok td{background:#E9F6EE}
+.doc-preview .m-tabla tbody tr.fx-mal td{background:#FCEDEC}
+.doc-preview .m-tabla tbody tr.fx-total td{background:var(--ink); color:#fff; font-weight:800}
+
+.doc-preview .m-kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:12px}
+.doc-preview .m-kpis .kpi{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 12px; text-align:center}
+.doc-preview .m-kpis .kpi.lead{background:var(--ink); border-color:var(--ink)}
+.doc-preview .m-kpis .kl{font-size:10.5px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ink3); margin-bottom:6px}
+.doc-preview .m-kpis .kpi.lead .kl{color:rgba(255,255,255,.55)}
+.doc-preview .m-kpis .kv{font-size:38px; font-weight:800; letter-spacing:-1.5px; line-height:1; color:var(--ink)}
+.doc-preview .m-kpis .kpi.lead .kv{color:#fff}
+.doc-preview .m-kpis .kt{margin-top:8px; font-size:12px; font-weight:700; color:var(--ink3); min-height:1.1em}
+.doc-preview .m-kpis .kt.t-up{color:var(--c-success)} .doc-preview .m-kpis .kt.t-down{color:var(--c-danger)}
+.doc-preview .m-kpis .kpi.lead .kt{color:rgba(255,255,255,.75)}
+
+.doc-preview .m-barras{display:flex; flex-direction:column; gap:11px}
+.doc-preview .m-barras .ba{display:flex; align-items:center; gap:12px}
+.doc-preview .m-barras .bl{width:88px; flex:0 0 auto; text-align:right; font-size:13.5px; font-weight:700; color:var(--ink)}
+.doc-preview .m-barras .bt{flex:1; min-width:0; height:38px; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden}
+.doc-preview .m-barras .bf{height:100%; border-radius:10px; display:flex; align-items:center; padding:0 13px; min-width:46px}
+.doc-preview .m-barras .bn{font-size:15px; font-weight:800; color:#fff; white-space:nowrap}
+.doc-preview .m-barras .br{width:126px; flex:0 0 auto}
+.doc-preview .m-barras .bchip{display:inline-flex; padding:4px 10px; border-radius:30px; font-size:10.5px; font-weight:700; line-height:1.3}
+.doc-preview .m-barras .bchip.g{background:#D4EDDA; color:#145A2E}
+.doc-preview .m-barras .bchip.y{background:#FBE9C9; color:#7D5A08}
+.doc-preview .m-barras .bchip.r{background:#FADBD8; color:#922B21}
+.doc-preview .m-barras .bchip.gr{background:#E8E8E8; color:#555}
+
+.doc-preview .m-podio{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:11px}
+.doc-preview .m-podio .pod{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 10px; text-align:center}
+.doc-preview .m-podio .pod.lead{border:2px solid var(--c-success)}
+.doc-preview .m-podio .rank{font-size:11px; font-weight:800; letter-spacing:1px; color:var(--ink3)}
+.doc-preview .m-podio .name{font-size:15.5px; font-weight:800; color:var(--ink); margin:6px 0 1px; letter-spacing:-.3px}
+.doc-preview .m-podio .suc{font-size:10px; color:var(--ink3); text-transform:uppercase; letter-spacing:1px; font-weight:600}
+.doc-preview .m-podio .sales{font-size:32px; font-weight:800; color:var(--ink); letter-spacing:-1.5px; margin-top:8px; line-height:1}
+.doc-preview .m-podio .slbl{font-size:10px; color:var(--ink3); font-weight:600}
+.doc-preview .m-podio .cv{margin-top:9px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; display:inline-block; background:#EFEBE4; color:var(--ink2)}
+.doc-preview .m-podio .pod.lead .cv{background:#D4EDDA; color:#145A2E}
+
+.doc-preview .m-tarj{display:grid; gap:12px}
+.doc-preview .m-tarj.cols-2{grid-template-columns:repeat(2,1fr)}
+.doc-preview .m-tarj.cols-3{grid-template-columns:repeat(3,1fr)}
+.doc-preview .m-tarj.cols-4{grid-template-columns:repeat(4,1fr)}
+.doc-preview .m-tarj .tj{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 16px; display:flex; gap:14px}
+.doc-preview .m-tarj.orient-v .tj{flex-direction:column}
+.doc-preview .m-tarj.orient-h .tj{flex-direction:row; align-items:center; padding:14px 16px}
+.doc-preview .m-tarj .tj-ic{width:46px; height:46px; border-radius:50%; display:grid; place-items:center; color:#fff; flex:0 0 auto}
+.doc-preview .m-tarj .tj-ic svg{width:22px; height:22px}
+.doc-preview .m-tarj .tj-t{font-size:15px; font-weight:800; color:var(--ink); letter-spacing:-.3px}
+.doc-preview .m-tarj .tj-p{font-size:12.5px; color:var(--ink3); line-height:1.5; margin-top:3px}
+
+/* corte de diapositiva (solo se ve en el editor) */
+.doc-preview .gb-diapo{display:flex; align-items:center; gap:10px; border-top:2px dashed var(--accent); padding-top:11px}
+.doc-preview .gb-diapo-l{font-size:9.5px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:#fff; background:var(--accent); border-radius:20px; padding:4px 11px; flex:0 0 auto}
+.doc-preview .gb-diapo-t{flex:1; font-size:13px; font-weight:700; color:var(--ink2); min-height:1.2em}
+/* un corte en modo Pagina no hace nada: que se VEA, en vez de desaparecer
+   atenuado como si fuera normal (antes solo bajaba la opacidad y el usuario
+   creia que estaba armando diapositivas) */
+/* se usa --danger y no --warn: el ambar (#B07A4A) sobre blanco da ~3,4:1, muy
+   poco para un aviso de 11px, y encima se parece al --accent del corte normal */
+.doc-preview .gb-diapo.huerfano{border-top-color:var(--danger); flex-wrap:wrap}
+.doc-preview .gb-diapo.huerfano .gb-diapo-l{background:var(--danger)}
+.doc-preview .gb-diapo-av{font-size:11px; font-weight:600; color:var(--danger); flex:0 0 auto}
+.gb-doc.modo-presentacion{box-shadow:0 8px 30px rgba(40,35,28,.07), 0 0 0 3px var(--accent2)}
+
+/* ---- editor de bloques estilo Gutenberg ---- */
+.gb-shell{display:grid; grid-template-columns:1fr 340px; border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; min-height:520px}
+@media(max-width:900px){.gb-shell{grid-template-columns:1fr}}
+.gb-canvas{background:var(--bg); padding:10px; overflow:auto; max-height:76vh}
+.gb-doc.doc-preview{max-width:680px; margin:18px auto; background:#F0EDE8; border:1px solid var(--line); border-radius:14px; padding:30px 28px; box-shadow:0 8px 30px rgba(40,35,28,.07); min-height:320px; max-height:none; overflow:visible}
+.gb-doc:empty:before{content:'Tu documento está vacío. Agregá bloques desde el panel de la derecha →'; color:var(--ink3); font-size:14px; display:block; text-align:center; padding:40px 10px}
+.gb-sidebar{background:#fff; border-left:1px solid var(--line); padding:14px; overflow:auto; max-height:76vh}
+.gb-sec{border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:14px}
+.gb-sec:last-child{border-bottom:none}
+.gb-sec-t{font-size:var(--t-xs); font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink3); margin:0 0 10px}
+.gb-block{position:relative; cursor:text}
+.gb-block + .gb-block{margin-top:16px}
+/* ---- 2B: la triada hover → seleccionado → escribiendo ----
+   Un solo lenguaje (outline + acento) en tres intensidades: punteado suave =
+   "esto se toca", anillo LEJOS (7px) = "esto esta seleccionado", anillo
+   PEGADO (2px) = "estas escribiendo aca" — la misma convencion que ya dejo
+   escrita el bloque de :focus-visible de A3, mas abajo. */
+.gb-block:not(.is-selected):hover{outline:1px dashed rgba(124,106,85,.45); outline-offset:7px; border-radius:var(--r-xs)}
+.gb-block.is-selected{outline:2px solid var(--accent); outline-offset:7px; border-radius:var(--r-xs)}
+.gb-block.is-selected:has([contenteditable]:focus){outline-offset:2px}
+/* chip con el nombre del bloque seleccionado: contesta "¿QUE es esto?" sin ir
+   al panel derecho (bloqueCanvas emite data-nom con el mismo nombre que usa
+   el titulo del inspector) */
+/* el 9.5px del chip va a proposito: --t-xs (11px) difiere 1.5px y agranda un rotulo que tiene que ser mas chico que el bloque que nombra (criterio C1) */
+.gb-block.is-selected:before{content:attr(data-nom); position:absolute; left:-1px; top:-9px; transform:translateY(-100%); background:var(--accent); color:#fff; font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:var(--r-xs) var(--r-xs) var(--r-xs) 0; white-space:nowrap; pointer-events:none; z-index:6}
+.gb-block [contenteditable]{outline:none; border-radius:4px; min-width:8px}  /* 4px a proposito: redondeo del foco pegado al texto; --r-xs se come las esquinas */
+.gb-block [contenteditable]:focus{box-shadow:0 0 0 2px rgba(124,106,85,.22)}
+.gb-block [contenteditable][data-ph]:empty:before{content:attr(data-ph); color:var(--ink3); opacity:.7; cursor:text}
+/* 2B: la botonera pierde la caja — era una tarjeta blanca con borde pegada al
+   bloque; ahora es una pastilla translucida apoyada en la mesa (sin blur a
+   proposito: el panel corre en cualquier maquina). left -46 y no -44 para que
+   no pise el anillo de seleccion, que llega hasta -9px. */
+.gb-handle{position:absolute; left:-46px; top:0; display:none; flex-direction:column; gap:2px; background:rgba(233,227,217,.6); border:none; border-radius:var(--r-sm); box-shadow:none; padding:3px; z-index:5}
+.gb-block.is-selected .gb-handle{display:flex}
+.gb-handle button{position:relative; width:30px; height:30px; border:none; background:none; cursor:pointer; color:var(--ink2); border-radius:var(--r-xs); font-size:var(--t-md)}
+.gb-handle button:hover{background:var(--bg); color:var(--ink)}
+/* tooltip propio via data-lbl: el title nativo tarda ~1s y no explica nada */
+.gb-handle button:hover:after{content:attr(data-lbl); position:absolute; left:calc(100% + 9px); top:50%; transform:translateY(-50%); background:var(--ink); color:#fff; font-size:var(--t-xs); font-weight:600; padding:4px 9px; border-radius:var(--r-xs); white-space:nowrap; z-index:8; pointer-events:none}
+/* el ✕ separado del ↓: "quise bajar y lo borre" se arregla con 4px y una linea */
+.gb-handle .gb-h-del{margin-top:4px; padding-top:4px; border-top:1px solid var(--line); border-radius:0 0 var(--r-xs) var(--r-xs)}
+.gb-handle .gb-h-del:hover{color:var(--danger)}
+.gb-handle .gb-grip{cursor:grab; touch-action:none; font-size:var(--t-md)}
+.gb-handle .gb-grip:active{cursor:grabbing}
+.gb-block.gb-dragging{opacity:.4}
+.gb-droplinea{height:3px; background:var(--accent); border-radius:3px; margin:5px 0}  /* 3px = la mitad del alto: ya es capsula; el token no agrega nada */
+.gb-block:hover .gb-handle{display:flex}
+/* ---- paleta de bloques: grilla de miniaturas siempre a la vista ----
+   Antes eran 5 desplegables CERRADOS: el usuario abria un documento vacio y
+   veia cuatro palabras abstractas, sin una pista de que adentro habia 25
+   bloques. Nadie sabe que es un "kicker" hasta insertarlo y borrarlo. */
+.gb-panes{margin-bottom:12px}
+/* la pane que entra (Agregar<->Ajustes) da un paso corto desde abajo: el
+   toggle de hidden en gbPane() reinicia la animacion sin JS extra */
+.gb-pane{animation:movPane var(--dur-1) var(--mov)}
+#gbTabAjustes.avisa:after{content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--accent); display:inline-block; margin-left:6px; vertical-align:middle}
+.gb-buscar-w{position:sticky; top:-14px; z-index:2; background:#fff; padding:0 0 8px}
+.gb-buscar{width:100%; border:1px solid var(--linea-int); border-radius:var(--r-sm);
+  padding:9px 11px; font:inherit; font-size:var(--t-md); box-sizing:border-box; color:var(--ink)}
+.gb-grupo{margin-bottom:12px}
+.gb-grupo-t{font-size:var(--t-xs); font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink3); margin:0 0 6px}
+.gb-grid{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+.gb-tipo{display:flex; flex-direction:column; gap:5px; text-align:left; padding:7px;
+  border:1px solid var(--line); border-radius:var(--r-sm); background:#fff; cursor:pointer;
+  font:inherit; font-size:var(--t-sm); font-weight:600; color:var(--ink); line-height:1.2}
+.gb-tipo:hover, .gb-tipo:focus-visible{border-color:var(--accent); background:var(--bg); outline:none}
+.gb-mini{width:100%; height:32px; display:block; color:var(--ink3); background:#F0EDE8;
+  border-radius:var(--r-xs); padding:3px}
+.gb-tipo:hover .gb-mini{color:var(--accent)}
+.gb-mini rect, .gb-mini circle, .gb-mini polygon, .gb-mini path{fill:currentColor}
+.gb-mini line{stroke:currentColor; stroke-width:2; stroke-linecap:round}
+.gb-nores{font-size:var(--t-sm); color:var(--ink3); padding:10px 2px}
+/* el titulo del inspector ES el nombre del bloque, y se queda a la vista */
+.gb-pane[data-pane="ajustes"] .gb-sec-t{position:sticky; top:0; background:#fff;
+  padding:8px 0; margin:0 0 10px; z-index:2}
+.gb-pane[data-pane="ajustes"] .gb-sec-t.activo{text-transform:none; letter-spacing:0;
+  font-size:var(--t-md); color:var(--accent); border-left:3px solid var(--accent); padding-left:9px}
+.gb-empty-insp{color:var(--ink3); font-size:var(--t-sm); text-align:center; padding:18px 8px; border:1px dashed var(--line); border-radius:var(--r-sm)}
+#gbFloat{position:fixed; z-index:120; background:var(--ink); border-radius:var(--r-sm); box-shadow:var(--sombra-3); display:flex; padding:3px; gap:2px}
+#gbFloat button{border:none; background:none; color:#EDE8DF; width:32px; height:30px; border-radius:var(--r-xs); cursor:pointer; font-size:14px}
+#gbFloat button:hover{background:rgba(255,255,255,.16)}
+.manual .m-h2, .doc-preview .m-h2{font-size:16px; font-weight:700; color:var(--ink); letter-spacing:-.2px}
+
+/* ---- consolidación: editor único full-bleed + barra compacta ---- */
+.editor-bar{padding:6px 12px !important; gap:8px}
+.editor-bar-t{font-size:14px}
+.editor-bar .btn{padding:7px 12px; font-size:var(--t-sm)}
+.editor-bar .btn-icon{padding:7px 11px; font-size:var(--t-lg); line-height:1}
+.editor-body{overflow:hidden !important}
+.cpane-bloques{height:100%}
+.gb-shell{border:0 !important; border-radius:0 !important; height:100%; min-height:0}
+.gb-canvas{max-height:none !important; height:100%; overflow:auto; padding:24px 16px}
+.gb-sidebar{max-height:none !important; height:100%; overflow:auto}
+.gb-doc.doc-preview{max-width:720px; margin:0 auto}
+.galeria-wrap{max-width:1080px; margin:0 auto; padding:18px 22px; height:100%; overflow:auto}
+@media(max-width:900px){
+  .gb-shell{grid-template-columns:1fr; grid-template-rows:1fr auto}
+  .gb-sidebar{border-left:0; border-top:1px solid var(--line); max-height:46vh !important}
+}
+/* menú ⋯ Más de la barra */
+.ebar-more{position:relative}
+.ebar-menu{position:absolute; right:0; top:calc(100% + 6px); background:#fff; border:1px solid var(--line); border-radius:var(--r-sm); box-shadow:var(--shadow); padding:6px; display:flex; flex-direction:column; gap:4px; z-index:30; min-width:220px}
+.ebar-menu .btn{justify-content:flex-start; text-align:left; border:none; width:100%}
+/* apariencia compacta dentro del sidebar */
+#gbApSlot, #galApSlot{border-bottom:1px solid var(--line)}
+#gbApSlot .card-sec, #galApSlot .card-sec{border:0; box-shadow:none; padding:0; margin:0; background:none}
+#gbApSlot .acc-title{font-size:var(--t-md)}
+#gbApSlot .acc-body{margin-top:10px}
+#gbApSlot .icon-grid{grid-template-columns:repeat(7,1fr); gap:4px}
+#gbApSlot .preview-tile{padding:10px; gap:10px}
+#gbApSlot .fld{font-size:var(--t-sm)}
+/* inputs del inspector */
+.insp-input, .insp-sel{width:100%; border:1px solid var(--line); border-radius:var(--r-sm); padding:9px 10px; font:inherit; font-size:var(--t-md); box-sizing:border-box}
+/* bloques nuevos en el canvas */
+.doc-preview .blk-img{text-align:center}
+.doc-preview .blk-img img{max-width:100%; max-height:300px; border-radius:12px; display:block; margin:0 auto}
+.doc-preview .blk-img.tam-ch img{max-height:170px}
+.doc-preview .blk-img.tam-gr img{max-height:460px}
+.doc-preview .blk-img.tam-full img{max-height:none}
+.doc-preview .blk-img figcaption{font-size:12px; color:var(--ink3); text-align:center; margin-top:7px; outline:none; font-weight:600}
+.doc-preview .blk-img .dl-btn{display:inline-flex; align-items:center; gap:7px; margin-top:10px; background:var(--ink); color:#fff; padding:9px 16px; border-radius:10px; font-weight:700; font-size:13px; text-decoration:none}
+.doc-preview .blk-img .dl-btn svg{width:15px; height:15px; stroke:#fff; fill:none; stroke-width:2}
+.doc-preview .blk-img figcaption:empty:before{content:attr(data-ph); color:var(--ink3); opacity:.7}
+/* VIDEO en el canvas: espejo de las reglas de la intranet, con topes mas chicos
+   porque el lienzo del editor es angosto. La caja toma la proporcion REAL del
+   video (--arw/--arh) para que no queden franjas negras ni se deforme. */
+/* mismo mecanismo que la intranet (--alto elegido + --tope de ventana), con
+   numeros mas chicos porque el lienzo del editor es angosto */
+.doc-preview .blk-video{text-align:center; margin:4px 0; --alto:260px; --tope:60vh}
+.doc-preview .blk-video.vert{--alto:300px}
+.doc-preview .blk-video.tam-ch{--alto:170px}
+.doc-preview .blk-video.tam-ch.vert{--alto:210px}
+.doc-preview .blk-video.tam-gr{--alto:380px}
+.doc-preview .blk-video.tam-gr.vert{--alto:420px}
+.doc-preview .blk-video.tam-full{--alto:900px}
+.doc-preview .blk-video .v-box{position:relative; margin:0 auto; border-radius:12px; overflow:hidden;
+  background:#000; aspect-ratio:var(--arw,16)/var(--arh,9);
+  max-width:min(100%, calc(min(var(--alto), var(--tope))*var(--arw,16)/var(--arh,9)))}
+.doc-preview .blk-video video, .doc-preview .blk-video iframe{position:absolute; inset:0;
+  width:100%; height:100%; border:0; display:block; object-fit:contain; background:#000}
+.doc-preview .blk-video figcaption{font-size:12px; color:var(--ink3); text-align:center; margin-top:7px; outline:none; font-weight:600}
+.doc-preview .blk-video figcaption:empty:before{content:attr(data-ph); color:var(--ink3); opacity:.7}
+.doc-preview .blk-video .dl-btn{display:inline-flex; align-items:center; gap:7px; margin-top:10px; background:var(--ink); color:#fff; padding:9px 16px; border-radius:10px; font-weight:700; font-size:13px; text-decoration:none}
+.doc-preview .blk-video .dl-btn svg{width:15px; height:15px; stroke:#fff; fill:none; stroke-width:2}
+/* sección de descargas EN EL EDITOR: miniaturas chicas y densas (la intranet publicada se ve grande igual) */
+.doc-preview .dl-section{margin-top:8px}
+.doc-preview .dl-section .gallery{display:grid; grid-template-columns:repeat(auto-fill, minmax(116px,1fr)); gap:9px; margin-top:12px}
+.doc-preview .dl-section .gcard{background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column}
+.doc-preview .dl-section .gimg{width:100%; aspect-ratio:3/4; object-fit:contain; background:#efe9e0; display:block}
+.doc-preview .dl-section .gmeta{padding:6px 8px}
+.doc-preview .dl-section .gtitle{font-size:11px; font-weight:600; color:var(--ink2); line-height:1.25; outline:none; min-height:1em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.doc-preview .dl-section .gtitle:empty:before{content:attr(data-ph); color:var(--ink3); opacity:.7}
+.doc-preview .dl-section .dl-btn{display:none}   /* en el editor no hace falta el botón Descargar */
+.doc-preview.is-mobile .dl-section .gallery{grid-template-columns:repeat(auto-fill, minmax(92px,1fr))}
+/* inspector de galería: filas compactas (miniatura + nombre + quitar) */
+.gal-row{display:flex; align-items:center; gap:7px}
+.gal-thumb{width:42px; height:42px; flex:0 0 auto; border:1px solid var(--line); border-radius:var(--r-xs); background-color:#efe9e0; background-size:cover; background-position:center; background-repeat:no-repeat; cursor:pointer; color:var(--ink3); font-size:18px; display:grid; place-items:center}
+.gal-thumb:hover{border-color:var(--accent)}
+.gal-del{border:none; background:none; color:var(--danger); cursor:pointer; font-size:var(--t-md); flex:0 0 auto; padding:2px 5px}
+/* barra de auto-actualizacion del panel (solo colaborador) */
+.update-bar{display:flex; align-items:center; gap:12px; padding:11px 22px; background:#1f6f43; color:#fff; font-size:var(--t-md)}
+.update-bar[hidden]{display:none}
+.update-bar .update-ico{font-size:var(--t-xl); line-height:1}
+.update-bar .update-txt{flex:1; min-width:0}
+.update-bar b{font-weight:800}
+.update-bar .btn{background:#fff; color:#1f6f43; border:none; font-weight:800; padding:8px 16px; border-radius:var(--r-sm); cursor:pointer; white-space:nowrap}
+.update-bar .btn:hover{opacity:.9}
+.update-bar .btn:disabled{opacity:.6; cursor:default}
+.update-bar.aplicando{background:#8a6d3b}
+.doc-preview .m-sep{height:4px; background:var(--border); border-radius:3px; margin:18px 0}
+.doc-preview .blk-ph{border:1px dashed var(--line); border-radius:10px; padding:24px; text-align:center; color:var(--ink3); font-size:13px}
+.doc-preview .blk-embed{position:relative; border-radius:12px; overflow:hidden; border:1px solid var(--border)}
+.doc-preview .blk-embed iframe{width:100%; border:0; display:block; height:340px; pointer-events:none}
+.doc-preview .blk-embed[data-h="sm"] iframe{height:220px}
+.doc-preview .blk-embed[data-h="lg"] iframe{height:520px}
+.doc-preview .pdf-card{width:100%; display:flex; align-items:center; gap:13px; text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:13px 15px}
+.doc-preview .pdf-card .pdf-ic{width:42px; height:42px; border-radius:11px; background:#e2483d; color:#fff; display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+.doc-preview .pdf-card .pdf-ic .ico{width:21px; height:21px}
+.doc-preview .pdf-card .pdf-ic .ico svg{stroke:#fff}
+.doc-preview .pdf-card .pdf-meta{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px}
+.doc-preview .pdf-card .pdf-nombre{font-weight:800; font-size:14px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.doc-preview .pdf-card .pdf-sub{font-size:12px; color:var(--ink3); font-weight:600}
+.doc-preview .pdf-card .pdf-arrow{color:var(--ink3); flex:0 0 auto}
+.doc-preview .pdf-card .pdf-arrow .ico{width:16px; height:16px}
+.doc-preview .pdf-dl{text-align:center; margin-top:10px}
+.doc-preview .pdf-dl .dl-btn{display:inline-flex; align-items:center; gap:7px; background:var(--ink); color:#fff; padding:9px 16px; border-radius:10px; font-weight:700; font-size:13px; text-decoration:none}
+.doc-preview .pdf-dl .dl-btn svg{width:15px; height:15px; stroke:#fff; fill:none; stroke-width:2}
+.doc-preview .blk-btn{text-align:center; padding:6px 0}
+.doc-preview .blk-btn .dl-btn{display:inline-flex; align-items:center; gap:8px; background:var(--c-caba,#2C6E8A); color:#fff; padding:11px 20px; border-radius:999px; font-weight:700; text-decoration:none}
+.doc-preview .blk-btn .dl-btn svg{width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2}
+/* toggle escritorio / celular */
+.view-toggle{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:var(--r-sm); padding:2px}
+.vt{border:none; background:none; cursor:pointer; padding:5px 10px; border-radius:var(--r-xs); font-size:14px; line-height:1}
+.vt.active{background:#fff; box-shadow:var(--shadow)}
+/* vista celular del documento: ancho de teléfono + reglas mobile de la intranet */
+.gb-doc.doc-preview.is-mobile{max-width:392px; box-shadow:0 0 0 9px #2C2A26, 0 18px 44px rgba(0,0,0,.28); border-radius:26px; padding:24px 16px; margin-top:30px}
+.doc-preview.is-mobile .checklist{grid-template-columns:1fr}
+.doc-preview.is-mobile .flow{flex-direction:column}
+.doc-preview.is-mobile .flow .arrow{transform:rotate(90deg); padding:7px 0}
+.doc-preview.is-mobile .m-h{font-size:17px}
+.doc-preview.is-mobile .situ{padding:14px 12px} .doc-preview.is-mobile .situ .chat .bubble{max-width:90%}
+.doc-preview.is-mobile .wa-card{flex-basis:86%}
+
+/* ---- editor de texto visual (WYSIWYG) ---- */
+.rt-toolbar{display:flex; align-items:center; gap:3px; flex-wrap:wrap; border:1px solid var(--line); border-bottom:none; border-radius:var(--r-sm) var(--r-sm) 0 0; padding:7px 8px; background:var(--panel)}
+.rt-toolbar button{
+  min-width:32px; height:32px; border:1px solid transparent; background:transparent; border-radius:var(--r-xs);
+  cursor:pointer; font-size:14px; color:var(--ink); display:grid; place-items:center; padding:0 8px;
+}
+.rt-toolbar button:hover{background:#fff; border-color:var(--line)}
+.rt-sep{width:1px; height:20px; background:var(--line); margin:0 4px}
+.rt-editor{
+  border:1px solid var(--line); border-radius:0 0 var(--r-sm) var(--r-sm); padding:16px 18px; min-height:240px; max-height:50vh;
+  overflow:auto; font-size:14.5px; line-height:1.65; background:#fff; outline:none;
+}
+.rt-editor:focus{border-color:var(--accent2)}
+.rt-editor h3{font-size:var(--t-xl); margin:1em 0 .4em}
+.rt-editor p{margin:0 0 .8em}
+.rt-editor ul,.rt-editor ol{padding-left:1.4em; margin:0 0 .8em}
+.rt-editor a{color:var(--c-caba,#2C6E8A)}
+.rt-editor:empty:before{content:attr(data-ph); color:var(--ink3)}
+
+/* ---- gestor de descargables agrupado ---- */
+.gal-group{border:1px solid var(--line); border-radius:var(--r-md); padding:14px 16px; margin-bottom:14px; background:var(--panel)}
+.gal-group-head{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+.gal-group-t{font-weight:700; font-size:14px; flex:1}
+.gal-count{display:inline-grid; place-items:center; min-width:22px; height:20px; padding:0 7px; border-radius:var(--r-full); background:var(--line); color:var(--ink2); font-size:var(--t-xs); font-weight:600; vertical-align:middle}
+.gal-add{padding:7px 12px; font-size:var(--t-sm)}
+.gal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; min-height:96px; border-radius:var(--r-sm); transition:background var(--dur-1)}
+.gal-grid.drop-on{background:#EFEAE1; outline:2px dashed var(--accent2); outline-offset:3px}
+.gal-empty{grid-column:1/-1; display:grid; place-items:center; color:var(--ink3); font-size:var(--t-sm); border:1px dashed var(--line); border-radius:var(--r-sm); min-height:90px; text-align:center; padding:10px}
+.gcard-mini{position:relative; border:1px solid var(--line); border-radius:var(--r-sm); overflow:hidden; background:#fff; cursor:grab; box-shadow:var(--shadow); touch-action:none; user-select:none; transition:box-shadow var(--dur-1)}
+.gcard-mini:hover{box-shadow:0 4px 14px rgba(40,35,28,.12)}
+.gcard-mini img{display:block; width:100%; aspect-ratio:1/1; object-fit:cover; -webkit-user-drag:none; user-select:none; pointer-events:none}
+/* card flotando en la mano mientras se arrastra */
+.drag-ghost{
+  position:fixed; z-index:1000; pointer-events:none; border-radius:var(--r-sm); overflow:hidden; background:#fff;
+  border:1px solid var(--line); box-shadow:0 22px 48px rgba(40,35,28,.38);
+  transform:scale(1) rotate(0deg); transition:transform var(--dur-1) var(--mov);
+}
+.drag-ghost.lift{transform:scale(1.1) rotate(-4deg)}
+.drag-ghost img{display:block; width:100%; aspect-ratio:1/1; object-fit:cover}
+.gcard-placeholder{border:2px dashed var(--accent2); border-radius:var(--r-sm); background:#EFEAE1; aspect-ratio:1/1; animation:phpop var(--dur-1) ease}
+@keyframes phpop{from{transform:scale(.85); opacity:.4}to{transform:scale(1); opacity:1}}
+body.grabbing, body.grabbing *{cursor:grabbing !important}
+
+/* lightbox para ver la imagen en grande */
+.img-lightbox{position:fixed; inset:0; z-index:1100; background:rgba(28,24,20,.86); display:grid; place-items:center; animation:lbfade var(--dur-1) ease}
+@keyframes lbfade{from{opacity:0}to{opacity:1}}
+.img-lightbox img{max-width:92vw; max-height:88vh; border-radius:var(--r-md); box-shadow:var(--sombra-4); animation:lbzoom var(--dur-1) var(--mov)}
+@keyframes lbzoom{from{transform:scale(.9); opacity:.6}to{transform:scale(1); opacity:1}}
+.img-lightbox .lb-x{position:absolute; top:16px; right:20px; width:42px; height:42px; border-radius:50%; border:none; background:rgba(255,255,255,.15); color:#fff; font-size:18px; cursor:pointer; display:grid; place-items:center}
+.img-lightbox .lb-x:hover{background:rgba(255,255,255,.28)}
+.gcard-cap{font-size:var(--t-xs); color:var(--ink2); padding:5px 7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.gx{
+  position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%; border:none;
+  background:rgba(40,35,28,.55); color:#fff; cursor:pointer; font-size:var(--t-md); line-height:1;
+  display:grid; place-items:center; opacity:0; transition:opacity var(--dur-1); z-index:2;
+}
+.gcard-mini:hover .gx{opacity:1}
+.gx:hover{background:var(--danger)}
+
+.ctipos{display:flex; gap:8px; flex-wrap:wrap}
+.ctipo{
+  padding:9px 14px; border:1px solid var(--line); border-radius:var(--r-sm); background:#fff;
+  cursor:pointer; font-size:var(--t-md); color:var(--ink2); font-weight:500;
+}
+.ctipo.sel{background:var(--ink); color:#fff; border-color:var(--ink)}
+#cImgPrev{margin-top:10px}
+#cImgPrev img{max-width:100%; border-radius:var(--r-md); border:1px solid var(--line)}
+.color-grid{display:flex; gap:8px; flex-wrap:wrap}
+.color-opt{width:34px; height:34px; border-radius:var(--r-sm); cursor:pointer; border:2px solid transparent}
+.color-opt.sel{border-color:var(--ink); box-shadow:0 0 0 2px #fff inset}
+
+@media(max-width:760px){
+  .layout{grid-template-columns:1fr}
+  .side{border-right:none; border-bottom:1px solid var(--line)}
+  #nav{flex-direction:row; flex-wrap:wrap}
+  .icon-grid{grid-template-columns:repeat(6,1fr)}
+}
+
+/* ============ Roles: central / colaborador ============ */
+.rol-badge{font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--r-full);
+  border:1px solid var(--line); color:var(--ink2); background:var(--panel)}
+.rol-badge.central{color:#fff; background:var(--accent); border-color:var(--accent)}
+.rol-badge.colab{color:var(--accent); background:#F1ECE3; border-color:var(--accent2)}
+.pend-badge{display:inline-grid; place-items:center; min-width:19px; height:19px; padding:0 5px;
+  margin-left:4px; border-radius:var(--r-full); background:var(--danger); color:#fff; font-size:var(--t-xs); font-weight:700}
+#btnBandeja.tiene-pend{border-color:var(--danger); color:var(--danger)}
+
+/* ============ Bandeja de aprobaciones ============ */
+.bandeja-box{width:min(620px,94vw); max-height:88vh; display:flex; flex-direction:column}
+.bandeja-body{overflow:auto; gap:12px; padding-top:12px}
+.bandeja-empty{text-align:center; padding:26px 8px}
+.bandeja-empty p{margin:4px 0}
+.aprob-card{border:1px solid var(--line); border-radius:var(--r-md); padding:14px 15px; background:var(--panel);
+  box-shadow:var(--shadow)}
+.aprob-top{display:flex; justify-content:space-between; align-items:flex-start}
+.aprob-quien{font-weight:700; font-size:14.5px; color:var(--ink)}
+.aprob-pc{font-weight:500; font-size:12px; color:var(--ink3); margin-left:6px}
+.aprob-fecha{font-size:12px; color:var(--ink3); margin-top:2px}
+.aprob-msg{margin:9px 0 4px; font-size:var(--t-md); color:var(--ink2); font-style:italic;
+  border-left:3px solid var(--accent2); padding-left:10px}
+.aprob-resumen{font-size:var(--t-sm); color:var(--ink3); margin:6px 0}
+.aprob-diff{font-size:var(--t-sm); margin:6px 0 12px}
+.aprob-diff b{color:var(--ink2)}
+.aprob-acts{display:flex; justify-content:flex-end; gap:9px}
+
+/* ===================================================================
+   MOVIMIENTO
+   Todo lo que aparece, se abre o cambia entra con una animacion corta.
+   Duraciones tokenizadas (--dur-1 micro / --dur-2 layout, en el :root de
+   arriba) y una sola curva, para que se sienta un sistema y no una
+   coleccion de efectos. Respeta "reducir movimiento".
+   La regla: la animacion EXPLICA el cambio de estado, no decora. Solo se
+   animan transform y opacity; nada de width/top salvo colapso justificado.
+   =================================================================== */
+:root{ --mov:cubic-bezier(.2,.8,.2,1) }  /* curva de entrada; la de salida es --ease-in */
+
+@keyframes movAparece{ from{opacity:0} to{opacity:1} }
+@keyframes movDesplegar{ from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none} }
+@keyframes movEntraAbajo{ from{opacity:0; transform:translate(-50%,8px)} to{opacity:1; transform:translate(-50%,0)} }
+@keyframes movModal{ from{opacity:0; transform:translateY(8px) scale(.985)} to{opacity:1; transform:none} }
+@keyframes movBloque{ from{opacity:0; transform:translateY(-8px) scale(.99)} to{opacity:1; transform:none} }
+@keyframes movSale{ to{opacity:0; transform:translateY(-6px) scale(.99)} }
+@keyframes movPulso{ from{box-shadow:0 0 0 0 rgba(124,106,85,.32)} to{box-shadow:0 0 0 14px rgba(124,106,85,0)} }
+@keyframes movPane{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none} }
+@keyframes movVa{ to{opacity:0} }
+@keyframes movModalVa{ to{opacity:0; transform:translateY(6px) scale(.99)} }
+
+/* menus desplegables de la paleta de bloques */
+.gb-tipo{ transition:border-color var(--dur-1), background var(--dur-1), transform var(--dur-1) var(--mov) }
+.gb-tipo:hover{ transform:translateY(-1px) }
+.gb-grupo{ animation:movDesplegar var(--dur-1) var(--mov) }
+
+/* acordeon (Apariencia del modulo) */
+.accordion.open .acc-body{ animation:movDesplegar var(--dur-2) var(--mov) }
+
+/* modales y avisos */
+.modal:not([hidden]) .modal-ov{ animation:movAparece var(--dur-2) ease }
+.modal:not([hidden]) .modal-box{ animation:movModal var(--dur-2) var(--mov) }
+.toast{ animation:movEntraAbajo var(--dur-2) var(--mov) }
+
+/* salida: el mismo gesto en espejo y acelerando, porque lo que se retira no
+   tiene que presentarse. La clase la pone esconderModal()/ocultarToast() en
+   app.js y el hidden llega recien cuando la caja ya se fue — es el patron
+   .yendose del picker del muro (#coPick). pointer-events:none para que el
+   velo moribundo no se coma el click que viene atras.
+   OJO con el orden: estas reglas van DESPUES de las de entrada porque
+   empatan en especificidad con .modal:not([hidden]) y gana la ultima. */
+.modal.yendose{ pointer-events:none }
+.modal.yendose .modal-ov{ animation:movVa var(--dur-1) var(--ease-in) both }
+.modal.yendose .modal-box{ animation:movModalVa var(--dur-1) var(--ease-in) both }
+.img-lightbox.yendose{ pointer-events:none; animation:movVa var(--dur-1) var(--ease-in) both }
+.toast.yendose{ animation:movVa var(--dur-1) var(--ease-in) both; pointer-events:none }
+
+/* editor a pantalla completa */
+#viewDetalle:not([hidden]){ animation:movAparece var(--dur-1) ease }
+#viewDetalle:not([hidden]) .editor-body{ animation:movDesplegar var(--dur-2) var(--mov) }
+
+/* bloques del documento */
+.gb-block{ transition:outline-offset var(--dur-1) var(--mov) }
+.gb-block.gb-nuevo{ animation:movBloque var(--dur-2) var(--mov) }
+.gb-block.gb-recien{ animation:movPulso .6s ease-out; border-radius:var(--r-xs) }
+.gb-block.gb-saliendo{ animation:movSale var(--dur-1) var(--ease-in) forwards; pointer-events:none }
+.gb-handle{ transition:opacity var(--dur-1) }
+.gb-droplinea{ animation:movAparece var(--dur-1) ease }
+#gbInspector.mov-cambio{ animation:movAparece var(--dur-1) ease }
+
+/* tarjetas y botones.
+   OJO: la copia flotante del arrastre (.ord-flota) TIENE la clase .col-item /
+   .mod-card. Si le entra una transicion de transform, se arrastra retrasada
+   respecto del cursor: por eso queda excluida. */
+.mod-card:not(.ord-flota), .col-item:not(.ord-flota){
+  transition:border-color var(--dur-1), box-shadow var(--dur-1) var(--mov), transform var(--dur-1) var(--mov) }
+.mod-card:not(.ord-flota):hover, .col-item:not(.ord-flota):hover{
+  transform:translateY(-1px); box-shadow:0 4px 14px rgba(40,35,28,.09) }
+.btn, .col-act{ transition:background var(--dur-1), border-color var(--dur-1), color var(--dur-1), transform .1s }
+.btn:active, .col-act:active{ transform:scale(.97) }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:.01ms !important; scroll-behavior:auto !important }
+}
+
+/* ---- kit de recuperacion: entrada deliberadamente discreta ---- */
+.pie-discreto{text-align:center; margin:26px 0 6px}
+.link-discreto{background:none; border:0; color:var(--ink3); font:inherit; font-size:12px;
+  min-height:var(--tap); display:inline-flex; align-items:center;
+  cursor:pointer; opacity:.55; padding:6px 10px; border-radius:var(--r-sm);
+  transition:opacity var(--dur-1), background var(--dur-1), color var(--dur-1)}
+.link-discreto:hover{opacity:1; background:var(--bg); color:var(--ink2)}
+.nota-fuerte{background:#FBF0EC; border:1px solid #E6C9C3; border-radius:var(--r-sm);
+  padding:11px 13px; font-size:var(--t-sm); color:var(--ink2); line-height:1.45}
+
+/* ---- tabla ordenable / con buscador: espejo en el lienzo del editor ---- */
+.doc-preview .m-tablaw{margin:4px 0}
+.doc-preview .m-tablaw .m-tabla{margin:0}
+.doc-preview .tb-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px}
+.doc-preview .tb-q{flex:1; min-width:150px; font:inherit; font-size:12.5px; padding:8px 11px;
+  border:1px solid var(--border); border-radius:9px; background:var(--surface); color:var(--ink3); box-sizing:border-box}
+.doc-preview .tb-cont{font-size:11px; color:var(--ink3)}
+.doc-preview .tb-limpiar{font:inherit; font-size:11.5px; padding:7px 12px; border:1px solid var(--border);
+  border-radius:9px; background:var(--surface); color:var(--ink3)}
+.doc-preview .tb-pista{font-size:10.5px; color:var(--ink3); margin:0 0 6px}
+.doc-preview .tb-nada{display:none}
+.doc-preview .m-tabla thead th.ord{padding:0}
+.doc-preview .m-tabla .th-b{display:flex; align-items:center; gap:6px; width:100%; padding:9px 13px;
+  color:inherit; font:inherit; font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:1px}
+.doc-preview .m-tabla thead th.num .th-b{justify-content:flex-end}
+.doc-preview .m-tabla .th-c:before{content:'\2195'; opacity:.5; font-size:10px}
+
+.kit-acts{display:flex; gap:8px; flex-wrap:wrap}
+#kitPass{font-family:ui-monospace,Consolas,monospace; font-size:14px; letter-spacing:.3px}
+
+/* ===================================================================
+   TANDA A del rediseño: que el panel DIGA en que estado esta.
+   (auditoria del 8-ago-2026; el plan completo esta en el Escritorio)
+   =================================================================== */
+
+/* ---- A2: un control aislado tiene que verse como un control ----
+   El borde de todo era --line (1,33:1): los botones fantasma parecian
+   texto suelto. Se aplica por lista explicita, NO con `button, input`:
+   un borde fuerte en las 25 tarjetas de la paleta seria una reja. */
+.btn:not(.btn-pub):not(.active):not(.btn-done):not(.btn-danger),
+.tab, .col-act, .ctipo, .gal-add,
+.fld input[type=text], .fld input[type=password], .fld textarea,
+.insp-input, .insp-sel, .doc-bar-in, .doc-muro-fij, .col-palabra input{border-color:var(--linea-int)}
+.tab:hover, .col-act:hover, .ctipo:hover{border-color:var(--accent)}
+
+/* ---- A2: apagado se ve apagado (y :hover ya no lo ilumina) ---- */
+.btn:disabled, .btn[disabled], .col-act:disabled, .vt:disabled, .seg-b:disabled{
+  opacity:.42; cursor:not-allowed; box-shadow:none; border-color:var(--line) !important}
+.btn:disabled:hover{border-color:var(--line) !important}
+
+/* ---- A3: foco visible ----
+   Habia 6 `outline:none` justo sobre las superficies de edicion y ningun
+   reemplazo legible: quien arma un documento con Tab no sabia donde estaba.
+   Anillo PEGADO (2px) = "estas escribiendo aca".
+   Anillo LEJOS (7px, .gb-block.is-selected) = "esto esta seleccionado". */
+:where(a,button,input,select,textarea,summary,[tabindex],[contenteditable]):focus-visible{
+  outline:var(--foco); outline-offset:2px}
+.gb-block [contenteditable]:focus-visible,
+.doc-preview .blk-img figcaption:focus-visible,
+.doc-preview .blk-video figcaption:focus-visible,
+.doc-preview .dl-section .gtitle:focus-visible{outline:var(--foco); outline-offset:2px}
+.gcard-mini:focus-within .gx, .gx:focus-visible{opacity:1}
+/* sobre fondo oscuro --accent da 2,76:1: ahi va --accent2 (4,33:1) */
+#gbFloat button:focus-visible{outline-color:var(--accent2)}
+
+/* ---- A1: el enlace al Kit era discreto por OPACIDAD (1,79:1 = ilegible).
+   Ahora es discreto por tamaño y por estar al pie, que es lo correcto. ---- */
+.link-discreto{opacity:1; color:var(--ink3)}
+.link-discreto:hover{background:var(--bg); color:var(--ink)}
+
+/* ---- A4: el pendiente de publicar se nota al entrar (una sola vez) ---- */
+#btnPublicar.btn-pub{animation:movPulso 2.6s ease-out 1 .4s}
+
+/* ---- A8: que los 9 modulos entren en una notebook de 1366x768 ----
+   Fila de 68px + 10 de gap = 692px de lista, y arriba se comen 154px: entraban
+   6 de 9, sin ninguna señal de que la lista seguia. En un monitor grande esto
+   no cambia nada. */
+@media (max-height:820px){
+  .main{padding:16px 28px 40px}
+  .main-head{margin-bottom:12px}
+  .main-head h2{font-size:18px}
+  .mod-list{gap:7px}
+  .mod-card{padding:8px 12px; gap:12px}
+  .mod-ic{width:34px; height:34px; border-radius:var(--r-sm)}
+  .mod-ic svg{width:18px; height:18px}
+  .mod-add{padding:10px; margin-top:7px}
+  .pie-discreto{margin:16px 0 4px}
+}
+
+/* el mensaje de confirmacion ahora puede traer una lista en varias lineas
+   (confirmar() usa textContent, asi que sin esto se veria todo en un renglon) */
+#confirmMsg{white-space:pre-line}
+
+/* ===================================================================
+   TANDA B: el inspector como sistema, no como acumulacion de parches
+   =================================================================== */
+
+/* UN checkbox para todo el panel, y que se NOTE cuando esta prendido.
+   Antes eran dos familias distintas y ninguna se veia tildada: opciones que
+   cambian de verdad la intranet se veian igual prendidas que apagadas. */
+.insp-check{display:flex; align-items:center; gap:9px; font-size:var(--t-sm); color:var(--ink2);
+  border:1px solid var(--line); border-radius:var(--r-sm); padding:9px 11px; background:#fff;
+  cursor:pointer; transition:background var(--dur-1), border-color var(--dur-1), color var(--dur-1)}
+.insp-check:hover{border-color:var(--accent2)}
+.insp-check input{accent-color:var(--accent); width:15px; height:15px; margin:0; flex:0 0 auto}
+/* .on lo pone insCheck() por JS; :has cubre los checkboxes de HTML estatico
+   (#dReady) sin obligarlos a duplicar esa mecanica */
+.insp-check.on{background:#F3EFE8; border-color:var(--accent2); color:var(--ink); font-weight:600}
+.insp-check:has(> input:checked){background:#F3EFE8; border-color:var(--accent2); color:var(--ink); font-weight:600}
+
+/* "donde se escribe el texto": siempre en el mismo lugar y con la misma forma.
+   Caja calida = "esto te lo explico", distinta de un rotulo o de otro campo. */
+#gbInspector .insp-ayuda{background:#F2EFE9; border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:9px 11px; line-height:1.45; color:var(--ink2); margin:0 0 6px}
+
+/* UN solo vocabulario para agregar y quitar */
+.insp-caja{border:1px solid var(--line); border-radius:var(--r-sm); padding:9px; background:#fff;
+  display:flex; flex-direction:column; gap:7px}
+.insp-del{border:none; background:none; color:var(--ink3); cursor:pointer; font-size:var(--t-md);
+  line-height:1; width:24px; height:24px; border-radius:var(--r-xs); flex:0 0 auto;
+  transition:background var(--dur-1), color var(--dur-1)}
+.insp-del:hover{background:#FBEFEC; color:var(--danger)}
+.insp-add{width:100%; border:1px dashed var(--line); background:none; border-radius:var(--r-sm);
+  padding:9px; cursor:pointer; color:var(--ink2); font:inherit; font-size:var(--t-sm);
+  transition:background var(--dur-1), border-color var(--dur-1), color var(--dur-1)}
+.insp-add:hover{border-color:var(--accent2); background:var(--bg); color:var(--ink)}
+
+/* ---- 2D: los cssText estaticos que quedaban en app.js, traidos a clases del
+   mismo vocabulario insp-* (asi el proximo ajuste se hace en UN lugar) ---- */
+.insp-col{display:flex; flex-direction:column; gap:8px}       /* columna estandar del inspector */
+.insp-col-fina{display:flex; flex-direction:column; gap:3px}  /* campo + su contador, pegados */
+.insp-lista{display:flex; flex-direction:column; gap:5px}    /* lista densa de archivos adjuntos */
+.insp-num{width:80px}                                         /* numero del kicker: corto a proposito */
+.insp-input.insp-flex{flex:1; min-width:0; width:auto}        /* input que comparte fila con la cruz */
+.insp-img-prev{max-width:100%; border-radius:var(--r-sm); border:1px solid var(--line)}
+.insp-nota-ok{word-break:break-all; color:var(--ok)}          /* "archivo subido" en verde */
+.insp-rompe{word-break:break-all}                             /* nombres de archivo largos */
+.insp-contador{text-align:right; margin:0}                    /* el "n / max" de campoContado */
+.insp-cab-t{flex:1; font-size:var(--t-sm); font-weight:700; color:var(--ink2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.insp-item-t{flex:1; font-size:var(--t-sm); color:var(--ink2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* "Quitar paso" como boton de texto: anda, pero es pre-B7 — cuando se vuelva a
+   tocar ese inspector, pasarlo a la cruz de insDel como el resto */
+.insp-quitar-txt{border:none; background:none; color:var(--danger); cursor:pointer;
+  font:inherit; font-size:var(--t-sm); align-self:flex-start; padding:0}
+.insp-add-lado{width:auto; flex:1; padding:7px; font-size:var(--t-sm)}  /* insp-add a media fila */
+.btn-lado{flex:1; font-size:var(--t-sm); padding:6px 8px}     /* alterna Cliente/Vendedor en Chat */
+.bk-lbl{margin-bottom:4px}                                    /* la etiqueta que fabrica lbl() */
+.insp-nota{margin:4px 0 0}                                    /* la nota que fabrica insNota() */
+#gbInspector .insp-ayuda.roja{border-color:#E6C9C3; background:#FBF0EC}  /* "Meta lo va a rechazar" */
+.insp-contador.pasado{color:var(--danger); font-weight:700}   /* n / max pasado del limite */
+
+/* rotulo del interruptor del documento (hay otro igual en Apariencia) */
+.doc-bar-lbl{font-size:var(--t-xs); font-weight:600; color:var(--ink3); white-space:nowrap}
+/* con el acordeon ABIERTO el resumen sobra: ya se ve el interruptor */
+.accordion.open .acc-meta{display:none}
+
+/* boton "+" en el hueco entre bloques (vive en el lienzo, no en el documento) */
+.gb-canvas{position:relative}
+.gb-mas{position:absolute; z-index:5; width:26px; height:26px; padding:0; border-radius:50%;
+  border:1px solid var(--accent); background:#fff; color:var(--accent); cursor:pointer;
+  font-size:var(--t-xl); line-height:1; display:grid; place-items:center;
+  box-shadow:var(--sombra-2); transition:transform var(--dur-1) var(--mov), background var(--dur-1), color var(--dur-1)}
+.gb-mas:hover{background:var(--accent); color:#fff; transform:scale(1.14)}
+
+/* ===================================================================
+   LAS BARRAS: jerarquia y agrupacion
+   Se veian dos botones verdes IDENTICOS y pegados ("Guardado ✓" y
+   "Publicado ✓") siendo las dos acciones de alcance mas distinto que hay:
+   una toca este modulo, la otra toca el sitio que ven todos.
+   =================================================================== */
+
+/* El "hecho" de Guardar es una confirmacion tranquila (accion local, reversible).
+   El "hecho" de Publicar conserva la chapa verde: es la que importa de verdad. */
+#detSave.btn-done{background:transparent !important; border-color:transparent !important;
+  box-shadow:none !important; font-weight:600}
+#detSave.btn-done:hover{background:#EFF5EF !important}
+
+/* separadores entre grupos de acciones (la clase ya existia sin usarse) */
+.editor-bar-sep{flex:0 0 auto}
+
+/* el toggle escritorio/celular con iconos dibujados */
+.vt{display:grid; place-items:center; width:32px; height:32px; padding:0; color:var(--ink3)}
+.vt svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.7;
+  stroke-linecap:round; stroke-linejoin:round}
+.vt:hover{color:var(--ink2)}
+.vt.active{background:#fff; color:var(--ink); box-shadow:var(--sombra-1)}
+
+/* el deshacer apagado tiene que verse apagado, no roto */
+.editor-bar .btn-icon{min-width:34px; display:inline-grid; place-items:center}
+
+/* La chapa del rol NO es un boton: era lo mas contrastado del encabezado
+   despues del logo, compitiendo con Publicar, y solo dice quien sos. */
+.rol-badge.central{color:var(--ink2) !important; background:transparent !important;
+  border:1px solid var(--line) !important; font-weight:600}
+
+/* el resumen del modulo no puede empujar el acordeon a tres renglones */
+.acc-meta{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:190px;
+  text-align:right}
+
+/* que se note DONDE podes pegar: el pegado de Word no tenia ningun cartel */
+.gb-doc:empty:before{content:'Tu documento está vacío. Agregá bloques desde la derecha → o pegá directo desde Word o Excel con Ctrl+V.'}
+.gb-pegar{font-size:var(--t-xs); color:var(--ink3); line-height:1.4; margin:8px 2px 0;
+  padding:8px 10px; border:1px dashed var(--line); border-radius:var(--r-sm)}
+.gb-pegar b{color:var(--ink2)}
+
+/* iconos de los interruptores Pagina/Presentacion/Biblioteca (eran emoji de color) */
+.seg-b{display:inline-flex; align-items:center; justify-content:center; gap:7px}
+.seg-ic{width:15px; height:15px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+
+/* el interruptor de 3 opciones no entra a 340px con el texto completo */
+#dModo .seg-b{padding:8px 5px; font-size:12px; gap:5px; min-width:0}
+#dModo .seg-ic{width:14px; height:14px}
+
+/* boton visible para pegar de Word/Excel (antes era solo un cartel que nadie leia) */
+.gb-pegar-btn{display:flex; align-items:center; gap:10px; width:100%; margin-top:14px;
+  padding:11px 12px; border:1px dashed var(--accent2); border-radius:var(--r-sm);
+  background:#F7F3EC; cursor:pointer; font:inherit; text-align:left; color:var(--ink);
+  transition:background var(--dur-1), border-color var(--dur-1), transform var(--dur-1) var(--mov)}
+.gb-pegar-btn:hover{background:#F1EBE0; border-color:var(--accent); transform:translateY(-1px)}
+.gb-pegar-btn b{display:block; font-size:var(--t-sm); font-weight:700}
+.gb-pegar-btn small{display:block; color:var(--ink3); font-size:var(--t-xs); line-height:1.35; margin-top:2px}
+.gb-pegar-ic{font-size:var(--t-xl); flex:0 0 auto; line-height:1}
+/* ---- buscar en todo el panel ---- */
+.buscar-todo{border:1px solid var(--linea-int); border-radius:var(--r-sm); padding:9px 12px;
+  font:inherit; font-size:var(--t-md); width:290px; max-width:42vw; color:var(--ink); background:#fff}
+.buscar-res{display:flex; flex-direction:column; gap:8px; animation:movDesplegar var(--dur-1) var(--mov)}
+.buscar-cuenta{font-size:var(--t-xs); font-weight:700; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--ink3); margin-bottom:2px}
+.buscar-item{text-align:left; background:#fff; border:1px solid var(--line); border-radius:var(--r-md);
+  padding:12px 14px; cursor:pointer; font:inherit; box-shadow:var(--sombra-1);
+  transition:border-color var(--dur-1), transform var(--dur-1) var(--mov)}
+.buscar-item:hover{border-color:var(--accent); transform:translateY(-1px)}
+/* la lista se repinta entera a cada tecla: el fade corto explica "esto es
+   resultado nuevo" sin marear (opacity sola, nada se mueve de lugar) */
+.buscar-item{animation:movAparece var(--dur-1) ease}
+.buscar-t{font-size:var(--t-md); font-weight:700; color:var(--ink)}
+.buscar-doc{color:var(--accent); font-weight:600}
+.buscar-f{font-size:var(--t-sm); color:var(--ink3); margin-top:3px; line-height:1.45}
+.buscar-nada{padding:26px; text-align:center; color:var(--ink3); font-size:var(--t-md);
+  border:1px dashed var(--line); border-radius:var(--r-md)}
+
+/* ---- historial de publicaciones ---- */
+.modal-ancho .modal-box, .modal-box.modal-ancho{max-width:620px; width:92vw}
+.hist-lista{display:flex; flex-direction:column; gap:7px; max-height:52vh; overflow:auto}
+.hist-item{display:flex; align-items:center; gap:12px; border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:10px 12px; background:#fff}
+.hist-item.actual{background:var(--bg); border-color:var(--accent2)}
+.hist-info{flex:1; min-width:0}
+.hist-f{font-size:var(--t-md); font-weight:700; color:var(--ink)}
+.hist-m{font-size:var(--t-sm); color:var(--ink3); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* 9.5px a proposito: chip minimo pegado al titulo; --t-xs (11px) difiere 1.5px y compite con el texto (criterio C1) */
+.hist-chip{font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  background:var(--accent); color:#fff; border-radius:var(--r-full); padding:2px 8px; margin-left:6px}
+.hist-err{padding:18px; border:1px solid #E6C9C3; background:#FBF0EC; border-radius:var(--r-sm);
+  color:var(--ink2); font-size:var(--t-sm)}
+.pie-sep{color:var(--ink3); opacity:.5; margin:0 4px}
+
+/* espejo del bloque Plantilla de WhatsApp en el lienzo del editor.
+   Si tocas uno, toca el otro: el lienzo tiene que verse igual que el sitio. */
+.doc-preview .wt{ margin:16px 0; max-width:400px; }
+.doc-preview .wt-cat{ display:inline-block; font-size:10px; font-weight:800; letter-spacing:1px;
+  text-transform:uppercase; color:#54656f; background:#fff; border:1px solid var(--border);
+  border-radius:20px; padding:4px 11px; margin-bottom:8px; }
+.doc-preview .wt-msg{ display:flow-root; position:relative; background:#d9fdd3; border-radius:8px; border-top-right-radius:0;
+  padding:7px 9px 7px 10px; box-shadow:0 1px .6px rgba(0,0,0,.16); color:#111b21;
+  font-size:14.2px; line-height:1.42; }
+.doc-preview .wt-msg::after{ content:""; position:absolute; top:0; right:-8px; width:0; height:0;
+  border:8px solid transparent; border-top-color:#d9fdd3; border-right-width:0; }
+.doc-preview .wt-hdr{ margin:-1px -3px 6px; border-radius:6px; overflow:hidden; aspect-ratio:1.91/1; background:#c9e7c2; }
+.doc-preview .wt-hdr img{ width:100%; height:100%; object-fit:cover; display:block; }
+.doc-preview .wt-hdrt{ font-weight:700; margin-bottom:3px; }
+.doc-preview .wt-body{ white-space:pre-wrap; }
+.doc-preview .wt-foot{ color:#667781; font-size:12.5px; margin-top:5px; }
+.doc-preview .wt-time{ float:right; font-size:10.5px; color:#667781; margin:6px -2px -2px 10px;
+  display:inline-flex; align-items:center; gap:3px; }
+.doc-preview .wt-time svg{ width:15px; height:11px; stroke:#53bdeb; fill:none; stroke-width:2; }
+.doc-preview .wt-var{ background:rgba(0,0,0,.07); border-radius:4px; padding:0 3px; font-weight:600; }
+.doc-preview .wt-btns{ display:flex; flex-direction:column; gap:2px; margin-top:2px; }
+.doc-preview .wt-btn, .doc-preview .wt-cbtn{ display:flex; align-items:center; justify-content:center; gap:7px;
+  background:#fff; color:#00a5f4; font-size:14px; padding:9px; box-shadow:0 1px .6px rgba(0,0,0,.16); }
+.doc-preview .wt-btn{ border-radius:7px; }
+.doc-preview .wt-btn .ico, .doc-preview .wt-cbtn .ico, .doc-preview .wt-cimg .ico{ display:flex; flex:0 0 auto; }
+.doc-preview .wt-btn svg, .doc-preview .wt-cbtn svg{ width:15px; height:15px; stroke:#00a5f4; fill:none; display:block; flex:0 0 auto; }
+.doc-preview .wt-car{ display:flex; gap:6px; overflow-x:auto; padding:6px 0 4px; scroll-snap-type:x mandatory; align-items:stretch; }
+.doc-preview .wt-car::-webkit-scrollbar{ height:0; }
+.doc-preview .wt-card{ display:flex; flex-direction:column; flex:0 0 210px; background:#fff; border-radius:8px; overflow:hidden;
+  box-shadow:0 1px .6px rgba(0,0,0,.16); scroll-snap-align:start; }
+.doc-preview .wt-cimg{ aspect-ratio:1.91/1; background:#dfe5e7; display:grid; place-items:center; }
+.doc-preview .wt-cimg img{ width:100%; height:100%; object-fit:cover; display:block; }
+.doc-preview .wt-cimg svg{ width:28px; height:28px; stroke:#9aa7ad; fill:none; stroke-width:1.6; }
+.doc-preview .wt-cbody{ flex:1; padding:7px 9px 8px; font-size:13.2px; line-height:1.38; color:#111b21; white-space:pre-wrap; min-height:1.4em; }
+.doc-preview .wt-cbtns{ display:flex; flex-direction:column; }
+.doc-preview .wt-ph{ color:#9aa7ad; font-style:italic; }
+.doc-preview .wt-cbtn{ border-top:1px solid #e9edef; box-shadow:none; font-size:13.5px; padding:8px; }
+.doc-preview .wt-hint{ text-align:center; font-size:11px; color:var(--ink3); margin-top:3px; }
+
+/* ---- paleta: grupos desplegables (con 25 bloques a la vista era mucho scroll) ---- */
+.gb-grupo > summary{display:flex; align-items:center; gap:7px; cursor:pointer; list-style:none;
+  padding:7px 8px; border-radius:var(--r-sm); margin-bottom:4px; user-select:none;
+  transition:background var(--dur-1)}
+.gb-grupo > summary::-webkit-details-marker{display:none}
+.gb-grupo > summary:hover{background:var(--bg)}
+.gb-grupo > summary:before{content:'▸'; color:var(--ink3); font-size:var(--t-xs);
+  transition:transform var(--dur-1) var(--mov); display:inline-block}
+.gb-grupo[open] > summary:before{transform:rotate(90deg)}
+.gb-grupo-n{margin-left:auto; font-size:var(--t-xs); font-weight:700; color:var(--ink3);
+  background:var(--bg); border-radius:var(--r-full); padding:1px 7px}
+.gb-grupo[open] .gb-grid{animation:movDesplegar var(--dur-1) var(--mov)}
+
+/* ---- avisar novedad ---- */
+.avisar-lista{display:flex; flex-direction:column; gap:6px; max-height:52vh; overflow:auto}
+.avisar-item{align-items:flex-start}
+.avisar-tx{display:flex; flex-direction:column; gap:1px; min-width:0}
+.avisar-tx small{color:var(--ink3); font-size:var(--t-xs); font-weight:400}
+.avisar-item.on .avisar-tx small{color:var(--accent)}
+
+/* ===================================================================
+   MÉTRICAS (vista previa)
+   =================================================================== */
+.met-aviso{display:flex; align-items:flex-start; gap:11px; padding:13px 15px; border-radius:var(--r-md);
+  background:#FBF6E7; border:1px solid rgba(176,122,74,.3); font-size:var(--t-sm); line-height:1.5;
+  color:var(--ink2); margin-bottom:18px}
+.met-aviso b{color:var(--ink)}
+.met-kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px}
+.met-k{background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md); padding:15px 16px}
+.met-kt{font-size:var(--t-xs); font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink3)}
+.met-kv{font-size:28px; font-weight:800; letter-spacing:-.02em; color:var(--ink); margin-top:6px;
+  font-variant-numeric:tabular-nums}
+.met-kd{font-size:var(--t-xs); color:var(--ink3); margin-top:3px}
+.met-kd.sube{color:var(--ok); font-weight:600}
+.met-kd.baja{color:var(--danger); font-weight:600}
+.met-sec{background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:16px 18px; margin-bottom:16px}
+.met-h{font-size:var(--t-md); font-weight:700; color:var(--ink); margin-bottom:4px}
+.met-sub{font-size:var(--t-xs); color:var(--ink3); margin-bottom:14px}
+.met-tabla{width:100%; border-collapse:collapse; font-size:var(--t-sm)}
+.met-tabla th{text-align:left; font-size:var(--t-xs); text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink3); font-weight:700; padding:0 10px 8px 0; border-bottom:1px solid var(--line)}
+.met-tabla td{padding:11px 10px 11px 0; border-bottom:1px solid var(--line); vertical-align:middle}
+.met-tabla tr:last-child td{border-bottom:0}
+.met-tit{font-weight:600; color:var(--ink)}
+.met-meta{font-size:var(--t-xs); color:var(--ink3)}
+.met-barra{height:8px; border-radius:var(--r-full); background:var(--line); overflow:hidden; min-width:110px}
+.met-barra span{display:block; height:100%; border-radius:var(--r-full); background:var(--ok)}
+.met-barra.flojo span{background:var(--warn)}
+.met-pct{font-size:var(--t-xs); color:var(--ink2); font-weight:700; font-variant-numeric:tabular-nums;
+  white-space:nowrap}
+.met-cols{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.met-lista{list-style:none; margin:0; padding:0}
+.met-lista li{display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line);
+  font-size:var(--t-sm)}
+.met-lista li:last-child{border-bottom:0}
+.met-lista .n{width:22px; height:22px; border-radius:50%; background:var(--mesa); color:var(--ink2);
+  font-size:var(--t-xs); font-weight:700; display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+.met-lista .v{margin-left:auto; font-weight:700; color:var(--ink2); font-variant-numeric:tabular-nums}
+.met-chip{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:var(--r-full);
+  font-size:var(--t-xs); font-weight:700; background:var(--mesa); color:var(--ink2)}
+.met-chip.mal{background:#F7E4E0; color:var(--danger)}
+.met-chip.bien{background:#E6EFE6; color:var(--ok)}
+@media(max-width:900px){
+  .met-kpis{grid-template-columns:repeat(2,1fr)}
+  .met-cols{grid-template-columns:1fr}
+}
+
+/* piso táctil de los botones chicos de la barra del editor (auditoría 28-ago) */
+#detBack, #detUndo{ min-height:var(--tap); min-width:36px }
+
+/* ---------------------------------------------------------------------------
+   NUMEROS QUE NO BAILAN
+   Montserrat dibuja el 1 mucho mas angosto que el 9. Medido en esta fuente:
+   "1111111111" ocupa 50,55px y "9999999999" ocupa 85,27px — 69% mas ancho.
+   Por eso un contador que pasa de 9 a 10 empuja lo que tiene al lado, y dos
+   numeros en columna no se pueden comparar de un vistazo.
+   Montserrat SI trae la tabla `tnum`, asi que alcanza con pedirla.
+
+   OJO — va en el CROMO, no en el papel:
+   `.doc-preview` es el espejo de lo que se publica, y el sitio NO usa
+   tabular-nums. Si el espejo lo heredara, el editor mostraria los numeros
+   distinto de como salen publicados, que es exactamente el problema que
+   veniamos de arreglar. Por eso adentro del espejo se vuelve a `normal`.
+   (Que el SITIO use tabular-nums en sus tablas es una mejora aparte, y hay
+   que hacerla en los dos lados a la vez o el espejo se desincroniza.)
+   --------------------------------------------------------------------------- */
+body{ font-variant-numeric: tabular-nums; font-feature-settings:'tnum' 1; }
+.doc-preview, .doc-preview *{ font-variant-numeric: normal; font-feature-settings: normal; }
+
+/* ---------------------------------------------------------------------------
+   ICONOS DE LA HERRAMIENTA
+   Los botones ya no dibujan sus iconos con caracteres (ver iconos-ui.js).
+   El SVG hereda `currentColor`, asi que no hace falta pintarlo por separado:
+   toma el color del boton, incluido su estado deshabilitado.
+   --------------------------------------------------------------------------- */
+.btn svg, .col-grip svg, .mod-grip svg, .gb-handle svg,
+.update-ico svg, .gb-pegar-ic svg, .col-del svg, .insp-del svg{
+  display:block; flex:0 0 auto; vertical-align:middle;
+}
+.btn:has(> svg){ display:inline-flex; align-items:center; gap:6px; }
+.btn-icon:has(> svg){ gap:0; justify-content:center; }
+.mod-grip, .col-grip{ display:inline-flex; align-items:center; justify-content:center; }
+.col-badge svg, .mp-chip svg{ display:inline-block; vertical-align:-2px; margin-right:3px; }

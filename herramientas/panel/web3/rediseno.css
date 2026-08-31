@@ -1,0 +1,666 @@
+/* ===================================================================
+   REDISEÑO DEL PANEL — cara de red social
+   Barra lateral fija + lienzo. Este archivo va DESPUÉS de styles.css:
+   pisa lo que cambia y deja intacto lo que no se rediseñó (el editor de
+   bloques y los modales, que ya estaban bien).
+   =================================================================== */
+:root{
+  --accent-soft:#EFE9E0;         /* fondo de chip y hover del acento */
+  --accent-ink:#5E4F3E;          /* acento legible sobre claro */
+  --mov:cubic-bezier(.2,.8,.2,1);
+  --nav-w:232px;
+}
+body{ background:var(--bg); }
+
+/* ---------------- barra lateral ---------------- */
+.nav{ position:fixed; left:0; top:0; bottom:0; width:var(--nav-w); z-index:40;
+  background:var(--panel); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; padding:14px 12px 12px; }
+.nav-marca{ display:flex; align-items:center; gap:10px; padding:2px 8px 16px; }
+.nav-logo{ width:26px; height:26px; object-fit:contain; filter:brightness(0); opacity:.9; }
+.nav-marca-tx{ display:flex; flex-direction:column; line-height:1.2; min-width:0; }
+.nav-marca-tx b{ font-size:var(--t-md); color:var(--ink); letter-spacing:-.01em; }
+.nav-marca-tx span{ font-size:var(--t-xs); color:var(--ink3); }
+
+.nav-secs{ display:flex; flex-direction:column; gap:2px; }
+.nav-s{ display:flex; align-items:center; gap:10px; width:100%; height:36px; padding:0 10px;
+  border:0; border-radius:var(--r-sm); background:transparent; color:var(--ink2);
+  font:inherit; font-size:var(--t-md); font-weight:500; cursor:pointer; text-align:left;
+  transition:background var(--dur-1) ease-out, color var(--dur-1) ease-out; }
+.nav-s:hover{ background:var(--hoja); color:var(--ink); }
+.nav-s.active{ background:var(--mesa); color:var(--ink); font-weight:600; }
+.nav-ic{ width:18px; height:18px; flex:0 0 auto; display:flex; }
+.nav-ic svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.6;
+  stroke-linecap:round; stroke-linejoin:round; }
+.nav-t{ flex:1; min-width:0; }
+.nav-n{ min-width:19px; height:19px; padding:0 6px; border-radius:var(--r-full);
+  background:var(--accent-soft); color:var(--accent-ink); font-size:var(--t-xs); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
+
+/* lo que le pasa AL SITIO vive abajo, separado de la navegación */
+.nav-pie{ margin-top:auto; padding-top:14px; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:9px; }
+.nav-estado{ display:flex; align-items:center; gap:7px; font-size:var(--t-xs); color:var(--ink3);
+  padding:0 4px; }
+.nav-estado .dot{ width:7px; height:7px; border-radius:50%; background:var(--ok); flex:0 0 auto; }
+.nav-pub{ width:100%; justify-content:center; height:36px; }
+.nav-min{ width:100%; justify-content:center; font-size:var(--t-sm); }
+.nav-links{ display:flex; flex-wrap:wrap; gap:2px 10px; padding:2px 4px; }
+.nav-links .link-discreto{ font-size:var(--t-xs); }
+
+/* ---------------- lienzo ---------------- */
+.lienzo{ margin-left:var(--nav-w); padding:0; max-width:none; display:block; }
+.main{ max-width:none; padding:26px 32px 60px; margin:0; }
+#viewMuro{ max-width:784px; margin:0 auto; }        /* columna de lectura */
+#viewModulos, #viewMetricas{ max-width:1180px; margin:0 auto; }
+.lz-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px;
+  margin-bottom:20px; }
+.lz-head h2{ font-size:var(--t-2xl); font-weight:700; letter-spacing:-.02em; color:var(--ink); margin:0; }
+.lz-head .muted{ font-size:var(--t-sm); margin:4px 0 0; }
+.lz-head .head-actions{ gap:8px; flex-wrap:wrap; justify-content:flex-end; min-width:0; }
+/* A 768 la fila de acciones (buscador de 290px + botones) medía 456px y
+   desbordaba 66px la pantalla entera. En angosto baja a su propia fila y el
+   buscador toma el ancho que hay. */
+@media (max-width:900px){
+  .lz-head{ flex-wrap:wrap; }
+  .lz-head .head-actions{ flex:1 1 100%; justify-content:stretch; }
+  .lz-head .buscar-todo{ flex:1 1 160px; width:auto; max-width:none; }
+}
+
+/* ---------------- composer ---------------- */
+.comp{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:14px; margin-bottom:22px;
+  transition:border-color var(--dur-1) ease-out, box-shadow var(--dur-1) ease-out; }
+.comp:hover{ border-color:var(--accent2); box-shadow:var(--sombra-1); }
+.comp-caja{ display:flex; align-items:center; gap:12px; width:100%; padding:0; border:0;
+  background:transparent; cursor:pointer; text-align:left; font:inherit; }
+.comp-av{ width:38px; height:38px; border-radius:50%; flex:0 0 auto; display:flex;
+  align-items:center; justify-content:center; background:var(--accent-soft);
+  color:var(--accent-ink); font-weight:700; font-size:var(--t-md); }
+.comp-ph{ flex:1; min-width:0; height:42px; display:flex; align-items:center; padding:0 16px;
+  border-radius:var(--r-full); background:var(--hoja); border:1px solid transparent;
+  color:var(--ink3); font-size:var(--t-lg); transition:background var(--dur-1); }
+.comp-caja:hover .comp-ph{ background:var(--mesa); }
+.comp-atajos{ display:flex; gap:6px; margin-top:12px; padding-top:12px;
+  border-top:1px solid var(--line); flex-wrap:wrap; }
+.comp-at{ display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 12px;
+  border:1px solid transparent; border-radius:var(--r-full); background:transparent;
+  color:var(--ink2); font:inherit; font-size:var(--t-sm); font-weight:600; cursor:pointer;
+  transition:background var(--dur-1), border-color var(--dur-1); }
+.comp-at:hover{ background:var(--hoja); border-color:var(--line); color:var(--ink); }
+.ca-ic{ width:9px; height:9px; border-radius:50%; background:var(--c,var(--accent)); flex:0 0 auto; }
+
+/* ---------------- filtros ---------------- */
+.muro-filtros{ display:flex; align-items:center; gap:4px; margin-bottom:14px; flex-wrap:wrap; }
+.mf{ height:32px; padding:0 13px; border-radius:var(--r-full); border:1px solid transparent;
+  background:transparent; color:var(--ink2); font:inherit; font-size:var(--t-sm);
+  font-weight:600; cursor:pointer; transition:background var(--dur-1); }
+.mf:hover{ background:var(--hoja); }
+.mf.on{ background:var(--mesa); color:var(--ink); border-color:var(--line); }
+.mf b{ font-variant-numeric:tabular-nums; color:var(--ink3); font-weight:600; margin-left:5px; }
+.mf.on b{ color:var(--ink2); }
+
+/* ---------------- una publicación ---------------- */
+.muro-lista{ display:flex; flex-direction:column; gap:12px; }
+.mp-grupo{ font-size:var(--t-xs); font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink3); margin:16px 2px 0; }
+.mp-grupo:first-child{ margin-top:0; }
+/* la tarjeta ya no es un botón: tocarla no abre nada, así que no simula
+   serlo. Se levanta apenas al pasar el mouse, para señalar que tiene un menú. */
+.mp{ position:relative; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:16px 18px;
+  transition:border-color var(--dur-1) ease-out, box-shadow var(--dur-1) ease-out; }
+.mp:hover{ border-color:var(--accent2); box-shadow:var(--sombra-1); }
+.mp.fijada{ background:var(--hoja); }
+.mp.vencida{ opacity:.62; }
+.mp.oculta{ border-style:dashed; opacity:.78; }
+.mp-head{ display:flex; align-items:center; gap:11px; }
+.mp-av{ width:38px; height:38px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; font-weight:700; font-size:var(--t-sm); color:var(--ink2); }
+.mp-quien{ flex:1; min-width:0; }
+.mp-autor{ font-size:var(--t-md); font-weight:600; color:var(--ink); line-height:1.3; }
+.mp-meta{ font-size:var(--t-sm); color:var(--ink3); margin-top:2px; display:flex;
+  align-items:center; gap:6px; flex-wrap:wrap; font-variant-numeric:tabular-nums; }
+.mp-pto{ width:6px; height:6px; border-radius:50%; background:var(--ok); flex:0 0 auto; }
+.mp-tit{ font-size:var(--t-lg); font-weight:600; color:var(--ink); line-height:1.35;
+  margin-top:11px; letter-spacing:-.01em; text-wrap:balance; }
+.mp-txt{ font-size:var(--t-md); color:var(--ink2); line-height:1.55; margin-top:5px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.mp-pie{ display:flex; align-items:center; gap:8px; margin-top:12px; padding-top:11px;
+  border-top:1px solid var(--line); font-size:var(--t-xs); color:var(--ink3); flex-wrap:wrap; }
+.mp-chip{ display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 9px;
+  border-radius:var(--r-full); font-size:var(--t-xs); font-weight:700; letter-spacing:.02em; }
+.mp-chip.prog{ background:#F6EDE2; color:#8A5A2C; }
+.mp-chip.venc{ background:var(--mesa); color:var(--ink3); }
+.mp-chip.ocul{ background:var(--mesa); color:var(--ink3); }
+.mp-chip.fij{ background:var(--accent-soft); color:var(--accent-ink); }
+/* ── CÓMO SE VE: escritorio o celular ──
+   El iframe se centra sobre el fondo de la mesa y con un filo, para que se
+   lea como "esto es una pantalla" y no como parte del panel. */
+/* 2B: mismo lenguaje que el segmented del editor (.seg/.seg-b de styles.css):
+   radio de token (10/8), pastilla clara y activo blanco con sombra. Antes este
+   era el unico seg con radio 999 y activo en tinta negra. Cambia solo la ropa:
+   la clase .on la sigue toggleando muro.js igual que siempre. */
+.mp-modo{ display:inline-flex; gap:3px; background:var(--bg); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:3px; flex:0 0 auto; }
+.mp-modo button{ padding:8px 10px; border:0; background:transparent; border-radius:var(--r-sm);
+  font-family:inherit; font-size:var(--t-sm); font-weight:600; color:var(--ink2); cursor:pointer;
+  transition:background var(--co-t), color var(--co-t); }
+.mp-modo button:hover{ color:var(--ink); }
+.mp-modo button.on{ background:#fff; color:var(--ink); box-shadow:var(--shadow); }
+.mp-cel{ display:flex; justify-content:center; padding:16px 0;
+  background:var(--mesa, #f2efe9); }
+.mp-frame{ width:390px; max-width:100%; border:1px solid var(--line);
+  border-radius:var(--r-lg); background:#fff; display:block; }
+
+/* dice en qué módulo quedó archivada, para no tener que abrir el editor */
+.mp-chip.arch{ background:#EAF0F6; color:#1A4A8A; }
+.mp-chip.conf{ background:#EDF1EA; color:var(--ok); }
+.mp-tipo{ display:inline-flex; align-items:center; gap:6px; }
+.mp-tipo i{ width:8px; height:8px; border-radius:50%; background:var(--c,var(--accent)); }
+
+/* las acciones no ensucian la tarjeta: aparecen al pasar por encima */
+.mp-acts{ position:absolute; top:12px; right:12px; display:flex; gap:2px; opacity:0;
+  transition:opacity var(--dur-1) ease-out; }
+.mp:hover .mp-acts, .mp:focus-within .mp-acts{ opacity:1; }
+.mp-a{ width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  border:0; border-radius:var(--r-sm); background:var(--panel); color:var(--ink3); cursor:pointer;
+  transition:background var(--dur-1), color var(--dur-1); }
+.mp-a:hover{ background:var(--mesa); color:var(--ink); }
+.mp-a.on{ color:var(--accent-ink); background:var(--accent-soft); }
+.mp-a.del:hover{ background:#F7EAE7; color:var(--danger); }
+.mp-a svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7;
+  stroke-linecap:round; stroke-linejoin:round; }
+
+/* el muro se repinta entero en cada accion (fijar, ocultar, borrar, filtrar):
+   un fade corto en cada tarjeta explica "la lista cambio" sin coreografia.
+   Alcanza opacity sola — nada se desplaza, asi el ojo no pierde el lugar.
+   Las filas de la papelera son .mp tambien, asi que quedan cubiertas. */
+.mp{ animation:movAparece var(--dur-1) ease both; }
+
+/* la recién creada se señala sola un momento */
+.mp.recien{ animation:mpNueva 1.2s ease-out both; }
+@keyframes mpNueva{ from{ background:var(--accent-soft); } }
+
+/* ---------------- vacío con voz ---------------- */
+.vacio{ text-align:center; padding:48px 24px; background:var(--panel);
+  border:1px dashed var(--line); border-radius:var(--r-lg); }
+.vacio b{ display:block; font-size:var(--t-lg); color:var(--ink); margin-bottom:6px; }
+.vacio p{ font-size:var(--t-sm); color:var(--ink3); margin:0 0 16px; }
+
+/* ---------------- módulos ---------------- */
+#modList.mod-list{ display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:12px; }
+.mod-card{ border-radius:var(--r-lg); }
+.mod-card:hover{ box-shadow:var(--sombra-1); transform:translateY(-1px); }
+.mod-add{ border-radius:var(--r-lg); }
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:1ms !important; transition-duration:1ms !important; }
+}
+
+/* ===================================================================
+   COMPOSITOR EN LÍNEA — publicar sin salir del muro
+   Nada de abrir otra pantalla: la caja crece acá mismo.
+   Criterio de color: el resaltado NUNCA es el color a full. Se usa el
+   mismo tono en tres intensidades — fondo al 8%, filo al 22%, texto al
+   100% — que es lo que hace que se lea sobrio en vez de estridente.
+   Clases prefijadas co- porque comp- ya estaba ocupada.
+   =================================================================== */
+:root{
+  --co-curva:cubic-bezier(.22,.9,.3,1);   /* arranca rápido, frena suave */
+  --co-t:.22s;
+}
+
+@keyframes coAbrir{ from{ opacity:0; transform:translateY(-8px) scale(.995); }
+                    to{ opacity:1; transform:none; } }
+@keyframes coSubir{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+@keyframes coPop{ 0%{ transform:scale(.9); } 60%{ transform:scale(1.04); } 100%{ transform:scale(1); } }
+@keyframes coLatir{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
+
+.comp{ transition:border-color var(--co-t) var(--co-curva),
+                  box-shadow var(--co-t) var(--co-curva); }
+.comp-open{ animation:coAbrir .26s var(--co-curva) both; position:relative; }
+.comp.abierto .comp-caja{ display:none; }
+/* los atajos de tipo viven DOS veces: en la caja cerrada y adentro del
+   compositor. Con el compositor abierto salían los seis duplicados. */
+.comp.abierto .comp-atajos{ display:none; }
+.comp.abierto{ border-color:var(--accent2); box-shadow:var(--sombra-1); }
+
+.co-head{ display:flex; align-items:center; gap:11px; margin-bottom:12px; }
+.co-quien{ flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25; }
+.co-quien b{ font-size:14px; color:var(--ink); }
+.co-quien span{ font-size:12px; color:var(--ink3); }
+.co-x{ width:32px; height:32px; border-radius:50%; border:0; background:transparent;
+  color:var(--ink3); font-size:22px; line-height:1; cursor:pointer; flex:0 0 auto;
+  transition:background var(--co-t), color var(--co-t), transform var(--co-t) var(--co-curva); }
+.co-x:hover{ background:var(--mesa); color:var(--ink); transform:rotate(90deg); }
+
+.co-titulo, .co-texto{ width:100%; border:0; background:transparent; color:var(--ink);
+  font-family:inherit; padding:6px 2px; outline:none; resize:none; }
+.co-titulo{ font-size:19px; font-weight:650; letter-spacing:-.2px; }
+.co-texto{ font-size:14.5px; line-height:1.55; min-height:60px; }
+.co-titulo::placeholder, .co-texto::placeholder{ color:var(--ink3); font-weight:400; letter-spacing:0; }
+/* una línea de foco discreta: se sabe dónde se está escribiendo sin recuadros */
+.co-titulo, .co-texto{ border-bottom:1.5px solid transparent; transition:border-color var(--co-t); }
+.co-titulo:focus, .co-texto:focus{ border-bottom-color:rgba(124,106,85,.28); }
+
+/* ------------------------------- adjuntos ------------------------------- */
+.co-adjuntos{ display:flex; flex-direction:column; gap:8px; }
+.co-adjuntos:not(:empty){ margin:10px 0 4px; }
+.co-adj{ display:flex; align-items:center; gap:10px; padding:10px 13px; background:var(--hoja);
+  border:1px solid var(--line); border-radius:var(--r-md); font-size:var(--t-md); color:var(--ink2);
+  animation:coSubir .24s var(--co-curva) both;
+  transition:border-color var(--co-t), background var(--co-t); }
+.co-adj:hover{ border-color:var(--accent2); }
+.co-adj b{ color:var(--ink); font-weight:600; }
+.co-adj .co-adj-x{ margin-left:auto; border:0; background:transparent; color:var(--ink3);
+  cursor:pointer; font-size:var(--t-xl); line-height:1; padding:2px 6px; border-radius:var(--r-xs);
+  transition:background var(--co-t), color var(--co-t); }
+.co-adj .co-adj-x:hover{ background:rgba(180,35,31,.09); color:#B4231F; }
+.co-adj-miniat{ display:flex; gap:5px; }
+.co-adj-miniat img{ width:34px; height:34px; object-fit:cover; border-radius:var(--r-sm);
+  border:1px solid var(--line); animation:coPop .3s var(--co-curva) both; }
+
+/* --------------------------- tipos de aviso --------------------------- */
+.co-tipos{ display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0; }
+.co-tipo{ display:inline-flex; align-items:center; gap:7px; height:31px; padding:0 12px;
+  border-radius:var(--r-full); border:1px solid var(--line); background:transparent; cursor:pointer;
+  font-size:var(--t-sm); color:var(--ink2); font-family:inherit;
+  transition:background var(--co-t) var(--co-curva), border-color var(--co-t),
+             color var(--co-t), transform .16s var(--co-curva);
+  animation:coSubir .3s var(--co-curva) both;
+  animation-delay:calc(var(--i, 0) * 26ms); }
+.co-tipo .ct-p{ width:8px; height:8px; border-radius:50%; background:var(--c); flex:0 0 auto;
+  transition:transform .2s var(--co-curva), box-shadow var(--co-t); }
+.co-tipo:hover{ background:rgba(var(--rgb), .07); border-color:rgba(var(--rgb), .28); color:var(--ink); }
+.co-tipo:hover .ct-p{ transform:scale(1.18); }
+.co-tipo:active{ transform:scale(.97); }
+/* elegido: fondo tenue del propio color, filo apenas marcado y texto al tono.
+   Antes era un anillo de color a full y se veía duro, casi de alarma. */
+.co-tipo.on{ background:rgba(var(--rgb), .10); border-color:rgba(var(--rgb), .34);
+  color:var(--c); font-weight:650; }
+.co-tipo.on .ct-p{ transform:scale(1.1); box-shadow:0 0 0 3px rgba(var(--rgb), .16); }
+
+/* ------------------------- barra de adjuntar ------------------------- */
+.co-barra{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:12px;
+  padding-top:12px; border-top:1px solid var(--line); }
+.co-clip-wrap{ position:relative; flex:0 0 auto; }
+.co-clip{ width:36px; height:36px; border-radius:var(--r-md); border:1px solid var(--line);
+  background:transparent; color:var(--ink2); cursor:pointer; display:grid; place-items:center;
+  transition:background var(--co-t), border-color var(--co-t), color var(--co-t),
+             transform var(--co-t) var(--co-curva); }
+.co-clip svg{ width:18px; height:18px; transition:transform var(--co-t) var(--co-curva); }
+.co-clip:hover{ background:var(--hoja); border-color:var(--accent2); color:var(--ink); }
+.co-clip:hover svg{ transform:rotate(-14deg); }
+.co-clip[aria-expanded="true"]{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.co-clip[aria-expanded="true"] svg{ transform:rotate(-45deg); }
+
+.co-menu{ position:absolute; bottom:calc(100% + 8px); left:0; z-index:40; min-width:172px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-lg);
+  box-shadow:var(--sombra-1); padding:5px; animation:coSubir .18s var(--co-curva) both; }
+.co-mi{ display:block; width:100%; text-align:left; border:0; background:transparent;
+  padding:9px 12px; border-radius:var(--r-sm); font-family:inherit; font-size:var(--t-md); color:var(--ink2);
+  cursor:pointer; transition:background .14s, color .14s, padding-left .16s var(--co-curva); }
+.co-mi:hover{ background:var(--hoja); color:var(--ink); padding-left:15px; }
+
+/* la manito: dice que se puede arrastrar sin ocupar lugar */
+.co-tip{ display:inline-flex; align-items:center; gap:6px; font-size:var(--t-sm); color:var(--ink3);
+  user-select:none; }
+.co-tip-ic{ width:16px; height:16px; color:var(--accent2); }
+.comp-open:hover .co-tip-ic{ animation:coLatir 1.5s ease-in-out infinite; }
+
+.co-ad{ height:34px; padding:0 14px; border-radius:var(--r-full); border:1px solid var(--line);
+  background:transparent; cursor:pointer; font-size:var(--t-sm); color:var(--ink2);
+  font-family:inherit; transition:background var(--co-t), border-color var(--co-t),
+             color var(--co-t), transform .16s var(--co-curva); }
+.co-ad:hover{ background:var(--hoja); border-color:var(--accent2); color:var(--ink); }
+.co-ad:active{ transform:scale(.97); }
+.co-ad-ref{ margin-left:auto; border-color:rgba(124,106,85,.34); color:var(--accent); font-weight:600; }
+.co-ad-ref:hover{ background:rgba(124,106,85,.09); border-color:var(--accent); color:var(--accent); }
+
+/* ------------------------ soltar un archivo ------------------------ */
+.comp-open.soltando{ outline:2px dashed rgba(124,106,85,.45); outline-offset:6px; border-radius:var(--r-md); }
+.co-drop{ position:absolute; inset:0; z-index:50; display:grid; place-items:center;
+  background:rgba(240,237,232,.82); backdrop-filter:blur(2px); border-radius:var(--r-md);
+  animation:coAbrir .16s var(--co-curva) both; pointer-events:none; }
+.co-drop span{ font-size:var(--t-lg); font-weight:650; color:var(--accent);
+  padding:11px 20px; border-radius:var(--r-full); background:var(--panel);
+  border:1.5px dashed rgba(124,106,85,.5); box-shadow:var(--sombra-1); }
+
+/* ------------------------------ el pie ------------------------------ */
+.co-pie{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:12px;
+  padding-top:12px; border-top:1px solid var(--line); }
+/* el pie va todo en pastilla: los cuadrados de 8px al lado de los chips
+   redondos de arriba cortaban el ritmo de la caja */
+.co-op{ display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 13px;
+  border-radius:var(--r-full); border:1px solid transparent; font-size:var(--t-sm); color:var(--ink2);
+  cursor:pointer; user-select:none;
+  transition:color var(--co-t), background var(--co-t), border-color var(--co-t); }
+.co-op:hover{ color:var(--ink); background:var(--hoja); border-color:var(--line); }
+.co-op input{ accent-color:var(--accent); width:15px; height:15px; cursor:pointer;
+  border-radius:var(--r-xs); }
+/* marcada: queda en pastilla teñida, para leer de un vistazo qué está activo */
+.co-op:has(input:checked){ background:rgba(124,106,85,.1);
+  border-color:rgba(124,106,85,.32); color:var(--accent); font-weight:600; }
+
+/* ARCHIVAR EN UN MODULO: la publicación queda además guardada adentro del
+   módulo que se elija. No se copia — el módulo muestra ESTA publicación. */
+.co-arch{ gap:9px; padding-right:5px; }
+.co-arch[hidden]{ display:none; }
+.co-arch-cb{ display:inline-flex; align-items:center; gap:7px; cursor:pointer; }
+.co-arch-sel{ height:26px; max-width:186px; padding:0 8px; border-radius:var(--r-full);
+  border:1px solid var(--line); background:var(--papel, #fff); color:var(--ink2);
+  font-family:inherit; font-size:12px; cursor:pointer;
+  transition:border-color var(--co-t), color var(--co-t), opacity var(--co-t); }
+.co-arch-sel:disabled{ opacity:.4; cursor:not-allowed; }
+.co-arch:has(input:checked) .co-arch-sel{ border-color:rgba(124,106,85,.4);
+  color:var(--accent); }
+
+.co-sp{ flex:1 1 auto; }
+/* Cancelar y Publicar viajan juntos: sueltos, al envolver la fila quedaba
+   "Publicar" solo en un renglón */
+.co-btns{ display:inline-flex; gap:8px; flex:0 0 auto; margin-left:auto; }
+.co-btns .btn{ transition:transform .16s var(--co-curva), filter var(--co-t); }
+.co-btns .btn:active{ transform:scale(.97); }
+@media(max-width:760px){
+  .co-ad-ref{ margin-left:0; }
+  .co-sp{ display:none; }
+  .co-tip{ order:9; width:100%; }
+  .co-btns{ width:100%; }
+  .co-btns .btn{ flex:1 1 auto; }
+}
+
+/* =====================================================================
+   SELECTOR DE MÓDULO — ventana flotante
+   Se levanta por encima de todo en vez de empujar el compositor. Cada
+   módulo se puede elegir ENTERO de una, o desplegar para ver sus piezas.
+   El color de cada módulo tiñe su bloque, siempre en intensidad baja:
+   filo pleno a la izquierda, marco al 26%, cabecera al 5%.
+   ===================================================================== */
+@keyframes cmFondo{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes cmCaja{ from{ opacity:0; transform:translateY(14px) scale(.975); }
+                   to{ opacity:1; transform:none; } }
+@keyframes cmPieza{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:none; } }
+
+body.con-modal{ overflow:hidden; }
+
+.co-modal{ position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:20px; }
+.co-modal-fondo{ position:absolute; inset:0; background:rgba(40,35,28,.42);
+  backdrop-filter:blur(3px); animation:cmFondo .18s ease both; }
+.co-modal.yendose .co-modal-fondo{ animation:cmFondo .14s ease reverse both; }
+.co-modal.yendose .co-modal-caja{ animation:cmCaja .14s ease reverse both; }
+
+/* más angosta y más baja que antes: la lista compacta entra sin ocupar media
+   pantalla. La altura queda acotada y la lista scrollea adentro. */
+.co-modal-caja{ position:relative; width:min(460px, 100%); max-height:min(78vh, 580px);
+  display:flex; flex-direction:column; background:var(--panel);
+  border:1px solid var(--line); border-radius:18px; overflow:hidden;
+  box-shadow:0 18px 60px rgba(40,35,28,.24), 0 3px 12px rgba(40,35,28,.12);
+  animation:cmCaja .24s var(--co-curva) both; }
+
+.co-modal-head{ display:flex; align-items:flex-start; gap:12px; padding:14px 16px 12px;
+  border-bottom:1px solid var(--line); background:var(--hoja); }
+.cm-tit{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.cm-tit b{ font-size:var(--t-lg); font-weight:650; color:var(--ink); letter-spacing:-.15px; }
+.cm-tit span{ font-size:var(--t-sm); color:var(--ink3); }
+.co-modal-x{ width:30px; height:30px; flex:0 0 auto; border:0; border-radius:50%;
+  background:transparent; color:var(--ink3); font-size:21px; line-height:1; cursor:pointer;
+  transition:background .18s, color .18s, transform .2s var(--co-curva); }
+.co-modal-x:hover{ background:var(--mesa); color:var(--ink); transform:rotate(90deg); }
+
+/* buscador */
+.co-busca{ display:flex; align-items:center; gap:8px; margin:11px 13px 3px;
+  padding:8px 11px; background:var(--mesa); border:1px solid var(--line);
+  border-radius:var(--r-md); color:var(--ink3); }
+.co-busca svg{ width:15px; height:15px; flex:0 0 auto; opacity:.85; }
+.co-busca input{ border:0; background:transparent; outline:none; font-family:inherit;
+  font-size:var(--t-md); color:var(--ink); width:100%; }
+.co-busca input::placeholder{ color:var(--ink3); }
+
+/* lista */
+.co-lista{ flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; padding:5px 9px 10px; }
+.co-lista::-webkit-scrollbar{ width:10px; }
+.co-lista::-webkit-scrollbar-thumb{ background:var(--line); border-radius:var(--r-sm);
+  border:3px solid var(--panel); }
+.co-lista .vacio{ text-align:center; color:var(--ink3); font-size:var(--t-sm); padding:24px 10px; }
+
+.co-g{ border-radius:var(--r-md); }
+.co-g + .co-g{ margin-top:1px; }
+
+/* fila del módulo: compacta; DESPLIEGA (no elige) */
+.co-m{ display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  border:0; background:transparent; padding:8px 9px; border-radius:var(--r-md);
+  cursor:pointer; color:var(--ink); font-family:inherit;
+  transition:background var(--dur-1); }
+.co-m:hover{ background:var(--mesa); }
+.co-g.abierto .co-m{ background:var(--mesa); }
+.co-m-ic{ width:27px; height:27px; flex:0 0 auto; border-radius:var(--r-sm);
+  display:grid; place-items:center; color:#fff; box-shadow:0 1px 4px rgba(var(--rgb), .38); }
+.co-m-ic .ico{ width:15px; height:15px; }
+.co-m-tx{ flex:1; min-width:0; line-height:1.28; }
+.co-m-tx b{ display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.co-m-tx small{ display:block; font-size:11.5px; color:var(--ink3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.co-m-n{ flex:0 0 auto; font-size:11.5px; font-weight:600; color:var(--ink3);
+  background:var(--mesa); border:1px solid var(--line); border-radius:var(--r-full);
+  padding:2px 8px; }
+.co-g.abierto .co-m-n{ background:var(--panel); }
+.co-m-fl{ flex:0 0 auto; width:16px; height:16px; color:var(--ink3);
+  display:grid; place-items:center; transition:transform .2s var(--co-curva); }
+.co-m-fl svg{ width:16px; height:16px; }
+.co-g.abierto .co-m-fl{ transform:rotate(90deg); }
+
+/* bloques adentro: cada uno se elige puntual */
+.co-bl{ margin:1px 4px 5px 20px; padding-left:11px; border-left:2px solid var(--line); }
+.co-b{ display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+  border:0; background:transparent; padding:7px 8px; border-radius:var(--r-sm);
+  cursor:pointer; color:var(--ink); font-family:inherit;
+  animation:cmPieza .18s var(--co-curva) both; transition:background var(--dur-1); }
+.co-b:hover{ background:var(--mesa); }
+.co-b-dot{ width:24px; height:24px; flex:0 0 auto; border-radius:6px;
+  background:var(--mesa); border:1px solid var(--line); display:grid; place-items:center;
+  font-size:9.5px; font-weight:700; letter-spacing:.3px; color:var(--ink3); }
+.co-b-todo .co-b-dot{ background:rgb(var(--rgb)); border-color:rgb(var(--rgb));
+  color:#fff; font-size:12px; }
+.co-b-tx{ flex:1; min-width:0; line-height:1.25; }
+.co-b-tx b{ display:block; font-size:13px; font-weight:500; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.co-b-tx small{ font-size:11px; color:var(--ink3); }
+.co-b-pick{ flex:0 0 auto; width:17px; height:17px; border-radius:50%;
+  border:1.5px solid var(--line); transition:border-color .15s, background .15s, box-shadow .15s; }
+.co-b.elegido{ background:rgba(var(--rgb), .12); }
+.co-b.elegido .co-b-pick{ border-color:rgb(var(--rgb)); background:rgb(var(--rgb));
+  box-shadow:inset 0 0 0 3px var(--panel); }
+.co-b.elegido .co-b-tx b{ font-weight:700; }
+
+/* pie: qué quedó elegido + Adjuntar */
+.co-pie{ border-top:1px solid var(--line); background:var(--hoja);
+  padding:11px 14px; display:flex; align-items:center; gap:10px; min-height:56px; }
+.co-pie-st{ flex:1; min-width:0; font-size:var(--t-sm); color:var(--ink3); line-height:1.32; }
+.co-pie-st b{ color:var(--ink); font-weight:600; }
+.co-pie-de{ opacity:.75; }
+.co-pie-ok{ flex:0 0 auto; border:0; border-radius:var(--r-md); padding:9px 16px;
+  font-family:inherit; font-size:var(--t-md); font-weight:600; cursor:pointer;
+  background:var(--accent); color:#fff; transition:opacity .15s, filter .15s; }
+.co-pie-ok:disabled{ opacity:.4; cursor:default; }
+.co-pie-ok:not(:disabled):hover{ filter:brightness(1.07); }
+
+@media(max-width:560px){
+  .co-modal{ padding:0; place-items:end center; }
+  .co-modal-caja{ width:100%; max-height:90vh; border-radius:18px 18px 0 0; border-bottom:0; }
+}
+
+/* corrigiendo una publicación: un filo distinto, para que no haya dudas de
+   que se está editando algo que YA está publicado y no creando otra */
+.comp.editando{ border-color:rgba(176,122,74,.55); }
+.comp.editando .co-quien span{ color:var(--warn); font-weight:600; }
+/* un bloque que vino del editor completo: acá no se edita, pero se conserva
+   tal cual — y se puede sacar, que para eso cancelar no toca nada */
+.co-adj.ajeno{ border-style:dashed; }
+.co-adj.ajeno b{ color:var(--ink2); }
+
+/* =====================================================================
+   MENÚ DE LOS TRES PUNTITOS
+   Antes eran cinco íconos siempre a la vista sobre cada publicación. Un
+   tacho y un ojo sueltos no dicen qué hacen hasta que los tocás, así que
+   ahora hay un solo boton y adentro cada acción con su nombre escrito.
+   ===================================================================== */
+.mp{ position:relative; }
+.mp-acts{ position:absolute; top:10px; right:10px; z-index:3; }
+.mp-mas{ width:32px; height:32px; border-radius:50%; border:1px solid transparent;
+  background:transparent; color:var(--ink3); cursor:pointer; display:grid; place-items:center;
+  opacity:0; transition:opacity var(--dur-1), background var(--dur-1), color var(--dur-1), border-color var(--dur-1); }
+.mp-mas svg{ width:17px; height:17px; }
+.mp:hover .mp-mas, .mp-mas:focus-visible, .mp-mas[aria-expanded="true"]{ opacity:1; }
+.mp-mas:hover, .mp-mas[aria-expanded="true"]{ background:var(--panel);
+  border-color:var(--line); color:var(--ink); }
+/* en pantalla chica no hay hover: el botón se ve siempre */
+@media(hover:none){ .mp-mas{ opacity:1; } }
+
+.mp-menu{ position:fixed; z-index:130; min-width:212px; padding:6px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-lg);
+  box-shadow:0 12px 34px rgba(40,35,28,.18), 0 2px 8px rgba(40,35,28,.1);
+  animation:coSubir .16s var(--co-curva) both; }
+.mp-menu.hacia-arriba{ animation:coAbrir .16s var(--co-curva) both; }
+.mp-mi{ display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  border:0; background:transparent; padding:9px 11px; border-radius:var(--r-sm);
+  font-family:inherit; font-size:var(--t-md); color:var(--ink2); cursor:pointer;
+  transition:background .14s, color .14s, padding-left .16s var(--co-curva); }
+.mp-mi:hover{ background:var(--hoja); color:var(--ink); padding-left:15px; }
+.mi-ic{ display:grid; place-items:center; width:18px; height:18px; flex:0 0 auto;
+  color:var(--ink3); }
+.mi-ic svg{ width:16px; height:16px; }
+.mp-mi:hover .mi-ic{ color:var(--accent); }
+/* una línea separa lo que destruye de lo que no */
+.mp-mi.del{ color:#B4231F; margin-top:5px; border-top:1px solid var(--line);
+  padding-top:11px; border-radius:0 0 var(--r-sm) var(--r-sm); }
+.mp-mi.del:hover{ background:rgba(180,35,31,.08); color:#B4231F; }
+.mp-mi.del .mi-ic{ color:#B4231F; }
+
+/* =====================================================================
+   PAPELERA — lo eliminado espera 15 días
+   Vive en content.papelera, aparte de content.docs: la intranet no la ve
+   nunca, así que no hay riesgo de que un vendedor lea algo ya borrado.
+   ===================================================================== */
+.mf-tacho{ margin-left:auto; }
+.mf-tacho.on{ background:rgba(180,35,31,.1); border-color:rgba(180,35,31,.3); color:#B4231F; }
+
+.pap-aviso{ display:flex; align-items:center; gap:11px; padding:12px 15px; margin-bottom:12px;
+  background:var(--hoja); border:1px dashed var(--line); border-radius:var(--r-lg);
+  font-size:var(--t-md); color:var(--ink2); animation:coSubir .24s var(--co-curva) both; }
+.pap-aviso b{ color:var(--ink); }
+.pap-ic{ display:grid; place-items:center; color:var(--ink3); flex:0 0 auto; }
+.pap-ic svg{ width:18px; height:18px; }
+
+.mp.en-papelera{ border-style:dashed; }
+.mp.en-papelera .mp-tit{ text-decoration:line-through; text-decoration-color:var(--ink3);
+  text-decoration-thickness:1px; color:var(--ink2); }
+.mp.en-papelera.urgente{ border-color:rgba(180,35,31,.4); border-style:solid; }
+
+.pap-plazo{ margin-left:auto; flex:0 0 auto; font-size:var(--t-xs); font-weight:600;
+  padding:4px 11px; border-radius:var(--r-full); background:var(--mesa); color:var(--ink3);
+  white-space:nowrap; }
+.pap-plazo.urgente{ background:rgba(180,35,31,.1); color:#B4231F; }
+
+.pap-acts{ display:flex; align-items:center; gap:14px; margin-top:12px;
+  padding-top:11px; border-top:1px solid var(--line); }
+.btn-txt{ border:0; background:transparent; font-family:inherit; font-size:var(--t-sm);
+  color:var(--ink3); cursor:pointer; padding:5px 2px; border-radius:var(--r-xs);
+  transition:color var(--dur-1); }
+.btn-txt:hover{ color:var(--ink); text-decoration:underline; }
+.btn-txt.del:hover{ color:#B4231F; }
+
+/* =====================================================================
+   CALENDARIO PROPIO
+   El input type=date obligaba a acertarle a un ícono de 16px y abría el
+   almanaque de Chrome, que no se puede estilar. Este abre tocando el
+   campo entero y respeta la tipografía y las curvas del panel.
+   ===================================================================== */
+.co-fecha{ gap:8px; }
+.cf-lbl{ color:var(--ink3); font-size:var(--t-sm); }
+.co-date{ display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 15px;
+  border:1px solid var(--line); border-radius:var(--r-full); background:var(--panel);
+  color:var(--ink2); font-family:inherit; font-size:var(--t-sm); cursor:pointer;
+  transition:border-color var(--dur-1), box-shadow var(--dur-1), background var(--dur-1), color var(--dur-1); }
+.cf-ic{ width:15px; height:15px; color:var(--ink3); flex:0 0 auto;
+  transition:color .18s, transform .2s var(--co-curva); }
+.co-date:hover{ border-color:var(--accent2); color:var(--ink); background:var(--hoja); }
+.co-date:hover .cf-ic{ color:var(--accent); transform:scale(1.08); }
+.co-date[aria-expanded="true"]{ border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(124,106,85,.14); color:var(--ink); }
+/* con fecha puesta se nota de un vistazo que hay algo cargado */
+.co-date.con-fecha{ background:rgba(124,106,85,.1); border-color:rgba(124,106,85,.32);
+  color:var(--accent); font-weight:600; }
+.co-date.con-fecha .cf-ic{ color:var(--accent); }
+
+.cal-pop{ position:fixed; z-index:140; width:290px; padding:13px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-lg);
+  box-shadow:0 16px 44px rgba(40,35,28,.2), 0 3px 10px rgba(40,35,28,.1);
+  animation:coSubir .18s var(--co-curva) both; }
+.cal-pop.arriba{ animation:coAbrir .18s var(--co-curva) both; }
+
+.cal-head{ display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin-bottom:10px; }
+.cal-head b{ font-size:var(--t-md); font-weight:650; color:var(--ink);
+  text-transform:capitalize; letter-spacing:-.1px; }
+.cal-nav{ width:28px; height:28px; border-radius:50%; border:0; background:transparent;
+  color:var(--ink3); cursor:pointer; display:grid; place-items:center;
+  transition:background var(--dur-1), color var(--dur-1); }
+.cal-nav svg{ width:15px; height:15px; }
+.cal-nav:hover{ background:var(--hoja); color:var(--ink); }
+
+.cal-sem{ display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; margin-bottom:4px; }
+.cal-sem span{ text-align:center; font-size:var(--t-xs); font-weight:600; color:var(--ink3);
+  text-transform:uppercase; letter-spacing:.4px; padding:4px 0; }
+
+.cal-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; }
+.cal-v{ height:34px; }
+.cal-d{ height:34px; border:0; border-radius:var(--r-sm); background:transparent;
+  font-family:inherit; font-size:var(--t-md); color:var(--ink2); cursor:pointer;
+  transition:background .14s, color .14s, transform .14s var(--co-curva); }
+.cal-d:hover:not(:disabled){ background:var(--hoja); color:var(--ink); }
+.cal-d:active:not(:disabled){ transform:scale(.92); }
+.cal-d.pasado, .cal-d:disabled{ color:var(--ink3); opacity:.35; cursor:default; }
+/* hoy se marca con un punto, no con relleno: el relleno significa "elegido" */
+.cal-d.hoy{ font-weight:700; color:var(--accent); position:relative; }
+.cal-d.hoy::after{ content:''; position:absolute; bottom:5px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%; background:var(--accent); }
+.cal-d.sel{ background:var(--accent); color:#fff; font-weight:650; }
+.cal-d.sel::after{ background:#fff; }
+.cal-d.sel:hover{ background:var(--accent); color:#fff; }
+
+.cal-atajos{ display:flex; flex-wrap:wrap; gap:5px; margin-top:11px; padding-top:11px;
+  border-top:1px solid var(--line); }
+.cal-at{ flex:1 1 auto; height:29px; padding:0 10px; border-radius:var(--r-full);
+  border:1px solid var(--line); background:transparent; font-family:inherit;
+  font-size:12px; color:var(--ink2); cursor:pointer; white-space:nowrap;
+  transition:background var(--dur-1), border-color var(--dur-1), color var(--dur-1); }
+.cal-at:hover{ background:rgba(124,106,85,.1); border-color:var(--accent2); color:var(--accent); }
+
+.cal-pie{ margin-top:8px; }
+.cal-quitar{ width:100%; height:31px; border:0; border-radius:var(--r-sm); background:transparent;
+  font-family:inherit; font-size:var(--t-sm); color:var(--ink3); cursor:pointer;
+  transition:background var(--dur-1), color var(--dur-1); }
+.cal-quitar:hover:not(:disabled){ background:var(--hoja); color:var(--ink); }
+.cal-quitar:disabled{ opacity:.4; cursor:default; }
+
+@media(prefers-reduced-motion:reduce){
+  .mp-menu, .cal-pop, .pap-aviso{ animation:none; }
+}
+
+/* miniatura cuya imagen ya no existe: cuadrado neutro en vez del ícono de
+   imagen rota del navegador */
+.cp-mini.sin-foto img{ display:none; }
+.cp-mini.sin-foto{ background:var(--mesa); border:1px dashed var(--line); }
+
+/* la publicación como la ve el vendedor, adentro de la tarjeta del panel */
+.mp-vista{ margin:0 -1px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  background:var(--hoja); overflow:hidden; }
+.mp.en-papelera .mp-vista{ opacity:.6; filter:grayscale(.4); }
+
+/* ---- A2 (mismo criterio que styles.css): el select "Archivar en" es un
+   control aislado sin escalera de hover propia -> borde fuerte. .co-clip y
+   .co-date NO van: reposan quietos a proposito y suben a accent2 en hover
+   (escalera dibujada por el rediseno del compositor). */
+.co-arch-sel{ border-color:var(--linea-int); }

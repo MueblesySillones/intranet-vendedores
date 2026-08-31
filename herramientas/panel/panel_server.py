@@ -115,8 +115,10 @@ ASSETS = os.path.join(INTRANET, "assets") if PROYECTO else ""
 # `web2` es el frontend con la seccion Datos, el muro y el compositor. `web` es
 # el anterior y queda de red: si por lo que sea web2 no viajo en el paquete, el
 # panel abre igual con el viejo en vez de mostrar una pagina en blanco.
-_web_pedido = os.environ.get("MYS_PANEL_WEB") or "web2"
+_web_pedido = os.environ.get("MYS_PANEL_WEB") or "web3"
 WEB = os.path.join(RES_DIR, _web_pedido)
+if not os.path.isdir(WEB):
+    WEB = os.path.join(RES_DIR, "web2")
 if not os.path.isdir(WEB):
     WEB = os.path.join(RES_DIR, "web")
 GALERIAS_JS = os.path.join(INTRANET, "galerias.js") if PROYECTO else ""
@@ -269,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 33
+VERSION = 34
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -277,15 +279,16 @@ VERSION = 33
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.3.3"
-VERSION_LABEL = "1.3.3 - se acabaron las pantallas viejas"
+VERSION_PUBLICA = "1.4.0"
+VERSION_LABEL = "1.4.0 - el panel nuevo"
 VERSION_NOTES = (
-                 "Cada version del panel ahora firma sus propios archivos de "
-                 "pantalla: el navegador no puede volver a mostrar una pantalla "
-                 "guardada de una version anterior, ni siquiera de antes de este "
-                 "arreglo. Ya no hace falta apretar Ctrl+Shift+R despues de "
-                 "actualizar. Incluye el redisenio completo en blanco y la "
-                 "apertura como pestania del navegador.")
+                 "El panel se renovo entero, con el redisenio aprobado: la cartelera "
+                 "es un muro con su publicador en ventana, los modulos son tarjetas, "
+                 "el editor tiene el papel al centro y la paleta de bloques con "
+                 "miniaturas al costado, y aparecen Archivadas (con la papelera "
+                 "adentro) y Metricas (vista previa). Todo lo de siempre sigue en su "
+                 "lugar: publicar, historial, avisar novedad y las actualizaciones "
+                 "automaticas.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2592,6 +2595,7 @@ class Handler(BaseHTTPRequestHandler):
                 "version_publica": VERSION_PUBLICA,
                 "pendientes": (len(aprobaciones_pendientes()) if ES_CENTRAL else 0),
                 "cerebro": bool(CEREBRO_URL), "tiene_token": bool(PUBLISH_TOKEN),
+                "web_publica": WEB_PUBLICA,
             })
         if path == "/api/aprobaciones":
             if not ES_CENTRAL:

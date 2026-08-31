@@ -10,8 +10,9 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('web2', 'web2'),                   # el frontend actual: muro, modulos, DATOS, metricas
-        ('web', 'web'),                     # el anterior, de red por si web2 no viajara
+        ('web3', 'web3'),                   # EL PANEL: la maqueta del rediseño, identica
+        ('web2', 'web2'),                   # el anterior, de red (MYS_PANEL_WEB=web2)
+        ('web', 'web'),                     # el primero, ultima red de seguridad
         ('originales.json', '.'),           # HTML original de los modulos del sistema
         ('updater', 'updater'),             # aplicar.bat (swap del auto-update) + launcher
     ],
