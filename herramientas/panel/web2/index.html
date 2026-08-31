@@ -319,7 +319,15 @@
           </div>
         </div>
         <div class="gb-shell">
-          <div class="gb-canvas"><header class="gb-doc-head" id="gbDocHead"><div class="gb-doc-t"><h2 id="gbDocNom">Módulo</h2><button type="button" class="gb-doc-lapiz" id="gbDocRen" title="Cambiar el nombre"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div><p id="gbDocSub">Se ve en el menú de la intranet</p></header><div id="gbDoc" class="gb-doc doc-preview"></div></div>
+          <div class="gb-canvas"><header class="gb-doc-head" id="gbDocHead"><div class="gb-doc-t"><h2 id="gbDocNom">Módulo</h2><button type="button" class="gb-doc-lapiz" id="gbDocRen" title="Cambiar el nombre"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div><p id="gbDocSub">Se ve en el menú de la intranet</p>
+<div id="gbFloat" class="fija">
+  <button type="button" data-fmt="bold" title="Negrita"><b>N</b></button>
+  <button type="button" data-fmt="italic" title="Itálica"><i>I</i></button>
+  <span class="gb-fmt-sep"></span>
+  <button type="button" data-fmt="link" title="Poner un link"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
+  <button type="button" data-fmt="unlink" title="Sacar el link"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l1.5-1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5L5 12"/><path d="m3 3 18 18"/></svg></button>
+  <span class="gb-fmt-nota">Seleccioná texto para usarlos</span>
+</div></header><div id="gbDoc" class="gb-doc doc-preview"></div></div>
           <!-- Dos paneles que se turnan: el de la derecha SIGUE a lo que tocás.
                Tocás la paleta → "Agregar". Tocás el documento → "Ajustes".
                Antes era una sola columna infinita: con la paleta abierta el
@@ -539,12 +547,7 @@
 </div>
 <div id="toast" class="toast" hidden></div>
 
-<div id="gbFloat" hidden>
-  <button type="button" data-fmt="bold" title="Negrita"><b>N</b></button>
-  <button type="button" data-fmt="italic" title="Itálica"><i>I</i></button>
-  <button type="button" data-fmt="link" title="Link">🔗</button>
-  <button type="button" data-fmt="unlink" title="Quitar link">⛓️‍💥</button>
-</div>
+
 
 <script src="/static/iconos-ui.js"></script>
 <script src="/static/app.js"></script>
