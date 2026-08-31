@@ -1,0 +1,4 @@
+
+/* el mensaje de confirmacion ahora puede traer una lista en varias lineas
+   (confirmar() usa textContent, asi que sin esto se veria todo en un renglon) */
+#confirmMsg{white-space:pre-line}

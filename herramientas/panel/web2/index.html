@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel · Muebles y Sillones</title>
+<link rel="icon" href="/static/favicon.png">
+<!-- Los tokens del PAPEL salen del mismo archivo que publica el sitio.
+     Antes esto era una copia a mano dentro de styles.css y se desincronizo. -->
+<link rel="stylesheet" href="/intranet/css/sistema.css">
+<link rel="stylesheet" href="/static/styles.css">
+<link rel="stylesheet" href="/static/rediseno.css">
+<link rel="stylesheet" href="/static/panel_datos.css">
+<link rel="stylesheet" href="/static/mejoras.css">
+<!-- Redisenio 2026: va ULTIMO, solo pisa colores. Borrar esta linea revierte. -->
+<link rel="stylesheet" href="/static/redisenio2026.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     ARMAZÓN: barra lateral fija + lienzo.
+     La lateral tiene las secciones y, abajo del todo, lo que le pasa AL
+     SITIO (publicar). Arriba de cada sección, su propia barra de acciones.
+     =================================================================== -->
+<aside class="nav" id="nav">
+  <div class="nav-marca">
+    <img src="/static/logo.png" class="nav-logo" alt="Muebles y Sillones">
+    <div class="nav-marca-tx">
+      <b>Intranet MyS</b>
+      <span id="navVersion">Versión 1.2.2</span>
+    </div>
+  </div>
+
+  <nav class="nav-secs" id="navSecs">
+    <button type="button" class="nav-s active" data-sec="muro">
+      <span class="nav-ic"><svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 3.5v-11L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></svg></span>
+      <span class="nav-t">Cartelera</span>
+      <span class="nav-n" id="navNMuro" hidden></span>
+    </button>
+    <button type="button" class="nav-s" data-sec="modulos">
+      <span class="nav-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg></span>
+      <span class="nav-t">Módulos</span>
+      <span class="nav-n" id="navNMod" hidden></span>
+    </button>
+    <button type="button" class="nav-s" data-sec="datos">
+      <span class="nav-ic"><svg viewBox="0 0 24 24"><path d="M3 5.5c0-1.4 3.6-2.5 8-2.5s8 1.1 8 2.5-3.6 2.5-8 2.5-8-1.1-8-2.5z"/><path d="M3 5.5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/><path d="M3 11.5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/></svg></span>
+      <span class="nav-t">Datos</span>
+      <span class="nav-n" id="navNDatos" hidden></span>
+    </button>
+    <button type="button" class="nav-s" data-sec="metricas">
+      <span class="nav-ic"><svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="5"/><line x1="16" y1="20" x2="16" y2="9"/><line x1="21" y1="20" x2="21" y2="15"/></svg></span>
+      <span class="nav-t">Métricas</span>
+    </button>
+  </nav>
+
+  <div class="nav-pie">
+    <div class="nav-estado" id="gitState">
+      <span class="dot"></span><span id="gitText">cargando…</span>
+    </div>
+    <button id="btnPublicar" class="btn btn-pub nav-pub" title="Sube los cambios al sitio online. Vercel actualiza en ~30 s.">Publicar cambios</button>
+    <!-- COLABORADOR -->
+    <button id="btnEnviar" class="btn btn-pub nav-pub" hidden title="Manda tus cambios a la central para que los aprueben">Enviar para aprobación</button>
+    <!-- UN solo botón para estar al día: el programa y el contenido juntos.
+         Antes eran dos ("Actualizar a la última versión" y "Traer última
+         versión") y había que saber cuál apretar. Se enciende solo cuando el
+         panel detecta que hay algo nuevo publicado. -->
+    <button id="btnAlDia" class="btn nav-aldia" hidden
+            title="Trae lo último que se publicó: el programa y el contenido del sitio">
+      <span class="aldia-tx">Actualizar</span>
+      <span class="aldia-pto" aria-hidden="true"></span>
+    </button>
+    <button id="btnBandeja" class="btn btn-ghost nav-min" hidden title="Cambios que te mandaron los colaboradores para aprobar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14h4l1.5 2.5h5L16 14h4M4 14 6 6h12l2 8v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg> Aprobaciones <span class="pend-badge" id="pendBadge" hidden>0</span></button>
+    <div class="nav-links">
+      <button type="button" id="btnAvisar" class="link-discreto" title="Marcar módulos como novedad">Avisar novedad</button>
+      <button type="button" id="btnHistorial" class="link-discreto">Historial</button>
+      <button type="button" id="btnKit" class="link-discreto">Kit de recuperación</button>
+      <button type="button" id="btnCerrar" class="link-discreto">Cerrar panel</button>
+    </div>
+    <span class="rol-badge" id="rolBadge" hidden></span>
+    <!-- app.js engancha estos dos SIN preguntar si existen (son sus últimas
+         líneas): si faltan, muere el script entero. La navegación real es la
+         de arriba; estos quedan de puente. -->
+    <button id="btnMetricas" hidden>Métricas</button>
+  </div>
+</aside>
+
+<div id="updateBar" class="update-bar" hidden>
+  <span class="update-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></span>
+  <span class="update-txt"><b>Hay una versión nueva del panel.</b> <span id="updateLabel"></span></span>
+  <button id="btnUpdate" class="btn">Actualizar a la última versión</button>
+</div>
+
+<div class="panel-main lienzo">
+
+  <!-- ====================== MURO: publicaciones ====================== -->
+  <main class="main" id="viewMuro">
+    <div class="lz-head">
+      <div>
+        <h2>Cartelera</h2>
+        <p class="muted" id="muroSub">Lo que ven los vendedores al entrar a la intranet.</p>
+      </div>
+      <div class="head-actions">
+        <!-- Cómo se ve la publicación mientras se carga. Celular no es la
+             misma vista achicada: es un iframe de 390px, que es la única
+             forma de que aparezcan las reglas de celular de la intranet. -->
+        <div class="mp-modo" id="mpModo" role="group" aria-label="Cómo se ve la publicación">
+          <button type="button" data-modo="escritorio" class="on" aria-pressed="true">Escritorio</button>
+          <button type="button" data-modo="celular" aria-pressed="false">Celular</button>
+        </div>
+        <input type="search" id="muroBuscar" class="buscar-todo" autocomplete="off"
+          placeholder="Buscar entre las publicaciones…">
+      </div>
+    </div>
+
+    <!-- el composer: la caja para escribir, como en una red social -->
+    <div class="comp" id="composer">
+      <button type="button" class="comp-caja" id="compAbrir">
+        <span class="comp-av" id="compAv">M</span>
+        <span class="comp-ph">¿Qué querés comunicarle al equipo?</span>
+      </button>
+      <!-- el compositor abierto: crece ACA MISMO, no abre otra pantalla -->
+      <div class="comp-open" id="compOpen" hidden>
+        <div class="co-head">
+          <span class="comp-av" id="coAv">M</span>
+          <div class="co-quien"><b id="coAutor">Marketing</b><span id="coCuando">Hoy</span></div>
+          <button type="button" class="co-x" id="coCerrar" aria-label="Cerrar">&times;</button>
+        </div>
+        <input type="text" id="coTitulo" class="co-titulo" maxlength="120"
+               placeholder="Título del aviso" autocomplete="off">
+        <textarea id="coTexto" class="co-texto" rows="3"
+                  placeholder="Contale al equipo de qué se trata…"></textarea>
+        <div class="co-adjuntos" id="coAdjuntos"></div>
+        <div class="co-tipos" id="coTipos"></div>
+        <div class="co-barra">
+          <div class="co-clip-wrap">
+            <button type="button" class="co-clip" id="coClip" aria-label="Adjuntar"
+                    aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <div class="co-menu" id="coMenu" hidden>
+              <button type="button" class="co-mi" data-ad="foto">Una foto</button>
+              <button type="button" class="co-mi" data-ad="galeria">Varias fotos</button>
+              <button type="button" class="co-mi" data-ad="video">Un video</button>
+              <button type="button" class="co-mi" data-ad="pdf">Un PDF</button>
+              <button type="button" class="co-mi" data-ad="lista">Una lista</button>
+            </div>
+          </div>
+          <span class="co-tip">
+            <svg class="co-tip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11.5V7a1.5 1.5 0 0 0-3 0"/><path d="M15 8V5.5a1.5 1.5 0 0 0-3 0V8"/><path d="M12 8V6.5a1.5 1.5 0 0 0-3 0v6"/><path d="M9 12.5V11a1.5 1.5 0 0 0-3 0v3a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7v-1.5a1.5 1.5 0 0 0-3 0"/></svg>
+            o arrastrá una imagen acá
+          </span>
+          <button type="button" class="co-ad co-ad-ref" data-ad="ref">Señalar un módulo</button>
+        </div>
+        <div class="co-drop" id="coDrop" hidden><span>Soltá acá</span></div>
+        <div class="co-pie">
+          <label class="co-op"><input type="checkbox" id="coFijar"> Fijar arriba</label>
+          <label class="co-op"><input type="checkbox" id="coConfirmar"> Pedir confirmación</label>
+          <!-- ARCHIVAR EN UN MODULO. La casilla y el selector NO van adentro
+               del mismo <label>: si no, elegir módulo tildaría la casilla. -->
+          <span class="co-op co-arch" id="coArchWrap">
+            <label class="co-arch-cb"><input type="checkbox" id="coArchivar"> Archivar en</label>
+            <select id="coArchivarMod" class="co-arch-sel"
+                    aria-label="Módulo donde queda archivada"></select>
+          </span>
+          <span class="co-op co-fecha">
+            <span class="cf-lbl">Se ve hasta</span>
+            <!-- el valor real viaja en el hidden; el calendario es propio.
+                 El <input type="date"> obligaba a acertarle a un iconito de
+                 16px y abria el almanaque de Chrome, que no se puede estilar -->
+            <input type="hidden" id="coVence">
+            <button type="button" class="co-date" id="coVenceBtn" aria-haspopup="dialog"
+                    aria-expanded="false">
+              <svg class="cf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+              <span id="coVenceTx">Siempre</span>
+            </button>
+          </span>
+          <span class="co-sp"></span>
+          <span class="co-btns">
+            <button type="button" class="btn btn-ghost" id="coCancelar">Cancelar</button>
+            <button type="button" class="btn active" id="coPublicar">Publicar</button>
+          </span>
+        </div>
+      </div>
+
+      <div class="comp-atajos">
+        <button type="button" class="comp-at" data-tipo="anuncio"><span class="ca-ic" style="--c:#1A4A8A"></span> Anuncio</button>
+        <button type="button" class="comp-at" data-tipo="promo"><span class="ca-ic" style="--c:#8A5A2C"></span> Promoción</button>
+        <button type="button" class="comp-at" data-tipo="capacitacion"><span class="ca-ic" style="--c:#255C74"></span> Capacitación</button>
+        <button type="button" class="comp-at" data-tipo="logro"><span class="ca-ic" style="--c:#1A6A3A"></span> Logro</button>
+        <button type="button" class="comp-at" data-tipo="importante"><span class="ca-ic" style="--c:#B4231F"></span> Importante</button>
+        <button type="button" class="comp-at" data-tipo="equipo"><span class="ca-ic" style="--c:#5A554D"></span> Equipo</button>
+      </div>
+    </div>
+
+    <div class="muro-filtros" id="muroFiltros"></div>
+    <div id="muroLista" class="muro-lista"></div>
+  </main>
+
+  <!-- ====================== VISTA MÓDULOS (lista) ====================== -->
+  <main class="main" id="viewModulos" hidden>
+    <div class="lz-head">
+      <div>
+        <h2>Módulos</h2>
+        <p class="muted">Las secciones del menú de la intranet. Tocá una para editarla; arrastralas del agarre para ordenarlas.</p>
+      </div>
+      <div class="head-actions">
+        <input type="search" id="buscarTodo" class="buscar-todo" autocomplete="off"
+          placeholder="Buscar en todo el panel… (ej: garantía, envío)">
+        <button id="btnAddModulo" class="btn">+ Agregar módulo</button>
+      </div>
+    </div>
+    <div id="buscarRes" class="buscar-res" hidden></div>
+    <div id="modList" class="mod-list"></div>
+    <button type="button" id="btnAddModulo2" class="mod-add">+ Agregar módulo</button>
+  </main>
+
+  <!-- ====================== EDITOR DE MÓDULO (pantalla completa) ====================== -->
+  <!-- MÉTRICAS: cómo está funcionando la intranet -->
+  <main class="main" id="viewDatos" hidden>
+    <!-- La pantalla la dibuja panel_datos.js. Aca solo va el hueco: esa pieza
+         recibe los datos como argumento y no sabe de donde salen, que es lo
+         que permite probarla sola. El puente los va a buscar. -->
+    <div id="datosRaiz"></div>
+  </main>
+
+  <main class="main" id="viewMetricas" hidden>
+    <div class="lz-head">
+      <div>
+        <h2>Métricas</h2>
+        <p class="muted">Lo que leen, lo que descargan y lo que buscan los vendedores.</p>
+      </div>
+      <div class="head-actions">
+        <!-- se vuelve por la barra lateral; queda para app.js, que lo engancha sin preguntar -->
+        <button id="metVolver" class="btn btn-ghost" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg> Volver</button>
+      </div>
+    </div>
+    <div class="met-aviso" id="metAviso"></div>
+    <div id="metBody"></div>
+  </main>
+
+  <main class="main editor-full" id="viewDetalle" hidden>
+    <header class="editor-bar">
+      <button class="btn btn-ghost btn-icon" id="detBack" title="Volver a módulos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="editor-bar-t" id="detBarTitle">Editar módulo</div>
+      <!-- íconos dibujados, no emoji: el emoji era lo único de color en todo el
+           panel y rompía la paleta -->
+      <div class="view-toggle" title="Cómo se ve en cada pantalla">
+        <button type="button" id="vtDesktop" class="vt active" title="Vista escritorio" aria-label="Vista escritorio"><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 20h6M12 17v3"/></svg></button>
+        <button type="button" id="vtMobile" class="vt" title="Vista celular" aria-label="Vista celular"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.8 5.5h2.4"/></svg></button>
+      </div>
+      <div class="editor-bar-acts">
+        <div class="ebar-more">
+          <button class="btn btn-ghost" id="detMore" title="Más acciones"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg> Más</button>
+          <div class="ebar-menu" id="detMoreMenu" hidden>
+            <button class="btn btn-ghost" id="detHide">Ocultar del menú</button>
+            <button class="btn btn-ghost" id="detRestore" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg> Restaurar diseño del sistema</button>
+            <button class="btn btn-danger" id="detDelete" hidden>Eliminar módulo</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-icon" id="detUndo" title="Deshacer (volver atrás)" disabled><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 7 4 12l5 5M4 12h10a6 6 0 0 1 0 12h-1"/></svg></button>
+        <button class="btn btn-ghost btn-icon" id="detRedo" title="Nada para rehacer todavía" disabled><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 7l5 5-5 5M20 12H10a6 6 0 0 0 0 12h1"/></svg></button>
+        <span class="editor-bar-sep"></span>
+        <!-- este grupo es lo que le pasa a ESTE módulo -->
+        <button class="btn btn-ghost" id="detCancel">Cancelar</button>
+        <button class="btn active" id="detSave">Guardar</button>
+        <span class="editor-bar-sep"></span>
+        <!-- y este es lo que le pasa AL SITIO: por eso va separado -->
+        <button class="btn btn-pub" id="detPublicar" title="Guardá y después publicá al sitio">Publicar</button>
+        <!-- 2B: el ESTADO vive acá (chip no clickeable); los botones solo dicen la acción -->
+        <span class="chip-estado" id="detEstado" hidden></span>
+      </div>
+    </header>
+
+    <div class="editor-body" id="editorBody">
+      <!-- EDITOR DE BLOQUES (único, full-bleed) -->
+      <div class="cpane cpane-bloques" data-pane="bloques">
+        <!-- barra del documento (solo cuando el módulo es una biblioteca) -->
+        <div class="doc-bar" id="docBar" hidden>
+          <button class="btn btn-ghost btn-icon" id="docBack" title="Volver a la lista de documentos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <input type="text" id="docTitulo" class="doc-bar-in doc-bar-t" placeholder="Nombre del documento · ej: Julio 2026" maxlength="60">
+          <input type="text" id="docEtiqueta" class="doc-bar-in doc-bar-e" placeholder="Etiqueta · ej: Mensual" maxlength="30">
+          <!-- datos de la publicacion: solo cuando el modulo es un MURO -->
+          <span class="doc-muro" id="docMuro" hidden>
+            <input type="text" id="docAutor" class="doc-bar-in doc-muro-a" placeholder="Quién publica · ej: Marketing" maxlength="40">
+            <input type="text" id="docSucursal" class="doc-bar-in doc-muro-s" placeholder="Sucursal (opcional)" maxlength="40">
+            <input type="date" id="docFecha" class="doc-bar-in doc-muro-f" title="Fecha de la publicación">
+            <select id="docTipo" class="doc-bar-in doc-muro-t" title="Tipo de publicación">
+              <option value="">Sin tipo</option>
+              <option value="anuncio">Anuncio</option>
+              <option value="promo">Promoción</option>
+              <option value="capacitacion">Capacitación</option>
+              <option value="logro">Logro</option>
+              <option value="importante">Importante</option>
+              <option value="equipo">Equipo</option>
+            </select>
+            <label class="doc-muro-fij" title="Queda arriba de todo, aunque haya publicaciones más nuevas">
+              <input type="checkbox" id="docFijado"> Fijar arriba</label>
+            <label class="doc-muro-fij" title="El vendedor tiene que tocar «Entendido». Vas a poder ver quién confirmó y quién no.">
+              <input type="checkbox" id="docConfirmar"> Pedir confirmación</label>
+            <!-- se archiva sola: los atajos calculan la fecha, que queda a la vista -->
+            <span class="doc-vence">
+              <select id="docVence" class="doc-bar-in doc-muro-v" title="Cuándo deja de verse">
+                <option value="">No vence</option>
+                <option value="7">Dura una semana</option>
+                <option value="15">Dura 15 días</option>
+                <option value="30">Dura un mes</option>
+                <option value="finmes">Hasta fin de mes</option>
+                <option value="fecha">Hasta una fecha…</option>
+              </select>
+              <input type="date" id="docVenceF" class="doc-bar-in doc-muro-f" hidden
+                title="Último día que los vendedores la ven">
+            </span>
+          </span>
+          <!-- rotulado a propósito: hay OTRO interruptor igual en Apariencia, y
+               ese decide qué es el módulo entero (confundirlos puede hacerte
+               perder los demás documentos de la biblioteca) -->
+          <span class="doc-bar-lbl">Este documento:</span>
+          <div class="seg seg-sm" id="docModo">
+            <button type="button" class="seg-b" data-modo="pagina"><svg class="seg-ic" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>Página</button>
+            <button type="button" class="seg-b" data-modo="presentacion"><svg class="seg-ic" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 20h6M12 17v3"/></svg>Presentación</button>
+          </div>
+        </div>
+        <div class="gb-shell">
+          <div class="gb-canvas"><div id="gbDoc" class="gb-doc doc-preview"></div></div>
+          <!-- Dos paneles que se turnan: el de la derecha SIGUE a lo que tocás.
+               Tocás la paleta → "Agregar". Tocás el documento → "Ajustes".
+               Antes era una sola columna infinita: con la paleta abierta el
+               inspector quedaba fuera de pantalla, y por eso había un parche
+               que scrolleaba solo (que a su vez tapaba la paleta). -->
+          <aside class="gb-sidebar" id="gbSidebar">
+            <div class="gb-sec" id="gbApSlot"></div>
+            <div class="seg gb-panes" id="gbPanes">
+              <button type="button" class="seg-b active" data-pane="agregar">+ Agregar bloque</button>
+              <button type="button" class="seg-b" data-pane="ajustes" id="gbTabAjustes">Ajustes del bloque</button>
+            </div>
+            <div class="gb-pane" data-pane="agregar">
+              <div class="gb-buscar-w"><input type="search" id="gbBuscar" class="gb-buscar"
+                autocomplete="off" placeholder="Buscar bloque… (tabla, foto, whatsapp)"></div>
+              <div id="gbAdd"></div>
+              <!-- un cartel no alcanzaba: hace falta un botón que se pueda tocar -->
+              <button type="button" id="btnPegar" class="gb-pegar-btn">
+                <span class="gb-pegar-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 4h6v3H9zM7 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1"/></svg></span>
+                <span><b>Pegar de Word o Excel</b>
+                  <small>Copiá allá y tocá acá. También sirve Ctrl+V.</small></span>
+              </button>
+            </div>
+            <div class="gb-pane" data-pane="ajustes" hidden>
+              <div class="gb-sec-t" id="gbInspTitle">Bloque seleccionado</div>
+              <div id="gbInspector"><div class="gb-empty-insp">Tocá un bloque del documento y acá aparecen <b>sus</b> ajustes.</div></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- BIBLIOTECA (el módulo guarda varios documentos: un reporte por período) -->
+      <div class="cpane" data-pane="coleccion" hidden>
+        <div class="coleccion-wrap">
+          <div class="gb-sec" id="colApSlot"></div>
+          <div class="col-head">
+            <div>
+              <h3 id="colTitulo">Documentos de este módulo</h3>
+              <p class="muted">Arrastralos del agarre para ordenarlos. El primero se muestra destacado como el más reciente.</p>
+              <label class="col-palabra">Cómo se llama cada uno:
+                <input type="text" id="colPalabra" maxlength="20" placeholder="documento" list="colPalabras">
+                <datalist id="colPalabras">
+                  <option value="reporte"><option value="documento"><option value="capacitación">
+                  <option value="comunicado"><option value="informe"><option value="catálogo">
+                </datalist>
+              </label>
+            </div>
+            <div class="head-actions">
+              <button class="btn btn-ghost" id="colDup" title="Copia el primero tal cual, con sus números"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 9h10v10H9zM5 15V5h10"/></svg> Duplicar el primero</button>
+              <button class="btn" id="colNuevoMes" title="Misma estructura que el último, con los números en blanco para cargar los nuevos"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M4 12h16"/></svg> Nuevo desde el último</button>
+              <button class="btn active" id="colAdd">+ Nuevo en blanco</button>
+            </div>
+          </div>
+          <div id="colList" class="col-list"></div>
+        </div>
+      </div>
+
+      <!-- GALERÍA (solo Material descargable) -->
+      <div class="cpane" data-pane="galeria" hidden>
+        <div class="galeria-wrap">
+          <div class="gb-sec" id="galApSlot"></div>
+          <p class="muted" style="margin-top:0">Las imágenes que descargan los vendedores, separadas por sección. Pasá el mouse y tocá la <b>cruz</b> para borrarla. Arrastrá para reordenar o moverla de sección.</p>
+          <div id="dGalGroups"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APARIENCIA (acordeón) — se inyecta en #gbApSlot o #galApSlot -->
+    <section class="card-sec accordion open" id="apSec">
+      <button type="button" class="acc-head" id="apToggle">
+        <span class="acc-title">Módulo: nombre, ícono y tipo</span>
+        <span class="acc-meta" id="apMeta"></span>
+        <span class="acc-chev">▾</span>
+      </button>
+      <div class="acc-body">
+        <div class="preview-tile" id="detPreview" style="margin-bottom:12px"></div>
+        <label class="fld"><span>Título</span>
+          <input type="text" id="dTitle" maxlength="40" placeholder="Ej: Catálogo de primavera"></label>
+        <label class="fld"><span>Subtítulo (texto corto del botón)</span>
+          <input type="text" id="dDesc" maxlength="80" placeholder="Ej: Novedades."></label>
+        <div class="fld" id="dModoFld"><span>Qué es este módulo</span>
+          <div class="seg" id="dModo">
+            <button type="button" class="seg-b" data-modo="pagina"><svg class="seg-ic" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>Página</button>
+            <button type="button" class="seg-b" data-modo="presentacion"><svg class="seg-ic" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 20h6M12 17v3"/></svg>Presentación</button>
+            <button type="button" class="seg-b" data-modo="biblioteca"><svg class="seg-ic" viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="16" rx="1.4"/><rect x="11" y="4" width="6" height="16" rx="1.4"/><path d="M19.2 5.6l2 15"/></svg>Biblioteca</button>
+            <button type="button" class="seg-b" data-modo="muro"><svg class="seg-ic" viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 3.5v-11L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></svg>Cartelera</button>
+          </div>
+          <p class="fld-note" id="dModoNota"></p>
+        </div>
+        <div class="fld"><span>Ícono</span><div id="dIconGrid" class="icon-grid"></div></div>
+        <div class="fld"><span>Color</span><div id="dColorGrid" class="color-grid"></div></div>
+        <label class="insp-check"><input type="checkbox" id="dReady" checked>
+          <span>Disponible (si lo destildás, “Próximamente”)</span></label>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ====================== VER IMAGEN EN GRANDE ====================== -->
+<div id="imgLightbox" class="img-lightbox" hidden>
+  <button class="lb-x" id="imgLbClose" title="Cerrar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <img id="imgLightboxImg" alt="Imagen ampliada">
+</div>
+
+<!-- ====================== CONFIRMACIÓN ====================== -->
+<div id="avisarModal" class="modal" hidden>
+  <div class="modal-ov" data-cerrar-avisar></div>
+  <div class="modal-box modal-ancho">
+    <div class="modal-head"><h3>Avisar novedad a los vendedores</h3>
+      <button class="btn btn-ghost btn-icon" data-cerrar-avisar><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="modal-body">
+      <p class="muted" style="margin:0">Elegí qué módulos se anuncian como novedad.
+        Los marcados aparecen arriba de todo en la intranet, con una chapa <b>Nuevo</b>,
+        durante <b>14 días</b>. Publicar no avisa nada por su cuenta: esto lo decidís vos.</p>
+      <div id="avisarLista" class="avisar-lista"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-cerrar-avisar>Cancelar</button>
+      <button class="btn active" id="avisarGuardar">Guardar y publicar</button>
+    </div>
+  </div>
+</div>
+
+<div id="histModal" class="modal" hidden>
+  <div class="modal-ov" data-cerrar-hist></div>
+  <div class="modal-box modal-ancho">
+    <div class="modal-head"><h3>Historial de publicaciones</h3>
+      <button class="btn btn-ghost btn-icon" data-cerrar-hist><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="modal-body">
+      <p class="muted" style="margin:0">Cada vez que publicás queda una versión guardada.
+        Si algo salió mal, podés <b>volver a como estaba</b>: se trae esa versión al panel,
+        la revisás, y recién ahí publicás.</p>
+      <div id="histLista" class="hist-lista"><div class="muted">Cargando…</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-cerrar-hist>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="kitModal" class="modal" hidden>
+  <div class="modal-ov" data-cerrar-kit></div>
+  <div class="modal-box">
+    <div class="modal-head"><h3>Kit de recuperación</h3>
+      <button class="btn btn-ghost btn-icon" data-cerrar-kit><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="modal-body">
+      <p class="muted" style="margin:0">Genera <b>un solo archivo</b> con todo lo necesario para retomar
+        el control del sitio si esta computadora se pierde: qué cuentas hay, qué desbloquea cada una,
+        tu clave de publicación y el paso a paso.</p>
+      <p class="muted" style="margin:0">Se guarda <b>cifrado con una contraseña</b>. Para abrirlo alcanza
+        con hacerle doble clic: se abre en cualquier navegador, sin instalar nada.</p>
+      <label class="fld"><span>Clave del archivo</span>
+        <input type="text" id="kitPass" autocomplete="off" spellcheck="false"></label>
+      <div class="kit-acts">
+        <button type="button" class="btn btn-ghost" id="kitCopiar">Copiar la clave</button>
+        <button type="button" class="btn btn-ghost" id="kitOtra">Generar otra</button>
+      </div>
+      <p class="fld-note" style="margin:0">Ya te generé una clave segura. Podés dejarla o escribir la
+        tuya. <b>Anotala junto con el archivo</b>: sin ella no se puede abrir.</p>
+      <div id="kitAviso" class="fld-note" style="min-height:16px"></div>
+      <div class="nota-fuerte">⚠️ Si perdés esta contraseña <b>no hay forma de recuperar el archivo</b>.
+        Guardá el kit en dos lugares distintos.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-cerrar-kit>Cancelar</button>
+      <button class="btn active" id="kitGenerar">Generar el kit</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal" hidden>
+  <div class="modal-ov"></div>
+  <div class="modal-box" style="width:min(420px,92vw)">
+    <div class="modal-body" style="padding:24px 24px 8px">
+      <h3 style="margin:0 0 8px; font-size:16px" id="confirmTitle">¿Confirmás?</h3>
+      <p id="confirmMsg" style="margin:0; color:var(--ink2); font-size:14px"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="confirmNo">Cancelar</button>
+      <button class="btn btn-ghost" id="confirmAlt" hidden>Salir sin guardar</button>
+      <button class="btn btn-danger" id="confirmYes">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== BANDEJA DE APROBACIONES (central) ====================== -->
+<div id="bandeja" class="modal" hidden>
+  <div class="modal-ov" id="bandejaOv"></div>
+  <div class="modal-box bandeja-box">
+    <div class="modal-head">
+      <h3 style="margin:0;font-size:17px">Aprobaciones de colaboradores</h3>
+      <button class="link" id="bandejaClose">cerrar</button>
+    </div>
+    <div class="modal-body bandeja-body" id="bandejaList">
+      <p class="muted">Cargando…</p>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between">
+      <span class="muted" id="bandejaHint" style="font-size:12.5px"></span>
+      <button class="btn btn-ghost" id="bandejaRefresh">↻ Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<div id="console" class="console" hidden>
+  <div class="console-head">
+    <span id="consoleTitle">Salida</span>
+    <button class="link" id="consoleClose">cerrar</button>
+  </div>
+  <pre id="consoleBody"></pre>
+</div>
+
+<div id="traerBar" class="traer-bar" hidden>
+  <div class="traer-giro" aria-hidden="true"></div>
+  <div class="traer-cuerpo">
+    <div class="traer-txt">Conectando con el cerebro…</div>
+    <div class="traer-pista"><div class="traer-relleno"></div></div>
+  </div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<div id="gbFloat" hidden>
+  <button type="button" data-fmt="bold" title="Negrita"><b>N</b></button>
+  <button type="button" data-fmt="italic" title="Itálica"><i>I</i></button>
+  <button type="button" data-fmt="link" title="Link">🔗</button>
+  <button type="button" data-fmt="unlink" title="Quitar link">⛓️‍💥</button>
+</div>
+
+<script src="/static/iconos-ui.js"></script>
+<script src="/static/app.js"></script>
+<!-- la cáscara nueva: usa el motor de app.js, no lo reemplaza -->
+<script src="/static/muro.js"></script>
+<script src="/static/panel_datos.js"></script>
+<script src="/static/datos_puente.js"></script>
+<script src="/static/mejoras.js"></script>
+
+<!-- ===================================================================
+     VENTANA DE ACTUALIZACION
+     Sale al tocar "Actualizar" y acompana hasta el final. Existe para que
+     esperar no de ansiedad: mientras trabaja cuenta en que anda, con una
+     barra que avanza por los bytes que van llegando (no por un reloj).
+     No se puede cerrar a mitad de camino a proposito: cortar el swap del
+     programa deja la instalacion a medias.
+     =================================================================== -->
+<div class="upmodal" id="upModal" hidden role="dialog" aria-modal="true"
+     aria-labelledby="upTitulo" aria-describedby="upFrase">
+  <div class="upmodal-caja">
+    <h3 class="upmodal-tit" id="upTitulo">Actualizando</h3>
+    <p class="upmodal-frase" id="upFrase">Empezando…</p>
+    <div class="upmodal-barra"><div class="upmodal-relleno" id="upRelleno"></div></div>
+    <p class="upmodal-pie" id="upPie">No cierres esta ventana.</p>
+    <div class="upmodal-acts" id="upActs" hidden>
+      <button class="btn" id="upCerrar">Entendido</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

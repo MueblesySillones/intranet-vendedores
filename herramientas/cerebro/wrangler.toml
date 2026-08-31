@@ -1,0 +1,23 @@
+# Cerebro MyS — config de Cloudflare Workers
+# Desplegar con:  wrangler deploy
+# Los SECRETOS no van acá (se cargan con `wrangler secret put`).
+
+name = "mys-cerebro"
+main = "src/worker.js"
+compatibility_date = "2024-12-01"
+
+# Datos del repo de la intranet (NO son secretos).
+[vars]
+REPO_OWNER = "MueblesySillones"
+REPO_NAME  = "intranet-vendedores"
+REPO_BRANCH = "main"
+
+# Durable Object: la "cola única" que serializa las publicaciones.
+[[durable_objects.bindings]]
+name = "BRAIN"
+class_name = "Brain"
+
+# DO con SQLite (requerido para usar Durable Objects en el plan GRATIS).
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Brain"]

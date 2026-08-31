@@ -1,0 +1,7 @@
+{
+  "_comentario": "Identidad de PRUEBA con rol colaborador. Para ensayar el flujo /api/enviar (propuestas al central) sin tocar la identidad real: copiar este archivo como identity.json dentro del estado del sandbox (salida/sandbox/estado/) ANTES de lanzar el panel, apuntando central_url a un receptor de prueba. El flujo queda PENDIENTE de automatizar; ningun test lo usa todavia.",
+  "rol": "colaborador",
+  "usuario": "QA Colaborador",
+  "central_url": "http://127.0.0.1:8899",
+  "receptor_port": 0
+}

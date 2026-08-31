@@ -1,0 +1,8 @@
+
+/* boton "+" en el hueco entre bloques (vive en el lienzo, no en el documento) */
+.gb-canvas{position:relative}
+.gb-mas{position:absolute; z-index:5; width:26px; height:26px; padding:0; border-radius:50%;
+  border:1px solid var(--accent); background:#fff; color:var(--accent); cursor:pointer;
+  font-size:17px; line-height:1; display:grid; place-items:center;
+  box-shadow:var(--sombra-2); transition:transform .12s var(--mov), background .12s, color .12s}
+.gb-mas:hover{background:var(--accent); color:#fff; transform:scale(1.14)}

@@ -1,0 +1,31 @@
+
+/* ===================================================================
+   TANDA B: el inspector como sistema, no como acumulacion de parches
+   =================================================================== */
+
+/* UN checkbox para todo el panel, y que se NOTE cuando esta prendido.
+   Antes eran dos familias distintas y ninguna se veia tildada: opciones que
+   cambian de verdad la intranet se veian igual prendidas que apagadas. */
+.insp-check{display:flex; align-items:center; gap:9px; font-size:var(--t-sm); color:var(--ink2);
+  border:1px solid var(--line); border-radius:var(--r-sm); padding:9px 11px; background:#fff;
+  cursor:pointer; transition:background .13s, border-color .13s, color .13s}
+.insp-check:hover{border-color:var(--accent2)}
+.insp-check input{accent-color:var(--accent); width:15px; height:15px; margin:0; flex:0 0 auto}
+.insp-check.on{background:#F3EFE8; border-color:var(--accent2); color:var(--ink); font-weight:600}
+
+/* "donde se escribe el texto": siempre en el mismo lugar y con la misma forma.
+   Caja calida = "esto te lo explico", distinta de un rotulo o de otro campo. */
+#gbInspector .insp-ayuda{background:#F2EFE9; border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:9px 11px; line-height:1.45; color:var(--ink2); margin:0 0 6px}
+
+/* UN solo vocabulario para agregar y quitar */
+.insp-caja{border:1px solid var(--line); border-radius:var(--r-sm); padding:9px; background:#fff;
+  display:flex; flex-direction:column; gap:7px}
+.insp-del{border:none; background:none; color:var(--ink3); cursor:pointer; font-size:var(--t-md);
+  line-height:1; width:24px; height:24px; border-radius:var(--r-xs); flex:0 0 auto;
+  transition:background .13s, color .13s}
+.insp-del:hover{background:#FBEFEC; color:var(--danger)}
+.insp-add{width:100%; border:1px dashed var(--line); background:none; border-radius:var(--r-sm);
+  padding:9px; cursor:pointer; color:var(--ink2); font:inherit; font-size:var(--t-sm);
+  transition:background .13s, border-color .13s, color .13s}
+.insp-add:hover{border-color:var(--accent2); background:var(--bg); color:var(--ink)}

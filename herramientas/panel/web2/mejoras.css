@@ -1,0 +1,190 @@
+/* ============================================================================
+   MEJORAS — tanda 1
+   ============================================================================
+   Se activan agregando la clase `mejoras` al <body> (lo hace mejoras.js, y se
+   puede apagar con ?mejoras=0). Así se compara viendo, no leyendo.
+
+   Cada bloque dice de dónde sale. Las fuentes son de agosto de 2026:
+   Linear (blog oficial de su rediseño), el código fuente de Gutenberg
+   (base-styles/_variables.scss y _mixins.scss), Carbon de IBM, Vercel Geist,
+   NN/g y el patrón de "unsaved changes" de Cloudscape (AWS).
+   ========================================================================== */
+
+
+/* --- 2. LA NAVEGACIÓN NO COMPITE ------------------------------------------
+   Linear, en el blog de su rediseño: bajaron el sidebar "unos cuantos puntos
+   más tenue" y subieron el padding, bajo el principio de "no compitas por una
+   atención que no te ganaste". La barra lateral es orientación, no tarea: se
+   mira una vez y se sigue de largo.
+   Acá: el ítem inactivo baja a 62% de tinta y el activo se gana el 100% más
+   peso. La diferencia la hace el PESO y el color, nunca el tamaño, porque
+   cambiar el tamaño rompería el ritmo vertical de la lista. */
+body.mejoras .nav-s {
+  /* 70%, no menos. Lo probé primero con 62% y axe lo cazó: daba 4,16:1 sobre
+     el papel del panel, abajo del 4,5 que pide AA. El mínimo exacto es 66%;
+     70% deja margen. El apagado tiene un piso, y el piso es la legibilidad:
+     Linear puede irse más abajo porque su fondo es oscuro y ahí el mismo gesto
+     da más contraste. Sobre lino claro, no. */
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  font-weight: 400;
+  transition: color var(--dur-1) var(--mov), background var(--dur-1) var(--mov);
+}
+body.mejoras .nav-s:hover { color: color-mix(in srgb, var(--ink) 88%, transparent); }
+body.mejoras .nav-s.active { color: var(--ink); font-weight: 600; }
+body.mejoras .nav-s .nav-ic { opacity: .72; }
+body.mejoras .nav-s.active .nav-ic { opacity: 1; }
+
+/* --- 3. EL CONTADOR QUE NO PIDE NADA, NO GRITA -----------------------------
+   Regla de badges: el número va sólo cuando cambia una decisión. "Cartelera 3"
+   son borradores sin publicar, o sea trabajo pendiente: ese se lee. "Módulos 11"
+   es inventario, no tarea. Si todos los contadores pesan igual, ninguno informa.
+   El de inventario baja a 45% y peso normal; el de acción conserva su peso. */
+body.mejoras .nav-n {
+  /* Acá me equivoqué feo la primera vez: puse opacidad .45 y el contador quedó
+     en 2,03:1, la mitad de lo que pide AA. Un dato que no se puede leer no es
+     "secundario", es un dato roto.
+     La jerarquía se hace con PESO y TAMAÑO, no bajando el contraste hasta que
+     el texto desaparece. El de inventario queda legible pero liviano; el que
+     pide una acción gana peso y color pleno. */
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  opacity: 1;
+  font-weight: 400;
+  font-size: var(--t-micro, 11px);
+}
+body.mejoras .nav-s.active .nav-n,
+body.mejoras .nav-n.accion { color: var(--ink); font-weight: 500; }
+
+/* --- 4. EL ESTADO NO ES UN BOTÓN ------------------------------------------
+   El chip ya existía y ya estaba separado de la acción: eso estaba bien
+   resuelto. Lo que quedaba es que TENÍA FORMA de botón — píldora completa,
+   fondo relleno y peso 700 — al lado de "Publicar", que es un botón de verdad.
+   Cloudscape (AWS) y el hilo de Decap CMS lo dicen igual: el indicador de
+   estado no es un botón y no puede vestirse como uno.
+   Ahora es texto con un punto: mismo mensaje, cero ambigüedad sobre si se toca. */
+body.mejoras .chip-estado {
+  background: transparent;
+  border-radius: 0;
+  height: auto;
+  padding: 0 0 0 14px;
+  font-weight: 500;
+  font-size: var(--t-mini, 12.5px);
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+  letter-spacing: 0;
+  position: relative;
+}
+body.mejoras .chip-estado::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 50%;
+  width: 6px; height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: #5B7A5B;   /* verde salvia: convive con el lino, no es semáforo */
+}
+
+/* --- 5. EL HOVER DE LA PALETA ES UN VELO, NO UN FONDO ----------------------
+   Gutenberg no cambia el fondo del botón al pasar el mouse: superpone una capa
+   del 4% del color de acento en un ::after. La diferencia importa sobre papel
+   cálido — un fondo sólido apaga el lino, un velo lo tiñe.
+   Medidas del mismo archivo: grilla de 3 columnas, título 12px, íconos
+   clampeados entre 20 y 24px para que ninguno rompa la grilla. */
+body.mejoras .gb-mini,
+body.mejoras .gb-b {
+  position: relative;
+  transition: color var(--dur-1) var(--mov);
+}
+body.mejoras .gb-mini::after,
+body.mejoras .gb-b::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity var(--dur-1) var(--mov);
+}
+body.mejoras .gb-mini:hover::after,
+body.mejoras .gb-b:hover::after { opacity: .04; }
+body.mejoras .gb-mini svg,
+body.mejoras .gb-b svg { min-width: 20px; max-width: 24px; }
+
+/* --- 6. LA SELECCIÓN SE LEE SOBRE UNA FOTO ---------------------------------
+   Mixin `selected-block-outline()` de Gutenberg: el contorno va con offset
+   NEGATIVO (hacia adentro, así no se corta contra el bloque vecino) más un halo
+   interno blanco al 70%. El halo es lo que hace que el borde se vea sobre
+   cualquier fondo: un borde marrón sobre la foto de un sillón oscuro
+   desaparece; con el halo, no.
+   Va en un pseudo-elemento con pointer-events:none para no tocar el layout del
+   documento real, que es todo el punto de un editor visual. */
+body.mejoras .gb-block { position: relative; }
+body.mejoras .gb-block::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  border-radius: var(--r-xs, 6px);
+  transition: box-shadow var(--dur-1) var(--mov);
+}
+body.mejoras .gb-block:hover::after {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+body.mejoras .gb-block.sel::after,
+body.mejoras .gb-block.selected::after,
+body.mejoras .gb-block[data-sel="1"]::after {
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    inset 0 0 0 2.5px rgba(255,255,255,.7);
+}
+
+/* --- 7. TRES PESOS, NINGUNO MÁS -------------------------------------------
+   400 cuerpo · 500 énfasis y etiquetas · 600 títulos. El 700 en una interfaz
+   de trabajo grita sin agregar información: la jerarquía ya la hacen el color
+   y el espacio. (En el contenido publicado el 700 sigue valiendo: esto es
+   sólo para el cromo de la herramienta.) */
+body.mejoras .btn,
+body.mejoras .chip-estado,
+body.mejoras .nav-t,
+body.mejoras .link-discreto { font-weight: 500; }
+body.mejoras h1, body.mejoras h2, body.mejoras h3,
+body.mejoras .editor-bar-tit { font-weight: 600; }
+
+/* --- 8. EL "+" ENTRE BLOQUES NECESITA COLCHÓN ------------------------------
+   Gutenberg documentó el problema con todas las letras: apuntar al hueco entre
+   dos bloques "exige una precisión difícil" con el mouse. El hueco real mide
+   8 a 16px; el área que se puede tocar tiene que ser de al menos 24, aunque la
+   línea que se ve siga siendo de 1px. */
+body.mejoras .gb-mas-entre {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* --- 9. LOS ATAJOS SE MUESTRAN, Y ACÁ SON CTRL -----------------------------
+   El componente Keyboard Input de Vercel cambia ⌘ por Ctrl según el sistema,
+   justamente porque escribirlo a mano le manda el símbolo equivocado a la
+   mitad de la gente. Este equipo trabaja en Windows: siempre Ctrl. */
+body.mejoras kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 19px; padding: 0 5px;
+  font-family: inherit; font-size: 11px; font-weight: 500;
+  line-height: 1; letter-spacing: 0;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 10. PROFUNDIDAD POR LÍNEA, NO POR SOMBRA -----------------------------
+   Linear lo dice en su blog: la profundidad sale de una escalera de superficies
+   más un borde de 1px, y no usan sombras. Sobre un fondo cálido una sombra se
+   lee como suciedad. Se bajan las sombras del cromo; las del papel publicado
+   no se tocan. */
+body.mejoras .mp-post,
+body.mejoras .mod-card,
+body.mejoras .col-item {
+  box-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+body.mejoras .btn.con-ico{display:inline-flex;align-items:center;gap:6px}
+body.mejoras .btn-icon.con-ico{gap:0}

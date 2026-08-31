@@ -1,0 +1,3 @@
+﻿; COPIA este archivo como  clave-equipo.iss  y pone la clave real.
+; clave-equipo.iss esta gitignoreado a proposito (no sube la clave al repo).
+#define PubKey     "PEGA_ACA_LA_CLAVE_DEL_EQUIPO"

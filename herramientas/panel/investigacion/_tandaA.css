@@ -1,0 +1,59 @@
+
+/* ===================================================================
+   TANDA A del rediseño: que el panel DIGA en que estado esta.
+   (auditoria del 8-ago-2026; el plan completo esta en el Escritorio)
+   =================================================================== */
+
+/* ---- A2: un control aislado tiene que verse como un control ----
+   El borde de todo era --line (1,33:1): los botones fantasma parecian
+   texto suelto. Se aplica por lista explicita, NO con `button, input`:
+   un borde fuerte en las 25 tarjetas de la paleta seria una reja. */
+.btn:not(.btn-pub):not(.active):not(.btn-done):not(.btn-danger),
+.tab, .col-act, .ctipo, .gal-add, .gb-insp-acts button,
+.fld input[type=text], .fld input[type=password], .fld textarea,
+.insp-input, .insp-sel, .doc-bar-in, .col-palabra input{border-color:var(--linea-int)}
+.tab:hover, .col-act:hover, .ctipo:hover{border-color:var(--accent)}
+
+/* ---- A2: apagado se ve apagado (y :hover ya no lo ilumina) ---- */
+.btn:disabled, .btn[disabled], .col-act:disabled, .vt:disabled, .seg-b:disabled{
+  opacity:.42; cursor:not-allowed; box-shadow:none; border-color:var(--line) !important}
+.btn:disabled:hover{border-color:var(--line) !important}
+
+/* ---- A3: foco visible ----
+   Habia 6 `outline:none` justo sobre las superficies de edicion y ningun
+   reemplazo legible: quien arma un documento con Tab no sabia donde estaba.
+   Anillo PEGADO (2px) = "estas escribiendo aca".
+   Anillo LEJOS (7px, .gb-block.is-selected) = "esto esta seleccionado". */
+:where(a,button,input,select,textarea,summary,[tabindex],[contenteditable]):focus-visible{
+  outline:var(--foco); outline-offset:2px}
+.gb-block [contenteditable]:focus-visible,
+.doc-preview .blk-img figcaption:focus-visible,
+.doc-preview .blk-video figcaption:focus-visible,
+.doc-preview .dl-section .gtitle:focus-visible{outline:var(--foco); outline-offset:2px}
+.gcard-mini:focus-within .gx, .gx:focus-visible{opacity:1}
+/* sobre fondo oscuro --accent da 2,76:1: ahi va --accent2 (4,33:1) */
+#gbFloat button:focus-visible{outline-color:var(--accent2)}
+
+/* ---- A1: el enlace al Kit era discreto por OPACIDAD (1,79:1 = ilegible).
+   Ahora es discreto por tamaño y por estar al pie, que es lo correcto. ---- */
+.link-discreto{opacity:1; color:var(--ink3)}
+.link-discreto:hover{background:var(--bg); color:var(--ink)}
+
+/* ---- A4: el pendiente de publicar se nota al entrar (una sola vez) ---- */
+#btnPublicar.btn-pub{animation:movPulso 2.6s ease-out 1 .4s}
+
+/* ---- A8: que los 9 modulos entren en una notebook de 1366x768 ----
+   Fila de 68px + 10 de gap = 692px de lista, y arriba se comen 154px: entraban
+   6 de 9, sin ninguna señal de que la lista seguia. En un monitor grande esto
+   no cambia nada. */
+@media (max-height:820px){
+  .main{padding:16px 28px 40px}
+  .main-head{margin-bottom:12px}
+  .main-head h2{font-size:18px}
+  .mod-list{gap:7px}
+  .mod-card{padding:8px 12px; gap:12px}
+  .mod-ic{width:34px; height:34px; border-radius:var(--r-sm)}
+  .mod-ic svg{width:18px; height:18px}
+  .mod-add{padding:10px; margin-top:7px}
+  .pie-discreto{margin:16px 0 4px}
+}
