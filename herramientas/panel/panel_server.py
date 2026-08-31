@@ -269,7 +269,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 32
+VERSION = 33
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -277,15 +277,15 @@ VERSION = 32
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.3.2"
-VERSION_LABEL = "1.3.2 - el panel abre en el navegador"
+VERSION_PUBLICA = "1.3.3"
+VERSION_LABEL = "1.3.3 - se acabaron las pantallas viejas"
 VERSION_NOTES = (
-                 "El panel ahora abre como una pestania normal en tu navegador "
-                 "(localhost), en vez de la ventana separada de antes. Es la misma "
-                 "pantalla de siempre, con la barra de direcciones a la vista; si "
-                 "el panel ya estaba abierto, el acceso directo te abre otra "
-                 "pestania hacia el mismo lugar. Incluye el redisenio completo en "
-                 "blanco con la estructura nueva.")
+                 "Cada version del panel ahora firma sus propios archivos de "
+                 "pantalla: el navegador no puede volver a mostrar una pantalla "
+                 "guardada de una version anterior, ni siquiera de antes de este "
+                 "arreglo. Ya no hace falta apretar Ctrl+Shift+R despues de "
+                 "actualizar. Incluye el redisenio completo en blanco y la "
+                 "apertura como pestania del navegador.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2541,6 +2541,32 @@ class Handler(BaseHTTPRequestHandler):
                     return       # el navegador corto la descarga (normal al hacer seek)
                 restante -= len(trozo)
 
+    def _servir_index(self):
+        """Sirve index.html con `?v=<VERSION>` inyectado en cada css/js local.
+        La direccion de cada archivo CAMBIA con la version -> la cache vieja
+        del navegador (guardada bajo la direccion sin ?v=) queda huerfana y no
+        se puede volver a usar. Es la garantia que los headers no dan: el
+        no-store solo protege lo que se baja DESPUES de tenerlo, mientras que
+        esto invalida tambien lo que el navegador guardo ANTES del arreglo."""
+        try:
+            with open(os.path.join(WEB, "index.html"), encoding="utf-8") as f:
+                html = f.read()
+        except OSError:
+            self.send_error(404)
+            return
+        html = re.sub(r'((?:href|src)="/(?:static|intranet)/[^"?]+)"',
+                      r'\1?v=%d"' % VERSION, html)
+        cuerpo = html.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Cache-Control", "no-store, must-revalidate")
+        self.send_header("Content-Length", str(len(cuerpo)))
+        self.end_headers()
+        try:
+            self.wfile.write(cuerpo)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
     def log_message(self, *a):
         pass  # silenciar log ruidoso
 
@@ -2550,7 +2576,7 @@ class Handler(BaseHTTPRequestHandler):
         path = unquote(u.path)
 
         if path == "/" or path == "/index.html":
-            return self._file(os.path.join(WEB, "index.html"), "text/html; charset=utf-8")
+            return self._servir_index()
         if path.startswith("/static/"):
             rel = path[len("/static/"):]
             return self._servir_estatico(WEB, rel)
