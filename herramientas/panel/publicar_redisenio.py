@@ -27,9 +27,12 @@ nadie y las PCs que ya tomaron la primera quedan clavadas.
 """
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
-NUEVA_VERSION = 28
-NUEVA_PUBLICA = "1.3.0"
-NUEVO_LABEL = "1.3.0 - el panel en blanco, igual que la intranet"
+# La proxima version sale SOLA de la que este publicada + 1: asi no hay que
+# editar este archivo cada vez, ni se repite un numero (una version repetida no
+# la baja nadie, porque el auto-update compara int(remota) > VERSION).
+NUEVA_VERSION = None  # se calcula abajo
+NUEVA_PUBLICA = None  # se toma la del fuente si no se cambia
+NUEVO_LABEL = "el panel en blanco (ajustes de color)"
 NUEVAS_NOTAS = ("El panel cambio de color: donde antes era crema ahora es blanco, igual que "
                 "la intranet que ven los vendedores. Asi lo que ves mientras editas se "
                 "parece a lo que se publica. El boton Publicar pasa a negro para que se "
@@ -76,8 +79,10 @@ vj = os.path.join(repo_raiz, "panel", "version.json")
 if os.path.isfile(vj):
     pub = json.load(io.open(vj, encoding="utf-8"))
     print("    publicado ahora: v%s - %s" % (pub.get("version"), pub.get("label")))
-    if int(pub.get("version", 0)) >= NUEVA_VERSION:
-        morir("ya hay publicada una v%s. Subí NUEVA_VERSION arriba de ese numero." % pub.get("version"))
+    NUEVA_VERSION = int(pub.get("version", 0)) + 1
+    print("    la nueva va a ser la v%d" % NUEVA_VERSION)
+else:
+    morir("no encuentro panel/version.json para saber que numero sigue")
 
 # ---------------------------------------------------------------- 1. el CSS
 paso(1, "El CSS del rediseño ya esta en web2/")
@@ -113,8 +118,9 @@ if actual >= NUEVA_VERSION:
     morir("VERSION ya esta en %d. Subí NUEVA_VERSION arriba de ese numero." % actual)
 src = re.sub(r"^VERSION\s*=\s*\d+\s*$", "VERSION = %d" % NUEVA_VERSION, src, count=1, flags=re.M)
 
-src = re.sub(r'^VERSION_PUBLICA\s*=\s*".*?"\s*$',
-             'VERSION_PUBLICA = "%s"' % NUEVA_PUBLICA, src, count=1, flags=re.M)
+if NUEVA_PUBLICA:
+    src = re.sub(r'^VERSION_PUBLICA\s*=\s*".*?"\s*$',
+                 'VERSION_PUBLICA = "%s"' % NUEVA_PUBLICA, src, count=1, flags=re.M)
 src = re.sub(r'^VERSION_LABEL\s*=\s*".*?"\s*$',
              'VERSION_LABEL = "%s"' % NUEVO_LABEL, src, count=1, flags=re.M)
 
