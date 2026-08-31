@@ -25,14 +25,13 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.4.0"
-NUEVO_LABEL = "1.4.0 - el panel nuevo"
-NUEVAS_NOTAS = ("El panel se renovo entero, con el redisenio aprobado: la cartelera es un "
-                "muro con su publicador en ventana, los modulos son tarjetas, el editor "
-                "tiene el papel al centro y la paleta de bloques con miniaturas al costado, "
-                "y aparecen Archivadas (con la papelera adentro) y Metricas (vista previa). "
-                "Todo lo de siempre sigue en su lugar: publicar, historial, avisar novedad "
-                "y las actualizaciones automaticas.")
+NUEVA_PUBLICA = "1.4.1"
+NUEVO_LABEL = "1.4.1 - el menu queda fijo al editar"
+NUEVAS_NOTAS = ("Al entrar a editar un modulo, la columna del menu (Cartelera, Modulos, "
+                "Metricas, Datos) ahora queda fija a la izquierda, como en el disenio: el "
+                "editor ya no tapa la pantalla entera. Si tocas una seccion del menu "
+                "mientras editas, el panel sale del editor por la puerta de siempre: con "
+                "cambios sin guardar te pregunta antes.")
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",
@@ -110,7 +109,18 @@ src = re.sub(r'^VERSION_LABEL\s*=\s*".*?"\s*$',
 i = src.find("VERSION_NOTES")
 if i < 0:
     morir("no encuentro VERSION_NOTES en panel_server.py")
-j = src.index("\n", src.index(")", i))
+# El cierre del bloque es el ")" que esta FUERA de las comillas: el texto de
+# las notas puede traer parentesis adentro (ya paso, y cortaba el bloque a la
+# mitad dejando lineas colgadas -> SyntaxError al compilar).
+k, dentro = src.index("(", i) + 1, False
+while True:
+    c = src[k]
+    if c == '"':
+        dentro = not dentro
+    elif c == ")" and not dentro:
+        break
+    k += 1
+j = src.index("\n", k)
 troz = ['VERSION_NOTES = (']
 palabras, linea = NUEVAS_NOTAS.split(" "), ""
 for w in palabras:

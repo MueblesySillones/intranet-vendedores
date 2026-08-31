@@ -638,6 +638,10 @@ function openDetalle(idx) {
 }
 
 function mostrarDetalle(on) {
+  // El estado del editor se fija PRIMERO: así, al salir, volverASeccion ya lo
+  // ve cerrado y el guard del menú (irASeccion, muro.js) no vuelve a entrar.
+  $('#viewDetalle').hidden = !on;
+  document.body.classList.toggle('editing', on);
   // el rediseño tiene varias secciones: se esconden todas y al salir se vuelve
   // a la que estabas (lo resuelve volverASeccion, de muro.js)
   if (on) document.querySelectorAll('.lienzo > .main-sec').forEach(v => {
@@ -645,8 +649,6 @@ function mostrarDetalle(on) {
   });
   else if (typeof volverASeccion === 'function') volverASeccion();
   else $('#viewModulos').hidden = false;
-  $('#viewDetalle').hidden = !on;
-  document.body.classList.toggle('editing', on);
   if (!on) { pararEdicion(); editorSnapshot = null; $('#detMoreMenu').hidden = true; cargarModulos(); }
   window.scrollTo(0, 0);
 }

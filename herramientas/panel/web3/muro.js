@@ -22,6 +22,16 @@
   }
   function irASeccion(sec) {
     if (SECS.indexOf(sec) < 0) sec = 'muro';
+    /* Con el menú a la vista mientras se edita, tocar una sección tiene que
+       SALIR del editor primero — por la puerta de siempre, que pregunta si
+       hay cambios sin guardar. Al cerrar, volverASeccion() trae hasta acá. */
+    const ed = document.getElementById('viewDetalle');
+    if (ed && !ed.hidden) {
+      SEC = sec;
+      const back = document.getElementById('detBack');
+      if (back) back.click();
+      return;
+    }
     SEC = sec;
     SECS.forEach(s => { const v = vistaDe(s); if (v) v.hidden = s !== sec; });
     document.querySelectorAll('#navSecs .item').forEach(b =>
