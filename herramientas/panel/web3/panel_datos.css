@@ -1,0 +1,636 @@
+/* =====================================================================
+   SECCIÓN "DATOS" — estilos (pieza D)
+   Va DESPUÉS de styles.css y rediseno.css: usa sus variables y sus
+   idiomas (la pastilla, el filo de 3px a la izquierda, el chip tenue) en
+   vez de traer una paleta nueva. Acá no se define ni un color suelto que
+   no salga de un token o de un tono que ya esté en rediseno.css.
+
+   El criterio de color es el mismo que dejó escrito el compositor: el
+   resaltado NUNCA es el color a full, sino el mismo tono en tres
+   intensidades — fondo al 8%, filo al ~30%, texto al 100%.
+   ===================================================================== */
+
+/* Los tres tonos que se usan acá, sacados de rediseno.css para no inventar:
+     --dt-pub    lo publicado          = --ok  (el mismo verde del punto
+                                        "el sitio está online" de la lateral)
+     --dt-mal    lo grave / lo trabado = #B4231F (el de .mp-mi.del)
+     --dt-ojo    lo que hay que mirar  = --warn */
+.dt{
+  --dt-pub:91,122,91;
+  --dt-mal:180,35,31;
+  --dt-ojo:176,122,74;
+  max-width:1180px; margin:0 auto;
+}
+
+.dt .dt-ic{ display:inline-flex; width:14px; height:14px; flex:0 0 auto; }
+.dt .dt-ic svg{ width:100%; height:100%; fill:none; stroke:currentColor;
+  stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.dt .dt-rojo{ color:rgb(var(--dt-mal)); }
+
+/* =====================================================================
+   LA BARRA DEL RECUENTO
+   Pegada arriba y siempre a la vista. Es lo único que separa "mirar
+   números" de "publicarlos", así que no puede quedar fuera de pantalla
+   cuando se scrollea el tablero.
+   ===================================================================== */
+.dt-barra{
+  position:sticky; top:0; z-index:6;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin:0 0 20px; padding:12px 16px;
+  background:var(--panel); border:1px solid var(--line);
+  border-left:3px solid var(--line); border-radius:var(--r-lg);
+  box-shadow:var(--sombra-1);
+  transition:border-color var(--dur-1) var(--mov), background var(--dur-1) var(--mov);
+}
+/* ⚠️ El tinte va como background-IMAGE sobre el color opaco, no como
+   background-color. Con un rgba() suelto la barra quedaba traslúcida y,
+   como está pegada arriba, el tablero se veía pasar POR DETRÁS del
+   recuento: justo el dato que no se puede leer mal. */
+.dt-barra.hay{
+  background-image:linear-gradient(rgba(var(--dt-pub),.08), rgba(var(--dt-pub),.08));
+  border-color:rgba(var(--dt-pub),.3);
+  border-left-color:rgb(var(--dt-pub));
+}
+.dt-cuenta{ font-size:var(--t-lg); color:var(--ink2); flex:0 0 auto;
+  font-variant-numeric:tabular-nums; }
+.dt-cuenta b{ color:var(--ink); font-weight:700; }
+.dt-barra.hay .dt-cuenta b.dt-cuenta-n{ color:rgb(var(--dt-pub)); }
+
+/* la barrita: el mismo dato que el texto, para leerlo sin leerlo */
+.dt-medidor{ width:104px; height:6px; flex:0 0 auto; border-radius:var(--r-full);
+  background:var(--mesa); overflow:hidden; }
+.dt-medidor i{ display:block; height:100%; border-radius:var(--r-full);
+  background:rgb(var(--dt-pub)); transition:width var(--dur-2) var(--mov); }
+.dt-nota{ flex:1 1 220px; min-width:0; font-size:var(--t-sm); color:var(--ink3); }
+.dt-barra.hay .dt-nota{ color:var(--ink2); }
+.dt-apagar{ flex:0 0 auto; }
+
+/* =====================================================================
+   LAS SECCIONES
+   ===================================================================== */
+.dt-sec{ margin-bottom:30px; }
+.dt-sec-h{ margin-bottom:12px; }
+.dt-sec-h h3{ font-size:var(--t-xl); font-weight:700; letter-spacing:-.01em;
+  color:var(--ink); margin:0; }
+.dt-sec-h .muted{ font-size:var(--t-sm); color:var(--ink3); margin:3px 0 0; }
+.dt .vacio{ padding:34px 24px; }
+
+/* =====================================================================
+   1 · LAS COLUMNAS QUE ENCONTRÓ
+   auto-fill con mínimo de 250px: en el lienzo de 1180 entran cuatro, y a
+   1100px de ventana (804 de lienzo) entran tres. Nunca hay que arrastrar
+   la pantalla para el costado.
+   ===================================================================== */
+.dt-cols{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; }
+/* el tablero se pinta por innerHTML: el fade corto al aparecer explica que
+   los datos recien llegaron/cambiaron (opacity sola: el grid no se mueve) */
+.dt-col{ animation:movAparece var(--dur-1) ease both; }
+.dt-col{ background:var(--panel); border:1px solid var(--line);
+  border-left:3px solid var(--line); border-radius:var(--r-lg); padding:13px 15px;
+  min-width:0; transition:border-color var(--dur-1) ease-out, box-shadow var(--dur-1) ease-out; }
+.dt-col:hover{ border-color:var(--accent2); border-left-color:var(--accent2);
+  box-shadow:var(--sombra-1); }
+
+/* una columna con datos de clientes se tiene que ver DISTINTA de lejos, no
+   solo cuando se la lee: filo rojo pleno y fondo teñido */
+.dt-col.sensible{ background:rgba(var(--dt-mal),.045);
+  border-color:rgba(var(--dt-mal),.26); border-left-color:rgb(var(--dt-mal)); }
+.dt-col.sensible:hover{ border-color:rgba(var(--dt-mal),.45);
+  border-left-color:rgb(var(--dt-mal)); box-shadow:0 2px 12px rgba(var(--dt-mal),.12); }
+
+.dt-col-h{ display:flex; align-items:center; gap:8px; }
+.dt-col-n{ flex:1; min-width:0; font-size:var(--t-md); font-weight:650; color:var(--ink);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* el rótulo del tipo: los tonos salen de los chips que ya existen en
+   rediseno.css (.mp-chip.arch, .mp-chip.prog, .mp-chip.venc…) */
+.dt-tipo{ flex:0 0 auto; height:20px; padding:0 9px; border-radius:var(--r-full);
+  display:inline-flex; align-items:center; font-size:var(--t-xs); font-weight:700;
+  letter-spacing:.02em; background:var(--mesa); color:var(--ink3); }
+.dt-tipo.t-fecha{ background:#EAF0F6; color:#1A4A8A; }
+.dt-tipo.t-categoria{ background:var(--accent-soft); color:var(--accent-ink); }
+.dt-tipo.t-numero{ background:#E7EFF2; color:#255C74; }
+.dt-tipo.t-motivo{ background:#F6EDE2; color:#8A5A2C; }
+.dt-tipo.t-libre{ background:var(--mesa); color:var(--ink3); }
+.dt-tipo.t-contacto{ background:rgba(var(--dt-mal),.12); color:rgb(var(--dt-mal)); }
+
+.dt-col-traba{ display:flex; align-items:flex-start; gap:7px; margin-top:9px;
+  padding:8px 10px; border-radius:var(--r-sm);
+  background:rgba(var(--dt-mal),.09); color:rgb(var(--dt-mal));
+  font-size:var(--t-xs); line-height:1.45; }
+.dt-col-traba .dt-ic{ margin-top:1px; }
+.dt-col-traba b{ font-weight:750; }
+
+.dt-col-cif{ display:flex; flex-wrap:wrap; gap:3px 12px; margin-top:10px;
+  font-size:var(--t-xs); color:var(--ink3); font-variant-numeric:tabular-nums; }
+.dt-col-cif b{ color:var(--ink2); font-weight:700; }
+.dt-col-cif .flojo b{ color:var(--warn); }
+.dt-col-x{ margin-top:8px; font-size:var(--t-xs); color:var(--ink3); }
+.dt-col-x b{ color:var(--ink2); font-weight:650; }
+
+/* los valores más repetidos, con una barrita al lado: es la misma idea que
+   .m-barras pero en miniatura, porque acá no es un número publicable sino
+   una pista de qué tiene adentro la columna */
+.dt-vals{ list-style:none; margin:10px 0 0; padding:0;
+  display:flex; flex-direction:column; gap:4px; }
+.dt-vals li{ display:flex; align-items:center; gap:8px; min-width:0; }
+.dv-t{ flex:1 1 auto; min-width:0; font-size:var(--t-xs); color:var(--ink2);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dv-b{ flex:0 0 46px; height:5px; border-radius:var(--r-full); background:var(--mesa);
+  overflow:hidden; }
+.dv-b i{ display:block; height:100%; background:var(--accent2); border-radius:var(--r-full); }
+.dv-n{ flex:0 0 auto; font-size:var(--t-xs); font-weight:700; color:var(--ink2);
+  font-variant-numeric:tabular-nums; }
+
+/* =====================================================================
+   2 · LOS AVISOS
+   ===================================================================== */
+.dt-filtros{ margin-bottom:10px; }
+.dt-avisos{ display:flex; flex-direction:column; gap:8px; }
+.dt-av{ background:var(--panel); border:1px solid var(--line);
+  border-left:3px solid var(--ink3); border-radius:var(--r-lg); padding:13px 16px; }
+.dt-av[hidden]{ display:none; }
+.dt-av.g-grave{ border-left-color:rgb(var(--dt-mal));
+  border-color:rgba(var(--dt-mal),.24); }
+.dt-av.g-aviso{ border-left-color:rgb(var(--dt-ojo)); }
+.dt-av-h{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.dt-av-t{ flex:1 1 260px; min-width:0; font-size:var(--t-md); font-weight:650;
+  color:var(--ink); line-height:1.4; }
+.dt-grav{ flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; height:20px;
+  padding:0 9px; border-radius:var(--r-full); font-size:var(--t-xs); font-weight:700;
+  letter-spacing:.02em; background:var(--mesa); color:var(--ink3); }
+.dt-grav.g-grave{ background:rgba(var(--dt-mal),.11); color:rgb(var(--dt-mal)); }
+.dt-grav.g-aviso{ background:#F6EDE2; color:#8A5A2C; }
+.dt-grav .dt-ic{ width:11px; height:11px; }
+.dt-av-d{ margin:5px 0 0; font-size:var(--t-sm); color:var(--ink2); line-height:1.5; }
+
+.dt-ejem{ list-style:none; margin:9px 0 0; padding:0;
+  display:flex; flex-direction:column; gap:3px; }
+.dt-ejem li{ font-size:var(--t-xs); color:var(--ink3); padding:4px 9px;
+  background:var(--hoja); border-radius:var(--r-xs);
+  overflow:hidden; text-overflow:ellipsis; }
+
+.dt-av-p{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px; }
+.dt-av-ir{ height:30px; padding:0 13px; font-size:var(--t-sm); display:inline-flex;
+  align-items:center; gap:7px; }
+
+/* las filas concretas donde está el problema: se abren a pedido, porque
+   veinte chips arriba de cada aviso tapaban los avisos */
+.dt-filas{ display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;
+  padding-top:10px; border-top:1px solid var(--line); }
+.dt-filas[hidden]{ display:none; }
+.dt-fila{ display:inline-flex; align-items:center; height:24px; padding:0 10px;
+  border-radius:var(--r-full); border:1px solid var(--line); background:transparent;
+  font-family:inherit; font-size:var(--t-xs); color:var(--ink2);
+  font-variant-numeric:tabular-nums; }
+button.dt-fila{ cursor:pointer; transition:background var(--dur-1), border-color var(--dur-1), color var(--dur-1); }
+button.dt-fila:hover{ background:var(--hoja); border-color:var(--accent2); color:var(--ink); }
+
+/* =====================================================================
+   3 · EL TABLERO   +   4 · LOS INTERRUPTORES
+
+   DECISIÓN QUE MÁS COSTÓ: el número NUNCA se apaga visualmente.
+   El primer intento grisaba (filter:saturate) las tarjetas apagadas, y de
+   lejos se leía perfecto qué estaba publicado… pero el tablero es privado
+   y marketing lo usa para MIRAR: con once de catorce números en gris, la
+   pantalla dejaba de servir para lo que se hizo. El estado se cuenta
+   entonces en el MARCO — filo, tinte y chapa — y el número queda siempre
+   a full. Es el mismo recurso que ya usan .mf.on y .co-tipo.on.
+   ===================================================================== */
+.dt-nums{ display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:12px;
+  align-items:start; }
+.dt-num{ min-width:0; background:var(--panel);
+  border:1px dashed var(--line); border-left:3px solid var(--line);
+  border-radius:var(--r-lg); padding:13px 15px 11px;
+  display:flex; flex-direction:column; gap:11px;
+  transition:border-color var(--dur-1) var(--mov), background var(--dur-1) var(--mov),
+             box-shadow var(--dur-1) var(--mov); }
+/* los cortes, las tablas y los podios necesitan ancho: una barra de 90px no
+   se lee, y un podio de tres en dos columnas deja el tercero colgando.
+   Si solo entra una columna, la grilla recorta el span sola. */
+.dt-num.ancho{ grid-column:span 2; }
+
+/* PUBLICADO: filo pleno a la izquierda, marco al 30%, fondo al 7% */
+.dt-num.on{ border-style:solid; background:rgba(var(--dt-pub),.07);
+  border-color:rgba(var(--dt-pub),.3); border-left-color:rgb(var(--dt-pub)); }
+.dt-num.on:hover{ box-shadow:0 2px 12px rgba(var(--dt-pub),.16); }
+
+/* TRABADO: nunca va a tener interruptor, y se dice con el mismo rojo que
+   la columna sensible de arriba, para que se entienda que es lo mismo */
+.dt-num.trabado{ border-style:solid; background:rgba(var(--dt-mal),.045);
+  border-color:rgba(var(--dt-mal),.24); border-left-color:rgb(var(--dt-mal)); }
+.dt-num.incierto{ background:var(--hoja); }
+
+.dt-num-h{ display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; }
+.dt-num-t{ flex:1 1 150px; min-width:0; font-size:var(--t-md); font-weight:650;
+  color:var(--ink); line-height:1.4; text-wrap:balance; }
+.dt-chip{ flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; height:20px;
+  padding:0 9px; border-radius:var(--r-full); font-size:var(--t-xs); font-weight:750;
+  letter-spacing:.04em; }
+.dt-chip.pub{ background:rgb(var(--dt-pub)); color:#fff; }
+.dt-chip.lock{ background:rgba(var(--dt-mal),.11); color:rgb(var(--dt-mal)); }
+.dt-chip .dt-ic{ width:11px; height:11px; }
+
+/* La hoja de adentro es un .doc-preview de verdad: mismas clases, mismos
+   colores, mismo CSS que la vista previa del editor. Solo se le saca el
+   alto mínimo, que allá existe para que un documento vacío igual parezca
+   una hoja y acá no hace falta porque nunca está vacío. */
+.dt-num-vista.doc-preview{ min-height:0; padding:15px 16px; }
+.dt-num.trabado .dt-num-vista{ opacity:.82; }
+
+/* .m-barras nació para etiquetas de una palabra: una sucursal, un mes.
+   Acá una etiqueta puede ser un motivo entero escrito a mano ("No respondió,
+   se le envió mensaje"), así que la columna crece, se alinea a la izquierda
+   como se lee, y lo que no entra corta con puntos suspensivos — con el texto
+   completo en el title. Antes desbordaba la tarjeta. */
+.dt-num-vista .m-barras .bl{ width:150px; text-align:left; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; }
+
+/* cuando no hay certeza no se dibuja número: se dice que no se puede */
+.dt-num-nose{ display:flex; flex-direction:column; gap:3px; padding:14px 16px;
+  border:1px dashed var(--line); border-radius:var(--r-md); background:var(--panel); }
+.dt-num-nose b{ font-size:var(--t-md); color:var(--ink2); }
+.dt-num-nose span{ font-size:var(--t-sm); color:var(--ink3); line-height:1.45; }
+
+.dt-num-p{ display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin-top:auto; padding-top:10px; border-top:1px solid var(--line); }
+.dt-num.on .dt-num-p{ border-top-color:rgba(var(--dt-pub),.22); }
+.dt-num.trabado .dt-num-p{ border-top-color:rgba(var(--dt-mal),.18); }
+.dt-num-sobre{ margin-left:auto; font-size:var(--t-xs); color:var(--ink3);
+  font-variant-numeric:tabular-nums; }
+.dt-num-traba{ display:inline-flex; align-items:center; gap:7px;
+  font-size:var(--t-xs); color:rgb(var(--dt-mal)); line-height:1.4; }
+/* "no se pudo calcular" no es lo mismo que "tiene datos de clientes": la
+   primera se arregla, la segunda no se arregla nunca. Distinto color para
+   que no se lean como el mismo problema. */
+.dt-num-traba.incierto{ color:var(--ink3); }
+
+/* --------------------------- el interruptor ---------------------------
+   Es un <input type=checkbox> de verdad, escondido: así se prende con el
+   teclado y con el lector de pantalla sin escribir una línea, y el estado
+   real vive en el DOM y no en una variable de JavaScript que se puede
+   desincronizar de lo que se ve. */
+.dt-sw{ position:relative; display:inline-flex; align-items:center; gap:9px;
+  cursor:pointer; user-select:none; padding:3px 3px 3px 0; border-radius:var(--r-full); }
+.dt-sw-i{ position:absolute; opacity:0; width:1px; height:1px;
+  margin:0; pointer-events:none; }
+.dt-sw-p{ position:relative; width:38px; height:22px; flex:0 0 auto;
+  border-radius:var(--r-full); background:var(--mesa);
+  border:1px solid var(--line);
+  transition:background var(--dur-1) var(--mov), border-color var(--dur-1) var(--mov); }
+.dt-sw-p::after{ content:''; position:absolute; top:2px; left:2px;
+  width:16px; height:16px; border-radius:50%; background:var(--panel);
+  box-shadow:0 1px 2px rgba(40,35,28,.25);
+  transition:transform var(--dur-1) var(--mov); }
+.dt-sw-t{ font-size:var(--t-sm); font-weight:600; color:var(--ink3);
+  transition:color var(--dur-1) var(--mov); }
+.dt-sw:hover .dt-sw-p{ border-color:var(--accent2); }
+.dt-sw-i:checked + .dt-sw-p{ background:rgb(var(--dt-pub));
+  border-color:rgb(var(--dt-pub)); }
+.dt-sw-i:checked + .dt-sw-p::after{ transform:translateX(16px); }
+.dt-sw-i:checked ~ .dt-sw-t{ color:rgb(var(--dt-pub)); font-weight:700; }
+/* el foco tiene que verse: el input está escondido, así que lo dibuja la
+   pastilla */
+.dt-sw-i:focus-visible + .dt-sw-p{ box-shadow:0 0 0 3px rgba(var(--dt-pub),.28); }
+
+@media (prefers-reduced-motion:reduce){
+  .dt-medidor i, .dt-sw-p, .dt-sw-p::after, .dt-num, .dt-barra{ transition:none; }
+}
+
+/* =====================================================================
+   QUÉ ES ESTA PLANILLA
+   Va arriba de todo, antes de cualquier decisión. No es una tarjeta más:
+   no tiene marco de tarjeta, ni interruptor, ni chapa. Es el encabezado
+   de la pantalla, y por eso los números van grandes y sin caja — una caja
+   los volvería a leer como "un número publicable" y no lo son.
+   ===================================================================== */
+.dt-id{ margin-bottom:26px; padding-bottom:20px;
+  border-bottom:1px solid var(--line); }
+.dt-id-h{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.dt-id-h b{ font-size:var(--t-lg); font-weight:700; color:var(--ink);
+  letter-spacing:-.01em; }
+.dt-id-h span{ font-size:var(--t-sm); color:var(--ink3); }
+.dt-id-cifras{ display:flex; flex-wrap:wrap; gap:10px 38px; margin-top:14px; }
+.dt-id-c{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.dt-id-c b{ font-size:32px; font-weight:750; line-height:1.05; color:var(--ink);
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.dt-id-c span{ font-size:var(--t-xs); font-weight:650; color:var(--ink3);
+  letter-spacing:.07em; text-transform:uppercase; }
+.dt-id-n{ margin:13px 0 0; max-width:68ch; font-size:var(--t-sm);
+  color:var(--ink3); line-height:1.55; }
+
+/* =====================================================================
+   LO QUE QUEDÓ AFUERA
+   Plegado. Estas lecturas no tienen ninguna decisión asociada —no hay
+   interruptor que tocar—, así que abiertas de entrada sólo empujan hacia
+   abajo lo único que sí hay que decidir.
+   ===================================================================== */
+.dt-afuera{ border:1px solid var(--line); border-radius:var(--r-lg);
+  background:var(--hoja); overflow:hidden; }
+.dt-afuera-h{ display:flex; align-items:center; gap:10px; width:100%;
+  padding:14px 16px; border:0; background:none; text-align:left;
+  font-family:inherit; color:var(--ink2); cursor:pointer; }
+.dt-afuera-h:hover{ background:var(--panel); }
+.dt-afuera-h b{ flex:0 0 auto; font-size:var(--t-md); font-weight:700; color:var(--ink); }
+.dt-afuera-r{ flex:1 1 200px; min-width:0; font-size:var(--t-xs); color:var(--ink3);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dt-afuera-fl{ color:var(--ink3); transition:transform var(--dur-1) var(--mov); }
+.dt-afuera.abierta .dt-afuera-fl{ transform:rotate(90deg); }
+.dt-afuera-c{ padding:2px 16px 16px; }
+.dt-afuera-c[hidden]{ display:none; }
+
+/* "Para arreglar" es lo unico accionable de la pantalla: se distingue de
+   "lo que quedo afuera" —que es una lista para mirar— con el filo del color
+   de lo que hay que atender, y va antes. */
+.dt-arreglar{ margin-bottom:14px; border-left:3px solid rgba(var(--dt-ojo),.55); }
+.dt-arreglar .dt-rep-p em{ font-weight:600; }
+
+.dt-grupo{ padding-top:16px; }
+.dt-grupo + .dt-grupo{ margin-top:16px; border-top:1px solid var(--line); }
+.dt-grupo-h{ display:flex; align-items:center; gap:8px; }
+.dt-grupo-h b{ font-size:var(--t-md); font-weight:700; color:var(--ink); }
+.dt-grupo-h span{ display:inline-flex; align-items:center; justify-content:center;
+  min-width:20px; height:20px; padding:0 6px; border-radius:var(--r-full);
+  background:rgba(var(--dt-mal),.11); color:rgb(var(--dt-mal));
+  font-size:var(--t-xs); font-weight:750; }
+.dt-grupo-d{ margin:5px 0 0; max-width:74ch; font-size:var(--t-sm);
+  color:var(--ink3); line-height:1.55; }
+
+/* Los reparos, una vez cada uno, con las dos opciones enfrentadas. Puestas
+   así —una al lado de la otra y no adentro de un párrafo— se ve en un
+   segundo cuál par es de verdad el mismo valor escrito dos veces y cuál no
+   (LA PLATA vs MAR DEL PLATA no lo es). */
+.dt-rep-lista{ list-style:none; margin:11px 0 0; padding:0;
+  display:flex; flex-direction:column; gap:5px; }
+.dt-rep-lista li{ display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:8px 11px; border-radius:var(--r-md); background:var(--panel);
+  border:1px solid var(--line); }
+.dt-rep-c{ flex:0 0 auto; min-width:112px; font-size:var(--t-sm); font-weight:700;
+  color:var(--ink); }
+.dt-rep-p{ flex:1 1 240px; min-width:0; display:flex; align-items:center;
+  gap:7px; flex-wrap:wrap; font-size:var(--t-xs); color:var(--ink2); }
+.dt-rep-p i{ font-style:normal; padding:2px 7px; border-radius:var(--r-sm);
+  background:var(--mesa); font-variant-numeric:tabular-nums; }
+.dt-rep-p em{ font-style:normal; color:var(--ink3); font-size:var(--t-xs); }
+.dt-rep-n{ flex:0 0 auto; margin-left:auto; font-size:var(--t-xs); color:var(--ink3);
+  font-variant-numeric:tabular-nums; }
+
+/* Una lectura trabada, en un renglón: el número, y qué dice. Sin la vista
+   previa de la intranet, que acá no tiene sentido porque no va a ir. */
+.dt-minis{ list-style:none; margin:11px 0 0; padding:0;
+  display:flex; flex-direction:column; gap:2px; }
+.dt-mini{ display:flex; align-items:baseline; gap:12px; padding:6px 2px;
+  border-bottom:1px solid var(--line); }
+.dt-mini:last-child{ border-bottom:0; }
+.dt-mini-v{ flex:0 0 auto; min-width:74px; text-align:right;
+  font-size:var(--t-lg); font-weight:750; color:var(--ink2);
+  font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+.dt-mini.incierto .dt-mini-v{ color:var(--ink3); font-weight:600; }
+.dt-mini-t{ flex:1 1 auto; min-width:0; font-size:var(--t-sm); color:var(--ink3);
+  line-height:1.45; }
+
+/* =====================================================================
+   PANTALLAS CHICAS
+   El lienzo ya pierde 232px con la barra lateral. A 1100px de ventana
+   quedan 804 y los cortes tienen que dejar de pedir dos columnas.
+   ===================================================================== */
+@media (max-width:1180px){
+  .dt-nums{ grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
+  .dt-num-vista .m-barras .bl{ width:118px; }
+}
+@media (max-width:900px){
+  .dt-num.ancho{ grid-column:span 1; }
+  .dt-num-vista .m-barras .bl{ width:96px; }
+  .dt-barra{ gap:10px; }
+  .dt-nota{ order:9; flex-basis:100%; }
+  .dt-id-cifras{ gap:10px 26px; }
+  .dt-id-c b{ font-size:26px; }
+  /* el resumen de la cabecera plegada se come el ancho del título */
+  .dt-afuera-r{ flex-basis:100%; white-space:normal; }
+  .dt-mini{ flex-wrap:wrap; gap:2px 12px; }
+  .dt-mini-v{ min-width:0; text-align:left; }
+  .dt-mini-t{ flex-basis:100%; }
+}
+
+/* ── LA LISTA DE REPORTES ──
+   Cada reporte es su propia planilla con su propio tablero. Se ven como una
+   lista y no como pestañas porque van a ser varios y crecen: derivaciones,
+   carga de sucursales, y lo que venga. */
+.dt-cab{ margin:0 0 22px; }
+.dt-cab h2{ margin:0 0 6px; font-size:24px; }
+.dt-cab p{ margin:0; max-width:60ch; font-size:var(--t-md); line-height:1.6; color:var(--ink3); }
+.dt-reps{ display:flex; flex-direction:column; gap:6px; margin:0 0 30px; }
+.dt-rep{ display:flex; align-items:center; gap:14px; width:100%; padding:13px 15px;
+  border:1px solid var(--line); background:var(--papel,#fff); cursor:pointer;
+  font-family:inherit; text-align:left; position:relative;
+  transition:border-color var(--dur-1), background var(--dur-1); }
+.dt-rep:hover{ border-color:var(--ink); }
+.dt-rep-t{ font-size:14.5px; font-weight:600; color:var(--ink); flex:0 0 auto; }
+.dt-rep-f{ font-size:12px; color:var(--ink3); flex:1; min-width:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dt-rep-p{ font-size:var(--t-xs); font-weight:600; color:#1A6A3A; flex:0 0 auto;
+  padding:3px 9px; background:#E6F1EA; }
+.dt-rep-p.apagado{ color:var(--ink3); background:var(--hoja); font-weight:400; }
+.dt-rep-x{ flex:0 0 auto; width:24px; height:24px; display:grid; place-items:center;
+  color:var(--ink3); font-size:var(--t-xl); line-height:1; opacity:0; transition:opacity var(--dur-1); }
+.dt-rep:hover .dt-rep-x{ opacity:1; }
+.dt-rep-x:hover{ color:#B4231F; }
+.dt-nada{ padding:26px 0; color:var(--ink3); font-size:var(--t-md); }
+.dt-nuevo{ padding-top:22px; border-top:1px solid var(--line); max-width:720px; }
+.dt-nuevo-t{ font-size:var(--t-xs); font-weight:700; letter-spacing:1.4px;
+  text-transform:uppercase; color:var(--ink3); margin:0 0 12px; }
+.dt-error{ padding:12px 15px; margin:0 0 18px; background:#FBEAE9;
+  border-left:3px solid #B4231F; font-size:var(--t-md); color:var(--ink2); }
+.dt-volver{ flex:0 0 auto; padding:6px 12px; min-height:var(--tap); border:1px solid var(--line);
+  background:var(--papel,#fff); font-family:inherit; font-size:var(--t-sm);
+  color:var(--ink2); cursor:pointer; }
+.dt-volver:hover{ border-color:var(--ink); color:var(--ink); }
+
+/* las dos formas de conectar una planilla */
+.dt-tabs{ display:inline-flex; border:1px solid var(--line); margin:0 0 14px; }
+.dt-tab{ padding:7px 14px; border:0; background:transparent; font-family:inherit;
+  font-size:var(--t-sm); color:var(--ink3); cursor:pointer; }
+.dt-tab + .dt-tab{ border-left:1px solid var(--line); }
+.dt-tab.on{ background:var(--ink); color:#fff; }
+.dt-chico.dt-ok{ color:#1A6A3A; }
+.dt-chico a{ color:var(--ink2); }
+
+/* ── la dirección de la cuenta del panel ──
+   Es lo más importante de toda la sección: es lo único que hay que hacer para
+   cada archivo nuevo. Por eso va en una caja aparte, con la dirección en
+   monoespaciada (para que se lea letra por letra) y un botón de copiar al lado.
+   Nadie debería tener que transcribir a mano una dirección de sesenta
+   caracteres terminada en .iam.gserviceaccount.com. */
+.dt-mail{ padding:15px 16px; margin:0 0 18px; background:var(--hoja);
+  border-left:3px solid #1A6A3A; }
+.dt-mail-t{ font-size:var(--t-sm); color:var(--ink2); margin:0 0 9px; }
+.dt-mail-fila{ display:flex; align-items:stretch; gap:8px; }
+.dt-mail-v{ flex:1; min-width:0; padding:9px 11px; background:var(--papel,#fff);
+  border:1px solid var(--line); font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  font-size:var(--t-sm); color:var(--ink); overflow-x:auto; white-space:nowrap;
+  display:flex; align-items:center; user-select:all; }
+.dt-mail-p{ margin:10px 0 0; font-size:12px; line-height:1.65; color:var(--ink3); }
+
+/* la caja donde se suelta el archivo .json de Google */
+.dt-suelta{ border:1px dashed var(--line); padding:12px; transition:border-color var(--dur-1),
+  background var(--dur-1); }
+.dt-suelta.encima{ border-color:#1A6A3A; background:var(--hoja); }
+.dt-suelta textarea{ width:100%; box-sizing:border-box; padding:9px 11px;
+  border:1px solid var(--line); background:var(--papel,#fff); font-family:ui-monospace,
+  "Cascadia Mono",Consolas,monospace; font-size:var(--t-xs); color:var(--ink2);
+  resize:vertical; }
+.dt-suelta-b{ display:flex; gap:8px; margin:10px 0 0; }
+.dt-suelta-b label.btn{ cursor:pointer; }
+.dt-otra{ margin-top:16px; }
+
+/* ── la fila donde se pega la ruta o el link ──
+   No tenía estilo: los <input> se quedaban con su ancho por defecto (~170px),
+   así que el campo del LINK —el que recibe una URL de noventa caracteres— era
+   el más chico de la fila y mostraba "Pegá el link de la planilla o d…".
+   Ahora el campo largo se estira y el nombre se queda corto, que es el reparto
+   que pide el contenido de cada uno. */
+.dt-conectar{ display:flex; align-items:stretch; gap:8px; flex-wrap:wrap; }
+.dt-conectar input[type=text]{ padding:9px 11px; border:1px solid var(--line);
+  background:var(--papel,#fff); font-family:inherit; font-size:var(--t-md);
+  color:var(--ink); min-width:0; }
+.dt-conectar input[type=text]:focus{ outline:none; border-color:var(--ink); }
+/* el primero es el nombre: corto. El que le sigue es la ruta o el link: largo. */
+.dt-conectar input[type=text]:first-child{ flex:0 1 190px; }
+.dt-conectar input[type=text] + input[type=text]{ flex:1 1 320px; }
+.dt-conectar .btn{ flex:0 0 auto; }
+
+/* ── elegir el archivo de una lista, en vez de pegar un link ──
+   Las filas son botones y no <div> con onclick: así se llega con el teclado y
+   el lector de pantalla las anuncia como lo que son. */
+.dt-buscar-f{ display:flex; align-items:center; gap:10px; margin:0 0 8px; }
+.dt-buscar-f input{ flex:1 1 260px; max-width:340px; padding:8px 11px;
+  border:1px solid var(--line); background:var(--papel,#fff);
+  font-family:inherit; font-size:var(--t-md); color:var(--ink); }
+.dt-buscar-f input:focus{ outline:none; border-color:var(--ink); }
+.dt-arch{ display:flex; flex-direction:column; gap:4px; max-height:320px;
+  overflow-y:auto; border:1px solid var(--line); padding:4px; }
+.dt-arch-i{ display:flex; align-items:baseline; gap:12px; width:100%;
+  padding:9px 11px; border:0; background:transparent; cursor:pointer;
+  font-family:inherit; text-align:left; }
+.dt-arch-i:hover{ background:var(--hoja); }
+.dt-arch-i:focus-visible{ outline:2px solid var(--ink); outline-offset:-2px; }
+/* "Planilla" / "Documento" en ancho fijo: así los nombres arrancan alineados y
+   la lista se lee como una columna, no como un serrucho. */
+.dt-arch-q{ flex:0 0 74px; font-size:var(--t-xs); font-weight:700; letter-spacing:.7px;
+  text-transform:uppercase; color:var(--ink3); }
+.dt-arch-n{ flex:1; min-width:0; font-size:var(--t-md); color:var(--ink);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dt-arch-f{ flex:0 0 auto; font-size:var(--t-xs); color:var(--ink3); }
+
+/* separador con texto en el medio, para partir "el camino rápido" del "camino
+   privado" sin que parezcan dos pantallas distintas */
+.dt-corte{ display:flex; align-items:center; gap:12px; margin:22px 0 14px;
+  font-size:var(--t-xs); font-weight:700; letter-spacing:1.3px; text-transform:uppercase;
+  color:var(--ink3); }
+.dt-corte::before, .dt-corte::after{ content:""; flex:1; height:1px; background:var(--line); }
+/* el aviso de que "con el link" quiere decir cualquiera: se tiene que leer,
+   no decorar. Fondo tenue y barra al costado, como los demás avisos serios. */
+.dt-chico.dt-ojo{ padding:10px 13px; margin:10px 0 0; background:#FDF6E3;
+  border-left:3px solid #B58900; color:var(--ink2); line-height:1.6; }
+
+/* ── elegir la hoja ──
+   Cada hoja muestra sus columnas de verdad. Ese renglón es lo que hace que la
+   elección sea informada: «DERIVACIONES · Fecha, Nombre, Vendedor…» se
+   reconoce de un vistazo, «Hoja 9» no dice nada. */
+.dt-paso{ max-width:820px; }
+.dt-paso h2{ margin:16px 0 6px; font-size:22px; }
+.dt-paso > .dt-chico{ margin:0 0 18px; max-width:62ch; }
+.dt-hojas{ display:flex; flex-direction:column; gap:5px; margin:0 0 18px; }
+.dt-hoja{ display:block; width:100%; padding:12px 14px; text-align:left;
+  border:1px solid var(--line); background:var(--papel,#fff); cursor:pointer;
+  font-family:inherit; transition:border-color var(--dur-1), background var(--dur-1); }
+.dt-hoja:hover{ border-color:var(--ink); }
+.dt-hoja:focus-visible{ outline:2px solid var(--ink); outline-offset:-2px; }
+.dt-hoja-n{ display:block; font-size:14.5px; font-weight:600; color:var(--ink); }
+.dt-hoja-c{ display:block; margin-top:3px; font-size:12px; color:var(--ink3);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dt-hoja-a{ display:block; margin-top:5px; font-size:var(--t-xs); color:#8A6D1F; }
+/* las que no son tablas: se ven, se entiende por qué, y no se pueden elegir */
+.dt-hoja.no{ cursor:not-allowed; background:var(--hoja); border-style:dashed; }
+.dt-hoja.no .dt-hoja-n{ color:var(--ink3); font-weight:500; }
+.dt-hoja.no:hover{ border-color:var(--line); }
+
+/* ── «esto encontré»: una tarjeta por columna ──
+   Van antes de la pregunta a propósito. Preguntar «¿qué querés medir?» sin
+   mostrar qué hay adentro es pedir que se elija a ciegas: la planilla la cargan
+   varias personas y nadie se acuerda de memoria de las 18 columnas. */
+.dt-detect{ display:grid; grid-template-columns:repeat(auto-fill,minmax(228px,1fr));
+  gap:8px; margin:0 0 8px; }
+.dt-dt{ padding:11px 13px; border:1px solid var(--line); background:var(--papel,#fff); }
+.dt-dt-h{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.dt-dt-n{ font-size:var(--t-md); font-weight:600; color:var(--ink);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* 9.5px a proposito: etiqueta minima de la tarjeta; --t-xs (11px) difiere 1.5px y le roba protagonismo al nombre (criterio C1) */
+.dt-dt-t{ flex:0 0 auto; font-size:9.5px; font-weight:700; letter-spacing:.8px;
+  text-transform:uppercase; color:var(--ink3); }
+.dt-dt-c{ margin-top:5px; font-size:var(--t-xs); color:var(--ink3); }
+.dt-dt-e{ margin-top:5px; font-size:var(--t-xs); line-height:1.5; color:var(--ink2);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; }
+/* las columnas con datos de clientes se ven distinto SIEMPRE: es lo único que
+   no puede terminar en una página pública, y tiene que saltar a la vista */
+.dt-dt.cli{ border-color:#D9A7A5; background:#FDF4F3; }
+.dt-dt.cli .dt-dt-t{ color:#B4231F; }
+.dt-dt.cli .dt-dt-e{ color:#B4231F; }
+.dt-rojo{ color:#B4231F; }
+
+/* ── la pregunta ── */
+.dt-medidas{ display:flex; flex-direction:column; gap:4px; margin:0 0 20px; }
+.dt-medida{ display:grid; grid-template-columns:auto 1fr; gap:2px 11px;
+  align-items:baseline; padding:10px 13px; border:1px solid var(--line);
+  background:var(--papel,#fff); cursor:pointer; }
+.dt-medida:hover{ border-color:var(--ink); }
+.dt-medida input{ grid-row:1 / span 3; align-self:center; width:16px; height:16px;
+  accent-color:var(--ink); cursor:pointer; }
+.dt-medida-t{ font-size:14px; color:var(--ink); }
+.dt-medida-d{ grid-column:2; font-size:var(--t-xs); color:var(--ink3);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dt-medida-a{ grid-column:2; margin-top:3px; font-size:var(--t-xs); color:#8A6D1F; }
+.dt-medida:has(input:checked){ border-color:var(--ink); background:var(--hoja); }
+.dt-paso-b{ display:flex; align-items:center; gap:10px; margin:0 0 28px; }
+
+/* ── los vendedores que el panel no ubica ──
+   Va arriba del tablero y no en un rincón: mientras estén sin asignar, el corte
+   por sucursal está incompleto, y eso hay que verlo antes que los números. */
+.dt-vend{ padding:15px 17px; margin:0 0 18px; background:#FDF6E3;
+  border-left:3px solid #B58900; }
+.dt-vend-t{ font-size:var(--t-md); color:var(--ink2); margin:0 0 12px; }
+.dt-vend-l{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 12px; }
+.dt-vend-i{ display:flex; flex-direction:column; gap:4px; }
+.dt-vend-i span{ font-size:var(--t-sm); color:var(--ink2); }
+.dt-vend-i span b{ margin-left:6px; color:var(--ink3); font-weight:600; }
+.dt-vend-i select{ padding:6px 9px; border:1px solid var(--line);
+  background:var(--papel,#fff); font-family:inherit; font-size:var(--t-md); color:var(--ink); }
+
+/* ── los avisos, plegados ──
+   Eran 34 tarjetas grandes = 6.637 px, el 58% de la pantalla, y encima antes de
+   los numeros. Ahora la seccion arranca cerrada: se ve cuantos hay y se abre
+   solo si a alguien le interesa. */
+.dt-avisos.plegado{ display:none; }
+.dt-mas{ padding:8px 16px; border:1px solid var(--line); background:var(--papel,#fff);
+  font-family:inherit; font-size:var(--t-md); color:var(--ink2); cursor:pointer; }
+.dt-mas:hover{ border-color:var(--ink); color:var(--ink); }
+/* los avisos que son el funcionamiento normal de la planilla, no un problema */
+.dt-av.esperado{ opacity:.72; }
+
+/* ── el resumen de lo que se leyo ──
+   Reemplaza 18 tarjetas (mil pixeles) por una linea de nombres. El detalle de
+   cada columna esta abajo, en el tablero, junto al numero que sale de ella. */
+.dt-resumen{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+.dt-rc{ padding:5px 11px; border:1px solid var(--line); background:var(--papel,#fff);
+  font-size:var(--t-sm); color:var(--ink2); border-radius:var(--r-full); }
+.dt-rc.cli{ border-color:#D9A7A5; background:#FDF4F3; color:#B4231F; }
+.dt-nota-cli{ margin:0; font-size:var(--t-sm); color:var(--ink3); }
+
+/* ---- A2 (mismo criterio que styles.css): borde fuerte (--linea-int) para el
+   control aislado, por lista explicita; las tarjetas, filas y chips repetidos
+   se quedan con --line. El interruptor .dt-sw-p tampoco va: su forma
+   (pastilla + perilla sobre --mesa) ya lo hace visible y el hover lo sube a
+   accent2 solo. */
+.dt-suelta textarea, .dt-conectar input[type=text], .dt-buscar-f input,
+.dt-vend-i select, .dt-volver, .dt-mas{ border-color:var(--linea-int); }

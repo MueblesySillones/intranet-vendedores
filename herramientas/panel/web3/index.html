@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel · Muebles y Sillones</title>
+<link rel="icon" href="/static/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Los tokens del PAPEL salen del mismo archivo que publica el sitio. -->
+<link rel="stylesheet" href="/intranet/css/sistema.css">
+<!-- Capa funcional heredada: estilos de todo lo que emiten los motores
+     (espejo del canvas, inspector, galerias, arrastres). El cromo que pintan
+     estos dos archivos queda pisado por la maqueta, que carga despues. -->
+<link rel="stylesheet" href="/static/styles.css">
+<link rel="stylesheet" href="/static/rediseno.css">
+<link rel="stylesheet" href="/static/panel_datos.css">
+<!-- LA MAQUETA (REDISENO-PANEL-MyS.html), tal cual. Es la autoridad visual:
+     no editar a mano — cualquier ajuste de diseño va en puente.css. -->
+<link rel="stylesheet" href="/static/maqueta.css">
+<!-- Reconciliación: viste las piezas reales que la maqueta no dibujó. -->
+<link rel="stylesheet" href="/static/puente.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= SIDEBAR (maqueta) ================= -->
+  <nav class="nav">
+    <div class="nav-top">
+      <div class="marca">
+        <img src="/static/logo-marca.png" alt="">
+        <span><b>Intranet MyS</b><span class="ver" id="navVersion">Versión</span></span>
+      </div>
+      <button class="suc" id="sucBtn" type="button">
+        <span class="av" id="sucAv">C</span>
+        <span class="txt"><b id="sucNombre">Central</b><span id="sucSub">Muebles y Sillones</span></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>
+      </button>
+      <button class="buscar" id="navBuscar" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Buscar en el panel
+      </button>
+    </div>
+
+    <div class="nav-body" id="navSecs">
+      <div class="grupo">
+        <h4>Publicar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></h4>
+        <button class="item on" type="button" data-sec="muro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+          Cartelera <span class="n" id="navNMuro" hidden></span>
+        </button>
+        <button class="item" type="button" data-sec="modulos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          Módulos <span class="n" id="navNMod" hidden></span>
+        </button>
+      </div>
+      <div class="grupo">
+        <h4>Medir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></h4>
+        <button class="item" type="button" data-sec="metricas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V8M17 16v-3"/></svg>
+          Métricas
+        </button>
+        <button class="item" type="button" data-sec="datos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+          Datos <span class="n" id="navNDatos" hidden></span>
+        </button>
+      </div>
+      <div class="grupo">
+        <h4>Papelera <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></h4>
+        <button class="item" type="button" data-sec="archivadas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+          Archivadas <span class="n" id="navNArch" hidden></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-pie">
+      <button id="btnPublicar" class="btn btn-1 nav-publicar btn-done" type="button" title="Sube los cambios al sitio online. Se ve en ~30 segundos.">Publicar cambios</button>
+      <!-- COLABORADOR (los muestra aplicarRol si corresponde) -->
+      <button id="btnEnviar" class="btn btn-1 nav-publicar" type="button" hidden>Enviar para aprobación</button>
+      <div class="estado" id="estadoNav">
+        <i class="punto" id="estadoPunto"></i>
+        <span><b id="estadoTit">Cargando…</b><span id="estadoSub">Conectando con el panel</span></span>
+      </div>
+      <div class="pie-links">
+        <button type="button" id="btnHistorial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Historial</button>
+        <button type="button" id="btnKit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>Recuperación</button>
+        <button type="button" id="btnAvisar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Avisar novedad</button>
+        <button type="button" id="btnCerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Cerrar panel</button>
+        <button type="button" id="btnTraer" class="ancho" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>Traer última versión</button>
+      </div>
+      <!-- puentes: app.js los engancha sin preguntar si existen -->
+      <button id="btnBandeja" hidden>Aprobaciones <span id="pendBadge" hidden>0</span></button>
+      <span id="rolBadge" hidden></span>
+      <span id="gitState" hidden><span class="dot"></span><span id="gitText"></span></span>
+      <button id="btnMetricas" hidden>Métricas</button>
+    </div>
+  </nav>
+
+  <!-- ================= CONTENIDO ================= -->
+  <main class="main lienzo">
+
+    <!-- aviso de versión nueva del panel (vive arriba de todas las vistas) -->
+    <div id="updateBar" class="update-aviso" hidden>
+      <div class="aviso-caja">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg>
+        <span class="update-txt"><b>Hay una versión nueva del panel.</b> <span id="updateLabel"></span></span>
+        <button id="btnUpdate" class="btn btn-1" type="button">Actualizar</button>
+      </div>
+    </div>
+
+    <!-- ---------- CARTELERA ---------- -->
+    <section data-vista="cartelera" class="main-sec" id="viewMuro">
+      <header class="top"><div class="top-in">
+        <div>
+          <h1>Cartelera</h1>
+          <p id="muroSub">Lo que ven los vendedores al entrar a la intranet.</p>
+        </div>
+        <div class="der">
+          <span class="campo-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="campo" id="muroBuscar" type="search" autocomplete="off" placeholder="Buscar publicación...">
+          </span>
+          <button class="btn btn-1" id="btnNuevaPub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Publicar</button>
+        </div>
+      </div></header>
+
+      <div class="hoja"><div class="wrap">
+        <div>
+          <!-- composer (dispara el modal) -->
+          <div class="card comp" id="composer">
+            <div class="comp-fila">
+              <span class="av" id="compAv">M</span>
+              <button class="comp-in" id="compAbrir" type="button">¿Qué querés comunicarle al equipo?</button>
+            </div>
+            <div class="comp-etq">
+              <button class="etq comp-at" type="button" data-tipo="anuncio"><i style="background:#1A4A8A"></i>Anuncio</button>
+              <button class="etq comp-at" type="button" data-tipo="promo"><i style="background:#8A5A2C"></i>Promoción</button>
+              <button class="etq comp-at" type="button" data-tipo="capacitacion"><i style="background:#255C74"></i>Capacitación</button>
+              <button class="etq comp-at" type="button" data-tipo="logro"><i style="background:#1A6A3A"></i>Logro</button>
+              <button class="etq comp-at" type="button" data-tipo="importante"><i style="background:#B4231F"></i>Importante</button>
+              <button class="etq comp-at" type="button" data-tipo="equipo"><i style="background:#5A554D"></i>Equipo</button>
+            </div>
+          </div>
+
+          <div class="muro-filtros" id="muroFiltros" hidden></div>
+          <div id="muroLista"></div>
+        </div>
+
+        <!-- aside -->
+        <aside class="aside">
+          <div class="card blq">
+            <h4>Estado de la cartelera</h4>
+            <div id="asideEstado"></div>
+          </div>
+          <div class="card blq">
+            <h4>Por etiqueta</h4>
+            <div class="lista-etq" id="asideEtiquetas"></div>
+          </div>
+          <div class="card blq bloq">
+            <div class="velado" aria-hidden="true">
+              <h4>Sucursales al día</h4>
+              <div class="dato"><span>Paneles conectados</span><b>7/7</b></div>
+              <div class="dato"><span>Versión más vieja</span><b class="mono" style="font-size:var(--t-mini)">v1.2.2</b></div>
+              <div class="pila" style="margin-top:12px">
+                <i style="background:#1A1A2E">HU</i><i style="background:#2C6E8A">CA</i><i style="background:#3A7A55">CN</i>
+                <i style="background:#8A5A2C">NC</i><i class="mas">+3</i>
+                <span class="pila-txt">todas al día</span>
+              </div>
+            </div>
+            <div class="tapa">
+              <span class="candado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+              <b>No disponible sin login</b>
+            </div>
+          </div>
+        </aside>
+      </div></div>
+    </section>
+
+    <!-- ---------- MÓDULOS ---------- -->
+    <section data-vista="modulos" class="main-sec" id="viewModulos" hidden>
+      <header class="top"><div class="top-in">
+        <div>
+          <h1>Módulos</h1>
+          <p>Las secciones del menú de la intranet · arrastrá del número para ordenarlas</p>
+        </div>
+        <div class="der">
+          <span class="campo-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="campo" id="buscarTodo" type="search" autocomplete="off" placeholder="Buscar en todo el panel...">
+          </span>
+          <button class="btn btn-1" id="btnAddModulo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Agregar módulo</button>
+        </div>
+      </div></header>
+
+      <div class="hoja"><div class="wrap-1col">
+        <div id="buscarRes" class="buscar-res" hidden></div>
+        <div class="grid-mod" id="modList"></div>
+        <button type="button" id="btnAddModulo2" hidden>+ Agregar módulo</button>
+      </div></div>
+    </section>
+
+    <!-- ---------- MÉTRICAS ---------- -->
+    <section data-vista="metricas" class="main-sec" id="viewMetricas" hidden>
+      <header class="top"><div class="top-in">
+        <div>
+          <h1>Métricas</h1>
+          <p>Últimos 30 días · comparado con los 30 anteriores</p>
+        </div>
+        <div class="der velado" aria-hidden="true">
+          <div class="seg">
+            <button type="button">7 días</button><button type="button" class="on">30 días</button><button type="button">90 días</button>
+          </div>
+          <button class="btn btn-2" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>Exportar</button>
+        </div>
+      </div></header>
+
+      <div class="hoja"><div class="wrap-1col bloq">
+        <div class="velado" aria-hidden="true">
+        <div class="kpis">
+          <div class="card kpi">
+            <span>Publicaciones</span><b>14</b>
+            <span class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>+4 vs. mes anterior</span>
+            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,20 14,18 28,21 42,12 56,14 70,8 84,9 100,4" fill="none" stroke="#7C6A55" stroke-width="1.6"/></svg>
+          </div>
+          <div class="card kpi">
+            <span>Vendedores activos</span><b>38</b>
+            <span class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>+6</span>
+            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,22 14,20 28,16 42,17 56,11 70,10 84,7 100,6" fill="none" stroke="#7C6A55" stroke-width="1.6"/></svg>
+          </div>
+          <div class="card kpi">
+            <span>Descargas de material</span><b>412</b>
+            <span class="delta down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/></svg>−38</span>
+            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,6 14,8 28,7 42,12 56,11 70,16 84,15 100,19" fill="none" stroke="#7C6A55" stroke-width="1.6"/></svg>
+          </div>
+          <div class="card kpi">
+            <span>Sucursales al día</span><b>7/7</b>
+            <span class="delta flat">Sin cambios este mes</span>
+            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,10 14,10 28,10 42,10 56,10 70,10 84,10 100,10" fill="none" stroke="#8B857A" stroke-width="1.6" stroke-dasharray="3 3"/></svg>
+          </div>
+        </div>
+
+        <div class="card" style="padding:16px 0 4px">
+          <h4 style="margin:0 0 12px;padding:0 14px;font-size:var(--t-nano);font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3)">Módulos más abiertos</h4>
+          <div class="tabla-scroll"><table class="tabla">
+            <thead><tr><th>Módulo</th><th>Etiqueta</th><th class="num">Aperturas</th><th class="num">Descargas</th><th class="num">Comparte</th></tr></thead>
+            <tbody id="tablaMod"></tbody>
+          </table></div>
+        </div>
+        </div>
+        <div class="tapa">
+          <span class="candado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+          <b>No disponible sin login</b>
+          <span class="porque">Para saber <b>quién</b> abrió cada módulo hace falta que el vendedor se identifique. Hoy la intranet es pública y sin registro, así que estos números son una vista previa. Los datos de arriba son de ejemplo.</span>
+        </div>
+      </div></div>
+      <!-- puentes para app.js (la vista vieja de métricas ya no se pinta) -->
+      <div hidden><div id="metAviso"></div><div id="metBody"></div><button id="metVolver">Volver</button></div>
+    </section>
+
+    <!-- ---------- DATOS ---------- -->
+    <section data-vista="datos" class="main-sec" id="viewDatos" hidden>
+      <header class="top"><div class="top-in">
+        <div>
+          <h1>Datos</h1>
+          <p>Cada reporte sale de una planilla · nada se publica hasta que lo prendas</p>
+        </div>
+      </div></header>
+      <div class="hoja"><div class="wrap-1col">
+        <div id="datosRaiz"></div>
+      </div></div>
+    </section>
+
+    <!-- ---------- ARCHIVADAS ---------- -->
+    <section data-vista="archivadas" class="main-sec" id="viewArch" hidden>
+      <header class="top"><div class="top-in">
+        <div>
+          <h1>Archivadas</h1>
+          <p id="archSub">Publicaciones fuera de la cartelera · nadie las ve</p>
+        </div>
+        <div class="der">
+          <span class="campo-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="campo" id="archBuscar" type="search" autocomplete="off" placeholder="Buscar archivada...">
+          </span>
+        </div>
+      </div></header>
+
+      <div class="hoja"><div class="wrap-1col" style="max-width:calc(var(--feed-w) + var(--aside-w) + var(--gap))">
+        <div class="aviso-caja">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>
+            <b>Archivar no es borrar</b>
+            <span>La publicación sale de la cartelera pero queda acá con sus fotos y archivos. Volver a publicarla la manda de nuevo arriba de todo, con la fecha de hoy.</span>
+          </span>
+        </div>
+        <div id="archLista"></div>
+      </div></div>
+    </section>
+
+    <!-- ---------- EDITOR DE MÓDULO ---------- -->
+    <section data-vista="editor" class="main-sec editor-full" id="viewDetalle" hidden>
+      <header class="ed-top">
+        <div class="ctx">
+          <button class="btn btn-3" style="padding:0 8px" id="detBack" type="button" title="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+          <nav class="ruta">
+            <span>Intranet</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg><span>Módulos</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg><b id="detBarTitle">Módulo</b>
+          </nav>
+        </div>
+        <div class="centro">
+          <div class="seg" id="vistaSeg">
+            <button type="button" id="vtDesktop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 20h6M12 17v3"/></svg>Escritorio</button>
+            <button type="button" id="vtMobile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.8 5.5h2.4"/></svg>Celular</button>
+          </div>
+        </div>
+        <div class="der">
+          <span class="guardado" id="detEstado" hidden><i></i><span id="detEstadoTx">Guardado</span></span>
+          <button class="btn btn-3" style="padding:0 9px" id="detUndo" type="button" title="Deshacer" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+          <button class="btn btn-3" style="padding:0 9px" id="detRedo" type="button" title="Rehacer" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+          <div class="ebar-more">
+            <button class="btn btn-3" style="padding:0 9px" id="detMore" type="button" title="Más acciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+            <div class="pop pop-menu" id="detMoreMenu" hidden>
+              <button type="button" id="detVista">Vista previa en la intranet</button>
+              <button type="button" id="detHide">Ocultar del menú</button>
+              <button type="button" id="detRestore" hidden>Restaurar diseño del sistema</button>
+              <button type="button" id="detCancel">Cancelar los cambios</button>
+              <button type="button" class="peligro" id="detDelete" hidden>Eliminar módulo</button>
+            </div>
+          </div>
+          <button class="btn btn-2" id="detSave" type="button">Guardar</button>
+          <button class="btn btn-1" id="detPublicar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 11 18-5v12L3 14v-3z"/></svg><span data-rotulo>Publicar</span></button>
+        </div>
+      </header>
+
+      <div class="ed-cuerpo-wrap" id="editorBody">
+        <!-- EDITOR DE BLOQUES -->
+        <div class="cpane cpane-bloques ed-cuerpo" data-pane="bloques">
+          <div class="mesa">
+            <!-- barra del documento (biblioteca / cartelera): la pinta app.js -->
+            <div class="doc-bar" id="docBar" hidden>
+              <button class="btn btn-3" id="docBack" type="button" title="Volver a la lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+              <input type="text" id="docTitulo" class="doc-bar-in doc-bar-t" placeholder="Nombre del documento · ej: Julio 2026" maxlength="60">
+              <input type="text" id="docEtiqueta" class="doc-bar-in doc-bar-e" placeholder="Etiqueta · ej: Mensual" maxlength="30">
+              <span class="doc-muro" id="docMuro" hidden>
+                <input type="text" id="docAutor" class="doc-bar-in doc-muro-a" placeholder="Quién publica · ej: Marketing" maxlength="40">
+                <input type="text" id="docSucursal" class="doc-bar-in doc-muro-s" placeholder="Sucursal (opcional)" maxlength="40">
+                <input type="date" id="docFecha" class="doc-bar-in doc-muro-f" title="Fecha de la publicación">
+                <select id="docTipo" class="doc-bar-in doc-muro-t" title="Tipo de publicación">
+                  <option value="">Sin tipo</option>
+                  <option value="anuncio">Anuncio</option>
+                  <option value="promo">Promoción</option>
+                  <option value="capacitacion">Capacitación</option>
+                  <option value="logro">Logro</option>
+                  <option value="importante">Importante</option>
+                  <option value="equipo">Equipo</option>
+                </select>
+                <label class="doc-muro-fij"><input type="checkbox" id="docFijado"> Fijar arriba</label>
+                <label class="doc-muro-fij"><input type="checkbox" id="docConfirmar"> Pedir confirmación</label>
+                <span class="doc-vence">
+                  <select id="docVence" class="doc-bar-in doc-muro-v" title="Cuándo deja de verse">
+                    <option value="">No vence</option>
+                    <option value="7">Dura una semana</option>
+                    <option value="15">Dura 15 días</option>
+                    <option value="30">Dura un mes</option>
+                    <option value="finmes">Hasta fin de mes</option>
+                    <option value="fecha">Hasta una fecha…</option>
+                  </select>
+                  <input type="date" id="docVenceF" class="doc-bar-in doc-muro-f" hidden title="Último día que los vendedores la ven">
+                </span>
+              </span>
+              <span class="doc-bar-lbl">Este documento:</span>
+              <div class="seg seg-sm" id="docModo">
+                <button type="button" class="seg-b" data-modo="pagina">Página</button>
+                <button type="button" class="seg-b" data-modo="presentacion">Presentación</button>
+              </div>
+            </div>
+
+            <div class="papel">
+              <div class="doc-cab" id="gbDocHead">
+                <div class="doc-tit">
+                  <h2 id="gbDocNom">Módulo</h2>
+                  <button type="button" id="gbDocRen" title="Cambiar el nombre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                </div>
+                <p id="gbDocSub">Se ve en el menú de la intranet</p>
+                <div class="formato fija" id="gbFloat">
+                  <button type="button" data-fmt="undo" title="Deshacer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+                  <button type="button" data-fmt="redo" title="Rehacer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+                  <span class="div"></span>
+                  <button type="button" data-fmt="bold" title="Negrita" style="font-weight:700">B</button>
+                  <button type="button" data-fmt="italic" title="Itálica" style="font-style:italic;font-family:Georgia,serif">I</button>
+                  <button type="button" data-fmt="underline" title="Subrayado" style="text-decoration:underline">U</button>
+                  <span class="div"></span>
+                  <button type="button" data-fmt="link" title="Poner un link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
+                  <button type="button" data-fmt="unlink" title="Sacar el link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.5.5l1.5-1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5L5 12"/><path d="m3 3 18 18"/></svg></button>
+                  <span class="gb-fmt-nota">Seleccioná texto para usarlos</span>
+                </div>
+              </div>
+              <div id="gbDoc" class="gb-doc doc-preview"></div>
+            </div>
+          </div>
+
+          <aside class="paleta" id="gbSidebar">
+            <div class="gb-sec" id="gbApSlot"></div>
+            <div class="pal-tabs seg" id="gbPanes">
+              <button type="button" class="seg-b active" data-pane="agregar">Agregar bloque</button>
+              <button type="button" class="seg-b" data-pane="ajustes" id="gbTabAjustes">Ajustes</button>
+            </div>
+            <div class="gb-pane" data-pane="agregar">
+              <span class="campo-wrap" style="width:100%">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input class="campo" style="width:100%" id="gbBuscar" type="search" autocomplete="off" placeholder="tabla, foto, whatsapp...">
+              </span>
+              <div id="gbAdd"></div>
+              <button type="button" id="btnPegar" class="pal-nota">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4a2 2 0 0 1 2-2h10"/></svg>
+                <span><b>Pegar de Word o Excel</b><span>Copiá allá y tocá acá. También sirve Ctrl+V.</span></span>
+              </button>
+            </div>
+            <div class="gb-pane" data-pane="ajustes" hidden>
+              <div class="insp">
+                <h5 id="gbInspTitle">Bloque seleccionado</h5>
+                <div id="gbInspector"><div class="gb-empty-insp">Tocá un bloque del documento y acá aparecen <b>sus</b> ajustes.</div></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- BIBLIOTECA (colección de documentos) -->
+        <div class="cpane cpane-hoja" data-pane="coleccion" hidden>
+          <div class="coleccion-wrap">
+            <div class="gb-sec" id="colApSlot"></div>
+            <div class="col-head">
+              <div>
+                <h3 id="colTitulo">Documentos de este módulo</h3>
+                <p class="muted">Arrastralos del agarre para ordenarlos. El primero se muestra destacado como el más reciente.</p>
+                <label class="col-palabra">Cómo se llama cada uno:
+                  <input type="text" id="colPalabra" maxlength="20" placeholder="documento" list="colPalabras">
+                  <datalist id="colPalabras">
+                    <option value="reporte"><option value="documento"><option value="capacitación">
+                    <option value="comunicado"><option value="informe"><option value="catálogo">
+                  </datalist>
+                </label>
+              </div>
+              <div class="head-actions">
+                <button class="btn btn-2" id="colDup" type="button" title="Copia el primero tal cual, con sus números">Duplicar el primero</button>
+                <button class="btn btn-2" id="colNuevoMes" type="button" title="Misma estructura que el último, con los números en blanco">Nuevo desde el último</button>
+                <button class="btn btn-1" id="colAdd" type="button">+ Nuevo en blanco</button>
+              </div>
+            </div>
+            <div id="colList" class="col-list"></div>
+          </div>
+        </div>
+
+        <!-- GALERÍA (solo Material descargable) -->
+        <div class="cpane cpane-hoja" data-pane="galeria" hidden>
+          <div class="galeria-wrap">
+            <div class="gb-sec" id="galApSlot"></div>
+            <p class="muted" style="margin-top:0">Las imágenes que descargan los vendedores, separadas por sección. Pasá el mouse y tocá la <b>cruz</b> para borrarla. Arrastrá para reordenar o moverla de sección.</p>
+            <div id="dGalGroups"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APARIENCIA (acordeón) — se inyecta en #gbApSlot o #galApSlot -->
+      <section class="card-sec accordion open" id="apSec">
+        <button type="button" class="acc-head" id="apToggle">
+          <span class="acc-title">Módulo: nombre, ícono y tipo</span>
+          <span class="acc-meta" id="apMeta"></span>
+          <span class="acc-chev">▾</span>
+        </button>
+        <div class="acc-body">
+          <div class="preview-tile" id="detPreview" style="margin-bottom:12px"></div>
+          <label class="fld"><span>Título</span>
+            <input type="text" id="dTitle" maxlength="40" placeholder="Ej: Catálogo de primavera"></label>
+          <label class="fld"><span>Subtítulo (texto corto del botón)</span>
+            <input type="text" id="dDesc" maxlength="80" placeholder="Ej: Novedades."></label>
+          <div class="fld" id="dModoFld"><span>Qué es este módulo</span>
+            <div class="seg" id="dModo">
+              <button type="button" class="seg-b" data-modo="pagina">Página</button>
+              <button type="button" class="seg-b" data-modo="presentacion">Presentación</button>
+              <button type="button" class="seg-b" data-modo="biblioteca">Biblioteca</button>
+              <button type="button" class="seg-b" data-modo="muro">Cartelera</button>
+            </div>
+            <p class="fld-note" id="dModoNota"></p>
+          </div>
+          <div class="fld"><span>Ícono</span><div id="dIconGrid" class="icon-grid"></div></div>
+          <div class="fld"><span>Color</span><div id="dColorGrid" class="color-grid"></div></div>
+          <label class="insp-check"><input type="checkbox" id="dReady" checked>
+            <span>Disponible (si lo destildás, "Próximamente")</span></label>
+        </div>
+      </section>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ MODAL: crear publicación (compositor) ============ -->
+<div class="fondo" id="fondo">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="compTitulo">
+    <div class="modal-cab">
+      <h2 id="compTitulo">Crear publicación</h2>
+      <button class="comp-cerrar" id="coCerrar" type="button" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div class="modal-cuerpo" id="compOpen">
+      <div class="modal-autor" style="position:relative">
+        <span class="av" id="coAv">M</span>
+        <span class="quien">
+          <b id="coAutor">Marketing</b>
+          <button class="selector" id="btnEtq" type="button">
+            <i id="etqColor" hidden></i><span id="etqNombre">Sin etiqueta</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <span id="coCuando" hidden>Hoy</span>
+        </span>
+        <div class="pop" id="coTipos"></div>
+      </div>
+
+      <input class="comp-tit" id="coTitulo" maxlength="120" placeholder="Título de la publicación" autocomplete="off">
+      <textarea class="comp-cuerpo" id="coTexto" rows="3" placeholder="Contales al equipo de qué se trata. Lo que escribas acá lo ven los vendedores."></textarea>
+
+      <div id="coAdjuntos"></div>
+
+      <div class="agregar">
+        <b>Agregale algo</b>
+        <button class="adj-btn co-ad" type="button" data-ad="foto" title="Una foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></button>
+        <button class="adj-btn co-ad" type="button" data-ad="galeria" title="Varias fotos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+        <button class="adj-btn co-ad" type="button" data-ad="video" title="Un video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></button>
+        <button class="adj-btn co-ad" type="button" data-ad="pdf" title="Un PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></button>
+        <button class="adj-btn co-ad" type="button" data-ad="lista" title="Una lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+        <button class="adj-btn co-ad" type="button" data-ad="ref" title="Enlace a un módulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
+      </div>
+
+      <button class="fijar" id="coFijarBtn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 17v5M9 10.8V4h6v6.8l3 3.2H6z"/></svg>
+        <span class="t"><b>Fijar arriba de todo</b><span>Queda primera hasta que la saques</span></span>
+        <span class="sw"></span>
+      </button>
+      <button class="fijar" id="coConfirmarBtn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>
+        <span class="t"><b>Pedir confirmación</b><span>El vendedor tiene que tocar «Entendido»</span></span>
+        <span class="sw"></span>
+      </button>
+      <div class="fijar como-fila" id="coArchWrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+        <span class="t"><b>Archivar en un módulo</b><span>Queda guardada ahí cuando salga de la cartelera</span></span>
+        <span class="ctrl-der">
+          <button type="button" class="sw-btn" id="coArchivarBtn" aria-pressed="false"><span class="sw"></span></button>
+          <select id="coArchivarMod" aria-label="Módulo donde queda archivada"></select>
+        </span>
+      </div>
+      <div class="fijar como-fila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span class="t"><b>Se ve hasta</b><span>Después de esa fecha deja de mostrarse</span></span>
+        <span class="ctrl-der">
+          <input type="hidden" id="coVence">
+          <button type="button" class="selector" id="coVenceBtn" aria-haspopup="dialog" aria-expanded="false"><span id="coVenceTx">Siempre</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+        </span>
+      </div>
+
+      <div class="co-drop" id="coDrop" hidden><span>Soltá acá</span></div>
+      <!-- puentes del compositor viejo: siguen existiendo para el motor -->
+      <span hidden>
+        <button id="compAbrirLegacy" type="button"></button>
+        <button id="coClip" type="button"></button>
+        <span id="coMenu" hidden></span>
+        <input type="checkbox" id="coFijar">
+        <input type="checkbox" id="coConfirmar">
+        <input type="checkbox" id="coArchivar">
+        <button id="coCancelar" type="button"></button>
+      </span>
+    </div>
+
+    <div class="modal-pie">
+      <button class="btn btn-1" id="coPublicar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 11 18-5v12L3 14v-3z"/></svg> <span data-rotulo>Publicar</span></button>
+      <span class="aviso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Se ve al instante en la intranet · se puede archivar después</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: avisar novedad ============ -->
+<div class="fondo" id="avisarModal">
+  <div class="modal medio" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Avisar novedad a los vendedores<span class="sub">Los marcados salen con la chapita "NUEVO" en la intranet durante 14 días</span></h2>
+      <button class="comp-cerrar" type="button" data-cerrar-avisar aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-cuerpo p16" id="avisarLista"></div>
+    <div class="modal-pie" style="display:flex;gap:8px">
+      <button class="btn btn-2" type="button" data-cerrar-avisar style="flex:1">Cancelar</button>
+      <button class="btn btn-1" id="avisarGuardar" type="button" style="flex:2">Guardar y publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: historial ============ -->
+<div class="fondo" id="histModal">
+  <div class="modal medio" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Historial de publicaciones<span class="sub">Cada vez que publicás queda una versión guardada</span></h2>
+      <button class="comp-cerrar" type="button" data-cerrar-hist aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-cuerpo p16">
+      <div class="linea-tiempo" id="histLista"><div class="muted">Cargando…</div></div>
+    </div>
+    <div class="modal-pie"><button class="btn btn-2" type="button" data-cerrar-hist>Cerrar</button></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: kit de recuperación ============ -->
+<div class="fondo" id="kitModal">
+  <div class="modal chico" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Kit de recuperación<span class="sub">Para retomar el control del sitio si esta computadora se pierde</span></h2>
+      <button class="comp-cerrar" type="button" data-cerrar-kit aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-cuerpo p16">
+      <p style="margin:0 0 4px;font-size:var(--t-mini);color:var(--ink2);line-height:1.6">
+        Genera <b>un solo archivo</b> con las cuentas, tu clave de publicación y el paso a paso.
+        Se guarda cifrado: para abrirlo alcanza con doble clic y esta clave.</p>
+      <div class="clave">
+        <input type="text" id="kitPass" autocomplete="off" spellcheck="false" aria-label="Clave del archivo">
+        <button class="btn btn-2" id="kitCopiar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4a2 2 0 0 1 2-2h10"/></svg> Copiar</button>
+      </div>
+      <div class="peligro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        <span><b>Si perdés esta clave no hay forma de abrir el archivo</b>
+        <span>Anotala junto con el kit y guardalo en dos lugares distintos.</span></span>
+      </div>
+      <div id="kitAviso" class="fld-note" style="min-height:16px"></div>
+    </div>
+    <div class="modal-pie" style="display:flex;gap:8px">
+      <button class="btn btn-2" type="button" data-cerrar-kit style="flex:1">Cancelar</button>
+      <button class="btn btn-2" id="kitOtra" type="button" style="flex:1">Generar otra clave</button>
+      <button class="btn btn-1" id="kitGenerar" type="button" style="flex:1">Generar el kit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: confirmación ============ -->
+<div class="fondo" id="confirmModal">
+  <div class="modal-ov"></div>
+  <div class="modal chico" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2 id="confirmTitle">¿Confirmás?</h2>
+    </div>
+    <div class="modal-cuerpo p16">
+      <p id="confirmMsg" style="margin:0;font-size:var(--t-sm);color:var(--ink2);line-height:1.6;white-space:pre-line"></p>
+    </div>
+    <div class="modal-pie" style="display:flex;gap:8px">
+      <button class="btn btn-2" id="confirmNo" type="button" style="flex:1">Cancelar</button>
+      <button class="btn btn-2" id="confirmAlt" type="button" style="flex:1" hidden>Salir sin guardar</button>
+      <button class="btn btn-peligro" id="confirmYes" type="button" style="flex:1">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: aprobaciones (central) ============ -->
+<div class="fondo" id="bandeja">
+  <div class="modal-ov" id="bandejaOv"></div>
+  <div class="modal medio" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Aprobaciones de colaboradores<span class="sub" id="bandejaHint">Publicaciones esperando el visto bueno de Central</span></h2>
+      <button class="comp-cerrar" id="bandejaClose" type="button" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-cuerpo p16" id="bandejaList"><p class="muted">Cargando…</p></div>
+    <div class="modal-pie"><button class="btn btn-2" id="bandejaRefresh" type="button">Actualizar</button></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: actualizando el panel ============ -->
+<div class="fondo" id="mActualizando">
+  <div class="modal chico" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Actualizando el panel<span class="sub">No cierres esta ventana</span></h2>
+    </div>
+    <div class="modal-cuerpo p16">
+      <div class="barra-prog"><i id="updProgFill" style="width:8%"></i></div>
+      <div style="display:flex;justify-content:space-between;font-size:var(--t-nano);color:var(--ink3)">
+        <span id="updProgVer">Actualizando</span><span class="mono" id="updProgPct"></span>
+      </div>
+      <div class="prog-pasos" id="updPasos">
+        <div class="prog-paso" data-paso="bajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/></svg>Bajando la versión nueva</div>
+        <div class="prog-paso" data-paso="verificar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/></svg>Verificando el archivo</div>
+        <div class="prog-paso" data-paso="instalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/></svg>Instalando</div>
+        <div class="prog-paso" data-paso="reabrir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/></svg>Reabriendo el panel</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== VER IMAGEN EN GRANDE ====================== -->
+<div id="imgLightbox" class="img-lightbox" hidden>
+  <button class="lb-x" id="imgLbClose" type="button" title="Cerrar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <img id="imgLightboxImg" alt="Imagen ampliada">
+</div>
+
+<div id="console" class="console" hidden>
+  <div class="console-head">
+    <span id="consoleTitle">Salida</span>
+    <button class="link" id="consoleClose" type="button">cerrar</button>
+  </div>
+  <pre id="consoleBody"></pre>
+</div>
+
+<div id="traerBar" class="traer-bar" hidden>
+  <div class="traer-giro" aria-hidden="true"></div>
+  <div class="traer-cuerpo">
+    <div class="traer-txt">Conectando con el cerebro…</div>
+    <div class="traer-pista"><div class="traer-relleno"></div></div>
+  </div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<!-- puente del compositor viejo (mp-modo): el motor lo consulta -->
+<div id="mpModo" hidden><button type="button" data-modo="escritorio" class="on"></button><button type="button" data-modo="celular"></button></div>
+
+<script src="/static/iconos-ui.js"></script>
+<script src="/static/app.js"></script>
+<!-- la cáscara: usa el motor de app.js, no lo reemplaza -->
+<script src="/static/muro.js"></script>
+<script src="/static/panel_datos.js"></script>
+<script src="/static/datos_puente.js"></script>
+</body>
+</html>
