@@ -2509,6 +2509,13 @@ class Handler(BaseHTTPRequestHandler):
         with fh:
             self.send_response(206 if parcial else 200)
             self.send_header("Content-Type", ctype)
+            # El panel corre en una ventana de Chrome, y Chrome se guarda el
+            # index.html y los .css entre sesiones. Al actualizar el programa,
+            # el numero de version cambiaba (viene por /api/config, que no se
+            # cachea) pero la PANTALLA seguia siendo la vieja: parecia que la
+            # actualizacion no habia entrado. Reinstalar tampoco lo arregla,
+            # porque la cache es del navegador, no del programa.
+            self.send_header("Cache-Control", "no-store, must-revalidate")
             # Sin esto el navegador intenta MOSTRAR el .docx, que es un ZIP:
             # se ve basura binaria en pantalla en vez de bajarse el archivo.
             if _descarga:
