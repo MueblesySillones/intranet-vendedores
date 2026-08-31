@@ -1,8 +1,8 @@
 {
-  "version": 30,
+  "version": 31,
   "label": "el panel en blanco (ajustes de color)",
   "notes": "El panel cambio de color: donde antes era crema ahora es blanco, igual que la intranet que ven los vendedores. Asi lo que ves mientras editas se parece a lo que se publica. El boton Publicar pasa a negro para que se distinga del resto, y la chapita NUEVO tambien. Nada cambio de lugar: todo esta donde estaba.",
-  "sha256": "4190f59bf90666027401c6b4b0918c185b461bc36b17adf916f33948378344b0",
-  "size": 19614058,
-  "url": "panel/PanelMyS-v30.zip"
+  "sha256": "9ed4cc67cfa3f9b5c882a5432ab6b7678040d47f8a38b6433ea6ca6e0438d89b",
+  "size": 19616776,
+  "url": "panel/PanelMyS-v31.zip"
 }
