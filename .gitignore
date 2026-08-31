@@ -1,6 +1,21 @@
 # No subir al repo: datos sensibles (emails de clientes), herramientas internas y notas
 datos/
-herramientas/
+# herramientas/ SI entra al repo desde el 31-ago-2026: el codigo del panel no
+# estaba en ningun git y dos maquinas lo editaron a la vez sin enterarse.
+# Lo que NO puede entrar nunca es esto de abajo (secretos y cosas por maquina):
+herramientas/panel/panel_config.json
+herramientas/panel/identity.json
+herramientas/panel/proyecto.txt
+herramientas/panel/aprobaciones/
+herramientas/panel/dist/
+herramientas/panel/build/
+herramientas/panel/salida/
+herramientas/qa/salida/
+herramientas/cerebro/.wrangler/
+herramientas/cerebro/node_modules/
+herramientas/**/__pycache__/
+herramientas/**/*.pyc
+herramientas/**/*.exe
 memoria-diseno/
 .claude/
 *.bat

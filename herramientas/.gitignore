@@ -1,0 +1,36 @@
+# ═══ Panel MyS — qué NO se versiona ═══
+
+# Compilados y empaquetado (se regeneran: PyInstaller / subir_update / Inno Setup)
+panel/dist/
+panel/build/
+panel/paquete/
+panel/instalador/
+panel/*.zip
+*.exe
+*.msi
+
+# Caches de Python
+__pycache__/
+*.pyc
+
+# ⚠️ SECRETOS y config por-máquina (NUNCA subir)
+panel/clave-equipo.iss
+panel/panel_config.json
+panel/proyecto.txt
+panel/aprobaciones/
+**/identity.json
+
+# Estado local del panel / restos de updates
+PanelMyS_state/
+PanelMyS_update/
+PanelMyS_old/
+PanelMyS_failed/
+
+# Artefactos de la suite QA (capturas, sandbox — regenerables)
+qa/salida/
+qa/baseline/
+qa/fixtures/estado-base/
+
+# Node / Wrangler (cerebro y pruebas)
+node_modules/
+cerebro/.wrangler/

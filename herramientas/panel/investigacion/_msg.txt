@@ -1,0 +1,18 @@
+Normas de WhatsApp: arreglar los iconos gigantes y sumar plantillas fieles
+
+El maquetado del telefono y el bloque de plantillas del panel compartian las
+clases .wa-*, y como `.manual .wa-btn` es mas especifico le ganaba al `.wa-btn`
+del telefono: le sacaba el display:flex, el span del icono volvia a ser inline,
+su width dejaba de aplicar y el SVG se inflaba a 262px. Ahora las reglas del
+panel van scopeadas bajo .wa-carousel y el tamano se declara en el propio SVG,
+no solo en el span.
+
+Ademas, siguiendo la documentacion de Meta: pie de plantilla, botones de
+respuesta rapida sin icono (el icono es solo de enlace y telefono), y un
+carrusel de ejemplo dentro del telefono.
+
+Bloque nuevo de plantilla de WhatsApp con prefijo wt- para no repetir la
+colision de clases: categoria, encabezado, cuerpo con variables, pie, botones
+por tipo y modo carrusel de 2 a 10 tarjetas.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>

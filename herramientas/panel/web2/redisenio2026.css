@@ -1,0 +1,72 @@
+/* ============================================================================
+   REDISEÑO 2026 — EL PANEL
+   ============================================================================
+   Se carga ÚLTIMO, después de styles.css / rediseno.css / panel_datos.css /
+   mejoras.css, y sólo redefine los tokens de color. Ninguna regla de layout:
+   la herramienta ya está bien armada, lo que cambia es la paleta.
+
+   Por qué: el sitio pasó de crema a blanco limpio (intranet/css/redisenio.css)
+   y el panel quedaba en beige. Son la misma plataforma vista desde dos lados;
+   si el que edita ve un color y el que lee ve otro, la vista previa deja de
+   ser una vista previa.
+
+   Para revertir: se borra la línea del <link> en web2/index.html.
+
+   ⚠️ ESTO NO LLEGA A LAS SUCURSALES SOLO. El panel corre del .exe: tocar este
+   archivo no cambia nada en las 7 PCs hasta que se compile una versión nueva y
+   se publique el paquete de actualización. Ver reference_mys_release_del_panel.
+   ============================================================================ */
+:root{
+  /* --- superficies --- */
+  --bg:        #F7F7F8;   /* el fondo de la herramienta */
+  --panel:     #FAFAFB;   /* barras y zonas secundarias */
+  --surface:   #FFFFFF;
+
+  /* --- tinta ---
+     ⚠️ --ink3 NO puede ser más claro que esto. En styles.css hay una nota que
+     dice que el valor viejo (#8A857B) daba 3,26:1 sobre el fondo, por debajo
+     del mínimo legible, y por eso lo habían oscurecido a #6E6960. Se respeta:
+     #6E6E76 sobre #F7F7F8 da ~5:1. Si algún día se aclara, se rompe lo que ya
+     estaba arreglado. */
+  --ink:       #18181B;
+  --ink2:      #52525B;
+  --ink3:      #6E6E76;
+
+  /* --- líneas --- */
+  --line:      #E7E7EA;
+  --linea-int: #C9C9CF;   /* borde de un control aislado: sigue dando >3:1 */
+  --accent2:   #C9C9CF;
+
+  /* --- el acento pasa de marrón a grafito, como en el sitio --- */
+  --accent:      #18181B;
+  --accent-ink:  #FFFFFF;
+  --accent-soft: #F0F0F2;
+
+  /* --- el lienzo del editor de bloques ---
+     --mesa es "acá afuera es la herramienta" y --hoja es "acá adentro es lo
+     que se publica". La hoja tiene que ser EXACTAMENTE el fondo del sitio, o
+     la vista previa miente sobre cómo va a verse publicado. */
+  --mesa: #E6E6EA;   /* más oscura que la hoja a propósito: si la mesa y el
+                        papel se parecen, se pierde el límite entre "la
+                        herramienta" y "lo que se va a publicar", que es lo que
+                        hace entender de un vistazo qué se está editando. */
+  --hoja: #F7F7F8;
+
+  /* --- semánticos: se quedan, son señales, no decoración --- */
+  --ok:     #15803D;
+  --warn:   #B45309;
+  --danger: #B91C1C;
+}
+
+/* El foco visible tiene que seguir viéndose sobre el fondo nuevo. */
+:root{ --foco: 2px solid #18181B; }
+
+/* La chapita NUEVO va negra, igual que en el sitio (.tile-nuevo). */
+.chip-nuevo, .nuevo, .badge-nuevo{
+  background:#18181B !important; color:#fff !important; font-weight:800;
+}
+
+/* El logo del panel es el mismo PNG BLANCO del sitio (hecho para header
+   oscuro): sobre el fondo claro quedaba casi invisible. brightness(0) lo
+   pinta negro respetando la transparencia. */
+.nav-logo{ filter:brightness(0); opacity:.88; }

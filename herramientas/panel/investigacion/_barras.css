@@ -1,0 +1,41 @@
+
+/* ===================================================================
+   LAS BARRAS: jerarquia y agrupacion
+   Se veian dos botones verdes IDENTICOS y pegados ("Guardado ✓" y
+   "Publicado ✓") siendo las dos acciones de alcance mas distinto que hay:
+   una toca este modulo, la otra toca el sitio que ven todos.
+   =================================================================== */
+
+/* El "hecho" de Guardar es una confirmacion tranquila (accion local, reversible).
+   El "hecho" de Publicar conserva la chapa verde: es la que importa de verdad. */
+#detSave.btn-done{background:transparent !important; border-color:transparent !important;
+  box-shadow:none !important; font-weight:600}
+#detSave.btn-done:hover{background:#EFF5EF !important}
+
+/* separadores entre grupos de acciones (la clase ya existia sin usarse) */
+.editor-bar-sep{flex:0 0 auto}
+
+/* el toggle escritorio/celular con iconos dibujados */
+.vt{display:grid; place-items:center; width:32px; height:28px; padding:0; color:var(--ink3)}
+.vt svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.7;
+  stroke-linecap:round; stroke-linejoin:round}
+.vt:hover{color:var(--ink2)}
+.vt.active{background:#fff; color:var(--ink); box-shadow:var(--sombra-1)}
+
+/* el deshacer apagado tiene que verse apagado, no roto */
+.editor-bar .btn-icon{min-width:34px; display:inline-grid; place-items:center}
+
+/* La chapa del rol NO es un boton: era lo mas contrastado del encabezado
+   despues del logo, compitiendo con Publicar, y solo dice quien sos. */
+.rol-badge.central{color:var(--ink2) !important; background:transparent !important;
+  border:1px solid var(--line) !important; font-weight:600}
+
+/* el resumen del modulo no puede empujar el acordeon a tres renglones */
+.acc-meta{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:190px;
+  text-align:right}
+
+/* que se note DONDE podes pegar: el pegado de Word no tenia ningun cartel */
+.gb-doc:empty:before{content:'Tu documento está vacío. Agregá bloques desde la derecha → o pegá directo desde Word o Excel con Ctrl+V.'}
+.gb-pegar{font-size:var(--t-xs); color:var(--ink3); line-height:1.4; margin:8px 2px 0;
+  padding:8px 10px; border:1px dashed var(--line); border-radius:var(--r-sm)}
+.gb-pegar b{color:var(--ink2)}

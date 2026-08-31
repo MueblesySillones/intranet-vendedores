@@ -1,0 +1,13 @@
+Carrusel de WhatsApp: tarjetas parejas y sin huecos
+
+Tres arreglos sobre el bloque de plantilla:
+
+- La burbuja verde ya no se dibuja si no hay mensaje escrito. Quedaba un globo
+  con la hora sola, que parecia un error.
+- Una tarjeta sin foto no se publica. Meta la pide obligatoria y sin ella la
+  tarjeta salia como un hueco gris al lado de las demas. En el editor si se ve,
+  para poder completarla, y el panel avisa cual falta.
+- Las tarjetas quedan a la misma altura, con el texto arriba y los botones
+  pegados abajo, aunque una tenga mas texto que otra.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>

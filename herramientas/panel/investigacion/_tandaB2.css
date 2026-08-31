@@ -1,0 +1,5 @@
+
+/* rotulo del interruptor del documento (hay otro igual en Apariencia) */
+.doc-bar-lbl{font-size:11.5px; font-weight:600; color:var(--ink3); white-space:nowrap}
+/* con el acordeon ABIERTO el resumen sobra: ya se ve el interruptor */
+.accordion.open .acc-meta{display:none}
