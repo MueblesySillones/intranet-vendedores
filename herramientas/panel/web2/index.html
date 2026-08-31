@@ -60,15 +60,7 @@
     <button id="btnPublicar" class="btn btn-pub nav-pub" title="Sube los cambios al sitio online. Vercel actualiza en ~30 s.">Publicar cambios</button>
     <!-- COLABORADOR -->
     <button id="btnEnviar" class="btn btn-pub nav-pub" hidden title="Manda tus cambios a la central para que los aprueben">Enviar para aprobación</button>
-    <!-- UN solo botón para estar al día: el programa y el contenido juntos.
-         Antes eran dos ("Actualizar a la última versión" y "Traer última
-         versión") y había que saber cuál apretar. Se enciende solo cuando el
-         panel detecta que hay algo nuevo publicado. -->
-    <button id="btnAlDia" class="btn nav-aldia" hidden
-            title="Trae lo último que se publicó: el programa y el contenido del sitio">
-      <span class="aldia-tx">Actualizar</span>
-      <span class="aldia-pto" aria-hidden="true"></span>
-    </button>
+    <button id="btnTraer" class="btn btn-ghost nav-min" hidden title="Baja la última versión publicada, por internet"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg> Traer última versión</button>
     <button id="btnBandeja" class="btn btn-ghost nav-min" hidden title="Cambios que te mandaron los colaboradores para aprobar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14h4l1.5 2.5h5L16 14h4M4 14 6 6h12l2 8v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg> Aprobaciones <span class="pend-badge" id="pendBadge" hidden>0</span></button>
     <div class="nav-links">
       <button type="button" id="btnAvisar" class="link-discreto" title="Marcar módulos como novedad">Avisar novedad</button>
@@ -558,26 +550,5 @@
 <script src="/static/panel_datos.js"></script>
 <script src="/static/datos_puente.js"></script>
 <script src="/static/mejoras.js"></script>
-
-<!-- ===================================================================
-     VENTANA DE ACTUALIZACION
-     Sale al tocar "Actualizar" y acompana hasta el final. Existe para que
-     esperar no de ansiedad: mientras trabaja cuenta en que anda, con una
-     barra que avanza por los bytes que van llegando (no por un reloj).
-     No se puede cerrar a mitad de camino a proposito: cortar el swap del
-     programa deja la instalacion a medias.
-     =================================================================== -->
-<div class="upmodal" id="upModal" hidden role="dialog" aria-modal="true"
-     aria-labelledby="upTitulo" aria-describedby="upFrase">
-  <div class="upmodal-caja">
-    <h3 class="upmodal-tit" id="upTitulo">Actualizando</h3>
-    <p class="upmodal-frase" id="upFrase">Empezando…</p>
-    <div class="upmodal-barra"><div class="upmodal-relleno" id="upRelleno"></div></div>
-    <p class="upmodal-pie" id="upPie">No cierres esta ventana.</p>
-    <div class="upmodal-acts" id="upActs" hidden>
-      <button class="btn" id="upCerrar">Entendido</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>

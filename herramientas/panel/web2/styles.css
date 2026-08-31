@@ -858,11 +858,7 @@ body.grabbing, body.grabbing *{cursor:grabbing !important}
 .rol-badge{font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--r-full);
   border:1px solid var(--line); color:var(--ink2); background:var(--panel)}
 .rol-badge.central{color:#fff; background:var(--accent); border-color:var(--accent)}
-/* #776652 y no var(--accent): el acento puro da 4,41:1 sobre este fondo, apenas
-   por debajo del 4,5 que pide AA. Oscurecido un 4% cumple (4,69:1) y a simple
-   vista es el mismo color. Se ve solo en las sucursales, por eso habia pasado
-   inadvertido: la central nunca muestra esta chapa. */
-.rol-badge.colab{color:#776652; background:#F1ECE3; border-color:var(--accent2)}
+.rol-badge.colab{color:var(--accent); background:#F1ECE3; border-color:var(--accent2)}
 .pend-badge{display:inline-grid; place-items:center; min-width:19px; height:19px; padding:0 5px;
   margin-left:4px; border-radius:var(--r-full); background:var(--danger); color:#fff; font-size:var(--t-xs); font-weight:700}
 #btnBandeja.tiene-pend{border-color:var(--danger); color:var(--danger)}
@@ -1367,87 +1363,3 @@ body{ font-variant-numeric: tabular-nums; font-feature-settings:'tnum' 1; }
 .btn-icon:has(> svg){ gap:0; justify-content:center; }
 .mod-grip, .col-grip{ display:inline-flex; align-items:center; justify-content:center; }
 .col-badge svg, .mp-chip svg{ display:inline-block; vertical-align:-2px; margin-right:3px; }
-
-/* ---------------------------------------------------------------------------
-   EL BOTON DE ESTAR AL DIA
-   Uno solo, y solo aparece cuando hay algo nuevo de verdad. En reposo no
-   ocupa espacio ni pide nada: si no hay novedad, el boton no esta.
-
-   Cuando aparece se pinta con el acento LLENO. En todo el panel el acento
-   relleno esta reservado a "Publicar", asi que verlo en otro lado ya avisa
-   por si mismo, sin necesidad de un color de alarma que romperia la paleta.
-   El punto que late es la segunda senal: color + forma + movimiento, para que
-   no dependa solo del color.
-   --------------------------------------------------------------------------- */
-.nav-aldia{
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  width:100%; margin-top:6px;
-  background:var(--accent); color:#fff; border:1px solid var(--accent);
-  font-weight:600;
-}
-.nav-aldia:hover{ background:var(--accent2); border-color:var(--accent2); }
-.nav-aldia .aldia-pto{
-  width:7px; height:7px; border-radius:50%;
-  background:#fff; flex:0 0 auto;
-  animation:aldiaLate 2s ease-in-out infinite;
-}
-@keyframes aldiaLate{
-  0%,100%{ opacity:.45; transform:scale(.85) }
-  50%    { opacity:1;   transform:scale(1) }
-}
-/* Mientras aplica: el punto deja de latir (ya no pide nada, esta trabajando) */
-.nav-aldia.trabajando{ opacity:.75; cursor:progress }
-.nav-aldia.trabajando .aldia-pto{ animation:none; opacity:.6 }
-/* Quien pide menos movimiento no recibe un punto latiendo */
-@media (prefers-reduced-motion: reduce){
-  .nav-aldia .aldia-pto{ animation:none }
-}
-
-/* ---------------------------------------------------------------------------
-   LA VENTANA DE ACTUALIZACION
-   Fondo velado para que se entienda que el resto espera, y la caja centrada.
-   La barra tiene una transicion de 400ms: sin ella los saltos de porcentaje se
-   ven como tirones y dan sensacion de que algo va mal.
-   --------------------------------------------------------------------------- */
-.upmodal{
-  position:fixed; inset:0; z-index:200;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(40,35,28,.42);
-  padding:20px;
-}
-.upmodal[hidden]{ display:none }
-.upmodal-caja{
-  background:var(--panel); border:1px solid var(--line);
-  border-radius:var(--r-lg); box-shadow:var(--sombra-3);
-  padding:26px 28px; width:min(420px,100%);
-}
-.upmodal-tit{ margin:0 0 6px; font-size:var(--t-xl); font-weight:600; color:var(--ink) }
-.upmodal-frase{
-  margin:0 0 16px; font-size:var(--t-md); color:var(--ink2);
-  min-height:2.6em;                 /* reservado: sin esto la caja salta al cambiar de frase */
-}
-.upmodal-barra{
-  height:8px; border-radius:var(--r-full); overflow:hidden;
-  background:color-mix(in srgb, var(--ink) 8%, transparent);
-}
-.upmodal-relleno{
-  height:100%; width:0%; border-radius:inherit;
-  background:var(--accent);
-  transition:width .4s cubic-bezier(.22,.61,.36,1);
-}
-/* Cuando todavia no se sabe cuanto falta, la barra se mueve sola: dice
-   "sigo vivo" sin mentir un porcentaje. */
-.upmodal-relleno.indet{
-  width:38%!important;
-  animation:upVaViene 1.4s ease-in-out infinite;
-}
-@keyframes upVaViene{
-  0%{ transform:translateX(-100%) } 100%{ transform:translateX(320%) }
-}
-.upmodal-pie{ margin:14px 0 0; font-size:var(--t-sm); color:var(--ink3) }
-.upmodal-acts{ margin-top:18px; display:flex; justify-content:flex-end }
-.upmodal.error .upmodal-relleno{ background:var(--danger); animation:none; width:100%!important }
-@media (prefers-reduced-motion: reduce){
-  .upmodal-relleno{ transition:none }
-  .upmodal-relleno.indet{ animation:none; width:100%!important; opacity:.45 }
-}
