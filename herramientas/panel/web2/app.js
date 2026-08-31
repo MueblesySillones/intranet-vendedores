@@ -633,6 +633,14 @@ function mostrarDetalle(on) {
 async function renderDetalle() {
   // --- apariencia ---
   $('#detBarTitle').textContent = detNew ? 'Nuevo módulo' : ('Editar · ' + (det.title || 'módulo'));
+  /* El mismo nombre, tambien arriba del papel: el canvas arrancaba
+     directo en el primer bloque y no se veia QUE se estaba editando. */
+  var _nom = $('#gbDocNom'); if (_nom) _nom.textContent = detNew ? 'Nuevo módulo' : (det.title || 'módulo');
+  var _sub = $('#gbDocSub');
+  if (_sub) {
+    var _n = (det.bloques && det.bloques.length) || 0;
+    _sub.textContent = 'Se ve en el menú de la intranet' + (_n ? (' · ' + _n + (_n === 1 ? ' bloque' : ' bloques')) : '');
+  }
   $('#dTitle').value = det.title || '';
   $('#dDesc').value = det.desc || '';
   $('#dReady').checked = det.ready !== false;
