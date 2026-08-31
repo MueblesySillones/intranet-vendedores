@@ -19,6 +19,8 @@ herramientas/**/*.exe
 memoria-diseno/
 .claude/
 *.bat
+# excepcion: el actualizador SI es codigo fuente y tiene que viajar en el repo
+!herramientas/panel/updater/aplicar.bat
 LEEME.md
 
 # Contenido de prueba del muro: vive solo en tu disco, nunca en produccion
