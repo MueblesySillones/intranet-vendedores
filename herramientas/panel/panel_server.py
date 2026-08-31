@@ -269,7 +269,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 28
+VERSION = 29
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -277,14 +277,17 @@ VERSION = 28
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.3.0"
-VERSION_LABEL = "1.3.0 - el panel en blanco, igual que la intranet"
+VERSION_PUBLICA = "1.3.1"
+VERSION_LABEL = "1.3.1 - el panel en blanco, igual que la intranet"
 VERSION_NOTES = (
                  "El panel cambio de color: donde antes era crema ahora es blanco, "
                  "igual que la intranet que ven los vendedores. Asi lo que ves "
                  "mientras editas se parece a lo que se publica. El boton Publicar "
                  "pasa a negro para que se distinga del resto, y la chapita NUEVO "
-                 "tambien. Nada cambio de lugar: todo esta donde estaba.")
+                 "tambien. Nada cambio de lugar: todo esta donde estaba. Ademas, "
+                 "el actualizador ahora tambien acepta a la computadora central "
+                 "(antes solo actualizaba sucursales y en la central daba marcha "
+                 "atras solo).")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
