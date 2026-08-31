@@ -269,7 +269,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 27
+VERSION = 29
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -277,14 +277,17 @@ VERSION = 27
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.3.0"
-VERSION_LABEL = "1.3.0 - el panel en blanco, igual que la intranet"
-VERSION_NOTES = ("El panel cambio de color: donde antes era crema ahora es "
-                 "blanco, igual que la intranet que ven los vendedores. Asi "
-                 "lo que ves mientras editas se parece a lo que se publica. "
-                 "El boton Publicar pasa a negro para que se distinga del "
-                 "resto, y la chapita NUEVO tambien. Nada cambio de lugar: "
-                 "todo esta donde estaba.")
+VERSION_PUBLICA = "1.3.1"
+VERSION_LABEL = "1.3.1 - el panel en blanco, igual que la intranet"
+VERSION_NOTES = (
+                 "El panel cambio de color: donde antes era crema ahora es blanco, "
+                 "igual que la intranet que ven los vendedores. Asi lo que ves "
+                 "mientras editas se parece a lo que se publica. El boton Publicar "
+                 "pasa a negro para que se distinga del resto, y la chapita NUEVO "
+                 "tambien. Nada cambio de lugar: todo esta donde estaba. Ademas, "
+                 "el actualizador ahora tambien acepta a la computadora central "
+                 "(antes solo actualizaba sucursales y en la central daba marcha "
+                 "atras solo).")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1479,9 +1482,10 @@ def novedades(timeout=8):
 
 def chequear_update(timeout=8):
     """Consulta la version publicada y dice si hay una mas nueva que la local.
-    Primero por INTERNET (version.json en la web publica); si falla, la central."""
-    if ES_CENTRAL:
-        return {"disponible": False, "es_central": True, "local": VERSION}
+    Primero por INTERNET (version.json en la web publica); si falla, la central.
+    TODOS los roles chequean (v27): el codigo puede publicarse desde cualquier
+    maquina con el fuente, asi que la central tambien se actualiza desde la web.
+    La central solo mira internet (preguntarse a si misma no informa nada)."""
     data = None
     fallas = []
     if WEB_PUBLICA:
@@ -1493,7 +1497,7 @@ def chequear_update(timeout=8):
                 data = json.loads(r.read().decode("utf-8"))
         except Exception as e:  # noqa
             fallas.append("internet: %s" % e)
-    if data is None and CENTRAL_URL:
+    if data is None and CENTRAL_URL and not ES_CENTRAL:
         try:
             with urllib.request.urlopen(CENTRAL_URL + "/update/version", timeout=timeout) as r:
                 data = json.loads(r.read().decode("utf-8"))
@@ -1544,8 +1548,6 @@ def aplicar_update(dry=False, jid=None):
     sola mientras el proceso esta trabado miente, y la persona se entera cuando
     el panel no vuelve."""
     global _UPDATE_EN_CURSO
-    if ES_CENTRAL:
-        return {"ok": False, "error": "la central no se auto-actualiza"}
     if not UPDATE_DIR or not os.path.isfile(UPDATER_SRC):
         return {"ok": False, "error": "falta el componente de actualizacion (aplicar.bat)"}
     with _UPDATE_LOCK:
@@ -1591,7 +1593,7 @@ def aplicar_update(dry=False, jid=None):
         rel = (info.get("url") or "").strip().lstrip("/")
         if rel and WEB_PUBLICA:
             url = WEB_PUBLICA + "/" + rel + "?v=" + str(version_esp)
-        elif CENTRAL_URL:
+        elif CENTRAL_URL and not ES_CENTRAL:
             url = CENTRAL_URL + "/update/bundle?v=" + str(version_esp)
         else:
             return {"ok": False, "error": "no hay de donde bajar el paquete (ni internet ni central)"}
@@ -1668,7 +1670,20 @@ def aplicar_update(dry=False, jid=None):
         if dry:
             return {"ok": True, "dry": True, "new": new_dir, "version": version_esp}
 
-        # 6) lanzar el swap; el endpoint responde y programa el os._exit
+        # 6) en la central puede haber OTRO PanelMyS.exe corriendo (el receptor
+        #    oculto que lanza iniciar_receptor.vbs al login): retiene archivos de
+        #    la carpeta instalada y el swap fallaria con "no pude mover". Se baja
+        #    antes; al reiniciar, el panel levanta su receptor en hilo propio.
+        if ES_CENTRAL:
+            try:
+                subprocess.run(["taskkill", "/F", "/IM", "PanelMyS.exe",
+                                "/FI", "PID ne %d" % os.getpid()],
+                               creationflags=0x08000000, timeout=15,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:  # noqa
+                pass
+
+        # 7) lanzar el swap; el endpoint responde y programa el os._exit
         if jid:
             _job_set(jid, pct=97, msg="Instalando y reiniciando el panel…")
         _lanzar_aplicar()
