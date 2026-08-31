@@ -242,7 +242,7 @@ function aplicarRol(cfg) {
   $('#btnPublicar').hidden = false;
   $('#btnBandeja').hidden  = true;    // el modelo de aprobaciones ya no se usa
   $('#btnEnviar').hidden   = true;
-  // el boton de estar al dia lo maneja vigilarNovedades(): aparece solo si hay algo
+  $('#btnTraer').hidden    = central; // el colaborador puede refrescar su copia desde la central
   // con el cerebro, el estado de git local no aplica
   const gs = $('#gitState');
   if (gs) gs.hidden = true;
@@ -266,7 +266,7 @@ function accionPublicarEditor() { return publicarCambios(); }
 // la confirmación: durante mucho tiempo publicar desde la home no preguntó nada.
 $('#btnPublicar').onclick = () => publicarCambios();
 $('#btnEnviar').onclick = () => enviarPropuesta();
-// #btnTraer se reemplazo por #btnAlDia (ver vigilarNovedades)
+$('#btnTraer').onclick = () => traerUltima();
 $('#detPublicar').onclick = accionPublicarEditor;
 $('#btnCerrar').onclick = async () => {
   if (!await confirmar('¿Cerrar el panel? Lo que no publicaste queda guardado en esta computadora.', 'Cerrar', 'Cerrar el panel')) return;
@@ -292,9 +292,9 @@ async function enviarPropuesta() {
   btns.forEach(b => b && (b.disabled = false));
 }
 
-async function traerUltima(opc) {
-  const btn = $('#btnAlDia');
-  const sigue = (opc && opc.sinPreguntar) ? true : await confirmar(
+async function traerUltima() {
+  const btn = $('#btnTraer');
+  const sigue = await confirmar(
     'Se va a reemplazar tu copia local con la última versión publicada. Los cambios que no hayas enviado se pierden.',
     'Traer última versión', 'Traer última versión');
   if (!sigue) return;
@@ -4309,159 +4309,44 @@ $('#bandejaClose').onclick = cerrarBandeja;
 $('#bandejaOv').onclick = cerrarBandeja;
 $('#bandejaRefresh').onclick = renderBandeja;
 
-// ---------- auto-actualizacion del panel (solo colaborador) ----------
-/* ===================================================================
-   ESTAR AL DIA — un solo boton
-   ===================================================================
-   Al equipo no le importa si lo nuevo es el programa o el contenido del
-   sitio: quiere estar al dia. Antes eran dos botones y habia que saber cual
-   apretar; ademas "Traer ultima version" bajaba a ciegas, sin decir si habia
-   algo nuevo.
-
-   Ahora el panel PREGUNTA solo, cada 90 segundos. La consulta es barata: un
-   HEAD contra modulos.js que devuelve 304 sin descargar nada. Cuando marketing
-   publica algo, a los pocos segundos el boton aparece encendido en todas las
-   sucursales, sin que nadie avise por WhatsApp.
-
-   90 segundos y no 5: publicar no es una urgencia de segundos, y preguntar
-   seguido de mas gasta la conexion de la sucursal sin que nadie lo note.
-   =================================================================== */
-var NOV_TIMER = null;
-
-async function vigilarNovedades() {
-  if (ES_CENTRAL) return;         // la central genera las versiones, no las recibe
-  await revisarNovedades();
-  if (NOV_TIMER) clearInterval(NOV_TIMER);
-  NOV_TIMER = setInterval(revisarNovedades, 90000);
-}
-
-async function revisarNovedades() {
-  const btn = $('#btnAlDia');
-  if (!btn || btn.dataset.ocupado === '1') return;
-  let n;
-  try { n = await api('/api/novedades'); } catch (e) { return; }   // sin internet: sin ruido
-  if (!n || !n.hay) { btn.hidden = true; return; }
-
-  const hayProg = n.programa && n.programa.hay;
-  const hayCont = n.contenido && n.contenido.hay;
-  const tx = btn.querySelector('.aldia-tx');
-  /* El rotulo dice QUE llega, no "hay una actualizacion": la persona decide
-     mejor si sabe si le cambia el programa o el contenido que publica. */
-  if (tx) tx.textContent = hayProg && hayCont ? 'Actualizar todo'
-                         : hayProg ? 'Actualizar el panel'
-                         : 'Traer lo nuevo del sitio';
-  btn.title = hayProg
-    ? ((n.programa.notas || n.programa.label || '') + ' — el panel se reinicia solo')
-    : 'Marketing publico cambios en el sitio. Tocá para traerlos a esta computadora.';
-  btn.hidden = false;
-  btn.onclick = () => aplicarNovedades(n);
-}
-
-/* ---------------------------------------------------------------------------
-   La ventana de progreso. Una sola para las dos operaciones (el programa y el
-   contenido), porque para la persona es el mismo momento: "esperá que estoy
-   actualizando".
-   --------------------------------------------------------------------------- */
-var UP = {
-  abrir(titulo) {
-    const m = $('#upModal'); if (!m) return;
-    m.hidden = false; m.classList.remove('error');
-    $('#upTitulo').textContent = titulo;
-    $('#upActs').hidden = true;
-    $('#upPie').textContent = 'No cierres esta ventana.';
-    this.paso('Empezando…', -1);
-  },
-  /* pct < 0 = todavía no se sabe cuánto falta: la barra se mueve sola en vez
-     de inventar un número. */
-  paso(frase, pct) {
-    const f = $('#upFrase'), r = $('#upRelleno');
-    if (f && frase) f.textContent = frase;
-    if (!r) return;
-    if (pct == null || pct < 0) { r.classList.add('indet'); }
-    else { r.classList.remove('indet'); r.style.width = Math.max(2, Math.min(100, pct)) + '%'; }
-  },
-  fallo(msg) {
-    const m = $('#upModal'); if (!m) return;
-    m.classList.add('error');
-    $('#upTitulo').textContent = 'No se pudo actualizar';
-    $('#upFrase').textContent = msg || 'Probá de nuevo en un rato.';
-    $('#upPie').textContent = 'No se cambió nada: el panel sigue como estaba.';
-    $('#upActs').hidden = false;
-    $('#upCerrar').onclick = () => { m.hidden = true; };
-  },
-  cerrar() { const m = $('#upModal'); if (m) m.hidden = true; }
-};
-
-/* Sigue un trabajo del servidor y va contando. Sirve para las dos operaciones
-   porque las dos usan el mismo mecanismo de trabajos. */
-async function seguirTrabajo(jobId, alTerminar) {
-  let cortes = 0;
-  for (;;) {
-    await new Promise(r => setTimeout(r, 600));
-    let j;
-    try {
-      j = await api('/api/job?id=' + encodeURIComponent(jobId));
-      cortes = 0;
-    } catch (e) {
-      /* Que el servidor deje de responder es ESPERABLE al actualizar el
-         programa: se está reiniciando. Después de 3 fallos seguidos lo damos
-         por reiniciando en vez de por roto. */
-      if (++cortes >= 3) return 'sin-respuesta';
-      continue;
+// ---------- auto-actualizacion del panel (todos los roles) ----------
+async function chequearActualizacion() {
+  let st;
+  try { st = await api('/api/update-status'); } catch (e) { return; }
+  if (!st || !st.disponible) return;
+  const bar = $('#updateBar'); if (!bar) return;
+  const txt = bar.querySelector('.update-txt');
+  const btn = $('#btnUpdate');
+  const setTxt = html => { if (txt) txt.innerHTML = html; };
+  setTxt('<b>Hay una versión nueva del panel.</b> ' + esc(st.label || ('versión ' + st.version)));
+  bar.hidden = false;
+  let enCurso = false;
+  btn.onclick = async () => {
+    if (enCurso) return;                       // anti doble-submit (sincrono, antes del await)
+    enCurso = true; btn.disabled = true;
+    if (!await confirmar('El panel se va a actualizar y reiniciar solo en unos segundos. Guardá lo que estés editando antes de seguir.', 'Actualizar ahora', 'Actualizar el panel')) {
+      enCurso = false; btn.disabled = false; return;
     }
-    if (j.estado === 'error') { alTerminar && alTerminar(); throw new Error(j.error || 'falló'); }
-    UP.paso(j.msg, j.pct);
-    if (j.estado === 'listo') return 'listo';
-  }
-}
-
-async function aplicarNovedades(n) {
-  const btn = $('#btnAlDia');
-  if (!btn || btn.dataset.ocupado === '1') return;     // sincrono: corta el doble click
-  const hayProg = n.programa && n.programa.hay;
-
-  const ok = await confirmar(
-    hayProg
-      ? 'El panel se va a actualizar y reiniciar solo. Guardá lo que estés editando antes de seguir.'
-      : 'Se va a reemplazar tu copia del sitio con la última publicada. Los cambios que no hayas publicado se pierden.',
-    'Actualizar ahora', hayProg ? 'Actualizar el panel' : 'Traer lo nuevo');
-  if (!ok) return;
-
-  btn.dataset.ocupado = '1';
-  btn.classList.add('trabajando');
-  const soltar = () => { btn.dataset.ocupado = ''; btn.classList.remove('trabajando'); };
-
-  /* El PROGRAMA va primero: al reiniciar puede traer una forma nueva de leer
-     el sitio, así que traer el contenido antes sería al revés. */
-  if (hayProg) {
-    UP.abrir('Actualizando el panel');
+    bar.classList.add('aplicando');
+    setTxt('<b>Descargando y aplicando…</b> no cierres la ventana, el panel se reinicia solo.');
     try {
       const r = await api('/api/update-apply', { method: 'POST' });
-      if (!r || !r.job) throw new Error((r && r.error) || 'No se pudo empezar');
-      const fin = await seguirTrabajo(r.job);
-      /* Tanto 'listo' como 'sin-respuesta' significan lo mismo acá: el swap
-         arrancó y el servidor se está por caer. */
-      UP.paso('Reiniciando el panel… vuelve solo en unos segundos.', 100);
-      $('#upPie').textContent = 'Esto tarda menos de un minuto.';
-      esperarReinicio();
+      if (r && r.aplicando) {
+        btn.hidden = true;
+        setTxt('<b>Actualizando…</b> el panel se va a reiniciar solo. Esperá unos segundos.');
+        esperarReinicio();
+      } else {
+        bar.classList.remove('aplicando'); btn.disabled = false; enCurso = false;
+        setTxt('<b>No se pudo actualizar.</b> ' + esc((r && r.error) || ''));
+        toast((r && r.error) || 'No se pudo actualizar', 'err');
+      }
     } catch (e) {
-      UP.fallo(e.message);
-      soltar();
+      // el POST responde ANTES de salir; si el fetch falla, es un error real -> reintentar
+      bar.classList.remove('aplicando'); btn.disabled = false; btn.hidden = false; enCurso = false;
+      setTxt('<b>No se pudo iniciar la actualización.</b> Probá de nuevo.');
+      toast('No se pudo iniciar la actualización', 'err');
     }
-    return;
-  }
-
-  UP.abrir('Trayendo lo nuevo del sitio');
-  try {
-    const r = await api('/api/traer', { method: 'POST' });
-    if (!r.ok || !r.job) throw new Error(r.error || 'No se pudo empezar la descarga');
-    await seguirTrabajo(r.job);
-    UP.paso('¡Listo! Recargando…', 100);
-    setTimeout(() => location.reload(), 800);
-  } catch (e) {
-    UP.fallo(e.message);
-    soltar();
-  }
+  };
 }
 
 // espera a que el panel se reinicie (server cae y vuelve) y recarga la version nueva
@@ -4481,7 +4366,7 @@ function esperarReinicio() {
 cargarConfig().finally(() => {
   cargarModulos().catch(e => toast('No se pudo conectar con el panel: ' + e.message, 'err'));
   refrescarGit();
-  vigilarNovedades();
+  chequearActualizacion();
   // la central revisa cada 20 s si llegaron propuestas nuevas
   setInterval(refrescarPendientes, 20000);
 });
