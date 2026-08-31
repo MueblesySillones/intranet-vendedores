@@ -297,3 +297,16 @@
   font-size:16px; /* 16px o iOS hace zoom al enfocar */
   border-radius:10px;
 }
+
+/* ---- 11. MODO PRESENTACIÓN: un solo "Volver a la lista" ------------------
+   Con una presentación abierta aparecían DOS: el `.lista-btn` de la barra de
+   arriba y el `.dk-volver` de la barra de la propia presentación. Dos salidas
+   para lo mismo, en dos lugares distintos de la pantalla.
+   Se queda el de la presentación, que está al lado de Anterior/Siguiente,
+   donde el ojo ya está mirando.
+   El :has() no lo soportan navegadores viejos; si falla, quedan los dos como
+   hasta ahora — se degrada al estado actual, no rompe nada. */
+body.report-mode:has(.dk-slide.on) .lista-btn{ display:none; }
+
+/* La diapositiva quedaba pegada arriba con un vacío grande abajo. */
+.dk-slide.on{ justify-content:center; }
