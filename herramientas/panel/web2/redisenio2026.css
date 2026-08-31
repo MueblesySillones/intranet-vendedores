@@ -70,3 +70,12 @@
    oscuro): sobre el fondo claro quedaba casi invisible. brightness(0) lo
    pinta negro respetando la transparencia. */
 .nav-logo{ filter:brightness(0); opacity:.88; }
+
+/* ---- Los cremas escritos A MANO ----------------------------------------
+   Redefinir tokens no alcanza: hay 4 lugares con el color puesto directo en
+   la regla, así que se quedaban crema mientras el resto pasaba a blanco.
+   Encontrados comparando el zip publicado contra los tokens. */
+.gb-doc.doc-preview{ background:#F7F7F8; }   /* el papel del editor */
+.gb-mini{ background:#F7F7F8; }              /* la miniatura del documento */
+.doc-preview .dl-section .gimg{ background:#F0F0F2; }
+.gal-thumb{ background-color:#F0F0F2; }
