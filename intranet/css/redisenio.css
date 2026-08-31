@@ -310,3 +310,32 @@ body.report-mode:has(.dk-slide.on) .lista-btn{ display:none; }
 
 /* La diapositiva quedaba pegada arriba con un vacío grande abajo. */
 .dk-slide.on{ justify-content:center; }
+
+/* ============================================================================
+   12. NADA DE DESLIZAMIENTO HORIZONTAL EN EL TELÉFONO
+   ============================================================================
+   Reportado por Mus en un iPhone 16 Pro Max (viewport 440x956). En Chrome de
+   escritorio no se reproduce a ningún ancho de iPhone — es una diferencia real
+   entre motores, no un descuido de medida.
+
+   La causa: `.navmenu` es `position:fixed; inset:0` SIN `overflow`, y adentro
+   `.nav-panel` vive en `transform:translateX(100%)`, o sea corrido 340px a la
+   derecha del borde de la pantalla. Chrome no lo cuenta para el scroll del
+   documento; WebKit en algunos estados SÍ. Y el menú queda `hidden:false`
+   después de cerrarse, así que el panel corrido sigue ahí.
+
+   Dos capas, porque una sola no alcanza:
+   1. Cortarlo en el origen: el drawer recorta lo que se sale.
+   2. Una red de seguridad en la raíz, por si aparece otro elemento corrido.
+
+   ⚠️ `overflow-x: clip` y NO `hidden`: `hidden` crea un contexto de scroll que
+   ROMPE `position:sticky`, y la barra de arriba es sticky. `clip` recorta sin
+   crear scroll. Safari lo soporta desde la 16 (2022); en uno más viejo
+   simplemente no se aplica y queda como estaba.
+   ============================================================================ */
+.navmenu{ overflow:hidden; }
+html, body{ overflow-x:clip; max-width:100%; }
+
+/* Las medidas reales de los iPhone en uso, para que no haya que adivinar:
+   16 Pro Max 440 · 16 Plus / 15 Pro Max 430 · 16 Pro 402 · 16 / 15 Pro 393
+   SE y mini 375 · Android chico 360. Probado en los siete. */
