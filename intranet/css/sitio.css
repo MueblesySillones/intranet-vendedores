@@ -127,7 +127,17 @@ body.menu-open{ overflow:hidden; }
    pliegue hace falta que main mida una pantalla Y que el pie se vaya al fondo
    (columna flex + margin-top:auto en .footer). Asi el contenido aparece en el
    lugar reservado y no mueve nada que este en pantalla. */
-main{ max-width:1080px; margin:0 auto; padding:40px 26px 80px; min-height:100vh;
+/* El ancho ya no es el literal 1080: sale de --doc-ancho, al lado del ancho
+   del feed, para que las dos medidas del sitio se lean juntas y no se vayan
+   cada una por su lado. El VALOR no cambió: sigue siendo 1028 + 26 de aire a
+   cada lado. El salto de ancho entre la portada y un módulo bajó de 336px
+   (692 → 1028) a 108px (920 → 1028), que ya no se nota al entrar.
+   Los tokens llevan valor de reserva a propósito: el panel de marketing carga
+   ESTA hoja adentro de un shadow root donde el bloque de armazón (que es
+   :root, no .doc-preview) no llega. Sin la reserva, el calc quedaría
+   inválido y el max-width se caería entero. */
+main{ max-width:calc(var(--doc-ancho, 1028px) + var(--doc-aire, 26px) * 2);
+  margin:0 auto; padding:40px var(--doc-aire, 26px) 80px; min-height:100vh;
   display:flex; flex-direction:column; }
 main > *{ width:100%; }
 .footer{ margin-top:auto; }
@@ -306,6 +316,12 @@ main > *{ width:100%; }
 
 /* ---- Manual de derivaciones (contenido enriquecido) ---- */
 .manual{ max-width:760px; }
+/* ...pero NO adentro de una publicación de la Cartelera. Ahí el envoltorio ya
+   es la tarjeta, que tiene su propio ancho, y este tope de 760 dejaba la foto
+   clavada mientras la tarjeta crecía: a 2560 la galería ocupaba 760px de una
+   tarjeta de 1280 y la mitad derecha quedaba en blanco. Que llene.
+   El texto NO se estira con esto: sigue topeado por --medida. */
+.mu-cuerpo .manual{ max-width:none; }
 .manual .m-lead{ font-size:16px; color:var(--ink2); line-height:1.6; }
 .manual .m-lead b{ color:var(--ink); }
 .m-block{ margin-top:38px; }
@@ -1076,7 +1092,15 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 /* titulo y cuerpo */
 .mu-titulo{ font-size:18px; font-weight:700; line-height:1.32; letter-spacing:-.2px; color:var(--ink);
   padding:13px 20px 0; text-wrap:balance; }
-.mu-cuerpo .m-p, .mu-cuerpo .m-lead{ text-wrap:pretty; }
+/* LA MEDIDA DEL RENGLÓN EN LA CARTELERA
+   Acá había un `62ch` suelto y encima adentro de @media(min-width:1200px). Dos
+   problemas: el número era una copia a mano de una medida que ya vivía en el
+   sistema (y había divergido: daba 82 caracteres, no 68), y al estar dentro
+   del @media, en una tablet de 768px el renglón se iba a 84 caracteres sin
+   ningún tope. Ahora lee --medida y vale a cualquier ancho.
+   En celular no cambia nada: a 390px el texto mide ~330px, muy por debajo del
+   tope, así que el max-width nunca llega a morder. */
+.mu-cuerpo .m-p, .mu-cuerpo .m-lead{ text-wrap:pretty; max-width:var(--medida); }
 .mu-cuerpo{ --pad:20px; padding:10px var(--pad) 4px; position:relative; }
 /* El primer párrafo traía su propio margen de arriba y se sumaba al padding
    del cuerpo: entre el título y el texto quedaban 21px, demasiado para dos
@@ -1570,14 +1594,32 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   body.con-mesa main{ max-width:none; padding:0; }
   body.con-mesa .footer{ padding:26px 26px 12px; }
 
-  #lobby:not([hidden]){ display:grid; grid-template-columns:minmax(0,1fr) 300px;
-    align-items:start; }
+  /* EL CONJUNTO, NO CADA COLUMNA
+     Antes acá decía `minmax(0,1fr) 300px` sin techo, y el feed se centraba
+     solo, adentro de la columna izquierda, con `max-width:760px`. El efecto
+     era el que se veía en pantalla grande: la columna izquierda medía
+     pantalla-menos-300, el feed se plantaba en el medio de ESA columna, y
+     como el panel de 300 no entra en esa cuenta, el feed quedaba corrido
+     exactamente 300px hacia la izquierda respecto del centro real. A 1920
+     eso eran 464px de aire a la izquierda y 764 a la derecha.
+     Ahora el techo y el centrado los lleva #lobby, que es el conjunto: el
+     sobrante se reparte en partes iguales en los dos bordes y el feed ocupa
+     toda su columna en lugar de flotar adentro. */
+  #lobby:not([hidden]){ display:grid;
+    grid-template-columns:minmax(0,1fr) var(--lat-ancho);
+    align-items:start;
+    max-width:var(--tope-portada); margin-inline:auto; }
   /* si el unico modulo fuera la cartelera, no hay panel que poner */
-  #lobby.sin-panel:not([hidden]){ grid-template-columns:minmax(0,1fr); }
+  #lobby.sin-panel:not([hidden]){ grid-template-columns:minmax(0,1fr);
+    max-width:calc(var(--feed-ancho) + var(--feed-aire) * 2); }
   #lobby.sin-panel .lat{ display:none; }
 
-  .lobby-centro{ grid-column:1; grid-row:1; width:100%; max-width:760px;
-    justify-self:center; box-sizing:border-box; padding:26px 34px 40px; }
+  /* El feed llena su columna. El `max-width:760px` + `justify-self:center` que
+     había acá es lo que lo dejaba en 692px útiles para siempre: no crecía ni
+     en un monitor de 2560. Quien pone el techo ahora es #lobby, arriba. */
+  .lobby-centro{ grid-column:1; grid-row:1; width:100%; max-width:none;
+    justify-self:stretch; box-sizing:border-box;
+    padding:26px var(--feed-aire) 40px; }
   .lobby-centro .muro, .lobby-centro .lobby-t, .lobby-centro .fijados,
   .lobby-centro .pendientes, .lobby-centro .noti{ max-width:none;
     margin-left:0; margin-right:0; }
@@ -1596,9 +1638,8 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
      selector lo pidiera, quien publica veria un titulo de 18px y el vendedor
      uno de 22px, que es justo lo que no queremos. */
   .mu-titulo{ font-size:22px; line-height:1.22; }
-  /* el renglon no puede medir 95 caracteres: a esa altura se pierde el hilo
-     al volver a la izquierda */
-  .mu-cuerpo .m-p, .mu-cuerpo .m-lead{ max-width:62ch; }
+  /* (la medida del renglón se mudó arriba, fuera de este @media: el tope
+     también hace falta abajo de 1200px — ver .mu-cuerpo .m-p) */
 
   /* el buscador deja de ser un icono suelto y dice lo que hace */
   .buscar-btn{ width:auto; height:40px; padding:0 15px; border-radius:999px; gap:9px; }

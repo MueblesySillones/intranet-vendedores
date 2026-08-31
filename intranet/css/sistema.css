@@ -86,8 +86,21 @@
   /* --- ANCHO DE LECTURA --------------------------------------------------
      La medida que decide si un texto se lee o se abandona. El objetivo es
      66-75 caracteres por línea. Los módulos ya lo cumplían (75); la Cartelera
-     no (82), porque la regla se aplicó a `.manual` y el feed quedó afuera. */
-  --medida: 34em;   /* ~68 caracteres con Montserrat */
+     no (82), porque la regla se aplicó a `.manual` y el feed quedó afuera.
+
+     30-ago-2026: hasta hoy este token estaba DECLARADO PERO SIN USAR — el feed
+     tenía su propio `62ch` escrito a mano, que es de donde salían los 82
+     caracteres. Ahora la Cartelera lee de acá, así que la medida se corrige en
+     un solo lugar y no puede volver a divergir.
+
+     Por qué `em` y no `px`: la medida tiene que seguir al tamaño de la letra.
+     Si mañana el cuerpo pasa de 14,5px a 16px, una medida en px dejaría el
+     renglón en 90 caracteres sin que nadie se entere; en `em` se reajusta sola.
+     36em sobre el cuerpo de 14,5px son 522px. Medido en Chromium con la
+     Montserrat cargada, el renglón más ancho del feed da 73,6 caracteres
+     reales (antes 82) y el más angosto 70,8: queda adentro de 66-75 con
+     margen, y en la misma vecindad que los 545px ya validados en los módulos. */
+  --medida: 36em;   /* ~71 caracteres con Montserrat. NO subirlo de 75 */
 
   /* --- ESPACIADO: base 4 ------------------------------------------------- */
   --sp-1:  4px;
@@ -139,6 +152,67 @@
      44px es el mínimo de Apple y Android para algo que se toca con el dedo.
      El vendedor usa esto parado en el local, con una mano. */
   --tap: 44px;
+}
+
+/* ============================================================================
+   EL ARMAZÓN DE ESCRITORIO — cuánto ancho ocupa el sitio
+   ============================================================================
+   ⚠️ Esto va en `:root` SOLO, a propósito, y no en `.doc-preview`.
+   Todo lo de arriba describe el PAPEL (colores, letra, aire) y por eso lo
+   comparten el sitio y el editor. Esto de acá describe la VENTANA en la que
+   se apoya el papel: el ancho del documento, el panel de módulos, el aire
+   lateral. En el panel el papel es un rectángulo adentro de la herramienta y
+   no tiene ni ventana ni panel lateral; si estos tokens llegaran ahí, un
+   `vw` mediría el monitor del que edita en lugar de su recuadro y la vista
+   previa quedaría más ancha que su propio marco.
+
+   POR QUÉ EXISTE (30-ago-2026)
+   La portada medía 692px fijos a cualquier ancho de pantalla. En un monitor
+   de 1920 eso dejaba 464px de aire a la izquierda y 764px a la derecha: el
+   feed no crecía nunca y encima quedaba corrido 300px — justo el ancho del
+   panel de módulos — porque se centraba dentro de SU columna en vez de
+   centrarse el conjunto. Se veía chico, perdido y con un hueco en el medio.
+
+   LÍMITE CONOCIDO: en un monitor de 2560 igual van a quedar márgenes
+   laterales anchos (~636px por lado), y es a propósito. Se probó estirar la
+   tarjeta hasta 1280 y se descartó VIENDO la captura: la galería sí acompaña,
+   pero el texto está topeado por --medida y el video vertical se mide por
+   altura, no por ancho, así que la publicación queda con la mitad derecha en
+   blanco. Se ve peor, no mejor. Llenar un 2560 de verdad pide otro diseño
+   (feed a dos columnas), que es una decisión de producto, no un ajuste de CSS.
+   ========================================================================== */
+:root {
+
+  /* Ancho ÚTIL del documento de un módulo, sin contar el aire lateral.
+     Queda en los 1028px de siempre. Se probó hacerlo crecer con la pantalla
+     y se descartó MIDIENDO: adentro, el contenido cuelga de `.manual`, que
+     topea en 760px, así que ensanchar el documento no agranda ni una foto —
+     solo agrega papel en blanco a la derecha. Está como token igual porque
+     la portada tiene que poder mirarlo (ver --feed-ancho). */
+  --doc-ancho: 1028px;
+
+  --doc-aire:  26px;   /* margen lateral del documento (módulos) */
+  --feed-aire: 34px;   /* margen lateral del feed: más aire, es la portada */
+
+  /* Ancho ÚTIL del feed de la portada. Antes eran 692px fijos para cualquier
+     pantalla — los mismos en una notebook que en un monitor de 2560.
+     El piso de 800px es el ancho que la publicación llena con seguridad; el
+     techo de 920 se fijó MIRANDO, no calculando: de ahí para arriba el
+     renglón de texto (topeado en --medida) empieza a quedar demasiado corto
+     al lado de una tarjeta muy ancha y la publicación se lee desbalanceada.
+     El 48vw del medio es lo que hace que en 1280 y en 1680 la portada llene
+     la pantalla en vez de saltar de golpe en un breakpoint. */
+  --feed-ancho: clamp(800px, 48vw, 920px);
+
+  /* El panel de módulos de la portada. Fijo a propósito: son diez nombres
+     cortos, ensancharlo no agrega información, solo le roba ancho al feed. */
+  --lat-ancho: 300px;
+
+  /* El techo del CONJUNTO feed + panel. Se centra esto, no cada columna por
+     su lado: así el aire sobrante queda repartido en los bordes (que se lee
+     como margen) y no en el medio (que se lee como error).
+     Va de 1168px (800 + 34*2 + 300) a 1288px cuando el feed llega a su techo. */
+  --tope-portada: calc(var(--feed-ancho) + var(--feed-aire) * 2 + var(--lat-ancho));
 }
 
 /* Quien pide menos movimiento, recibe menos movimiento. No es opcional. */
