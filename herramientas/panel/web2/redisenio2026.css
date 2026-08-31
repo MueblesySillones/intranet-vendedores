@@ -79,3 +79,53 @@
 .gb-mini{ background:#F7F7F8; }              /* la miniatura del documento */
 .doc-preview .dl-section .gimg{ background:#F0F0F2; }
 .gal-thumb{ background-color:#F0F0F2; }
+
+
+/* ============================================================================
+   LA ESTRUCTURA DE LA MAQUETA (no solo los colores)
+   ============================================================================ */
+
+/* ---- 1. El sidebar se agrupa ----
+   Cuatro secciones sueltas no dicen nada. Agrupadas dicen que dos son para
+   PUBLICAR y dos para MEDIR, que es como se usa el panel. Los rotulos son
+   solo texto: el JS sigue viendo los mismos botones .nav-s. */
+.nav-grupo{
+  margin:16px 0 4px; padding:0 10px;
+  font-size:10.5px; font-weight:700; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink3);
+}
+.nav-grupo:first-child{ margin-top:2px; }
+.nav-secs .nav-s{ min-height:38px; }
+
+/* ---- 2. Breadcrumb en el editor ----
+   "Editar modulo" no dice donde estas parado. La ruta si. */
+.editor-ruta{
+  display:flex; align-items:center; gap:7px;
+  font-size:12.5px; color:var(--ink3); white-space:nowrap; flex-shrink:0;
+}
+.editor-ruta i{ font-style:normal; color:#C9C9CF; }
+.editor-bar-t{ font-weight:600; }
+@media(max-width:900px){ .editor-ruta{ display:none; } }
+
+/* ---- 3. El papel dice QUE se esta editando ----
+   El canvas arrancaba directo en el primer bloque: no habia forma de saber en
+   que modulo estabas parado sin mirar la barra de arriba. */
+.gb-doc-head{
+  width:min(720px, 100%); margin:0 auto; padding:22px 30px 0;
+}
+.gb-doc-t{ display:flex; align-items:center; gap:9px; }
+.gb-doc-head h2{
+  margin:0; font-size:21px; font-weight:700; letter-spacing:-.02em; color:var(--ink);
+}
+.gb-doc-lapiz{
+  width:26px; height:26px; border:0; border-radius:6px; background:transparent;
+  color:var(--ink3); display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .16s, color .16s;
+}
+.gb-doc-lapiz:hover{ background:#F0F0F2; color:var(--ink); }
+.gb-doc-head p{ margin:3px 0 0; font-size:12.5px; color:var(--ink3); }
+
+/* ---- 4. El inspector deja de esconderse en una pestaña ----
+   Los ajustes del bloque que estas tocando son lo que mas se usa: que se vean
+   sin tener que cambiar de pestaña. */
+.gb-pane[data-pane="ajustes"] .gb-sec-t.activo{ font-weight:700; }
