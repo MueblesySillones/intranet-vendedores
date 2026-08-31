@@ -269,7 +269,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 31
+VERSION = 32
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -277,14 +277,15 @@ VERSION = 31
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.3.1"
-VERSION_LABEL = "el panel en blanco (ajustes de color)"
+VERSION_PUBLICA = "1.3.2"
+VERSION_LABEL = "1.3.2 - el panel abre en el navegador"
 VERSION_NOTES = (
-                 "El panel cambio de color: donde antes era crema ahora es blanco, "
-                 "igual que la intranet que ven los vendedores. Asi lo que ves "
-                 "mientras editas se parece a lo que se publica. El boton Publicar "
-                 "pasa a negro para que se distinga del resto, y la chapita NUEVO "
-                 "tambien. Nada cambio de lugar: todo esta donde estaba.")
+                 "El panel ahora abre como una pestania normal en tu navegador "
+                 "(localhost), en vez de la ventana separada de antes. Es la misma "
+                 "pantalla de siempre, con la barra de direcciones a la vista; si "
+                 "el panel ya estaba abierto, el acceso directo te abre otra "
+                 "pestania hacia el mismo lugar. Incluye el redisenio completo en "
+                 "blanco con la estructura nueva.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -3194,36 +3195,11 @@ def _msgbox(texto, titulo="Panel Muebles y Sillones"):
 
 
 def _abrir_panel(url):
-    """Abre el panel en su PROPIA VENTANA (modo aplicacion de Edge/Chrome: sin
-    pestanas ni barra de direcciones, con su icono en la barra de tareas). Si
-    no hay Edge ni Chrome, cae al navegador comun. Con BROWSER definido se
-    respeta webbrowser: lo usan las pruebas para no abrir nada en la cara
-    del usuario."""
-    if os.environ.get("BROWSER"):
-        try:
-            webbrowser.open(url)
-        except Exception:  # noqa
-            pass
-        return
-    pf = os.environ.get("ProgramFiles", r"C:\Program Files")
-    pf86 = os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")
-    local = os.environ.get("LOCALAPPDATA", "")
-    candidatos = [
-        os.path.join(pf86, "Microsoft", "Edge", "Application", "msedge.exe"),
-        os.path.join(pf, "Microsoft", "Edge", "Application", "msedge.exe"),
-        os.path.join(pf, "Google", "Chrome", "Application", "chrome.exe"),
-        os.path.join(pf86, "Google", "Chrome", "Application", "chrome.exe"),
-        os.path.join(local, "Google", "Chrome", "Application", "chrome.exe") if local else "",
-    ]
-    for exe in candidatos:
-        if exe and os.path.isfile(exe):
-            try:
-                subprocess.Popen([exe, "--app=" + url],
-                                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                 stderr=subprocess.DEVNULL, close_fds=True)
-                return
-            except OSError:
-                pass
+    """Abre el panel como PESTANA normal del navegador (localhost), no en la
+    ventana modo --app de Edge (v32, pedido del usuario: la ventana separada
+    confundia y arrastraba su propia cache/perfil). webbrowser usa el navegador
+    por defecto del sistema; con BROWSER definido se respeta igual que siempre
+    (lo usan las pruebas para no abrir nada en la cara del usuario)."""
     try:
         webbrowser.open(url)
     except Exception:  # noqa
