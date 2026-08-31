@@ -1,8 +1,8 @@
 {
-  "version": 31,
-  "label": "el panel en blanco (ajustes de color)",
-  "notes": "El panel cambio de color: donde antes era crema ahora es blanco, igual que la intranet que ven los vendedores. Asi lo que ves mientras editas se parece a lo que se publica. El boton Publicar pasa a negro para que se distinga del resto, y la chapita NUEVO tambien. Nada cambio de lugar: todo esta donde estaba.",
-  "sha256": "9ed4cc67cfa3f9b5c882a5432ab6b7678040d47f8a38b6433ea6ca6e0438d89b",
-  "size": 19616776,
-  "url": "panel/PanelMyS-v31.zip"
+  "version": 32,
+  "label": "1.3.2 - el panel abre en el navegador",
+  "notes": "El panel ahora abre como una pestania normal en tu navegador (localhost), en vez de la ventana separada de antes. Es la misma pantalla de siempre, con la barra de direcciones a la vista; si el panel ya estaba abierto, el acceso directo te abre otra pestania hacia el mismo lugar. Incluye el redisenio completo en blanco con la estructura nueva.",
+  "sha256": "367b228c0730d1feef1c1076a202e9a6075a6b83c2c122aefa6ee269aff45c10",
+  "size": 19615296,
+  "url": "panel/PanelMyS-v32.zip"
 }
