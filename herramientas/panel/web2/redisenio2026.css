@@ -129,3 +129,33 @@
    Los ajustes del bloque que estas tocando son lo que mas se usa: que se vean
    sin tener que cambiar de pestaña. */
 .gb-pane[data-pane="ajustes"] .gb-sec-t.activo{ font-weight:700; }
+
+/* ---- 5. La barra de formato, fija ----
+   Era flotante: aparecia sobre el texto al seleccionar. El que edita una vez
+   por semana no la encontraba nunca. Ahora vive en el encabezado del papel,
+   siempre a la vista, y se apaga cuando no hay nada seleccionado.
+   Es el MISMO #gbFloat de antes, movido: no se duplicaron botones ni se toco
+   execCommand. */
+#gbFloat.fija{
+  position:static !important; z-index:auto;
+  display:flex; align-items:center; gap:3px;
+  margin:14px 0 0; padding:5px 7px;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:8px; box-shadow:none;
+  width:min(720px, 100%);
+}
+#gbFloat.fija button{
+  color:var(--ink2); width:30px; height:28px; border-radius:6px;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition:background .14s, color .14s;
+}
+#gbFloat.fija button:hover{ background:#F0F0F2; color:var(--ink); }
+.gb-fmt-sep{ width:1px; height:18px; background:var(--line); margin:0 4px; flex:0 0 1px; }
+.gb-fmt-nota{ margin-left:auto; font-size:11.5px; color:var(--ink3); padding-right:4px; }
+
+/* Sin seleccion: apagados. Es la unica senal que hace falta. */
+#gbFloat.fija.sin-seleccion button{ opacity:.38; pointer-events:none; }
+#gbFloat.fija:not(.sin-seleccion) .gb-fmt-nota{ visibility:hidden; }
+
+/* el encabezado del papel ya no cierra en el subtitulo */
+.gb-doc-head{ padding-bottom:4px; }

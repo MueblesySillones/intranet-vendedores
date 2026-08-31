@@ -3372,6 +3372,16 @@ function editableDeSeleccion() {
 function syncActiveEditable() { const ed = editableDeSeleccion(); if (ed) ed.dispatchEvent(new Event('input', { bubbles: true })); }
 function posFloat() {
   const bar = $('#gbFloat'); const sel = window.getSelection();
+  /* Barra FIJA: vive en el encabezado del papel y no se mueve ni desaparece.
+     La flotante obligaba a descubrirla seleccionando texto; el que edita una
+     vez por semana no la encontraba nunca. Cuando no hay nada seleccionado
+     los botones quedan apagados, que es la unica senal que hace falta. */
+  if (bar && bar.classList.contains('fija')) {
+    const hay = !!(sel && !sel.isCollapsed && sel.rangeCount && editableDeSeleccion());
+    bar.classList.toggle('sin-seleccion', !hay);
+    bar.hidden = false;
+    return;
+  }
   if (!sel || sel.isCollapsed || !sel.rangeCount || !editableDeSeleccion()) { bar.hidden = true; return; }
   const rect = sel.getRangeAt(0).getBoundingClientRect();
   if (!rect.width && !rect.height) { bar.hidden = true; return; }
