@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 35
+VERSION = 36
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,14 +279,14 @@ VERSION = 35
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.4.1"
-VERSION_LABEL = "1.4.1 - el menu queda fijo al editar"
+VERSION_PUBLICA = "1.4.2"
+VERSION_LABEL = "1.4.2 - vuelve el scroll en el editor"
 VERSION_NOTES = (
-                 "Al entrar a editar un modulo, la columna del menu (Cartelera, "
-                 "Modulos, Metricas, Datos) ahora queda fija a la izquierda, como en "
-                 "el disenio: el editor ya no tapa la pantalla entera. Si tocas una "
-                 "seccion del menu mientras editas, el panel sale del editor por la "
-                 "puerta de siempre: con cambios sin guardar te pregunta antes.")
+                 "Arregla el editor de modulos: no se podia scrollear ni el "
+                 "documento ni la paleta de bloques (quedaba todo trabado al abrir "
+                 "un modulo). Ahora la mesa del documento y la columna de la derecha "
+                 "scrollean cada una por su lado, con la barra de Guardar y Publicar "
+                 "siempre a la vista.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

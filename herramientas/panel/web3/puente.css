@@ -197,7 +197,9 @@ main.lienzo{padding:0; max-width:none; margin:0}
 /* En la maqueta el editor NO tapa la barra lateral: el menú (Cartelera,
    Módulos, Métricas, Datos) queda fijo a la izquierda también mientras
    editás. La capa vieja lo hacía pantalla completa (position:fixed). */
-.main-sec.editor-full{position:static; inset:auto; z-index:auto; height:100vh}
+.main-sec.editor-full{position:static; inset:auto; z-index:auto; height:100vh;
+  flex:0 0 auto} /* flex:1 (de .main-sec) pisaba el height:100vh y el editor
+  crecía con el contenido: la mesa nunca scrolleaba y body.editing traba la página */
 .ed-cuerpo-wrap{flex:1; min-height:0; display:flex; flex-direction:column}
 .cpane{flex:1; min-height:0}
 .cpane-bloques{min-height:0}
