@@ -1,8 +1,8 @@
 {
-  "version": 35,
-  "label": "1.4.1 - el menu queda fijo al editar",
-  "notes": "Al entrar a editar un modulo, la columna del menu (Cartelera, Modulos, Metricas, Datos) ahora queda fija a la izquierda, como en el disenio: el editor ya no tapa la pantalla entera. Si tocas una seccion del menu mientras editas, el panel sale del editor por la puerta de siempre: con cambios sin guardar te pregunta antes.",
-  "sha256": "bd4cc619f7a9ca71a12dac6646bf1e567be06d65e73a60f1fe306fcdeabc3d7a",
-  "size": 20006556,
-  "url": "panel/PanelMyS-v35.zip"
+  "version": 36,
+  "label": "1.4.2 - vuelve el scroll en el editor",
+  "notes": "Arregla el editor de modulos: no se podia scrollear ni el documento ni la paleta de bloques (quedaba todo trabado al abrir un modulo). Ahora la mesa del documento y la columna de la derecha scrollean cada una por su lado, con la barra de Guardar y Publicar siempre a la vista.",
+  "sha256": "456e3a1cfd4c5f368a6110452defaf24e68afc509c9f05af4e75f7f70443149c",
+  "size": 20005195,
+  "url": "panel/PanelMyS-v36.zip"
 }
