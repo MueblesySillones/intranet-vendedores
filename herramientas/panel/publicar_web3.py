@@ -25,13 +25,12 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.4.1"
-NUEVO_LABEL = "1.4.1 - el menu queda fijo al editar"
-NUEVAS_NOTAS = ("Al entrar a editar un modulo, la columna del menu (Cartelera, Modulos, "
-                "Metricas, Datos) ahora queda fija a la izquierda, como en el disenio: el "
-                "editor ya no tapa la pantalla entera. Si tocas una seccion del menu "
-                "mientras editas, el panel sale del editor por la puerta de siempre: con "
-                "cambios sin guardar te pregunta antes.")
+NUEVA_PUBLICA = "1.4.2"
+NUEVO_LABEL = "1.4.2 - vuelve el scroll en el editor"
+NUEVAS_NOTAS = ("Arregla el editor de modulos: no se podia scrollear ni el documento ni "
+                "la paleta de bloques (quedaba todo trabado al abrir un modulo). Ahora "
+                "la mesa del documento y la columna de la derecha scrollean cada una "
+                "por su lado, con la barra de Guardar y Publicar siempre a la vista.")
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",
@@ -183,14 +182,14 @@ print("    ok: version.json en v%d" % NUEVA_VERSION)
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
-msg = ("Panel v%d (%s): el redisenio ES el panel\n\n"
-       "web3 pasa a ser el frontend principal: la maqueta REDISENO-PANEL-MyS\n"
-       "implementada identica (maqueta.css intacta como autoridad visual +\n"
-       "puente.css) con los motores probados de web2 adentro. web2 y web\n"
-       "quedan de red de seguridad (MYS_PANEL_WEB los elige).\n\n"
-       "Verificado adentro del zip antes de publicar: web3 viaja entero, el\n"
-       "index enlaza maqueta y puente, no viajan archivos per-maquina, y el\n"
-       "sha256/tamano coinciden con version.json.\n"
+msg = ("Panel v%d (%s): vuelve el scroll en el editor de modulos\n\n"
+       "El .main-sec{flex:1} del puente pisaba el height:100vh del editor\n"
+       "(flex-basis 0%% anula el height): la seccion crecia al alto del\n"
+       "contenido y body.editing{overflow:hidden} trababa la pagina, asi\n"
+       "que no se podia scrollear nada. Fix: .main-sec.editor-full con\n"
+       "flex:0 0 auto. Verificado con Playwright: la mesa y la paleta\n"
+       "scrollean cada una por su lado, la barra del editor queda fija y\n"
+       "Cartelera/Modulos siguen igual.\n"
        % (NUEVA_VERSION, NUEVA_PUBLICA))
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 
