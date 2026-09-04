@@ -14,6 +14,43 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmtneec52rj9e",
+          "titulo": "PROMO JUEGO COMEDOR",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-04",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Actualizamos en archivos descargable y les dejamos la nueva placa de la promo juego comedor"
+            },
+            {
+              "t": "ref",
+              "key": "descargables",
+              "mod": "Material descargable",
+              "sub": "Promociones vigentes",
+              "clase": "galería",
+              "detalle": "1 imagen",
+              "prev": {
+                "t": "fotos",
+                "srcs": [
+                  "assets/_modulos/descargables_gal_1788552589400_0.png"
+                ],
+                "total": 1
+              },
+              "icon": "download",
+              "color": "--c-caba"
+            }
+          ],
+          "html": "<div class=\"db\"><p class=\"m-p\">Actualizamos en archivos descargable y les dejamos la nueva placa de la promo juego comedor</p></div><div class=\"db\"><a class=\"m-ref con-previa con-fotos\" href=\"#descargables\"><span class=\"mr-pv mr-tira\"><img src=\"assets/_modulos/descargables_gal_1788552589400_0.png\" alt=\"\" loading=\"lazy\"></span><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Material descargable<span class=\"mr-sub\">Promociones vigentes</span></span><span class=\"mr-d\">galería · 1 imagen</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
+        },
+        {
           "id": "dmteok0v1sbva",
           "titulo": "NUEVA FECHA DE ENVIO A LA COSTA",
           "autor": "Marketing",
