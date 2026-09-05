@@ -1,8 +1,8 @@
 {
-  "version": 37,
-  "label": "1.4.3 - se ve lo que pasa al guardar y publicar",
-  "notes": "Ahora el boton cuenta el estado: Guardar pasa a Guardado y Publicar a Publicado, y vuelven atras con el primer cambio nuevo. Al publicar aparece una tarjeta con la barra de progreso y, cuando termina, el tilde verde con la cuenta de los 30 segundos que tarda el sitio en mostrarselo a los vendedores. Ademas: el compositor de la Cartelera ya no tira lo escrito sin preguntar, Escape con el menu de etiquetas abierto cierra solo el menu, y la Vista previa en la intranet abre el sitio en vez de una pagina de error.",
-  "sha256": "4e9288a34a24e53f15a735af42efc7592551e311f63ad41f78e042b47f7efc54",
-  "size": 20009860,
-  "url": "panel/PanelMyS-v37.zip"
+  "version": 38,
+  "label": "1.4.4 - actualizarse ya no puede dejarte sin panel",
+  "notes": "Arregla el instalador de actualizaciones. Al cerrarse el panel, Windows deja tomado un rato el runtime de C++, y entonces la carpeta vieja no se podia borrar: la instalacion terminaba metida adentro de esa carpeta y el programa desaparecia de la computadora. Ahora, si la carpeta esta ocupada, se usa otra y la actualizacion sigue; y si algo falla igual, el panel vuelve a la version anterior aunque la copia haya quedado anidada. Paso de verdad al actualizar a la 1.4.3.",
+  "sha256": "a2a2f5b0d87f6dd883ecde34384261170e71e4f461415ec5a47c9f48ed7af6b5",
+  "size": 20010831,
+  "url": "panel/PanelMyS-v38.zip"
 }
