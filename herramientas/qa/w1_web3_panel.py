@@ -185,7 +185,19 @@ def main():
                 return el
         raise AssertionError("no encuentro la tarjeta %r" % titulo)
 
+    def cerrar_aviso():
+        """La tarjeta de "Publicado" queda 30 s abajo a la derecha. Si el menu
+        de una publicacion abre cerca, se lo tapa. En pantalla alcanza con
+        tocarla; aca se la saca del medio antes de seguir."""
+        try:
+            if page.eval_on_selector("#pubCard", "e => !e.hidden && e.classList.contains('on')"):
+                page.click("#pubCard")
+                page.wait_for_timeout(350)
+        except Exception:
+            pass
+
     def menu_de(titulo, accion):
+        cerrar_aviso()
         el = tarjeta(titulo)
         el.query_selector(".mp-mas").click()
         page.wait_for_selector("#mpMenu", state="visible")
