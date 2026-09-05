@@ -865,12 +865,20 @@
        (Y antes de eso el orden era columnas → avisos → tablero, con 6.637
        px de quejas por delante de los números; esa parte ya se había
        arreglado y sigue así.) */
+    /* ⚠️ LAS TARJETAS DE CADA NÚMERO YA NO SE DIBUJAN (pedido del usuario).
+       Existían para elegir, número por número, qué salía publicado a la
+       intranet. Como los reportes no se publican —son para adentro: se
+       miran, se bajan en Word o se imprimen—, esas tarjetas mostraban
+       lecturas sueltas ("En Localidad, CABA tiene 11,2 veces lo de PILAR")
+       que no llevaban a ninguna decisión, y se comían la pantalla entre los
+       números de verdad y lo que hay que arreglar en la planilla.
+       Se van con ellas la sección de las trabadas, que era su contracara
+       (explicaba por qué una lectura no se podía publicar).
+       Las funciones quedan enteras y sin llamar: el día que haya un informe
+       que sí vaya al sitio, se vuelven a sumar acá. */
     cont.innerHTML =
-      barraHTML(prendidos().length, publicables.length) +
       seccionIdentidad(datos.identidad) +
-      seccionTablero(publicables, cols, pub) +
       seccionArreglar(avisos, false) +
-      seccionAfuera(trabadas, cols, !publicables.length) +
       seccionColumnas(an);
 
     var barra = cont.querySelector('.dt-barra');
