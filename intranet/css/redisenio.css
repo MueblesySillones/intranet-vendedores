@@ -84,8 +84,23 @@
 /* La barra de acento pegada al costado que se veía "desprolija": se va. */
 .mu-post::before, .mu-post::after{ display:none !important; }
 
-/* Una publicación NO es "Marketing posteó": es un aviso de la empresa. */
-.mu-av, .mu-autor{ display:none !important; }
+/* Una publicación no es "Marketing posteó", es un aviso de la EMPRESA: por eso
+   el avatar y el autor habían quedado ocultos. Pero así no quedaba ninguna
+   señal de quién lo mandó, y el vendedor la necesita para saber a quién
+   preguntarle. La marca en el avatar resuelve las dos cosas: la publicación se
+   lee como institucional, y el nombre de abajo dice quién la escribió.
+   El !important es a propósito: el markup pone un color de fondo inline
+   (colorDeAutor) que si no le gana a esto. */
+.mu-av{
+  background-color:var(--ink) !important;
+  background-image:url("../logo.png") !important;
+  background-size:74% auto !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  font-size:0 !important;          /* las iniciales del markup no se muestran */
+  border-radius:50%;
+}
+.mu-autor{ display:block; }
 .mu-head{ display:flex; align-items:center; gap:8px; padding:0; margin-bottom:10px; }
 .mu-quien{ display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
 .mu-meta{ font-size:12px; color:var(--ink3); white-space:nowrap; }
