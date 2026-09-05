@@ -19,8 +19,8 @@ import json
 import os
 import re
 
-from datos import (analizador, deck, derivaciones, encabezado, fuentes,
-                   lecturas, medidas, reporte, revisor)
+from datos import (analizador, deck, deck_word, derivaciones, encabezado,
+                   fuentes, lecturas, medidas, reporte, revisor)
 
 try:
     from datos import google_sheets
@@ -235,7 +235,12 @@ def buscar_informe(rep, iid):
     return None
 
 
-def informe_nuevo(rep, nombre, desde, hasta):
+def secciones_posibles():
+    """Las preguntas del formulario: qué puede llevar un reporte."""
+    return [{"id": k, "titulo": t, "detalle": det} for k, t, det in deck.SECCIONES]
+
+
+def informe_nuevo(rep, nombre, desde, hasta, secciones=None):
     """Suma un informe al reporte. Devuelve (informe, error)."""
     nombre = (nombre or "").strip()
     if not nombre:
@@ -245,12 +250,18 @@ def informe_nuevo(rep, nombre, desde, hasta):
             return None, "La fecha «%s» no está bien escrita." % q
     if desde and hasta and str(desde) > str(hasta):
         return None, "El desde tiene que ser anterior al hasta."
+    validas = set(deck.TODAS)
+    elegidas = [x for x in (secciones or []) if x in validas]
+    if not elegidas:
+        return None, "Elegí al menos una cosa para medir."
     inf = {
         "id": "i" + hashlib.md5(
             (str(datetime.datetime.now()) + os.urandom(4).hex()).encode()).hexdigest()[:10],
         "nombre": nombre,
         "desde": str(desde or ""),
         "hasta": str(hasta or ""),
+        # se guardan EN EL ORDEN del reporte, no en el que se tildaron
+        "secciones": [k for k in deck.TODAS if k in elegidas],
         "creado": datetime.date.today().isoformat(),
     }
     rep.setdefault("informes", []).insert(0, inf)   # el último arriba
@@ -388,6 +399,7 @@ def analizar_fuente(rep, state_dir):
         # y no en una ruta aparte para que la pantalla los tenga en el mismo
         # viaje en que dibuja el reporte
         "informes": informes(rep),
+        "secciones_posibles": secciones_posibles(),
         # Que se puede medir en esta planilla, y que se eligio medir. Van con el
         # analisis y no en una ruta aparte porque salen de el: pedirlos por
         # separado obligaria a analizar la planilla dos veces.
@@ -427,7 +439,37 @@ def deck_derivaciones(rep, state_dir, informe=None):
         return None, d.get("error")
     titulo = ((informe or {}).get("nombre")
               or rep.get("titulo") or "Derivaciones y ventas")
-    return deck.armar(d, titulo), None
+    return deck.armar(d, titulo, (informe or {}).get("secciones")), None
+
+
+def deck_derivaciones_word(rep, state_dir, informe=None):
+    """(ruta, error) del MISMO reporte con diseño, pero en .docx.
+
+    El Word sale de acá y no de `reporte.a_word` a propósito: aquel escribe un
+    documento de oficina —títulos y tablas— y lo que se pide bajar es la
+    presentación, la misma que se ve en pantalla. Los números salen del mismo
+    análisis, así que el Word y el deck no pueden decir cosas distintas.
+    """
+    r, an, _, _ = _leer_y_analizar(rep)
+    if not r.get("ok"):
+        return None, r.get("error")
+    if not derivaciones.es_derivaciones(an):
+        return None, ("Este reporte con diseño es para la planilla de "
+                      "derivaciones.")
+    d = derivaciones.analizar(
+        r["filas"], state_dir,
+        desde_f=_fecha_de((informe or {}).get("desde")),
+        hasta_f=_fecha_de((informe or {}).get("hasta")))
+    if not d.get("ok"):
+        return None, d.get("error")
+    titulo = ((informe or {}).get("nombre")
+              or rep.get("titulo") or "Derivaciones y ventas")
+    carpeta = os.path.join(state_dir, "reportes")
+    if not os.path.isdir(carpeta):
+        os.makedirs(carpeta)
+    ruta = os.path.join(carpeta, deck_word.nombre_archivo(titulo))
+    deck_word.a_word(d, ruta, titulo, (informe or {}).get("secciones"))
+    return ruta, None
 
 
 def resumen_derivaciones(rep, state_dir):

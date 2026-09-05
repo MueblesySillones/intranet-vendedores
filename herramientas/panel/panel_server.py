@@ -2198,6 +2198,15 @@ class Handler(BaseHTTPRequestHandler):
                         "color:#333'><h2>No pude armar el reporte</h2><p>%s</p>"
                         "</body>" % _esc(err or "error"))
                 return self._htm(html, 400)
+            # ?imprimir=1 abre el dialogo de impresion solo: es el boton
+            # "Descargar PDF". El PDF lo hace el navegador desde este mismo
+            # HTML, asi que sale identico a lo que se ve en pantalla.
+            if (q.get("imprimir") or [""])[0] == "1":
+                html = html.replace(
+                    "</body>",
+                    "<script>window.addEventListener('load',function(){"
+                    "setTimeout(function(){window.print();},350);});</script>"
+                    "</body>", 1)
             return self._htm(html)
 
         if path == "/api/datos/derivaciones":
@@ -2208,6 +2217,26 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(datos_api.resumen_derivaciones(rep, STATE_DIR))
             except Exception as ex:        # noqa
                 return self._json({"ok": False, "error": str(ex)}, 400)
+
+        if path == "/api/datos/deck-word":
+            # El mismo reporte con diseno, pero en .docx: una lamina por hoja,
+            # apaisada. No es el reporte generico de reporte.py, que es otro
+            # documento y otra cosa.
+            rep = datos_api.buscar(cfg, (q.get("id") or [""])[0])
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            inf = datos_api.buscar_informe(rep, (q.get("informe") or [""])[0])
+            try:
+                ruta, err = datos_api.deck_derivaciones_word(
+                    rep, STATE_DIR, inf)
+            except Exception as ex:        # noqa
+                ruta, err = None, str(ex)
+            if err or not ruta:
+                return self._json({"error": err or "no pude armarlo"}, 400)
+            return self._file(
+                ruta, "application/vnd.openxmlformats-officedocument"
+                      ".wordprocessingml.document",
+                nombre=os.path.basename(ruta))
 
         if path == "/api/datos/reporte":
             formato = (q.get("formato") or ["html"])[0]
@@ -2443,9 +2472,11 @@ class Handler(BaseHTTPRequestHandler):
             rep = datos_api.buscar(cfg, str(cuerpo.get("id") or ""))
             if not rep:
                 return self._json({"error": "no encuentro ese reporte"}, 404)
+            secs = cuerpo.get("secciones")
             inf, err = datos_api.informe_nuevo(
                 rep, str(cuerpo.get("nombre") or "")[:80],
-                str(cuerpo.get("desde") or ""), str(cuerpo.get("hasta") or ""))
+                str(cuerpo.get("desde") or ""), str(cuerpo.get("hasta") or ""),
+                [str(x) for x in secs] if isinstance(secs, list) else None)
             if err:
                 return self._json({"error": err}, 400)
             datos_api.guardar(STATE_DIR, cfg)

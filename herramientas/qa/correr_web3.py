@@ -7,7 +7,7 @@ armazón, así que sus suites son otras. Un solo panel puede servir una sola
 carpeta web por corrida, de modo que las dos familias no pueden convivir en
 la misma ejecución.
 
-    python correr_web3.py            # arma el sandbox, levanta, corre las 3
+    python correr_web3.py            # arma el sandbox, levanta, corre todas
     python correr_web3.py --solo w1  # sólo una
 
 Seguridad (igual que el resto de la suite): el sandbox es una COPIA
@@ -33,7 +33,10 @@ PUERTO = int(os.environ.get("QA_WEB3_PORT") or 8144)   # 8143 lo usa correr_todo
 BASE = "http://127.0.0.1:%d" % PUERTO
 SUITES = [("w1 panel", "w1_web3_panel.py"),
           ("w2 intranet", "w2_web3_intranet.py"),
-          ("w3 avisos", "w3_web3_avisos.py")]
+          ("w3 avisos", "w3_web3_avisos.py"),
+          ("w4 link a un bloque", "w4_web3_link_bloque.py"),
+          ("w5 cargar a un modulo", "w5_web3_cargar_modulo.py"),
+          ("w6 reportes de una planilla", "w6_web3_informes.py")]
 
 
 def armar_sandbox():
@@ -52,6 +55,18 @@ def armar_sandbox():
     estado = os.path.join(PROYECTO, "herramientas", "PanelMyS_state")
     if os.path.isdir(estado):
         shutil.copytree(estado, os.path.join(SANDBOX, "state"), dirs_exist_ok=True)
+    # w6 necesita una planilla YA conectada para tener qué medir. El estado de
+    # desarrollo tiene los reportes pero no la copia local de la planilla, que
+    # vive en el estado del panel instalado. Si está, se trae: así la suite
+    # corre contra la planilla de verdad en vez de contra un invento.
+    instalado = os.path.join(os.environ.get("LOCALAPPDATA", ""), "PanelMyS_state")
+    cache = os.path.join(SANDBOX, "state", "cache_google")
+    if not os.path.isdir(cache) and os.path.isdir(instalado):
+        if os.path.isdir(os.path.join(instalado, "cache_google")):
+            shutil.copytree(os.path.join(instalado, "cache_google"), cache)
+            shutil.copy2(os.path.join(instalado, "datos.json"),
+                         os.path.join(SANDBOX, "state", "datos.json"))
+            print("planilla conectada tomada del panel instalado")
     print("sandbox en %s" % SANDBOX)
 
 

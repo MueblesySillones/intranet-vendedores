@@ -815,7 +815,8 @@
          lo que el equipo explicó que significa la planilla, no de mirar las
          columnas, y el lugar donde se publican es el reporte con diseño. */
       nota: 'Estos tres salen de lo que el equipo explicó que significa la planilla, '
-        + 'no de leer las columnas. El reporte con diseño está en «Ver reporte».'
+        + 'no de leer las columnas, y son de TODA la planilla. Para un mes o una '
+        + 'semana, creá un reporte acá arriba.'
     };
   }
 
@@ -876,11 +877,15 @@
       '<span>' + esc((d.origen || '') + cuando + cache) + '</span></div>' +
       '<div class="dt-barra-b">' +
       '<button type="button" class="dt-volver" id="dtMedir">Qué se mide</button>' +
+      /* En la planilla de derivaciones, bajar el archivo es cosa de CADA
+         reporte creado, y sale con el diseño. Un "Descargar Word" acá arriba
+         bajaba el tablero de toda la planilla —otro documento y otra cosa— y
+         era justo lo que no se quería. Para el resto de las planillas, que no
+         tienen biblioteca de reportes, siguen siendo la única salida. */
       ((d.es_derivaciones)
-        ? '<button type="button" class="btn active" id="dtDeck">Ver reporte</button>'
-        : '') +
-      '<button type="button" class="btn" id="dtWord">Descargar Word</button>' +
-      '<button type="button" class="btn" id="dtPdf">Imprimir a PDF</button>' +
+        ? '<button type="button" class="btn active" id="dtDeck">Ver la planilla entera</button>'
+        : '<button type="button" class="btn" id="dtWord">Descargar Word</button>' +
+          '<button type="button" class="btn" id="dtPdf">Imprimir a PDF</button>') +
       '</div></div><div id="datosCuerpo"></div>';
     document.getElementById('dtVolver').onclick = function () {
       traerLista().then(function () { pintarLista(); });
@@ -906,11 +911,16 @@
     if (bd) bd.onclick = function () {
       window.open('/api/datos/deck?id=' + encodeURIComponent(ABIERTO), '_blank');
     };
-    document.getElementById('dtWord').onclick = function () { descargar('word'); };
-    document.getElementById('dtPdf').onclick = function () { descargar('pdf'); };
+    var bw = document.getElementById('dtWord');
+    var bp = document.getElementById('dtPdf');
+    if (bw) bw.onclick = function () { descargar('word'); };
+    if (bp) bp.onclick = function () { descargar('pdf'); };
     /* ABIERTO y no `id`: estas lineas viven adentro de barra(d), que no
        recibe el id del reporte. ABIERTO es el que se esta mirando. */
-    if (d.es_derivaciones) pintarInformes(ABIERTO, d.informes || []);
+    if (d.es_derivaciones) {
+      SECCIONES = d.secciones_posibles || SECCIONES;
+      pintarInformes(ABIERTO, d.informes || []);
+    }
   }
 
   /* ════════════════════ LOS INFORMES DE UNA PLANILLA ════════════════════
@@ -944,6 +954,19 @@
     return fechaCorta(inf.desde) + ' — ' + fechaCorta(inf.hasta);
   }
 
+  /* Lo que se puede medir lo dice el servidor (deck.SECCIONES), no esta
+     pantalla: si mañana el reporte aprende a mostrar otra cosa, aparece sola
+     en el formulario y no hay que tocar dos archivos. */
+  var SECCIONES = [];
+
+  function seccionesDe(inf) {
+    var elegidas = inf.secciones || [];
+    var nombres = SECCIONES.filter(function (s) {
+      return elegidas.indexOf(s.id) >= 0;
+    }).map(function (s) { return s.titulo; });
+    return nombres.length ? nombres.join(' · ') : 'todo';
+  }
+
   function pintarInformes(id, lista) {
     var caja = document.getElementById('dtInformes');
     if (!caja) {
@@ -957,24 +980,40 @@
       '<div class="dt-inf-h"><h3>Reportes</h3>' +
       '<button type="button" class="btn active" id="dtInfNuevo">Crear reporte</button>' +
       '</div>' +
+      '<div id="dtInfForm" hidden></div>' +
       (lista.length
-        ? '<div class="dt-inf-l">' + lista.map(function (i) {
-            return '<button type="button" class="dt-inf-i" data-inf="' + esc(i.id) + '">' +
-              '<span class="dt-inf-n">' + esc(i.nombre) + '</span>' +
-              '<span class="dt-inf-p">' + esc(periodoTexto(i)) + '</span>' +
-              '<span class="dt-inf-x" data-borrar-inf="' + esc(i.id) +
-              '" title="Quitar este reporte">×</span></button>';
-          }).join('') + '</div>'
-        : '<p class="dt-chico">Todavía no creaste ninguno. Un reporte es un ' +
-          'período con nombre: «Agosto», «Semana del 1 al 7». Los números se ' +
-          'sacan de la planilla cada vez que lo abrís.</p>') +
-      '<div id="dtInfForm" hidden></div>';
+        ? '<div class="dt-inf-l">' + lista.map(tarjeta).join('') + '</div>'
+        : '<p class="dt-chico" id="dtInfVacio">Todavía no creaste ninguno. ' +
+          'Un reporte es un período con nombre —«Agosto», «Semana del 1 al 7»— ' +
+          'y las cosas que querés que muestre. Los números se sacan de la ' +
+          'planilla cada vez que lo abrís.</p>');
     document.getElementById('dtInfNuevo').onclick = function () { formInforme(id); };
   }
 
-  /* El formulario propone el MES PASADO completo, que es lo que se pide casi
-     siempre, y deja cambiarlo. Proponer vacío obliga a escribir dos fechas
-     para la tarea más común. */
+  /* Cada reporte creado es una tarjeta, no una fila: adentro tiene sus tres
+     botones —verlo, bajarlo en PDF, bajarlo en Word— y los tres abren el MISMO
+     diseño. Ninguno toca la planilla ni los otros reportes. */
+  function tarjeta(i) {
+    return '<article class="dt-inf-c" data-inf="' + esc(i.id) + '">' +
+      '<button type="button" class="dt-inf-x" data-borrar-inf="' + esc(i.id) +
+        '" title="Quitar este reporte">×</button>' +
+      '<span class="dt-inf-p">' + esc(periodoTexto(i)) + '</span>' +
+      '<h4 class="dt-inf-n">' + esc(i.nombre) + '</h4>' +
+      '<p class="dt-inf-m">' + esc(seccionesDe(i)) + '</p>' +
+      '<div class="dt-inf-b">' +
+        '<button type="button" class="btn active" data-ver="' + esc(i.id) +
+          '">Ver reporte</button>' +
+        '<button type="button" class="btn" data-pdf="' + esc(i.id) +
+          '">Descargar PDF</button>' +
+        '<button type="button" class="btn" data-doc="' + esc(i.id) +
+          '">Descargar Word</button>' +
+      '</div></article>';
+  }
+
+  /* El formulario pregunta tres cosas, en el orden en que uno las piensa:
+     cómo se llama, de qué período habla y qué tiene que mostrar. El período
+     viene propuesto con el MES PASADO completo, que es el pedido de siempre;
+     dejarlo vacío obliga a escribir dos fechas para la tarea más común. */
   function formInforme(id) {
     var caja = document.getElementById('dtInfForm');
     if (!caja) return;
@@ -990,23 +1029,72 @@
     caja.hidden = false;
     caja.innerHTML =
       '<div class="dt-inf-f">' +
-      '<label>Nombre<input type="text" id="dtInfN" maxlength="80" value="' +
+      '<div class="dt-inf-q"><b>1. ¿Cómo se va a llamar?</b>' +
+        '<input type="text" id="dtInfN" maxlength="80" value="' +
         esc((MESES[m.getMonth()] || '').replace(/^./, function (c) { return c.toUpperCase(); }) +
-            ' ' + m.getFullYear()) + '"></label>' +
-      '<label>Desde<input type="date" id="dtInfD" value="' + iso(ini) + '"></label>' +
-      '<label>Hasta<input type="date" id="dtInfH" value="' + iso(fin) + '"></label>' +
-      '<button type="button" class="btn active" id="dtInfOk">Crear</button>' +
-      '<button type="button" class="dt-volver" id="dtInfNo">Cancelar</button>' +
-      '</div>';
+            ' ' + m.getFullYear()) + '"></div>' +
+      '<div class="dt-inf-q"><b>2. ¿De qué período?</b>' +
+        '<span class="dt-chico">Se cuentan las consultas cargadas entre esas ' +
+        'dos fechas, los dos días incluidos.</span>' +
+        '<div class="dt-inf-fe">' +
+          '<label>Desde<input type="date" id="dtInfD" value="' + iso(ini) + '"></label>' +
+          '<label>Hasta<input type="date" id="dtInfH" value="' + iso(fin) + '"></label>' +
+        '</div>' +
+        '<div class="dt-inf-at">' +
+          '<button type="button" class="dt-at" data-per="mes-pasado">El mes pasado</button>' +
+          '<button type="button" class="dt-at" data-per="este-mes">Este mes</button>' +
+          '<button type="button" class="dt-at" data-per="semana">Últimos 7 días</button>' +
+          '<button type="button" class="dt-at" data-per="todo">Toda la planilla</button>' +
+        '</div></div>' +
+      '<div class="dt-inf-q"><b>3. ¿Qué querés medir?</b>' +
+        '<span class="dt-chico">Cada cosa que marques es una lámina del ' +
+        'reporte. Después podés crear otro con otras.</span>' +
+        '<div class="dt-inf-s">' + SECCIONES.map(function (s) {
+          return '<label class="dt-inf-o"><input type="checkbox" value="' +
+            esc(s.id) + '" checked><span><b>' + esc(s.titulo) + '</b>' +
+            '<i>' + esc(s.detalle) + '</i></span></label>';
+        }).join('') + '</div></div>' +
+      '<div class="dt-inf-ac">' +
+        '<button type="button" class="btn active" id="dtInfOk">Crear reporte</button>' +
+        '<button type="button" class="dt-volver" id="dtInfNo">Cancelar</button>' +
+      '</div></div>';
+
+    var D = document.getElementById('dtInfD');
+    var H = document.getElementById('dtInfH');
+    var atajos = caja.querySelectorAll('.dt-at');
+    for (var k = 0; k < atajos.length; k++) {
+      atajos[k].onclick = (function (b) {
+        return function () {
+          var q = b.getAttribute('data-per'), a, z;
+          if (q === 'mes-pasado') {
+            a = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+            z = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+          } else if (q === 'este-mes') {
+            a = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+            z = hoy;
+          } else if (q === 'semana') {
+            a = new Date(hoy.getTime() - 6 * 86400000);
+            z = hoy;
+          } else { D.value = ''; H.value = ''; return; }
+          D.value = iso(a); H.value = iso(z);
+        };
+      }(atajos[k]));
+    }
+
     document.getElementById('dtInfNo').onclick = function () {
       caja.hidden = true; caja.innerHTML = '';
     };
     document.getElementById('dtInfOk').onclick = function () {
+      var mide = [];
+      var cs = caja.querySelectorAll('.dt-inf-s input');
+      for (var j = 0; j < cs.length; j++) if (cs[j].checked) mide.push(cs[j].value);
+      if (!mide.length) { aviso('Marcá al menos una cosa para medir', 'err'); return; }
       post('/api/datos/informe-crear', {
         id: id,
         nombre: document.getElementById('dtInfN').value,
-        desde: document.getElementById('dtInfD').value,
-        hasta: document.getElementById('dtInfH').value
+        desde: D.value,
+        hasta: H.value,
+        secciones: mide
       }).then(function (r) {
         if (r.error) { aviso(r.error, 'err'); return; }
         aviso('Reporte creado', 'ok');
@@ -1014,6 +1102,31 @@
         pintarInformes(id, r.informes || []);
       });
     };
+  }
+
+  /* Las tres salidas del mismo reporte. Van todas por `informe=` para que
+     digan lo mismo: si el PDF y el Word salieran por caminos distintos, tarde
+     o temprano uno de los dos mentiría. */
+  function urlInforme(iid) {
+    return '?id=' + encodeURIComponent(ABIERTO) +
+           '&informe=' + encodeURIComponent(iid);
+  }
+
+  function verInforme(iid) {
+    window.open('/api/datos/deck' + urlInforme(iid), '_blank');
+  }
+
+  function pdfInforme(iid) {
+    /* el PDF lo hace el navegador desde el mismo deck: sale en 16:9, con el
+       diseño tal cual, y el panel no carga con una librería de PDF */
+    var v = window.open('/api/datos/deck' + urlInforme(iid) + '&imprimir=1',
+                        '_blank');
+    if (!v) aviso('El navegador bloqueó la ventana del reporte', 'err');
+  }
+
+  function wordInforme(iid) {
+    aviso('Armando el Word…', 'ok');
+    window.location.href = '/api/datos/deck-word' + urlInforme(iid);
   }
 
   /* El Word se baja como archivo. El "PDF" abre el reporte en una pestaña y
@@ -1057,7 +1170,7 @@
     if (xi && RAIZ && RAIZ.contains(xi)) {
       e.stopPropagation();
       var iid = xi.getAttribute('data-borrar-inf');
-      var fila = xi.closest('.dt-inf-i');
+      var fila = xi.closest('.dt-inf-c');
       var nom = fila ? (fila.querySelector('.dt-inf-n') || {}).textContent : '';
       if (!window.confirm('¿Quitar el reporte "' + (nom || '') +
                           '"? La planilla no se toca.')) return;
@@ -1071,13 +1184,19 @@
       return;
     }
 
-    /* abrir un informe: el mismo reporte con diseno, recortado a su periodo */
-    var fi = e.target.closest('.dt-inf-i');
-    if (fi && RAIZ && RAIZ.contains(fi)) {
-      e.stopPropagation();
-      window.open('/api/datos/deck?id=' + encodeURIComponent(ABIERTO) +
-                  '&informe=' + encodeURIComponent(fi.getAttribute('data-inf')), '_blank');
-      return;
+    /* los tres botones de una tarjeta: el mismo reporte con diseno, recortado
+       a su periodo, mirandolo / en PDF / en Word */
+    var bv = e.target.closest('[data-ver]');
+    if (bv && RAIZ && RAIZ.contains(bv)) {
+      e.stopPropagation(); verInforme(bv.getAttribute('data-ver')); return;
+    }
+    var bp = e.target.closest('[data-pdf]');
+    if (bp && RAIZ && RAIZ.contains(bp)) {
+      e.stopPropagation(); pdfInforme(bp.getAttribute('data-pdf')); return;
+    }
+    var bw = e.target.closest('[data-doc]');
+    if (bw && RAIZ && RAIZ.contains(bw)) {
+      e.stopPropagation(); wordInforme(bw.getAttribute('data-doc')); return;
     }
 
     var x = e.target.closest('[data-borrar]');
