@@ -1,8 +1,8 @@
 {
-  "version": 39,
-  "label": "1.4.5 - la marca en cada publicacion",
-  "notes": "Cada publicacion vuelve a mostrar quien la hizo: el avatar lleva el logo de Muebles y Sillones y al lado va el nombre de quien la escribio. Antes era una letra sola, o directamente no se veia. Ademas, el boton Traer ultima version aparece solo si esa computadora tiene una central configurada: sin Tailscale no tenia a donde ir y lo unico que hacia era dar un error.",
-  "sha256": "f5cdab7c4a7fa709d96d34a842cc8cfca3c693e2773a3607acfeca8cafe41cd9",
-  "size": 20009999,
-  "url": "panel/PanelMyS-v39.zip"
+  "version": 40,
+  "label": "1.4.6 - el logo de la marca en cada publicacion",
+  "notes": "El avatar de cada publicacion ahora es el logo de Muebles y Sillones sobre fondo blanco, con el nombre de quien la escribio al lado. La version anterior lo mostraba en blanco sobre un circulo oscuro y no se llegaba a leer.",
+  "sha256": "cb6ede24163636bc8fe0f9882a4b037e052359ce532dda8991f78fe19b1fd4b8",
+  "size": 20030169,
+  "url": "panel/PanelMyS-v40.zip"
 }
