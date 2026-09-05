@@ -377,7 +377,13 @@ function aplicarRol(cfg) {
   $('#btnPublicar').hidden = false;
   $('#btnBandeja').hidden  = true;    // el modelo de aprobaciones ya no se usa
   $('#btnEnviar').hidden   = true;
-  $('#btnTraer').hidden    = central; // el colaborador puede refrescar su copia desde la central
+  /* "Traer última versión" baja una copia desde la central, y eso necesita
+     que la computadora tenga una central a la que llegar. Desde que las
+     sucursales se instalan sin Tailscale, muchas no la tienen: el botón
+     estaba a la vista y lo único que hacía era dar un error. Se muestra sólo
+     si hay una dirección de central configurada. */
+  const hayCentral = !!(cfg && (cfg.central_url || '').trim());
+  $('#btnTraer').hidden    = central || !hayCentral;
   // con el cerebro, el estado de git local no aplica
   const gs = $('#gitState');
   if (gs) gs.hidden = true;

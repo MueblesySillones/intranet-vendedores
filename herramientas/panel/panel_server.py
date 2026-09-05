@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 38
+VERSION = 39
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,17 +279,15 @@ VERSION = 38
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.4.4"
-VERSION_LABEL = "1.4.4 - actualizarse ya no puede dejarte sin panel"
+VERSION_PUBLICA = "1.4.5"
+VERSION_LABEL = "1.4.5 - la marca en cada publicacion"
 VERSION_NOTES = (
-                 "Arregla el instalador de actualizaciones. Al cerrarse el panel, "
-                 "Windows deja tomado un rato el runtime de C++, y entonces la "
-                 "carpeta vieja no se podia borrar: la instalacion terminaba metida "
-                 "adentro de esa carpeta y el programa desaparecia de la "
-                 "computadora. Ahora, si la carpeta esta ocupada, se usa otra y la "
-                 "actualizacion sigue; y si algo falla igual, el panel vuelve a la "
-                 "version anterior aunque la copia haya quedado anidada. Paso de "
-                 "verdad al actualizar a la 1.4.3.")
+                 "Cada publicacion vuelve a mostrar quien la hizo: el avatar lleva "
+                 "el logo de Muebles y Sillones y al lado va el nombre de quien la "
+                 "escribio. Antes era una letra sola, o directamente no se veia. "
+                 "Ademas, el boton Traer ultima version aparece solo si esa "
+                 "computadora tiene una central configurada: sin Tailscale no tenia "
+                 "a donde ir y lo unico que hacia era dar un error.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.4.4"
-NUEVO_LABEL = "1.4.4 - actualizarse ya no puede dejarte sin panel"
-NUEVAS_NOTAS = ("Arregla el instalador de actualizaciones. Al cerrarse el panel, Windows deja tomado un rato el runtime de C++, y entonces la carpeta vieja no se podia borrar: la instalacion terminaba metida adentro de esa carpeta y el programa desaparecia de la computadora. Ahora, si la carpeta esta ocupada, se usa otra y la actualizacion sigue; y si algo falla igual, el panel vuelve a la version anterior aunque la copia haya quedado anidada. Paso de verdad al actualizar a la 1.4.3.")
+NUEVA_PUBLICA = "1.4.5"
+NUEVO_LABEL = "1.4.5 - la marca en cada publicacion"
+NUEVAS_NOTAS = ("Cada publicacion vuelve a mostrar quien la hizo: el avatar lleva el logo de Muebles y Sillones y al lado va el nombre de quien la escribio. Antes era una letra sola, o directamente no se veia. Ademas, el boton Traer ultima version aparece solo si esa computadora tiene una central configurada: sin Tailscale no tenia a donde ir y lo unico que hacia era dar un error.")
 
 # firma de los commits que arma este guion
 FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
@@ -183,23 +183,16 @@ print("    ok: version.json en v%d" % NUEVA_VERSION)
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
-msg = ("Panel v%d (%s): actualizarse ya no puede dejar la maquina sin panel\n\n"
-       "Actualizando la central de v36 a v37, el swap dejo la carpeta de\n"
-       "instalacion sin existir. La cadena: al cerrar el panel Windows sigue\n"
-       "teniendo tomado VCRUNTIME140.dll un rato, el `rmdir` de PanelMyS_old\n"
-       "fallo a medias, la carpeta sobrevivio, y entonces `move INSTALL OLD`\n"
-       "no renombro: metio la instalacion ADENTRO (OLD\\PanelMyS). Desde ahi\n"
-       "el paso 6 no encontro los archivos per-maquina -> ROLLBACK, y el\n"
-       "rollback tampoco vio el exe porque estaba un nivel mas abajo.\n\n"
-       "Dos arreglos en updater/aplicar.bat:\n"
-       "- si el old no se puede limpiar, se usa uno con sufijo y la\n"
-       "  actualizacion sigue. Frenar y ya dejaria maquinas sin actualizar\n"
-       "  para siempre, en silencio, porque ese DLL puede quedar tomado.\n"
-       "- el rollback ahora tambien mira OLD\\PanelMyS, para rescatar a las\n"
-       "  maquinas que ya quedaron con la copia anidada.\n\n"
-       "Con pruebas: herramientas/qa/test_aplicar_bat.py (4 casos, incluido\n"
-       "el del old trabado, que con el bat viejo deja la maquina sin\n"
-       "programa y con el nuevo actualiza igual).\n"
+msg = ("Panel v%d (%s): la marca en el avatar de cada publicacion\n\n"
+       "El avatar mostraba las iniciales del autor: una M sola, que no dice\n"
+       "nada. Una publicacion de la cartelera es un aviso de la EMPRESA, asi\n"
+       "que el avatar lleva el logo y el nombre de al lado es el que dice\n"
+       "quien la escribio. Mismo criterio que ya se aplico en la intranet.\n"
+       "#sucAv queda afuera a proposito: ese no es el autor, es que\n"
+       "computadora es esta, y ahi la inicial si sirve.\n\n"
+       "Ademas: Traer ultima version se muestra solo si hay una central\n"
+       "configurada. Desde que las sucursales se instalan sin Tailscale,\n"
+       "muchas no la tienen y el boton solo servia para dar un error.\n"
        % (NUEVA_VERSION, NUEVA_PUBLICA)) + FIRMA
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 
