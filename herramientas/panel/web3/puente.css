@@ -315,3 +315,79 @@ main.lienzo{padding:0; max-width:none; margin:0}
   border:0; max-width:min(520px, calc(100vw - 48px)); text-align:center}
 .toast.err{background:#8E3A2C}
 .toast.ok{background:#3F5A3F}
+
+/* ---------- 10. PUBLICAR: QUE SE VEA QUE ESTA PASANDO ALGO ----------
+   Un toast de 11px abajo a la izquierda no alcanza para el momento mas
+   importante del panel. Publicar tarda ~3 s en el cerebro pero el vendedor
+   recien lo ve cuando Vercel termina de desplegar (~30 s): si nada lo cuenta,
+   la persona vuelve a apretar Publicar creyendo que no anduvo.
+   Esta tarjeta cubre las dos etapas y se va sola. */
+.pubcard{position:fixed; right:24px; bottom:24px; z-index:210; width:326px;
+  max-width:calc(100vw - 32px); background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); border-radius:var(--r-lg);
+  box-shadow:0 18px 44px rgba(30,26,22,.20); padding:15px 16px 0; cursor:pointer;
+  opacity:0; transform:translateY(10px) scale(.98); transition:opacity .2s var(--mov), transform .2s var(--mov)}
+.pubcard.on{opacity:1; transform:none}
+.pubcard-fila{display:flex; align-items:flex-start; gap:12px; padding-bottom:14px}
+.pubcard-tx{min-width:0; flex:1}
+.pubcard-tx b{display:block; font-size:var(--t-base); font-weight:700; line-height:1.3}
+.pubcard-tx span{display:block; margin-top:3px; font-size:var(--t-mini); color:var(--ink3); line-height:1.45}
+
+/* el circulito que gira mientras trabaja */
+.pubcard-ic{flex:0 0 34px; width:34px; height:34px; border-radius:50%; position:relative;
+  display:grid; place-items:center; background:var(--accent-soft)}
+.pubcard-ic .aro{width:22px; height:22px; border-radius:50%;
+  border:2.5px solid rgba(124,106,85,.28); border-top-color:var(--accent);
+  animation:pubgira .7s linear infinite}
+@keyframes pubgira{to{transform:rotate(360deg)}}
+/* y el tilde verde cuando termino */
+.pubcard.listo .pubcard-ic{background:#E7F1E7}
+.pubcard.listo .aro{display:none}
+.pubcard-ok{display:none; width:20px; height:20px; color:#3F5A3F; stroke-width:2.6}
+.pubcard.listo .pubcard-ok{display:block; animation:pubtilde .3s var(--mov)}
+@keyframes pubtilde{from{transform:scale(.5); opacity:0} to{transform:none; opacity:1}}
+.pubcard.error .pubcard-ic{background:#F6E5E1}
+.pubcard.error .aro{display:none}
+.pubcard.error .pubcard-ok{display:block; color:#8E3A2C}
+
+/* la barrita: gruesa, como se pidio. Mientras trabaja avanza sola y no
+   miente con un porcentaje que no conocemos; al terminar se llena. */
+.pubcard-barra{height:9px; margin:0 -16px; border-radius:0 0 var(--r-lg) var(--r-lg);
+  background:var(--accent-soft); overflow:hidden; position:relative}
+.pubcard-barra i{position:absolute; inset:0; display:block; background:var(--accent);
+  width:40%; border-radius:var(--r-full); animation:pubvai 1.15s var(--mov) infinite}
+@keyframes pubvai{0%{left:-42%} 100%{left:100%}}
+.pubcard.listo .pubcard-barra{background:#DCEBDC}
+.pubcard.listo .pubcard-barra i{animation:none; left:0; width:100%; background:#5B7A5B;
+  transition:width .35s var(--mov)}
+.pubcard.error .pubcard-barra{background:#F6E5E1}
+.pubcard.error .pubcard-barra i{animation:none; left:0; width:100%; background:#8E3A2C}
+
+/* la cuenta regresiva de Vercel: el dato que evita el segundo click.
+   El selector lleva .pubcard-tx adelante a propósito: `.pubcard-tx span`
+   (display:block) le ganaba por especificidad y el relojito caía a otro
+   renglón, separado de su texto. */
+.pubcard-tx .pubcard-espera{display:flex; align-items:center; gap:7px; margin-top:6px;
+  font-size:var(--t-micro); color:var(--ink3); line-height:1.3}
+.pubcard-espera svg{flex:0 0 13px; color:var(--ink3)}
+.pubcard-tx .pubcard-espera>span{display:inline; font-size:var(--t-micro); margin:0}
+.pubcard-espera b{font-family:"JetBrains Mono",ui-monospace,monospace; font-weight:700;
+  font-size:var(--t-micro); color:var(--ink2); display:inline}
+
+@media(max-width:760px){
+  .pubcard{right:12px; left:12px; bottom:12px; width:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  .pubcard{transition:none}
+  .pubcard-ic .aro,.pubcard-barra i{animation:none}
+  .pubcard-barra i{left:0; width:100%}
+  .pubcard.listo .pubcard-ok{animation:none}
+}
+
+/* Estado en el propio boton: "Guardado ✓" / "Publicado ✓".
+   El rediseño lo habia mandado a un chip gris de 11px al costado; en la
+   practica nadie lo mira y se vuelve a apretar Guardar. */
+#detSave.btn-hecho,#detPublicar.btn-hecho{background:#E7F1E7 !important; color:#2E5E2E !important;
+  border:1px solid #BCD8BC !important; font-weight:700}
+#detSave.btn-hecho:hover,#detPublicar.btn-hecho:hover{background:#DCEBDC !important}
+#detPublicar.btn-hecho svg{color:#2E5E2E}

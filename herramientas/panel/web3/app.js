@@ -137,6 +137,123 @@ function pintarGit(g) {
 
 function esc(s) { return (s || '').replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m])); }
 
+/* ===================================================================
+   LA TARJETA DE PUBLICAR
+
+   Publicar es lo unico del panel que sale de esta computadora, y hasta
+   ahora lo contaba un toast de 11px abajo de todo que dura 3 segundos.
+   Dos cosas quedaban sin decir:
+     1) que esta trabajando (se apreta y no pasa "nada visible");
+     2) que subir al cerebro tarda ~3 s pero el VENDEDOR lo ve cuando
+        Vercel termina de desplegar, ~30 s despues. Sin eso, la persona
+        mira la intranet, ve lo viejo, y vuelve a publicar.
+   La tarjeta cubre las dos etapas: barra en movimiento mientras trabaja,
+   tilde verde + cuenta regresiva cuando termino, y se va sola.
+   =================================================================== */
+const SEGUNDOS_VERCEL = 30;
+let pubCard = null, pubTimer = null, pubTick = null;
+
+/* escribe el rotulo respetando el icono: los botones de la maqueta llevan un
+   <svg> al lado del texto, y un textContent pelado se lo come. */
+function rotularBoton(sel, texto) {
+  const b = typeof sel === 'string' ? $(sel) : sel;
+  if (!b) return;
+  const cara = b.querySelector('[data-rotulo]');
+  if (cara) cara.textContent = texto;
+  else b.textContent = texto;
+}
+
+function pubCardEl() {
+  if (pubCard && document.body.contains(pubCard)) return pubCard;
+  pubCard = document.createElement('div');
+  pubCard.className = 'pubcard';
+  pubCard.id = 'pubCard';
+  pubCard.setAttribute('role', 'status');
+  pubCard.setAttribute('aria-live', 'polite');
+  pubCard.innerHTML =
+    '<div class="pubcard-fila">' +
+      '<span class="pubcard-ic"><span class="aro"></span>' +
+        '<svg class="pubcard-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+        '<path d="M20 6 9 17l-5-5"/></svg></span>' +
+      '<span class="pubcard-tx"><b data-tit>Publicando…</b><span data-sub></span>' +
+        '<span class="pubcard-espera" data-espera hidden>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px">' +
+          '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' +
+          '<span>Visible para los vendedores en <b data-seg></b></span></span>' +
+      '</span>' +
+    '</div>' +
+    '<div class="pubcard-barra"><i></i></div>';
+  /* se puede sacar del medio con un click: la cuenta de Vercel dura 30 s y
+     mientras tanto la tarjeta tapa la paleta de bloques. */
+  pubCard.title = 'Tocá para cerrar este aviso';
+  pubCard.onclick = pubCardEsconder;
+  document.body.appendChild(pubCard);
+  return pubCard;
+}
+
+function pubCardMostrar(titulo, sub) {
+  const c = pubCardEl();
+  clearTimeout(pubTimer); clearInterval(pubTick);
+  c.classList.remove('listo', 'error');
+  c.querySelector('[data-tit]').textContent = titulo;
+  c.querySelector('[data-sub]').textContent = sub || '';
+  c.querySelector('[data-espera]').hidden = true;
+  c.hidden = false;
+  requestAnimationFrame(() => c.classList.add('on'));
+}
+
+/* el final feliz: tilde verde y la cuenta de lo que falta para que el
+   vendedor lo vea. La tarjeta se va sola cuando termina esa cuenta. */
+function pubCardListo() {
+  const c = pubCardEl();
+  c.classList.add('listo');
+  c.querySelector('[data-tit]').textContent = '¡Publicado!';
+  c.querySelector('[data-sub]').textContent = 'Ya salió de esta computadora.';
+  /* La línea se rearma entera cada vez. Al llegar a cero se reemplaza por
+     "ya lo están viendo", y eso se lleva puesto el <b data-seg>: en la
+     publicación SIGUIENTE el contador ya no existía y reventaba con
+     "Cannot set properties of null". */
+  const esp = c.querySelector('[data-espera]');
+  esp.innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px">' +
+    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' +
+    '<span>Visible para los vendedores en <b data-seg></b></span>';
+  const seg = c.querySelector('[data-seg]');
+  esp.hidden = false;
+  let quedan = SEGUNDOS_VERCEL;
+  seg.textContent = quedan + ' s';
+  clearInterval(pubTick);
+  pubTick = setInterval(() => {
+    quedan--;
+    if (quedan > 0) { seg.textContent = quedan + ' s'; return; }
+    clearInterval(pubTick);
+    esp.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'style="width:13px;height:13px"><path d="M20 6 9 17l-5-5"/></svg>' +
+      '<span>Los vendedores ya lo están viendo.</span>';
+    clearTimeout(pubTimer);
+    pubTimer = setTimeout(pubCardEsconder, 2600);
+  }, 1000);
+}
+
+function pubCardError(msg) {
+  const c = pubCardEl();
+  clearInterval(pubTick);
+  c.classList.add('error');
+  c.querySelector('[data-tit]').textContent = 'No se pudo publicar';
+  c.querySelector('[data-sub]').textContent = msg || 'Probá de nuevo en un momento.';
+  c.querySelector('[data-espera]').hidden = true;
+  clearTimeout(pubTimer);
+  pubTimer = setTimeout(pubCardEsconder, 7000);   // el error se queda mas
+}
+
+function pubCardEsconder() {
+  if (!pubCard) return;
+  clearInterval(pubTick); clearTimeout(pubTimer);
+  pubCard.classList.remove('on');
+  const c = pubCard;
+  setTimeout(() => { if (c && !c.classList.contains('on')) c.hidden = true; }, 220);
+}
+
 // ---------- refrescos ----------
 async function refrescarGit() {
   // en modo cerebro (publicacion directa) el estado de git local no aplica:
@@ -173,11 +290,14 @@ async function publicarCambios(_reintento, sinPreguntar) {
   }
   const btns = [$('#btnPublicar'), $('#detPublicar')];
   btns.forEach(b => b && (b.disabled = true));
-  toast('Publicando…');
+  rotularBoton('#detPublicar', 'Publicando…');
+  pubCardMostrar('Publicando…', 'Subiendo los cambios al sitio.');
   try {
     const r = await api('/api/publicar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     if (r.falta_token) {
       btns.forEach(b => b && (b.disabled = false));
+      // la tarjeta se va: lo que sigue es una pregunta, no un trabajo en curso
+      pubCardEsconder();
       if (!_reintento && await pedirToken()) return publicarCambios(true, sinPreguntar);
       return;
     }
@@ -187,21 +307,32 @@ async function publicarCambios(_reintento, sinPreguntar) {
        EXITOSO iba a avisar "No se pudo publicar". Hoy no pasa de casualidad. */
     if (!r.ok) {
       console.error('Publicar:', r.log);
-      toast('No se pudo publicar: ' + ((r.log || '').split('\n').pop() || 'probá de nuevo'), 'err');
+      const detalle = (r.log || '').split('\n').pop() || 'probá de nuevo';
+      pubCardError(detalle);
+      toast('No se pudo publicar: ' + detalle, 'err');
     } else {
-      if (r.nada) toast('No había cambios para publicar');
-      else toast('¡Publicado! Vercel actualiza en ~30 s', 'ok');
+      if (r.nada) {
+        // no hubo nada que subir: no corresponde la cuenta de Vercel
+        pubCardEsconder();
+        toast('No había cambios para publicar');
+      } else {
+        pubCardListo();
+      }
       limpiarEditados();
       if (typeof actualizarBotones === 'function') actualizarBotones();
     }
     return !!r.ok;
   } catch (e) {
-    console.error('Publicar:', e); toast(e.message, 'err');
+    console.error('Publicar:', e);
+    pubCardError(e && e.message ? e.message : '');
+    toast(e.message, 'err');
     return false;
   } finally {
     // en el `finally` y no despues del try: con un `return` adentro, la linea
     // de abajo no llegaba a correr y los botones quedaban apagados para siempre
     btns.forEach(b => b && (b.disabled = false));
+    // el rotulo definitivo lo decide actualizarBotones (Publicar / Publicado ✓)
+    if (typeof actualizarBotones === 'function') actualizarBotones();
   }
 }
 
@@ -256,9 +387,10 @@ function aplicarRol(cfg) {
   if (sn) sn.textContent = nombre;
   if (sa) sa.textContent = (nombre.trim().charAt(0) || 'C').toUpperCase();
   if (sb2) sb2.title = central ? 'Esta computadora publica al sitio.' : 'Publicás directo al sitio online.';
-  // botón de publicar dentro del editor
-  const dp = $('#detPublicar');
-  if (dp) dp.textContent = 'Publicar';
+  // botón de publicar dentro del editor. Va por rotularBoton y no por
+  // textContent: el botón lleva un <svg> al lado del texto y un textContent
+  // pelado se lo comía (quedaba "Publicar" sin el ícono del avión).
+  rotularBoton('#detPublicar', 'Publicar');
 }
 
 function accionPublicarEditor() { return publicarCambios(); }
@@ -3808,12 +3940,29 @@ function actualizarBotones() {
   // Publicar pendiente: en modo cerebro se basa en si hay ediciones sin publicar
   // (no en git). Ambos roles ven el mismo estado.
   const pubPend = dirty || (MODO_CEREBRO ? (editados && editados.size > 0) : gitPendiente);
-  // 2B: ESTADO ≠ ACCION. Antes el boton alternaba rotulo ("Guardar"/"Guardado ✓")
-  // y el control cambiaba de naturaleza sin cambiar de forma. Ahora el boton
-  // dice siempre lo que HACE y lo que PASO vive en el chip verde de al lado.
+  /* 2B decia ESTADO ≠ ACCION y mandaba el resultado a un chip gris de 11px
+     al costado. En uso real no alcanza: se apreta Guardar, el boton sigue
+     diciendo "Guardar" y la persona no sabe si paso algo (lo reporto el
+     usuario el 4-sep). El rotulo vuelve a contar el estado —"Guardado ✓",
+     "Publicado ✓"— y con el primer cambio nuevo vuelve a ser una accion.
+     El chip queda como refuerzo, no como unico aviso.
+     ⚠️ conBoton restaura el rotulo que habia ANTES de trabajar, asi que los
+     onclick de #detSave/#detPublicar llaman a esta funcion al terminar. */
   const sb = $('#detSave');
-  if (sb) {
+  if (sb && !sb.dataset.ocupado) {
     sb.classList.toggle('active', dirty);
+    sb.classList.toggle('btn-hecho', !dirty);
+    rotularBoton(sb, dirty ? 'Guardar' : 'Guardado ✓');
+    sb.title = dirty ? 'Guarda los cambios en esta computadora.'
+                     : 'No hay cambios sin guardar.';
+  }
+  const pb = $('#detPublicar');
+  if (pb && !pb.disabled) {
+    const hecho = !pubPend;
+    pb.classList.toggle('btn-hecho', hecho);
+    rotularBoton(pb, hecho ? 'Publicado ✓' : 'Publicar');
+    pb.title = hecho ? 'El sitio online está igual que este panel.'
+                     : 'Sube al sitio lo que editaste. Los vendedores lo ven en ~30 s.';
   }
   const ch = $('#detEstado');
   if (ch) {
@@ -3919,7 +4068,8 @@ $('#detRedo').onclick = () => rehacer();
 // "Publicar" del editor: guarda primero si hay cambios, después publica
 $('#detPublicar').onclick = async () => {
   if (hayCambios()) { const ok = await guardarModulo({ salir: false }); if (!ok) return; }
-  await publicarCambios();
+  try { await publicarCambios(); }
+  finally { actualizarBotones(); }   // deja el rótulo que corresponde al estado real
 };
 
 /* ===================================================================
@@ -4221,8 +4371,11 @@ async function guardarModulo({ salir = true, auto = false } = {}) {
 }
 // guarda y se queda en el editor. Va por conBoton para que se vea que está
 // trabajando y para que un segundo click no dispare otro guardado.
+/* conBoton deja el rótulo que había ANTES de trabajar; si el guardado salió
+   bien ese rótulo quedó vencido ("Guardar" cuando ya está guardado). Por eso
+   actualizarBotones corre al final, pase lo que pase. */
 $('#detSave').onclick = () => conBoton('#detSave', 'Guardando…',
-  () => guardarModulo({ salir: false }));
+  () => guardarModulo({ salir: false })).then(actualizarBotones, actualizarBotones);
 
 $('#detDelete').onclick = async () => {
   if (detNew) return;

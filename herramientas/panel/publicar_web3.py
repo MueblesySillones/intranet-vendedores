@@ -25,12 +25,20 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.4.2"
-NUEVO_LABEL = "1.4.2 - vuelve el scroll en el editor"
-NUEVAS_NOTAS = ("Arregla el editor de modulos: no se podia scrollear ni el documento ni "
-                "la paleta de bloques (quedaba todo trabado al abrir un modulo). Ahora "
-                "la mesa del documento y la columna de la derecha scrollean cada una "
-                "por su lado, con la barra de Guardar y Publicar siempre a la vista.")
+NUEVA_PUBLICA = "1.4.3"
+NUEVO_LABEL = "1.4.3 - se ve lo que pasa al guardar y publicar"
+NUEVAS_NOTAS = ("Ahora el boton cuenta el estado: Guardar pasa a Guardado y Publicar a "
+                "Publicado, y vuelven atras con el primer cambio nuevo. Al publicar "
+                "aparece una tarjeta con la barra de progreso y, cuando termina, el "
+                "tilde verde con la cuenta de los 30 segundos que tarda el sitio en "
+                "mostrarselo a los vendedores. Ademas: el compositor de la Cartelera "
+                "ya no tira lo escrito sin preguntar, Escape con el menu de etiquetas "
+                "abierto cierra solo el menu, y la Vista previa en la intranet abre el "
+                "sitio en vez de una pagina de error.")
+
+# firma de los commits que arma este guion
+FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
+         "Claude-Session: https://claude.ai/code/session_01UztbDef1C6mxrqdPB2WieL\n")
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",
@@ -182,15 +190,26 @@ print("    ok: version.json en v%d" % NUEVA_VERSION)
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
-msg = ("Panel v%d (%s): vuelve el scroll en el editor de modulos\n\n"
-       "El .main-sec{flex:1} del puente pisaba el height:100vh del editor\n"
-       "(flex-basis 0%% anula el height): la seccion crecia al alto del\n"
-       "contenido y body.editing{overflow:hidden} trababa la pagina, asi\n"
-       "que no se podia scrollear nada. Fix: .main-sec.editor-full con\n"
-       "flex:0 0 auto. Verificado con Playwright: la mesa y la paleta\n"
-       "scrollean cada una por su lado, la barra del editor queda fija y\n"
-       "Cartelera/Modulos siguen igual.\n"
-       % (NUEVA_VERSION, NUEVA_PUBLICA))
+msg = ("Panel v%d (%s): se ve lo que pasa al guardar y publicar\n\n"
+       "Sale de la re-auditoria del 4-sep, medida con Playwright.\n\n"
+       "Los avisos: el rediseno habia mandado el resultado a un chip gris\n"
+       "de 11px y un toast abajo, y nadie los mira -> se vuelve a apretar\n"
+       "Guardar. Ahora el rotulo cuenta el estado (Guardado / Publicado) y\n"
+       "vuelve a ser accion con el primer cambio. Publicar suma una tarjeta\n"
+       "flotante: barra en movimiento mientras trabaja, tilde verde y la\n"
+       "cuenta de los ~30 s que tarda Vercel en mostrarselo al vendedor.\n"
+       "Ese dato faltaba y era el que hacia publicar dos veces.\n\n"
+       "Tres bugs reales:\n"
+       "- El compositor tiraba el borrador sin preguntar por sus CUATRO\n"
+       "  salidas (Escape, la X, el fondo, el boton viejo). Medido: 200\n"
+       "  caracteres escritos se perdian con una tecla.\n"
+       "- Escape con el menu de etiquetas abierto cerraba el compositor\n"
+       "  entero: #coTipos faltaba en la lista de capas de arriba.\n"
+       "- /intranet/ daba 404 (solo respondia index.html), asi que la\n"
+       "  Vista previa abria la pagina de error pelada de Python.\n\n"
+       "Verificado: 46 checks del panel, 9 del lado vendedor y 10 de los\n"
+       "avisos, todos en verde y sin errores de consola.\n"
+       % (NUEVA_VERSION, NUEVA_PUBLICA)) + FIRMA
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 
 # el FUENTE tambien viaja al repo: sin esto la otra compu compila otra cosa
@@ -201,7 +220,7 @@ subprocess.run(["git", "add", "--",
                 "herramientas/panel/publicar_web3.py"], cwd=repo_raiz, check=True)
 subprocess.run(["git", "commit", "-m",
                 "Fuente al dia con lo publicado: VERSION %d + web3 como panel principal"
-                % NUEVA_VERSION], cwd=repo_raiz, check=True)
+                % NUEVA_VERSION + FIRMA], cwd=repo_raiz, check=True)
 
 r = subprocess.run(["git", "push", "origin", "main"], cwd=repo_raiz, capture_output=True, text=True)
 if r.returncode != 0:
