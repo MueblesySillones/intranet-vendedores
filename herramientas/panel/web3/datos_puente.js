@@ -865,6 +865,8 @@
     RAIZ.innerHTML =
       '<div class="dt-barra">' +
       '<button type="button" class="dt-volver" id="dtVolver">‹ Reportes</button>' +
+      /* el <b> y el <span> son bloques distintos: en una sola línea el título
+         quedaba pegado al origen ("DerivacionesPlanilla de Google") */
       '<div class="dt-barra-t"><b>' + esc(d.titulo || 'Reporte') + '</b>' +
       '<span>' + esc((d.origen || '') + cuando + cache) + '</span></div>' +
       '<div class="dt-barra-b">' +

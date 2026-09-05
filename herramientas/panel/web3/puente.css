@@ -300,6 +300,50 @@ main.lienzo{padding:0; max-width:none; margin:0}
    duplicado de panel_datos no hace falta */
 #datosRaiz .dt-cab{display:none}
 
+/* El encabezado de sección es una BARRA, no una portada: 13 px arriba y abajo
+   más el subtítulo lo dejaban en ~130 px, y adentro de Datos —donde después
+   viene otra barra con el reporte— quedaban dos franjas apiladas comiéndose
+   la pantalla. */
+.top-in{padding:9px 24px}
+.top h1{font-size:var(--t-lg)}
+
+/* La barra del reporte: estaba como tarjeta flotante (fondo propio, borde,
+   sombra y 20 px de aire), y al quedar pegada arriba se leía como algo suelto
+   encima del contenido. Ahora es la continuación del encabezado: mismo fondo,
+   una sola línea de separación abajo, y nada de sombra. */
+#datosRaiz .dt-barra{
+  margin:0 0 18px; padding:10px 0 12px;
+  background:transparent; background-image:none;
+  border:0; border-bottom:1px solid var(--line); border-radius:0;
+  box-shadow:none; gap:12px;
+}
+#datosRaiz .dt-barra.hay{background-image:none; border-color:var(--line)}
+/* el título y el origen son dos renglones: en uno solo quedaban pegados
+   ("DerivacionesPlanilla de Google") */
+#datosRaiz .dt-barra-t{display:flex; flex-direction:column; gap:1px; min-width:0; flex:1}
+#datosRaiz .dt-barra-t b{font-size:var(--t-base); font-weight:700; line-height:1.25}
+#datosRaiz .dt-barra-t span{font-size:var(--t-micro); color:var(--ink3); line-height:1.35}
+/* los botones, juntos y a la derecha */
+#datosRaiz .dt-barra-b{display:flex; align-items:center; gap:8px; flex:0 0 auto; margin-left:auto}
+#datosRaiz .dt-barra-b .btn,
+#datosRaiz .dt-barra-b .dt-volver{height:32px; min-height:32px; padding:0 12px;
+  font-size:var(--t-mini); border-radius:var(--r-sm)}
+
+/* PUBLICAR A LA INTRANET: apagado.
+   Un reporte de derivaciones es para adentro —se mira, se baja en Word o se
+   imprime—, no para el sitio de los vendedores. La franja de "0 de 21
+   publicados" y los interruptores por número ocupaban lugar y ofrecían algo
+   que no se usa. El motor sigue entero (los endpoints y `publicados` no se
+   tocaron): el día que haya un informe que sí vaya a la intranet, se vuelve a
+   mostrar sacando estas reglas. */
+/* la franja "N de M publicados" es OTRA .dt-barra, la que trae el recuento */
+#datosRaiz .dt-barra:has(.dt-cuenta){display:none !important}
+/* y el interruptor "Publicar" de cada número. El cartel de una lectura trabada
+   (.dt-num-traba) SÍ se deja: explica por qué un número no es confiable, que
+   sirve igual sin publicar nada. */
+#datosRaiz .dt-num .dt-sw{display:none !important}
+#datosRaiz .dt-num-p:empty{display:none}
+
 /* ---------- 9. VARIOS ---------- */
 .muted{color:var(--ink3)}
 [hidden]{display:none !important}
