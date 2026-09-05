@@ -41,6 +41,26 @@ if not exist "%NEW%\update_ok.marker" ( echo new sin marker >> "%LOG%" & goto fa
 REM 3) limpiar restos de updates anteriores (rollback viejo y fallidos)
 if exist "%OLD%" rmdir /s /q "%OLD%"
 if exist "%FAILED%" rmdir /s /q "%FAILED%"
+REM barrer los old con sufijo que hayan quedado de updates anteriores (ver 3b)
+for /d %%D in ("%ROOT%\PanelMyS_old_*") do rmdir /s /q "%%D" 2>nul
+
+REM 3b) EL PASO QUE FALTABA.
+REM     El rmdir de arriba falla mas seguido de lo que parece: al cerrar el
+REM     panel, Windows sigue teniendo tomado un rato el runtime de C++
+REM     (VCRUNTIME140.dll da "acceso denegado"). Si %OLD% sobrevive, el `move`
+REM     del paso 4 NO renombra: mete la instalacion ADENTRO, como
+REM     %OLD%\PanelMyS. De ahi no cierra nada -> el paso 6 no encuentra los
+REM     archivos per-maquina, se va a ROLLBACK, y el rollback tampoco ve el exe
+REM     porque quedo un nivel mas abajo: LA MAQUINA SE QUEDA SIN PROGRAMA.
+REM     Paso de verdad en la central el 5-sep-2026 (v36 -> v37).
+REM     No alcanza con frenar: si el DLL queda tomado siempre, la maquina
+REM     nunca mas se actualizaria, en silencio. Se usa un nombre libre y el
+REM     update sigue su curso; la carpeta trabada la barre el proximo update.
+if exist "%OLD%" (
+  echo old ocupado, uso uno con sufijo >> "%LOG%"
+  set "OLD=%ROOT%\PanelMyS_old_%RANDOM%%RANDOM%"
+)
+if exist "!OLD!" ( echo no consigo una carpeta libre para el old >> "%LOG%" & goto fail )
 
 REM 4) install -> old  (retry para absorber locks residuales de handles/AV)
 set /a n=0
@@ -87,6 +107,13 @@ if exist "%INSTALL%\PanelMyS.exe" (
 if not exist "%INSTALL%\PanelMyS.exe" (
   if exist "%OLD%\PanelMyS.exe" move "%OLD%" "%INSTALL%" >> "%LOG%" 2>&1
 )
+REM Red de seguridad para las maquinas que YA quedaron con la copia anidada
+REM por el bug de arriba: sin esto el rollback no encuentra el programa y la
+REM instalacion se queda vacia. Salir de aca sin panel no es una opcion.
+if not exist "%INSTALL%\PanelMyS.exe" (
+  if exist "%OLD%\PanelMyS\PanelMyS.exe" move "%OLD%\PanelMyS" "%INSTALL%" >> "%LOG%" 2>&1
+)
+if not exist "%INSTALL%\PanelMyS.exe" echo ROLLBACK INCOMPLETO: no encontre el programa >> "%LOG%"
 goto relaunch
 
 :fail
