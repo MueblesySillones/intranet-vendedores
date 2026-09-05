@@ -1,8 +1,8 @@
 {
-  "version": 41,
-  "label": "1.5.0 - el link va al bloque, y cargar al modulo",
-  "notes": "Cuando una publicacion senala un bloque puntual de un modulo, ahora el vendedor cae en ESE bloque y no arriba de todo el modulo. Y aparece el interruptor Cargar al modulo: lo que se escribe en la publicacion se copia adentro del modulo elegido como contenido de verdad, con el titulo, el texto y las piezas, asi no hay que escribirlo dos veces. De paso, el selector ahora deja senalar tambien los titulos, que son las secciones de cada modulo.",
-  "sha256": "e5db745a2051a10a3820a11f652458b4e957a2115ea2fb87f42af810a4e0778e",
-  "size": 20032175,
-  "url": "panel/PanelMyS-v41.zip"
+  "version": 42,
+  "label": "1.6.0 - el reporte se arma preguntando",
+  "notes": "Crear un reporte ahora es contestar tres preguntas: como se llama, de que periodo (con atajos para el mes pasado, este mes o los ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por sucursal, por vendedor, seguimiento enviado, el cuello de botella del precio o por que se pierden. Cada reporte creado queda como una tarjeta con tres botones: Ver reporte, Descargar PDF y Descargar Word, y los tres salen con el diseno de las laminas, no con el tablero de antes. El Word baja apaisado, una lamina por hoja. Releer la planilla no toca los reportes ya creados. Ademas, el reporte ahora dice cuantas filas dejo afuera al recortar el periodo, para que nadie piense que faltan datos al compararlo con el total.",
+  "sha256": "8f5c249109c4cb4ef07dd6ed219e13635bf208dd61648ed986d51729d9d97759",
+  "size": 20062779,
+  "url": "panel/PanelMyS-v42.zip"
 }
