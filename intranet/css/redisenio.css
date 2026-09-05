@@ -92,13 +92,14 @@
    El !important es a propósito: el markup pone un color de fondo inline
    (colorDeAutor) que si no le gana a esto. */
 .mu-av{
-  background-color:var(--ink) !important;
-  background-image:url("../logo.png") !important;
-  background-size:74% auto !important;
+  background-color:#fff !important;
+  background-image:url("../avatar-marca.png") !important;
+  background-size:88% auto !important;
   background-position:center !important;
   background-repeat:no-repeat !important;
   font-size:0 !important;          /* las iniciales del markup no se muestran */
   border-radius:50%;
+  border:1px solid var(--borde, rgba(24,24,27,.12));
 }
 .mu-autor{ display:block; }
 .mu-head{ display:flex; align-items:center; gap:8px; padding:0; margin-bottom:10px; }
