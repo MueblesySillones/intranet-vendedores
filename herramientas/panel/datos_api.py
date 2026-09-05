@@ -17,6 +17,7 @@ import hashlib
 import io
 import json
 import os
+import re
 
 from datos import (analizador, deck, derivaciones, encabezado, fuentes,
                    lecturas, medidas, reporte, revisor)
@@ -214,6 +215,62 @@ def buscar(cfg, rid):
     return None
 
 
+# ── los informes de una planilla ─────────────────────────────────────────
+#  Una planilla conectada da MUCHOS informes, no uno: el de agosto, el de la
+#  semana pasada, el que haga falta. Cada uno es un nombre y un tramo de
+#  fechas; los números salen de leer la planilla en ese momento, así que un
+#  informe guardado no es una foto vieja: se vuelve a calcular con lo que la
+#  planilla diga hoy, recortado a su período.
+#
+#  Viven adentro del reporte, en `informes`. Guardar la lista y no los números
+#  es lo que hace que "el informe de agosto" siga siendo cierto en octubre.
+def informes(rep):
+    return [i for i in (rep.get("informes") or []) if isinstance(i, dict)]
+
+
+def buscar_informe(rep, iid):
+    for i in informes(rep):
+        if i.get("id") == iid:
+            return i
+    return None
+
+
+def informe_nuevo(rep, nombre, desde, hasta):
+    """Suma un informe al reporte. Devuelve (informe, error)."""
+    nombre = (nombre or "").strip()
+    if not nombre:
+        return None, "Ponele un nombre al informe."
+    for c, q in (("desde", desde), ("hasta", hasta)):
+        if q and not re.match(r"^\d{4}-\d{2}-\d{2}$", str(q)):
+            return None, "La fecha «%s» no está bien escrita." % q
+    if desde and hasta and str(desde) > str(hasta):
+        return None, "El desde tiene que ser anterior al hasta."
+    inf = {
+        "id": "i" + hashlib.md5(
+            (str(datetime.datetime.now()) + os.urandom(4).hex()).encode()).hexdigest()[:10],
+        "nombre": nombre,
+        "desde": str(desde or ""),
+        "hasta": str(hasta or ""),
+        "creado": datetime.date.today().isoformat(),
+    }
+    rep.setdefault("informes", []).insert(0, inf)   # el último arriba
+    return inf, None
+
+
+def informe_borrar(rep, iid):
+    antes = informes(rep)
+    rep["informes"] = [i for i in antes if i.get("id") != iid]
+    return len(rep["informes"]) != len(antes)
+
+
+def _fecha_de(txt):
+    """'2026-08-01' -> date, o None."""
+    try:
+        return datetime.date(*[int(x) for x in str(txt).split("-")])
+    except (ValueError, TypeError):
+        return None
+
+
 def guardar(state_dir, d):
     p = _config_path(state_dir)
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -327,6 +384,10 @@ def analizar_fuente(rep, state_dir):
         "publicados": rep.get("publicados") or [],
         "id": rep.get("id"),
         "titulo": rep.get("titulo") or "Reporte",
+        # los informes que ya se crearon de esta planilla. Van con el analisis
+        # y no en una ruta aparte para que la pantalla los tenga en el mismo
+        # viaje en que dibuja el reporte
+        "informes": informes(rep),
         # Que se puede medir en esta planilla, y que se eligio medir. Van con el
         # analisis y no en una ruta aparte porque salen de el: pedirlos por
         # separado obligaria a analizar la planilla dos veces.
@@ -343,7 +404,7 @@ def analizar_fuente(rep, state_dir):
     }
 
 
-def deck_derivaciones(rep, state_dir):
+def deck_derivaciones(rep, state_dir, informe=None):
     """(html, error) del reporte con diseño, si la planilla es la de derivaciones.
 
     Es un camino aparte del reporte genérico a propósito. El genérico sirve para
@@ -357,10 +418,16 @@ def deck_derivaciones(rep, state_dir):
         return None, ("Este reporte con diseño es para la planilla de "
                       "derivaciones. Necesita las columnas Fecha, Vendedor y "
                       "Respuesta Final.")
-    d = derivaciones.analizar(r["filas"], state_dir)
+    # con informe, el reporte es de ESE tramo; sin informe, de toda la planilla
+    d = derivaciones.analizar(
+        r["filas"], state_dir,
+        desde_f=_fecha_de((informe or {}).get("desde")),
+        hasta_f=_fecha_de((informe or {}).get("hasta")))
     if not d.get("ok"):
         return None, d.get("error")
-    return deck.armar(d, rep.get("titulo") or "Derivaciones y ventas"), None
+    titulo = ((informe or {}).get("nombre")
+              or rep.get("titulo") or "Derivaciones y ventas")
+    return deck.armar(d, titulo), None
 
 
 def resumen_derivaciones(rep, state_dir):

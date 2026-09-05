@@ -336,6 +336,38 @@ main.lienzo{padding:0; max-width:none; margin:0}
    que no se usa. El motor sigue entero (los endpoints y `publicados` no se
    tocaron): el día que haya un informe que sí vaya a la intranet, se vuelve a
    mostrar sacando estas reglas. */
+/* ---------- LA BIBLIOTECA DE REPORTES DE UNA PLANILLA ----------
+   Una planilla da muchos reportes, no uno: el de agosto, el de la semana
+   pasada. Cada uno es un nombre y un período; los números se calculan al
+   abrirlo, así que «Agosto» sigue diciendo la verdad sobre agosto en
+   diciembre. */
+#datosRaiz .dt-inf{margin:0 0 22px}
+#datosRaiz .dt-inf-h{display:flex; align-items:center; gap:12px; margin:0 0 10px}
+#datosRaiz .dt-inf-h h3{margin:0; font-size:var(--t-lg); font-weight:700; flex:1}
+#datosRaiz .dt-inf-l{display:flex; flex-direction:column; gap:6px}
+#datosRaiz .dt-inf-i{display:flex; align-items:center; gap:12px; width:100%;
+  padding:11px 14px; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-md); cursor:pointer; text-align:left;
+  transition:border-color .16s var(--mov), background .16s var(--mov)}
+#datosRaiz .dt-inf-i:hover{border-color:var(--line3); background:var(--panel)}
+#datosRaiz .dt-inf-n{font-size:var(--t-base); font-weight:650; color:var(--ink)}
+#datosRaiz .dt-inf-p{flex:1; font-size:var(--t-mini); color:var(--ink3)}
+#datosRaiz .dt-inf-x{flex:0 0 auto; width:24px; height:24px; display:inline-flex;
+  align-items:center; justify-content:center; border-radius:6px;
+  color:var(--ink3); font-size:16px; line-height:1}
+#datosRaiz .dt-inf-x:hover{background:rgba(181,80,63,.10); color:var(--danger)}
+/* el formulario: una sola línea, con el nombre ya propuesto */
+#datosRaiz .dt-inf-f{display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
+  margin-top:10px; padding:12px 14px; background:var(--panel);
+  border:1px solid var(--line); border-radius:var(--r-md)}
+#datosRaiz .dt-inf-f label{display:flex; flex-direction:column; gap:4px;
+  font-size:var(--t-nano); font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ink3)}
+#datosRaiz .dt-inf-f input{height:34px; padding:0 10px; font:inherit;
+  font-size:var(--t-mini); color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:var(--r-sm)}
+#datosRaiz .dt-inf-f input[type="text"]{min-width:190px}
+
 /* La franja "N de M publicados" ya no se dibuja (ver barraHTML en
    panel_datos.js): no hace falta taparla.
    Acá queda el interruptor "Publicar" de cada número, que sí se dibuja. El

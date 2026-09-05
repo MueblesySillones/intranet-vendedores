@@ -2184,8 +2184,11 @@ class Handler(BaseHTTPRequestHandler):
             rep = datos_api.buscar(cfg, (q.get("id") or [""])[0])
             if not rep:
                 return self._json({"error": "no encuentro ese reporte"}, 404)
+            # ?informe=<id> recorta el reporte al periodo de ese informe; sin
+            # el, se mira toda la planilla, como siempre
+            inf = datos_api.buscar_informe(rep, (q.get("informe") or [""])[0])
             try:
-                html, err = datos_api.deck_derivaciones(rep, STATE_DIR)
+                html, err = datos_api.deck_derivaciones(rep, STATE_DIR, inf)
             except Exception as ex:        # noqa
                 html, err = None, str(ex)
             if err or not html:
@@ -2435,6 +2438,28 @@ class Handler(BaseHTTPRequestHandler):
             rep["foco"] = [str(x)[:40] for x in ids][:40]
             datos_api.guardar(STATE_DIR, cfg)
             return self._json({"ok": True, "cuantas": len(rep["foco"])})
+
+        if path == "/api/datos/informe-crear":
+            rep = datos_api.buscar(cfg, str(cuerpo.get("id") or ""))
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            inf, err = datos_api.informe_nuevo(
+                rep, str(cuerpo.get("nombre") or "")[:80],
+                str(cuerpo.get("desde") or ""), str(cuerpo.get("hasta") or ""))
+            if err:
+                return self._json({"error": err}, 400)
+            datos_api.guardar(STATE_DIR, cfg)
+            return self._json({"ok": True, "informe": inf,
+                               "informes": datos_api.informes(rep)})
+
+        if path == "/api/datos/informe-borrar":
+            rep = datos_api.buscar(cfg, str(cuerpo.get("id") or ""))
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            if not datos_api.informe_borrar(rep, str(cuerpo.get("informe") or "")):
+                return self._json({"error": "no encuentro ese informe"}, 404)
+            datos_api.guardar(STATE_DIR, cfg)
+            return self._json({"ok": True, "informes": datos_api.informes(rep)})
 
         if path == "/api/datos/renombrar":
             rep = datos_api.buscar(cfg, str(cuerpo.get("id") or ""))
