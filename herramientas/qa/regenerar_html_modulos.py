@@ -29,14 +29,41 @@ RECALCULAR = """() => {
   const out = [];
   (MODULOS || []).forEach(m => {
     const c = m && m.content;
-    if (!c || c.tipo !== 'bloques' || !Array.isArray(c.bloques)) return;
-    const antes = c.html || '';
-    const ahora = bloquesHTML(c.bloques, c.presentacion);
-    if (antes !== ahora) {
-      c.html = ahora;
-      out.push({key: m.key, titulo: m.title, bloques: c.bloques.length,
-                anclasAntes: (antes.match(/data-bi=/g) || []).length,
-                anclasAhora: (ahora.match(/data-bi=/g) || []).length});
+    if (!c) return;
+
+    if (c.tipo === 'bloques' && Array.isArray(c.bloques)) {
+      const antes = c.html || '';
+      const ahora = bloquesHTML(c.bloques, c.presentacion);
+      if (antes !== ahora) {
+        c.html = ahora;
+        out.push({key: m.key, titulo: m.title, bloques: c.bloques.length,
+                  anclasAntes: (antes.match(/data-bi=/g) || []).length,
+                  anclasAhora: (ahora.match(/data-bi=/g) || []).length});
+      }
+      return;
+    }
+
+    /* La cartelera: cada publicacion tiene su propio html, y ahi vive el link
+       a los modulos. Regenerarlo es lo que hace que una publicacion vieja
+       —que guardo el NOMBRE del bloque pero no su posicion— pase a apuntar al
+       bloque en vez de al modulo entero.
+       ⚠️ Solo las que tienen `bloques`. Una publicacion cargada a mano trae el
+       html ya armado y ninguna lista de bloques: regenerarla la dejaria EN
+       BLANCO. Es el mismo patron que una vez se llevo puesto Marzo-Mayo. */
+    if (c.tipo === 'cartelera' && Array.isArray(c.docs)) {
+      c.docs.forEach((d, i) => {
+        if (!d || !Array.isArray(d.bloques) || !d.bloques.length) return;
+        const antes = d.html || '';
+        const ahora = bloquesHTML(d.bloques, false);
+        if (antes !== ahora) {
+          d.html = ahora;
+          const link = /<a class="[^"]*m-ref[^"]*" href="#([^"]+)"/.exec(ahora);
+          out.push({key: m.key + ' › ' + (d.titulo || ('publicacion ' + i)),
+                    titulo: (d.titulo || '(sin titulo)'), bloques: d.bloques.length,
+                    anclasAntes: 0, anclasAhora: 0,
+                    link: link ? '#' + link[1] : ''});
+        }
+      });
     }
   });
   return out;
@@ -63,8 +90,9 @@ with sync_playwright() as pw:
     else:
         print("modulos con el HTML desactualizado: %d" % len(cambios))
         for c in cambios:
-            print("  %-24s %2d bloques   anclas %d -> %d"
-                  % (c["titulo"][:24], c["bloques"], c["anclasAntes"], c["anclasAhora"]))
+            extra = ("  link " + c["link"]) if c.get("link") else (
+                "  anclas %d -> %d" % (c["anclasAntes"], c["anclasAhora"]))
+            print("  %-30s %2d bloques %s" % (c["titulo"][:30], c["bloques"], extra))
         if APLICAR:
             r = p.evaluate("() => persistModulos(false).then(() => 'ok', e => 'ERROR: ' + e.message)")
             print("\nguardado: %s" % r)
