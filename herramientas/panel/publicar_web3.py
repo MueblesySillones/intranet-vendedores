@@ -29,6 +29,13 @@ NUEVA_PUBLICA = "1.6.0"
 NUEVO_LABEL = "1.6.0 - el reporte se arma preguntando"
 NUEVAS_NOTAS = ("Crear un reporte ahora es contestar tres preguntas: como se llama, de que periodo (con atajos para el mes pasado, este mes o los ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por sucursal, por vendedor, seguimiento enviado, el cuello de botella del precio o por que se pierden. Cada reporte creado queda como una tarjeta con tres botones: Ver reporte, Descargar PDF y Descargar Word, y los tres salen con el diseno de las laminas, no con el tablero de antes. El Word baja apaisado, una lamina por hoja. Releer la planilla no toca los reportes ya creados. Ademas, el reporte ahora dice cuantas filas dejo afuera al recortar el periodo, para que nadie piense que faltan datos al compararlo con el total.")
 
+# El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
+# describe esta version. Antes esto era un texto fijo mas abajo y habia que
+# acordarse de cambiarlo: la v42 se publico con el titulo de la v41, contando
+# cambios que no eran los suyos. Un commit que describe otra version manda a
+# leer el codigo equivocado, asi que ahora el default no puede quedar viejo.
+NUEVO_CUERPO = ""
+
 # firma de los commits que arma este guion
 FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
          "Claude-Session: https://claude.ai/code/session_01UztbDef1C6mxrqdPB2WieL\n")
@@ -186,26 +193,12 @@ print("    ok: version.json en v%d" % NUEVA_VERSION)
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
-msg = ("Panel v%d (%s): el link va al bloque, y cargar al modulo\n\n"
-       "1) El bloque `ref` guardaba QUE bloque se habia elegido, pero el\n"
-       "   link salia como #modulo a secas: se senalaba una galeria y al\n"
-       "   vendedor lo dejaba arriba de todo. Ahora piezasDe anota la\n"
-       "   posicion del bloque, bloquesHTML emite data-bi en cada uno, y\n"
-       "   el link sale como #modulo/b<n>. Las publicaciones viejas, que\n"
-       "   no guardaron la posicion, la resuelven por nombre.\n\n"
-       "2) Cargar al modulo: copia el titulo, el cuerpo y las piezas\n"
-       "   adentro del modulo como bloques. Es distinto de Archivar en un\n"
-       "   modulo, que solo espeja la publicacion, y por eso es otro\n"
-       "   interruptor. Va en el MISMO guardado que la publicacion, y si\n"
-       "   ese guardado falla se deshacen las dos cosas. Un modulo del\n"
-       "   sistema sin content estrena uno con su diseno original adentro,\n"
-       "   para no borrarle lo que ya mostraba.\n\n"
-       "3) El selector ahora ofrece tambien los TITULOS: son las secciones\n"
-       "   del modulo, y es lo que hace util a lo anterior (se carga el\n"
-       "   aviso una vez y despues se lo senala).\n\n"
-       "Con suites: qa/w4 (link al bloque, 5 checks) y qa/w5 (cargar al\n"
-       "modulo, 7 checks), las dos de punta a punta.\n"
-       % (NUEVA_VERSION, NUEVA_PUBLICA)) + FIRMA
+# El titulo sale del label, sin repetir el numero de version que ya va
+# adelante: "1.6.0 - el reporte se arma preguntando" -> "el reporte se arma...".
+titulo = NUEVO_LABEL.split(" - ", 1)[-1].strip()
+msg = ("Panel v%d (%s): %s\n\n%s\n"
+       % (NUEVA_VERSION, NUEVA_PUBLICA, titulo,
+          (NUEVO_CUERPO or NUEVAS_NOTAS).strip())) + FIRMA
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 
 # el FUENTE tambien viaja al repo: sin esto la otra compu compila otra cosa
