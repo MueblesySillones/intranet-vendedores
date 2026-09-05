@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.5.0"
-NUEVO_LABEL = "1.5.0 - el link va al bloque, y cargar al modulo"
-NUEVAS_NOTAS = ("Cuando una publicacion senala un bloque puntual de un modulo, ahora el vendedor cae en ESE bloque y no arriba de todo el modulo. Y aparece el interruptor Cargar al modulo: lo que se escribe en la publicacion se copia adentro del modulo elegido como contenido de verdad, con el titulo, el texto y las piezas, asi no hay que escribirlo dos veces. De paso, el selector ahora deja senalar tambien los titulos, que son las secciones de cada modulo.")
+NUEVA_PUBLICA = "1.6.0"
+NUEVO_LABEL = "1.6.0 - el reporte se arma preguntando"
+NUEVAS_NOTAS = ("Crear un reporte ahora es contestar tres preguntas: como se llama, de que periodo (con atajos para el mes pasado, este mes o los ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por sucursal, por vendedor, seguimiento enviado, el cuello de botella del precio o por que se pierden. Cada reporte creado queda como una tarjeta con tres botones: Ver reporte, Descargar PDF y Descargar Word, y los tres salen con el diseno de las laminas, no con el tablero de antes. El Word baja apaisado, una lamina por hoja. Releer la planilla no toca los reportes ya creados. Ademas, el reporte ahora dice cuantas filas dejo afuera al recortar el periodo, para que nadie piense que faltan datos al compararlo con el total.")
 
 # firma de los commits que arma este guion
 FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
