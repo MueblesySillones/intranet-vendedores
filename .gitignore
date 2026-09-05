@@ -1,5 +1,8 @@
 # No subir al repo: datos sensibles (emails de clientes), herramientas internas y notas
-datos/
+# La barra del principio es importante: sin ella la regla tambien tapaba
+# herramientas/panel/datos/ (el backend de la seccion Datos), que quedaba fuera
+# del repo y solo existia en una computadora.
+/datos/
 # herramientas/ SI entra al repo desde el 31-ago-2026: el codigo del panel no
 # estaba en ningun git y dos maquinas lo editaron a la vez sin enterarse.
 # Lo que NO puede entrar nunca es esto de abajo (secretos y cosas por maquina):

@@ -33,7 +33,40 @@ que **fallan** (exit code 1) cuando algo empeora.
 - Sin pytest, sin dependencias nuevas: cada test es un script con
   contadores ok/aviso/falla, como el resto del código del proyecto.
 
-## Cómo se corre
+## ⚠️ Dos familias: web2 (t1–t4) y web3 (w1–w3)
+
+`correr_todo.py` y los bloques `t1`–`t4` fueron escritos para **web2** y usan
+sus selectores (`.nav-s[data-sec]`, entre otros). Desde la v34 el panel que
+corre en producción es **web3**, que tiene otro armazón: por eso sus suites
+son otras y viven aparte. Un panel sirve una sola carpeta `web/` por corrida,
+así que las dos familias no pueden convivir en la misma ejecución.
+
+```bat
+python correr_web3.py            :: arma el sandbox, levanta web3 y corre w1-w3
+python correr_web3.py --solo w1  :: sólo una
+```
+
+- **w1 panel** (46 checks) — arranque y rol, las 5 secciones, la Cartelera de
+  punta a punta (crear, editar, fijar, duplicar, archivar/restaurar, papelera,
+  Compartir), robustez (doble click, un 500 del servidor, el Escape
+  escalonado, el borrador que no se pierde), el editor de bloques (scroll,
+  edición inline, deshacer, guardar, paleta, vista celular, guarda de salida),
+  el editor de colección, los modales y la búsqueda.
+- **w2 intranet** (9 checks) — el lado vendedor en escritorio y celular: que
+  abra, los módulos del menú, la cartelera, el link `#cartelera/<id>`, un
+  módulo con su texto, y que no haya scroll lateral ni errores de consola.
+- **w3 avisos** (10 checks) — lo que ve la persona al guardar y publicar:
+  "Guardando…" → "Guardado ✓", la tarjeta flotante con la cuenta de los ~30 s
+  de Vercel, el vuelta-a-"Publicar" con el cambio siguiente y el camino de
+  error. El retardo se simula **dentro del navegador** parcheando
+  `window.fetch`: un `time.sleep` en un route handler de Playwright bloquea
+  también el muestreo y no se ve ningún estado intermedio.
+
+Vienen de la re-auditoría del 4-sep-2026, que encontró que el compositor
+tiraba el borrador sin preguntar por sus cuatro caminos de salida y que
+`/intranet/` devolvía 404.
+
+## Cómo se corre (web2)
 
 ```bat
 cd "C:\Users\Redes 1\Documents\web dinamica-mys\herramientas\qa"

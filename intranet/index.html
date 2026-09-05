@@ -41,14 +41,11 @@
     s.src = src; s.onload = alTerminar; s.onerror = alTerminar;
     document.head.appendChild(s);
   }
-  /* contenido de prueba del muro: existe solo en la maquina de trabajo.
-     En produccion no esta, y pedirlo igual cuesta un 404 en el camino
-     critico, asi que solo se busca en local. Se conserva el orden
-     modulos -> muro-demo porque el demo pisa cosas de MODULES. */
-  var local = ['localhost','127.0.0.1','::1',''].indexOf(location.hostname) >= 0;
-  traer('modulos.js', function(){
-    if(local) traer('muro-demo.js', hecho); else hecho();
-  });
+  /* Antes esto pedia ademas muro-demo.js cuando se abria en local. Ese
+     archivo se saco del repo (era contenido inventado de prueba), asi que
+     lo unico que quedaba era un 404 en el camino critico cada vez que se
+     miraba la vista previa desde el panel. */
+  traer('modulos.js', hecho);
   traer('galerias.js', function(){
     window.GALLERIES = window.GALLERIES || {};   /* si fallo, que no rompa */
     hecho();
@@ -1293,8 +1290,9 @@ window.addEventListener('hashchange', route);
    cuerpo (body) de los modulos personalizados a CONTENT. Si modulos.js no existe
    o esta vacio, se usan los TILES por defecto definidos arriba (compatibilidad). */
 function applyModules(){
-  /* muro-demo.js solo existe en la rama donde se esta probando el muro. En
-     produccion el archivo no esta y esto no hace nada. */
+  /* MURO_DEMO lo definia muro-demo.js, que ya no se carga. Se deja el
+     enganche por si alguna vez se vuelve a probar contenido de mentira:
+     sin esa variable definida, no hace nada. */
   if(window.MURO_DEMO && Array.isArray(window.MODULES) && !window.MODULES.some(m => m.key === window.MURO_DEMO.key))
     window.MODULES.unshift(window.MURO_DEMO);
   const M = window.MODULES;
