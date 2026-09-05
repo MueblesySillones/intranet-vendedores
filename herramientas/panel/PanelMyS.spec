@@ -29,7 +29,7 @@ a = Analysis(
         'datos.google_sheets', 'datos.google_cuenta', 'datos.google_link',
         'datos.encabezado',
         'datos.medidas',
-        'datos.derivaciones', 'datos.deck',
+        'datos.derivaciones', 'datos.deck', 'datos.deck_word',
     ],
     hookspath=[],
     hooksconfig={},
