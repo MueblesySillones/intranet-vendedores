@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 37
+VERSION = 38
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,17 +279,17 @@ VERSION = 37
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.4.3"
-VERSION_LABEL = "1.4.3 - se ve lo que pasa al guardar y publicar"
+VERSION_PUBLICA = "1.4.4"
+VERSION_LABEL = "1.4.4 - actualizarse ya no puede dejarte sin panel"
 VERSION_NOTES = (
-                 "Ahora el boton cuenta el estado: Guardar pasa a Guardado y "
-                 "Publicar a Publicado, y vuelven atras con el primer cambio nuevo. "
-                 "Al publicar aparece una tarjeta con la barra de progreso y, cuando "
-                 "termina, el tilde verde con la cuenta de los 30 segundos que tarda "
-                 "el sitio en mostrarselo a los vendedores. Ademas: el compositor de "
-                 "la Cartelera ya no tira lo escrito sin preguntar, Escape con el "
-                 "menu de etiquetas abierto cierra solo el menu, y la Vista previa "
-                 "en la intranet abre el sitio en vez de una pagina de error.")
+                 "Arregla el instalador de actualizaciones. Al cerrarse el panel, "
+                 "Windows deja tomado un rato el runtime de C++, y entonces la "
+                 "carpeta vieja no se podia borrar: la instalacion terminaba metida "
+                 "adentro de esa carpeta y el programa desaparecia de la "
+                 "computadora. Ahora, si la carpeta esta ocupada, se usa otra y la "
+                 "actualizacion sigue; y si algo falla igual, el panel vuelve a la "
+                 "version anterior aunque la copia haya quedado anidada. Paso de "
+                 "verdad al actualizar a la 1.4.3.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
