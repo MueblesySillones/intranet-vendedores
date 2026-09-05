@@ -1278,6 +1278,35 @@
     cerrarPicker();
   }
 
+  /* ¿hay algo escrito que se perdería al cerrar? */
+  function hayBorrador() {
+    if (!COMP.abierto) return false;
+    if (elCo('coTitulo').value.trim()) return true;
+    var t = elCo('coTexto').value.trim();
+    if (t && t !== (COMP.texto0 || '')) return true;
+    return (COMP.bloques || []).length > 0;
+  }
+
+  /* El cierre que pide permiso.
+     ⚠️ Va SEPARADO de cerrarComp() a propósito: cerrarComp también lo llama
+     el propio publicar() cuando ya guardó, y ahí preguntar "¿descartás lo
+     escrito?" sobre algo que acaba de publicarse sería absurdo.
+     Los cuatro caminos de salida —la X, Escape, el clic en el fondo y el
+     botón viejo— tiraban el borrador sin decir nada: se escribía un aviso
+     largo, un clic al costado y no quedaba nada. */
+  var cerrandoComp = false;
+  async function cerrarCompPidiendo() {
+    if (cerrandoComp) return;                 /* dos Escape seguidos */
+    if (!hayBorrador()) { cerrarComp(); return; }
+    cerrandoComp = true;
+    try {
+      var ok = await confirmar(
+        'Lo que escribiste todavía no se publicó. Si salís ahora se pierde.',
+        'Descartar', 'Salir sin publicar');
+      if (ok) cerrarComp();
+    } finally { cerrandoComp = false; }
+  }
+
   /* #B4231F -> "180,35,31", para poder pedir el mismo color con alpha */
   function rgbDe(hex) {
     var h = String(hex || '').replace('#', '');
@@ -1972,8 +2001,8 @@
   elCo('coArchivar').onchange = function () { COMP.archTocado = true; pintarArchEstado(); };
   elCo('coArchivarMod').onchange = function () { COMP.archTocado = true; };
 
-  elCo('coCerrar').onclick = cerrarComp;
-  elCo('coCancelar').onclick = cerrarComp;
+  elCo('coCerrar').onclick = cerrarCompPidiendo;
+  elCo('coCancelar').onclick = cerrarCompPidiendo;
   /* El botón se apaga y avisa mientras trabaja, y no acepta un segundo
      click: sin esto, un doble click creaba dos publicaciones iguales. */
   elCo('coPublicar').onclick = function () {
@@ -2094,8 +2123,18 @@
                  document.getElementById('mpMenu') ||
                  document.getElementById('coPick') ||
                  (!document.getElementById('coMenu').hidden ? 1 : null);
+    /* El menú de etiquetas es una capa más, y faltaba en esta lista: con él
+       abierto, Escape se saltaba al compositor y cerraba TODO —incluido lo
+       que la persona había escrito—. El que sí estaba, #coMenu, es el puente
+       oculto del compositor viejo: está siempre hidden, así que nunca frenó
+       nada. Este lo cierra acá mismo porque no tiene handler propio. */
+    var etq = document.getElementById('coTipos');
+    if (!encima && etq && etq.classList.contains('on')) {
+      etq.classList.remove('on');
+      return;
+    }
     if (encima) return;               /* lo cierra quien lo abrió */
-    if (COMP.abierto) cerrarComp();
+    if (COMP.abierto) cerrarCompPidiendo();
   });
 
 
@@ -2315,7 +2354,7 @@
   /* clic en el fondo oscuro del compositor: se cierra (patrón de la maqueta) */
   var fondoComp = document.getElementById('fondo');
   if (fondoComp) fondoComp.addEventListener('click', function (e) {
-    if (e.target === fondoComp) cerrarComp();
+    if (e.target === fondoComp) cerrarCompPidiendo();
   });
 
   /* al arrancar: la sección Cartelera es la casa */

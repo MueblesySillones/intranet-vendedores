@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 36
+VERSION = 37
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,14 +279,17 @@ VERSION = 36
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.4.2"
-VERSION_LABEL = "1.4.2 - vuelve el scroll en el editor"
+VERSION_PUBLICA = "1.4.3"
+VERSION_LABEL = "1.4.3 - se ve lo que pasa al guardar y publicar"
 VERSION_NOTES = (
-                 "Arregla el editor de modulos: no se podia scrollear ni el "
-                 "documento ni la paleta de bloques (quedaba todo trabado al abrir "
-                 "un modulo). Ahora la mesa del documento y la columna de la derecha "
-                 "scrollean cada una por su lado, con la barra de Guardar y Publicar "
-                 "siempre a la vista.")
+                 "Ahora el boton cuenta el estado: Guardar pasa a Guardado y "
+                 "Publicar a Publicado, y vuelven atras con el primer cambio nuevo. "
+                 "Al publicar aparece una tarjeta con la barra de progreso y, cuando "
+                 "termina, el tilde verde con la cuenta de los 30 segundos que tarda "
+                 "el sitio en mostrarselo a los vendedores. Ademas: el compositor de "
+                 "la Cartelera ya no tira lo escrito sin preguntar, Escape con el "
+                 "menu de etiquetas abierto cierra solo el menu, y la Vista previa "
+                 "en la intranet abre el sitio en vez de una pagina de error.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2651,6 +2654,12 @@ class Handler(BaseHTTPRequestHandler):
         full = os.path.normpath(os.path.join(raiz, rel))
         if not full.startswith(os.path.normpath(raiz)):
             return self.send_error(403)
+        # una carpeta se sirve con su index.html, como cualquier servidor web.
+        # Sin esto, "/intranet/" daba el 404 pelado de Python: el boton "Vista
+        # previa en la intranet" y los links "#cartelera/<id>" abiertos en local
+        # terminaban en una pagina de error en vez del sitio.
+        if not rel or rel.endswith("/") or os.path.isdir(full):
+            full = os.path.join(full, "index.html")
         ext = os.path.splitext(full)[1].lower()
         ctypes = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                   ".css": "text/css; charset=utf-8", ".png": "image/png", ".jpg": "image/jpeg",
