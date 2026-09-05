@@ -25,12 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.4.6"
-NUEVO_LABEL = "1.4.6 - el logo de la marca en cada publicacion"
-NUEVAS_NOTAS = ("El avatar de cada publicacion ahora es el logo de Muebles y Sillones "
-                "sobre fondo blanco, con el nombre de quien la escribio al lado. "
-                "La version anterior lo mostraba en blanco sobre un circulo oscuro "
-                "y no se llegaba a leer.")
+NUEVA_PUBLICA = "1.5.0"
+NUEVO_LABEL = "1.5.0 - el link va al bloque, y cargar al modulo"
+NUEVAS_NOTAS = ("Cuando una publicacion senala un bloque puntual de un modulo, ahora el vendedor cae en ESE bloque y no arriba de todo el modulo. Y aparece el interruptor Cargar al modulo: lo que se escribe en la publicacion se copia adentro del modulo elegido como contenido de verdad, con el titulo, el texto y las piezas, asi no hay que escribirlo dos veces. De paso, el selector ahora deja senalar tambien los titulos, que son las secciones de cada modulo.")
 
 # firma de los commits que arma este guion
 FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
@@ -116,6 +113,8 @@ if i < 0:
 # El cierre del bloque es el ")" que esta FUERA de las comillas: el texto de
 # las notas puede traer parentesis adentro (ya paso, y cortaba el bloque a la
 # mitad dejando lineas colgadas -> SyntaxError al compilar).
+# ⚠️ Por lo mismo, NUEVAS_NOTAS no puede llevar comillas dobles: se escriben
+# tal cual adentro de un literal y rompen panel_server.py al compilar.
 k, dentro = src.index("(", i) + 1, False
 while True:
     c = src[k]
@@ -187,12 +186,25 @@ print("    ok: version.json en v%d" % NUEVA_VERSION)
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
-msg = ("Panel v%d (%s): el logo de la marca en el avatar\n\n"
-       "La v39 puso la marca en el avatar, pero con el logo blanco sobre un\n"
-       "circulo oscuro: a 36 px no se llegaba a leer. Ahora usa\n"
-       "web3/avatar-marca.png, el logo negro sobre blanco recortado de sus\n"
-       "margenes para que ocupe el circulo, con un borde fino que lo separa\n"
-       "de la tarjeta.\n"
+msg = ("Panel v%d (%s): el link va al bloque, y cargar al modulo\n\n"
+       "1) El bloque `ref` guardaba QUE bloque se habia elegido, pero el\n"
+       "   link salia como #modulo a secas: se senalaba una galeria y al\n"
+       "   vendedor lo dejaba arriba de todo. Ahora piezasDe anota la\n"
+       "   posicion del bloque, bloquesHTML emite data-bi en cada uno, y\n"
+       "   el link sale como #modulo/b<n>. Las publicaciones viejas, que\n"
+       "   no guardaron la posicion, la resuelven por nombre.\n\n"
+       "2) Cargar al modulo: copia el titulo, el cuerpo y las piezas\n"
+       "   adentro del modulo como bloques. Es distinto de Archivar en un\n"
+       "   modulo, que solo espeja la publicacion, y por eso es otro\n"
+       "   interruptor. Va en el MISMO guardado que la publicacion, y si\n"
+       "   ese guardado falla se deshacen las dos cosas. Un modulo del\n"
+       "   sistema sin content estrena uno con su diseno original adentro,\n"
+       "   para no borrarle lo que ya mostraba.\n\n"
+       "3) El selector ahora ofrece tambien los TITULOS: son las secciones\n"
+       "   del modulo, y es lo que hace util a lo anterior (se carga el\n"
+       "   aviso una vez y despues se lo senala).\n\n"
+       "Con suites: qa/w4 (link al bloque, 5 checks) y qa/w5 (cargar al\n"
+       "modulo, 7 checks), las dos de punta a punta.\n"
        % (NUEVA_VERSION, NUEVA_PUBLICA)) + FIRMA
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 

@@ -1022,13 +1022,15 @@
 
   /* los interruptores del modal reflejan las casillas reales del motor */
   function pintarSwitches() {
-    [['coFijarBtn', 'coFijar'], ['coConfirmarBtn', 'coConfirmar'], ['coArchivarBtn', 'coArchivar']]
+    [['coFijarBtn', 'coFijar'], ['coConfirmarBtn', 'coConfirmar'],
+     ['coArchivarBtn', 'coArchivar'], ['coCargarBtn', 'coCargar']]
       .forEach(function (p) {
         var b = document.getElementById(p[0]), c = elCo(p[1]);
         if (b && c) b.setAttribute('aria-pressed', c.checked ? 'true' : 'false');
       });
   }
-  [['coFijarBtn', 'coFijar'], ['coConfirmarBtn', 'coConfirmar'], ['coArchivarBtn', 'coArchivar']]
+  [['coFijarBtn', 'coFijar'], ['coConfirmarBtn', 'coConfirmar'],
+     ['coArchivarBtn', 'coArchivar'], ['coCargarBtn', 'coCargar']]
     .forEach(function (p) {
       var b = document.getElementById(p[0]);
       if (!b) return;
@@ -1099,6 +1101,7 @@
        propuesta automática le cambie el módulo por abrir a arreglar una coma */
     COMP.archTocado = true;
     pintarArchivar();
+    pintarCargar();
     var puedeIr = !!d.archivar && (MODULOS || []).some(function (m) {
       return m.key === d.archivar && puedeArchivar(m);
     });
@@ -1245,6 +1248,87 @@
     return (cb && cb.checked && sel && sel.value) || '';
   }
 
+  /* ===================================================================
+     CARGAR LA PUBLICACIÓN AL MÓDULO
+
+     "Archivar en un módulo" (el interruptor de arriba) deja la publicación
+     ESPEJADA: el módulo la muestra en su sección «De la cartelera», pero
+     sigue siendo una sola cosa, la de la cartelera. Sirve para que un aviso
+     no se pierda cuando se cae del feed.
+
+     Esto es otra cosa y por eso es otro interruptor: COPIA el contenido
+     adentro del módulo como bloques de verdad —el título, el cuerpo, y las
+     piezas que se hayan adjuntado—. A partir de ahí ese contenido vive en el
+     módulo: se puede editar, sobrevive a que la publicación se borre, y —lo
+     que pidió el usuario— el selector lo encuentra, así que otra publicación
+     puede SEÑALAR ese bloque en vez de volver a escribirlo.
+     =================================================================== */
+  function cargaElegida() {
+    var cb = elCo('coCargar'), sel = elCo('coCargarMod');
+    return (cb && cb.checked && sel && sel.value) || '';
+  }
+
+  function pintarCargar() {
+    var wrap = document.getElementById('coCargarWrap'), sel = elCo('coCargarMod');
+    if (!wrap || !sel) return;
+    /* los mismos módulos que admiten archivado: los que tienen cuerpo propio */
+    var mods = modulosArchivables().filter(function (m) {
+      var c = m.content || {};
+      return !c.tipo || c.tipo === 'bloques';
+    });
+    var antes = sel.value;
+    sel.innerHTML = mods.map(function (m) {
+      return '<option value="' + esc(m.key) + '">' + esc(m.title || m.key) + '</option>';
+    }).join('');
+    if (antes && mods.some(function (m) { return m.key === antes; })) sel.value = antes;
+    wrap.hidden = !mods.length;
+    pintarCargarEstado();
+  }
+  function pintarCargarEstado() {
+    var cb = elCo('coCargar'), sel = elCo('coCargarMod');
+    if (cb && sel) sel.disabled = !cb.checked;
+    if (typeof pintarSwitches === 'function') pintarSwitches();
+  }
+
+  /* Los bloques que se le agregan al módulo, en el orden en que se leen:
+     el título arriba, después el texto, y abajo las piezas.
+     Las referencias a otros módulos NO viajan: son punteros de la
+     publicación, y adentro del módulo destino no significan nada. */
+  function bloquesParaModulo(titulo, texto, piezas) {
+    var out = [{ t: 'titulo', nivel: 'h2', html: esc(titulo), texto: titulo }];
+    if (texto) out.push({ t: 'parrafo', html: esc(texto).replace(/\n+/g, '<br>'), texto: texto });
+    (piezas || []).forEach(function (bk) {
+      if (!bk || bk.t === 'ref') return;
+      out.push(JSON.parse(JSON.stringify(bk)));
+    });
+    return out;
+  }
+
+  /* Devuelve la posición donde quedó el título, que es a donde conviene
+     apuntar si después alguien enlaza a esto. */
+  async function cargarEnModulo(key, titulo, texto, piezas) {
+    var m = (MODULOS || []).filter(function (x) { return x.key === key; })[0];
+    if (!m) return -1;
+    var c = m.content;
+    /* Un módulo del sistema que nunca se editó no tiene `content`: su cuerpo
+       vive en el HTML de la intranet. Se lo pide al servidor y se lo mete como
+       primer bloque, si no cargarle algo encima le borraría todo lo que ya
+       mostraba. */
+    if (!c || c.tipo !== 'bloques' || !Array.isArray(c.bloques)) {
+      var previos = [];
+      try {
+        var d = await api('/api/contenido?key=' + encodeURIComponent(key));
+        if (d && d.original) previos = [{ t: 'html', html: d.original }];
+      } catch (e) { /* sin original: el módulo arranca con lo que se carga */ }
+      c = m.content = { tipo: 'bloques', bloques: previos, html: '', presentacion: false };
+    }
+    var pos = c.bloques.length;
+    bloquesParaModulo(titulo, texto, piezas).forEach(function (bk) { c.bloques.push(bk); });
+    c.html = bloquesHTML(c.bloques, c.presentacion);
+    if (typeof marcarEditado === 'function') marcarEditado(key);
+    return pos;
+  }
+
   function abrirComp(tipo) {
     COMP.abierto = true;
     COMP.tipo = tipo || '';
@@ -1259,9 +1343,11 @@
     elCo('coVence').value = '';
     COMP.archTocado = false;
     elCo('coArchivar').checked = false;
+    elCo('coCargar').checked = false;
     pintarVence();
     pintarTipos();
     pintarArchivar();
+    pintarCargar();
     sugerirArchivo();
     pintarAdjuntos();
     pintarSwitches();
@@ -1634,14 +1720,29 @@
                    detalle: '', prev: null });
       });
     }
+    /* `bi` = la posicion del bloque adentro del modulo. Es lo que permite
+       que la publicacion mande al vendedor AL BLOQUE y no al modulo
+       entero: viaja en el bloque `ref` y termina en el link como
+       #modulo/b<bi>, que la intranet resuelve contra el data-bi que
+       emite bloquesHTML. */
     var nVid = 0, nImg = 0;
-    (c.bloques || []).forEach(function (bk) {
+    (c.bloques || []).forEach(function (bk, bi) {
       var n, its;
+
+      /* Los TÍTULOS también se pueden señalar: son las secciones del módulo,
+         y apuntar a "Información importante › Cambio de horarios" es
+         exactamente lo que se quiere al enlazar. Ademas es lo que hace util a
+         "Cargar al modulo": el aviso entra como titulo + cuerpo, y despues
+         otra publicacion puede mandar ahi en vez de repetir el texto. */
+      if ((bk.t === 'titulo' || bk.t === 'kicker') && textoPlano(bk).trim()) {
+        out.push({ bi: bi, sub: textoPlano(bk).trim().slice(0, 70),
+                   clase: 'sección', detalle: '', prev: null });
+      }
 
       if (bk.t === 'galeria' && (bk.titulo || '').trim()) {
         its = (bk.items || []).filter(function (it) { return it.src; });
         n = its.length;
-        out.push({ sub: bk.titulo, clase: 'galería',
+        out.push({ bi: bi, sub: bk.titulo, clase: 'galería',
                    detalle: n + (n === 1 ? ' imagen' : ' imágenes'),
                    prev: n ? { t: 'fotos', srcs: its.slice(0, 3).map(function (it) { return it.src; }),
                                total: n } : null });
@@ -1649,7 +1750,7 @@
 
       if (bk.t === 'imagen' && bk.src) {
         nImg++;
-        out.push({ sub: (bk.caption || bk.alt || '').trim() || ('Imagen ' + nImg),
+        out.push({ bi: bi, sub: (bk.caption || bk.alt || '').trim() || ('Imagen ' + nImg),
                    clase: 'imagen', detalle: '',
                    prev: { t: 'foto', src: bk.src } });
       }
@@ -1659,7 +1760,7 @@
         /* Un video subido se puede previsualizar de verdad. Uno pegado de
            YouTube o Drive no: ahí sirve el poster si lo pusieron, y si no,
            la tarjeta queda compacta con su ícono. */
-        out.push({ sub: (bk.caption || bk.dlNombre || '').trim() || ('Video ' + nVid),
+        out.push({ bi: bi, sub: (bk.caption || bk.dlNombre || '').trim() || ('Video ' + nVid),
                    clase: 'video', detalle: bk.src ? '' : 'link',
                    prev: bk.src ? { t: 'video', src: bk.src, poster: bk.poster || '',
                                     ar: bk.ar || '16/9', orient: bk.orient || 'horiz' }
@@ -1667,9 +1768,9 @@
       }
 
       if (bk.t === 'pdf' && (bk.nombre || '').trim())
-        out.push({ sub: bk.nombre, clase: 'PDF', detalle: '', prev: null });
+        out.push({ bi: bi, sub: bk.nombre, clase: 'PDF', detalle: '', prev: null });
       if (bk.t === 'tabla' && (bk.titulo || '').trim())
-        out.push({ sub: bk.titulo, clase: 'tabla', detalle: '', prev: null });
+        out.push({ bi: bi, sub: bk.titulo, clase: 'tabla', detalle: '', prev: null });
     });
     return out;
   }
@@ -1704,7 +1805,7 @@
        entero de una); adentro se elige el bloque puntual —o "Todo el módulo"—
        y se confirma con Adjuntar, así se ve qué quedó antes de cerrar.
        Compacto: filas finas, buscador arriba, un módulo abierto a la vez. */
-    var abrev = { 'galería': 'gal', 'imagen': 'img', 'video': 'vid', 'reporte': 'rep',
+    var abrev = { 'sección': 'sec', 'galería': 'gal', 'imagen': 'img', 'video': 'vid', 'reporte': 'rep',
                   'presentación': 'pre', 'documento': 'doc', 'PDF': 'pdf', 'tabla': 'tab' };
     var filas = [];
 
@@ -1725,7 +1826,9 @@
 
       pz.forEach(function (z) {
         var i = filas.length;
-        filas.push({ m: m, sub: z.sub, clase: z.clase, detalle: z.detalle, prev: z.prev, todo: false });
+        /* z.bi viaja hasta acá: es lo que después arma el link fino al bloque */
+        filas.push({ m: m, sub: z.sub, clase: z.clase, detalle: z.detalle,
+                     prev: z.prev, bi: z.bi, todo: false });
         var det = [z.clase, z.detalle].filter(Boolean).join(' · ');
         items.push(
           '<button type="button" class="co-b" data-i="' + i + '">' +
@@ -1813,7 +1916,10 @@
     ok.onclick = function () {
       if (!elegido) return;
       var f = elegido;
+      /* `bi` solo cuando se eligio UN bloque: si se mando "todo el modulo",
+         el link tiene que abrir el modulo y no saltar a ninguna parte. */
       COMP.bloques.push({ t: 'ref', key: f.m.key, mod: f.m.title, sub: f.sub,
+                          bi: (f.todo || f.bi === undefined) ? null : f.bi,
                           clase: f.clase, detalle: f.detalle, prev: f.prev || null,
                           icon: f.m.icon || 'layers', color: f.m.color || '--c-hudson' });
       cerrarPicker(); pintarAdjuntos();
@@ -1946,6 +2052,24 @@
     if (editando) cont.docs[COMP.editando] = doc;
     else cont.docs.unshift(doc);      /* lo más nuevo va arriba */
 
+    /* "Cargar al módulo": el contenido se COPIA adentro del módulo elegido,
+       como bloques de verdad. Se hace ANTES de persistir para que la
+       publicación y el módulo viajen en el mismo guardado: si se guardaran
+       por separado, un corte en el medio dejaría una de las dos cosas sin la
+       otra. `deshacerCarga` es la vuelta atrás si el guardado falla. */
+    var cargarEn = editando ? '' : cargaElegida();
+    var deshacerCarga = null;
+    if (cargarEn) {
+      var modDestino = (MODULOS || []).filter(function (m) { return m.key === cargarEn; })[0];
+      if (modDestino) {
+        var antesCont = modDestino.content
+          ? JSON.parse(JSON.stringify(modDestino.content)) : null;
+        var puesto = await cargarEnModulo(cargarEn, titulo, texto, COMP.bloques);
+        if (puesto < 0) cargarEn = '';
+        else deshacerCarga = function () { modDestino.content = antesCont; };
+      } else cargarEn = '';
+    }
+
     /* ⚠️ SI ESTO FALLA HAY QUE DESHACERLO EN MEMORIA.
        `cont.docs` ya se tocó arriba. Si el guardado no llega al disco y se
        deja igual, la pantalla muestra una publicación que no existe, y el
@@ -1957,10 +2081,15 @@
       function (e) {
         if (era) cont.docs[COMP.editando] = previa;
         else cont.docs.shift();
+        if (deshacerCarga) deshacerCarga();   /* el módulo tampoco quedó cargado */
         toast(e && e.message ? e.message : 'No se pudo guardar. Probá de nuevo.', 'err');
         return false;
       });
     if (!guardado) return;
+    var avisoCarga = cargarEn
+      ? ' También quedó cargado en «' +
+        (((MODULOS || []).filter(function (m) { return m.key === cargarEn; })[0] || {}).title || cargarEn) + '».'
+      : '';
     cerrarComp();
     renderMuro();
     if (window.pintarContadores) window.pintarContadores();
@@ -1977,10 +2106,14 @@
       if (subio === false) {
         toast('Se guardó en esta computadora, pero no se pudo subir. ' +
               'Probá con "Publicar cambios".', 'err');
+      } else if (avisoCarga) {
+        /* la tarjeta de publicar ya cuenta que salió; esto agrega lo otro que
+           pasó, que no es obvio: el contenido también entró a un módulo */
+        toast('Publicado.' + avisoCarga, 'ok');
       }
       return;
     }
-    toast(era ? 'Cambios guardados' : 'Publicado', 'ok');
+    toast((era ? 'Cambios guardados' : 'Publicado') + avisoCarga, 'ok');
   }
 
   (function () {
@@ -1999,6 +2132,8 @@
   })();
 
   elCo('coArchivar').onchange = function () { COMP.archTocado = true; pintarArchEstado(); };
+  elCo('coCargar').onchange = pintarCargarEstado;
+  elCo('coCargarMod').onchange = function () {};
   elCo('coArchivarMod').onchange = function () { COMP.archTocado = true; };
 
   elCo('coCerrar').onclick = cerrarCompPidiendo;
