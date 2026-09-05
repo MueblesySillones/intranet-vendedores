@@ -908,6 +908,112 @@
     };
     document.getElementById('dtWord').onclick = function () { descargar('word'); };
     document.getElementById('dtPdf').onclick = function () { descargar('pdf'); };
+    /* ABIERTO y no `id`: estas lineas viven adentro de barra(d), que no
+       recibe el id del reporte. ABIERTO es el que se esta mirando. */
+    if (d.es_derivaciones) pintarInformes(ABIERTO, d.informes || []);
+  }
+
+  /* ════════════════════ LOS INFORMES DE UNA PLANILLA ════════════════════
+     Una planilla conectada da MUCHOS informes, no uno: el de agosto, el de la
+     semana pasada, el que haga falta. Cada informe es un nombre y un tramo de
+     fechas; los números se calculan al abrirlo, leyendo la planilla en ese
+     momento. O sea que un informe guardado no es una foto vieja: «Agosto»
+     sigue diciendo la verdad sobre agosto aunque se abra en diciembre.
+     ═══════════════════════════════════════════════════════════════════════ */
+  var MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
+               'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  function fechaCorta(iso) {
+    var p = String(iso || '').split('-');
+    if (p.length !== 3) return '';
+    return p[2].replace(/^0/, '') + ' ' + (MESES[+p[1] - 1] || '').slice(0, 3) +
+           ' ' + p[0];
+  }
+
+  function periodoTexto(inf) {
+    if (!inf.desde && !inf.hasta) return 'toda la planilla';
+    /* un mes entero se dice por su nombre, no como "1 ago 2026 — 31 ago 2026":
+       es lo mismo y se lee de un vistazo */
+    var d = String(inf.desde || '').split('-'), h = String(inf.hasta || '').split('-');
+    if (d.length === 3 && h.length === 3 && d[0] === h[0] && d[1] === h[1] &&
+        d[2] === '01' && +h[2] >= 28) {
+      return (MESES[+d[1] - 1] || '') + ' de ' + d[0];
+    }
+    if (!inf.hasta) return 'desde el ' + fechaCorta(inf.desde);
+    if (!inf.desde) return 'hasta el ' + fechaCorta(inf.hasta);
+    return fechaCorta(inf.desde) + ' — ' + fechaCorta(inf.hasta);
+  }
+
+  function pintarInformes(id, lista) {
+    var caja = document.getElementById('dtInformes');
+    if (!caja) {
+      caja = document.createElement('section');
+      caja.id = 'dtInformes';
+      caja.className = 'dt-inf';
+      var cuerpo = document.getElementById('datosCuerpo');
+      cuerpo.parentNode.insertBefore(caja, cuerpo);
+    }
+    caja.innerHTML =
+      '<div class="dt-inf-h"><h3>Reportes</h3>' +
+      '<button type="button" class="btn active" id="dtInfNuevo">Crear reporte</button>' +
+      '</div>' +
+      (lista.length
+        ? '<div class="dt-inf-l">' + lista.map(function (i) {
+            return '<button type="button" class="dt-inf-i" data-inf="' + esc(i.id) + '">' +
+              '<span class="dt-inf-n">' + esc(i.nombre) + '</span>' +
+              '<span class="dt-inf-p">' + esc(periodoTexto(i)) + '</span>' +
+              '<span class="dt-inf-x" data-borrar-inf="' + esc(i.id) +
+              '" title="Quitar este reporte">×</span></button>';
+          }).join('') + '</div>'
+        : '<p class="dt-chico">Todavía no creaste ninguno. Un reporte es un ' +
+          'período con nombre: «Agosto», «Semana del 1 al 7». Los números se ' +
+          'sacan de la planilla cada vez que lo abrís.</p>') +
+      '<div id="dtInfForm" hidden></div>';
+    document.getElementById('dtInfNuevo').onclick = function () { formInforme(id); };
+  }
+
+  /* El formulario propone el MES PASADO completo, que es lo que se pide casi
+     siempre, y deja cambiarlo. Proponer vacío obliga a escribir dos fechas
+     para la tarea más común. */
+  function formInforme(id) {
+    var caja = document.getElementById('dtInfForm');
+    if (!caja) return;
+    if (!caja.hidden) { caja.hidden = true; caja.innerHTML = ''; return; }
+    var hoy = new Date();
+    var m = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+    var ini = new Date(m.getFullYear(), m.getMonth(), 1);
+    var fin = new Date(m.getFullYear(), m.getMonth() + 1, 0);
+    var iso = function (f) {
+      return f.getFullYear() + '-' + ('0' + (f.getMonth() + 1)).slice(-2) +
+             '-' + ('0' + f.getDate()).slice(-2);
+    };
+    caja.hidden = false;
+    caja.innerHTML =
+      '<div class="dt-inf-f">' +
+      '<label>Nombre<input type="text" id="dtInfN" maxlength="80" value="' +
+        esc((MESES[m.getMonth()] || '').replace(/^./, function (c) { return c.toUpperCase(); }) +
+            ' ' + m.getFullYear()) + '"></label>' +
+      '<label>Desde<input type="date" id="dtInfD" value="' + iso(ini) + '"></label>' +
+      '<label>Hasta<input type="date" id="dtInfH" value="' + iso(fin) + '"></label>' +
+      '<button type="button" class="btn active" id="dtInfOk">Crear</button>' +
+      '<button type="button" class="dt-volver" id="dtInfNo">Cancelar</button>' +
+      '</div>';
+    document.getElementById('dtInfNo').onclick = function () {
+      caja.hidden = true; caja.innerHTML = '';
+    };
+    document.getElementById('dtInfOk').onclick = function () {
+      post('/api/datos/informe-crear', {
+        id: id,
+        nombre: document.getElementById('dtInfN').value,
+        desde: document.getElementById('dtInfD').value,
+        hasta: document.getElementById('dtInfH').value
+      }).then(function (r) {
+        if (r.error) { aviso(r.error, 'err'); return; }
+        aviso('Reporte creado', 'ok');
+        if (ULTIMO) ULTIMO.informes = r.informes || [];
+        pintarInformes(id, r.informes || []);
+      });
+    };
   }
 
   /* El Word se baja como archivo. El "PDF" abre el reporte en una pestaña y
@@ -943,6 +1049,36 @@
     if (!e.target.closest) return;
     /* la entrada a la sección la maneja irASeccion (muro.js), que llama a
        refrescarDatos: acá ya no se escucha el menú, para no pintar dos veces */
+
+    /* quitar un informe. Va ANTES del [data-borrar] de los reportes: el ×
+       de un informe esta adentro de la fila del informe, y sin este orden el
+       click caeria en el otro camino. */
+    var xi = e.target.closest('[data-borrar-inf]');
+    if (xi && RAIZ && RAIZ.contains(xi)) {
+      e.stopPropagation();
+      var iid = xi.getAttribute('data-borrar-inf');
+      var fila = xi.closest('.dt-inf-i');
+      var nom = fila ? (fila.querySelector('.dt-inf-n') || {}).textContent : '';
+      if (!window.confirm('¿Quitar el reporte "' + (nom || '') +
+                          '"? La planilla no se toca.')) return;
+      post('/api/datos/informe-borrar', { id: ABIERTO, informe: iid })
+        .then(function (r) {
+          if (r.error) { aviso(r.error, 'err'); return; }
+          aviso('Reporte quitado', 'ok');
+          if (ULTIMO) ULTIMO.informes = r.informes || [];
+          pintarInformes(ABIERTO, r.informes || []);
+        });
+      return;
+    }
+
+    /* abrir un informe: el mismo reporte con diseno, recortado a su periodo */
+    var fi = e.target.closest('.dt-inf-i');
+    if (fi && RAIZ && RAIZ.contains(fi)) {
+      e.stopPropagation();
+      window.open('/api/datos/deck?id=' + encodeURIComponent(ABIERTO) +
+                  '&informe=' + encodeURIComponent(fi.getAttribute('data-inf')), '_blank');
+      return;
+    }
 
     var x = e.target.closest('[data-borrar]');
     if (x && RAIZ && RAIZ.contains(x)) {
