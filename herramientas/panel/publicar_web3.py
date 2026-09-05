@@ -25,9 +25,12 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.4.5"
-NUEVO_LABEL = "1.4.5 - la marca en cada publicacion"
-NUEVAS_NOTAS = ("Cada publicacion vuelve a mostrar quien la hizo: el avatar lleva el logo de Muebles y Sillones y al lado va el nombre de quien la escribio. Antes era una letra sola, o directamente no se veia. Ademas, el boton Traer ultima version aparece solo si esa computadora tiene una central configurada: sin Tailscale no tenia a donde ir y lo unico que hacia era dar un error.")
+NUEVA_PUBLICA = "1.4.6"
+NUEVO_LABEL = "1.4.6 - el logo de la marca en cada publicacion"
+NUEVAS_NOTAS = ("El avatar de cada publicacion ahora es el logo de Muebles y Sillones "
+                "sobre fondo blanco, con el nombre de quien la escribio al lado. "
+                "La version anterior lo mostraba en blanco sobre un circulo oscuro "
+                "y no se llegaba a leer.")
 
 # firma de los commits que arma este guion
 FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
@@ -36,7 +39,8 @@ FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",
                  "iconos-ui.js", "styles.css", "rediseno.css",
-                 "logo-marca.png", "logo.png", "favicon.png"]
+                 "logo-marca.png", "logo.png", "favicon.png",
+                 "avatar-marca.png"]
 
 
 def morir(msg):
@@ -183,16 +187,12 @@ print("    ok: version.json en v%d" % NUEVA_VERSION)
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
-msg = ("Panel v%d (%s): la marca en el avatar de cada publicacion\n\n"
-       "El avatar mostraba las iniciales del autor: una M sola, que no dice\n"
-       "nada. Una publicacion de la cartelera es un aviso de la EMPRESA, asi\n"
-       "que el avatar lleva el logo y el nombre de al lado es el que dice\n"
-       "quien la escribio. Mismo criterio que ya se aplico en la intranet.\n"
-       "#sucAv queda afuera a proposito: ese no es el autor, es que\n"
-       "computadora es esta, y ahi la inicial si sirve.\n\n"
-       "Ademas: Traer ultima version se muestra solo si hay una central\n"
-       "configurada. Desde que las sucursales se instalan sin Tailscale,\n"
-       "muchas no la tienen y el boton solo servia para dar un error.\n"
+msg = ("Panel v%d (%s): el logo de la marca en el avatar\n\n"
+       "La v39 puso la marca en el avatar, pero con el logo blanco sobre un\n"
+       "circulo oscuro: a 36 px no se llegaba a leer. Ahora usa\n"
+       "web3/avatar-marca.png, el logo negro sobre blanco recortado de sus\n"
+       "margenes para que ocupe el circulo, con un borde fino que lo separa\n"
+       "de la tarjeta.\n"
        % (NUEVA_VERSION, NUEVA_PUBLICA)) + FIRMA
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 
