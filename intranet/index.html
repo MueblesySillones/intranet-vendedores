@@ -1241,7 +1241,13 @@ function route(){
   const corte = crudo.indexOf('/');
   const key = decodeURIComponent(corte < 0 ? crudo : crudo.slice(0, corte));
   const pid = corte < 0 ? '' : decodeURIComponent(crudo.slice(corte + 1));
-  if(key && MAP[key] && !esCarteleraKey(key)) renderSection(key);
+  if(key && MAP[key] && !esCarteleraKey(key)){
+    renderSection(key);
+    /* "modulo/b7" = ir hasta ESE bloque. Una publicación que señala una
+       galería puntual dejaba al vendedor arriba de todo y lo obligaba a
+       buscarla; ahora la pantalla lo lleva y se la marca. */
+    if(pid) enfocarBloque(pid);
+  }
   else {
     document.body.classList.remove('report-mode');
     document.getElementById('view').hidden=true;
@@ -1251,6 +1257,27 @@ function route(){
     /* despues de pintar: la publicacion recien existe en el DOM ahora */
     if(pid) enfocarPost(pid);
   }
+}
+
+/* Lleva al BLOQUE que señaló una publicación ("#modulo/b7").
+   El número es la posición del bloque adentro del módulo, y viaja en el
+   data-bi que emite el panel. Si el módulo se editó y ese bloque ya no está,
+   no pasa nada: queda abierto el módulo, que es lo que hacía antes. */
+function enfocarBloque(ref){
+  const m = /^b(\d+)$/.exec(ref || '');
+  if(!m) return;
+  setTimeout(()=>{
+    const el = document.querySelector('#secBody [data-bi="' + m[1] + '"]');
+    if(!el) return;
+    /* si cayó adentro de una galería plegada, primero se abre: llevar a
+       alguien hasta algo que está colapsado es no llevarlo a ningún lado */
+    const plegada = el.closest('.dl-section.plegado, .m-block.plegado');
+    if(plegada){ const cab = plegada.querySelector('.m-kicker'); if(cab) cab.click(); }
+    try{ el.scrollIntoView({behavior:'smooth', block:'center'}); }
+    catch(e){ el.scrollIntoView(); }
+    el.classList.add('apuntada');
+    setTimeout(()=> el.classList.remove('apuntada'), 2600);
+  }, 120);
 }
 
 /* Lleva a la publicación que pide un link compartido y la deja ABIERTA.
