@@ -1,8 +1,8 @@
 {
-  "version": 38,
-  "label": "1.4.4 - actualizarse ya no puede dejarte sin panel",
-  "notes": "Arregla el instalador de actualizaciones. Al cerrarse el panel, Windows deja tomado un rato el runtime de C++, y entonces la carpeta vieja no se podia borrar: la instalacion terminaba metida adentro de esa carpeta y el programa desaparecia de la computadora. Ahora, si la carpeta esta ocupada, se usa otra y la actualizacion sigue; y si algo falla igual, el panel vuelve a la version anterior aunque la copia haya quedado anidada. Paso de verdad al actualizar a la 1.4.3.",
-  "sha256": "a2a2f5b0d87f6dd883ecde34384261170e71e4f461415ec5a47c9f48ed7af6b5",
-  "size": 20010831,
-  "url": "panel/PanelMyS-v38.zip"
+  "version": 39,
+  "label": "1.4.5 - la marca en cada publicacion",
+  "notes": "Cada publicacion vuelve a mostrar quien la hizo: el avatar lleva el logo de Muebles y Sillones y al lado va el nombre de quien la escribio. Antes era una letra sola, o directamente no se veia. Ademas, el boton Traer ultima version aparece solo si esa computadora tiene una central configurada: sin Tailscale no tenia a donde ir y lo unico que hacia era dar un error.",
+  "sha256": "f5cdab7c4a7fa709d96d34a842cc8cfca3c693e2773a3607acfeca8cafe41cd9",
+  "size": 20009999,
+  "url": "panel/PanelMyS-v39.zip"
 }
