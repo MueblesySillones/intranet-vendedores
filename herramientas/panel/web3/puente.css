@@ -316,6 +316,22 @@ main.lienzo{padding:0; max-width:none; margin:0}
 .toast.err{background:#8E3A2C}
 .toast.ok{background:#3F5A3F}
 
+/* ---------- 9b. EL AVATAR DE LAS PUBLICACIONES ES LA MARCA ----------
+   Antes mostraba las iniciales del autor: una "M" sola, que no dice nada.
+   Una publicacion de la cartelera es un aviso de la EMPRESA, asi que el
+   avatar lleva el logo y el nombre de al lado es el que dice quien la
+   escribio. Mismo criterio que en la intranet (css/redisenio.css).
+   #sucAv queda afuera: ese NO es el autor, es que computadora es esta
+   (Central / el nombre de la sucursal), y ahi la inicial si sirve. */
+.av:not(#sucAv){
+  background-color:#2C2A26;
+  background-image:url("logo.png");
+  background-size:74% auto;
+  background-position:center;
+  background-repeat:no-repeat;
+  font-size:0;                    /* las iniciales del markup no se muestran */
+}
+
 /* ---------- 10. PUBLICAR: QUE SE VEA QUE ESTA PASANDO ALGO ----------
    Un toast de 11px abajo a la izquierda no alcanza para el momento mas
    importante del panel. Publicar tarda ~3 s en el cerebro pero el vendedor
