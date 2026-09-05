@@ -1061,9 +1061,16 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
   0%,100%{ box-shadow:0 0 0 0 rgba(26,74,138,0); }
   30%    { box-shadow:0 0 0 4px rgba(26,74,138,.22); }
 }
+/* Lo mismo para el BLOQUE al que apunta una publicación ("#modulo/b7"): al
+   caer en medio de un módulo largo hay que decirle al vendedor cuál es.
+   Lleva su propio respiro porque un bloque no tiene el margen de una tarjeta
+   y el halo quedaría pegado al texto de al lado. */
+.db.apuntada{ animation:apuntar 1.3s ease-out 2; border-radius:12px;
+  scroll-margin-top:96px; padding:6px; margin:-6px; }
 @media (prefers-reduced-motion:reduce){
   /* sin latido: se marca fijo y se va cuando se le saca la clase */
-  .mu-post.apuntada{ animation:none; box-shadow:0 0 0 3px rgba(26,74,138,.22); }
+  .mu-post.apuntada,
+  .db.apuntada{ animation:none; box-shadow:0 0 0 3px rgba(26,74,138,.22); }
 }
 
 .mu-head{ display:flex; align-items:flex-start; gap:12px; padding:16px 20px 0; }
