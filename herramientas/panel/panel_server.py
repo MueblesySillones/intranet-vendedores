@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 41
+VERSION = 42
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,16 +279,21 @@ VERSION = 41
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.5.0"
-VERSION_LABEL = "1.5.0 - el link va al bloque, y cargar al modulo"
+VERSION_PUBLICA = "1.6.0"
+VERSION_LABEL = "1.6.0 - el reporte se arma preguntando"
 VERSION_NOTES = (
-                 "Cuando una publicacion senala un bloque puntual de un modulo, "
-                 "ahora el vendedor cae en ESE bloque y no arriba de todo el modulo. "
-                 "Y aparece el interruptor Cargar al modulo: lo que se escribe en la "
-                 "publicacion se copia adentro del modulo elegido como contenido de "
-                 "verdad, con el titulo, el texto y las piezas, asi no hay que "
-                 "escribirlo dos veces. De paso, el selector ahora deja senalar "
-                 "tambien los titulos, que son las secciones de cada modulo.")
+                 "Crear un reporte ahora es contestar tres preguntas: como se llama, "
+                 "de que periodo (con atajos para el mes pasado, este mes o los "
+                 "ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por "
+                 "sucursal, por vendedor, seguimiento enviado, el cuello de botella "
+                 "del precio o por que se pierden. Cada reporte creado queda como "
+                 "una tarjeta con tres botones: Ver reporte, Descargar PDF y "
+                 "Descargar Word, y los tres salen con el diseno de las laminas, no "
+                 "con el tablero de antes. El Word baja apaisado, una lamina por "
+                 "hoja. Releer la planilla no toca los reportes ya creados. Ademas, "
+                 "el reporte ahora dice cuantas filas dejo afuera al recortar el "
+                 "periodo, para que nadie piense que faltan datos al compararlo con "
+                 "el total.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
