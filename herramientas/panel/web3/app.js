@@ -3635,7 +3635,18 @@ function bloqueHTML(bk) {
           (resto > 0 ? `<span class="mr-mas">+${resto}</span>` : '') + `</span>`;
       }
 
-      return `<a class="${clase}" href="#${esc(bk.key)}">` + previa +
+      /* Si se señaló UN bloque, el link lleva hasta ese bloque y no al módulo
+         entero: #modulo/b<posicion>. Era el reclamo del usuario — elegía la
+         galería puntual y al vendedor lo dejaba arriba de todo, obligándolo a
+         buscarla. Sin bloque elegido (o en una publicación vieja, que no
+         guardó la posición) el link sigue siendo el de siempre. */
+      let bi = (bk.bi === 0 || bk.bi > 0) ? bk.bi : null;
+      /* Las publicaciones hechas antes de esto guardaron el nombre del bloque
+         pero no su posición. Se busca por nombre, así toman el link fino sin
+         que nadie tenga que rehacerlas. */
+      if (bi === null) bi = posicionDeBloque(bk.key, bk.sub);
+      const destino = bi === null ? esc(bk.key) : esc(bk.key) + '/b' + bi;
+      return `<a class="${clase}" href="#${destino}">` + previa +
         `<span class="mr-fila">` +
           `<span class="mr-ic" style="background:var(${bk.color || '--c-hudson'})">${ICO(bk.icon || 'layers')}</span>` +
           `<span class="mr-tx"><span class="mr-t">${esc(bk.mod || '')}${sub}</span>` +
@@ -3696,13 +3707,43 @@ function bloqueHTML(bk) {
 
 /* Arma el HTML final. En modo presentación agrupa los bloques en <section class="dk-slide">
    cortando en cada bloque "diapo"; la intranet le pone la navegación encima. */
+/* Dónde está, adentro de un módulo, el bloque que se llama así.
+   Lo usan los bloques `ref` para armar el link fino (#modulo/b<n>) cuando la
+   publicación guardó el NOMBRE del bloque pero no su posición. El nombre es
+   el mismo que muestra el selector: el título de la galería o de la tabla, el
+   epígrafe de una imagen o un video, el nombre del PDF.
+   Devuelve null si no lo encuentra, y ahí el link queda apuntando al módulo
+   entero, que es lo que hacía siempre. */
+function posicionDeBloque(key, sub) {
+  const nombre = String(sub || '').trim().toLowerCase();
+  if (!key || !nombre) return null;
+  const m = (Array.isArray(MODULOS) ? MODULOS : []).find(x => x.key === key);
+  const bl = (m && m.content && m.content.bloques) || [];
+  let nVid = 0, nImg = 0;
+  for (let i = 0; i < bl.length; i++) {
+    const bk = bl[i];
+    let n = '';
+    if (bk.t === 'galeria' || bk.t === 'tabla') n = bk.titulo || '';
+    else if (bk.t === 'pdf') n = bk.nombre || '';
+    else if (bk.t === 'imagen') { nImg++; n = (bk.caption || bk.alt || '').trim() || ('Imagen ' + nImg); }
+    else if (bk.t === 'video') { nVid++; n = (bk.caption || bk.dlNombre || '').trim() || ('Video ' + nVid); }
+    else continue;
+    if (String(n).trim().toLowerCase() === nombre) return i;
+  }
+  return null;
+}
+
 function bloquesHTML(bloques, presentacion) {
   const lista = bloques || [];
   // Un bloque que no renderiza nada NO se emite. Antes salía un
   // <div class="db"></div> vacío por cada corte en modo Página, y también por
   // cada bloque a medio cargar (una imagen sin foto, un embed sin link…).
   // `.db` no tiene estilos propios, así que sacarlos no cambia cómo se ve nada.
-  const db = bk => { const h = bloqueHTML(bk); return h ? `<div class="db">${h}</div>` : ''; };
+  /* data-bi = la posición del bloque en el módulo. Es el ancla que permite que
+     una publicación mande al vendedor AL BLOQUE señalado y no al módulo
+     entero: el link viaja como #modulo/b<posicion> y la intranet scrollea
+     hasta acá. Se emite siempre; sin link a mano no molesta a nadie. */
+  const db = (bk, i) => { const h = bloqueHTML(bk); return h ? `<div class="db" data-bi="${i}">${h}</div>` : ''; };
   if (!presentacion) return lista.map(db).join('');
 
   const slides = [];

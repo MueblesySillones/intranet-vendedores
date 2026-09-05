@@ -550,6 +550,14 @@
           <select id="coArchivarMod" aria-label="Módulo donde queda archivada"></select>
         </span>
       </div>
+      <div class="fijar como-fila" id="coCargarWrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/><path d="M4 4h16"/></svg>
+        <span class="t"><b>Cargar al módulo</b><span>Copia el título, el texto y las piezas como contenido del módulo</span></span>
+        <span class="ctrl-der">
+          <button type="button" class="sw-btn" id="coCargarBtn" aria-pressed="false"><span class="sw"></span></button>
+          <select id="coCargarMod" aria-label="Módulo donde se carga el contenido"></select>
+        </span>
+      </div>
       <div class="fijar como-fila">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
         <span class="t"><b>Se ve hasta</b><span>Después de esa fecha deja de mostrarse</span></span>
@@ -568,6 +576,7 @@
         <input type="checkbox" id="coFijar">
         <input type="checkbox" id="coConfirmar">
         <input type="checkbox" id="coArchivar">
+        <input type="checkbox" id="coCargar">
         <button id="coCancelar" type="button"></button>
       </span>
     </div>
