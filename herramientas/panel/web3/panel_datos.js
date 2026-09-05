@@ -727,11 +727,14 @@
 
   function seccionTablero(publicables, cols, pub) {
     var h = '<section class="dt-sec"><div class="dt-sec-h">' +
-      '<h3>Para publicar en la intranet</h3>' +
-      '<p class="muted">Los números se ven como se verían allá. ' +
-      'Viaja únicamente lo que esté prendido.</p></div>';
+      /* Se llamaba "Para publicar en la intranet". Los reportes no se
+         publican: son para adentro. Lo que esta seccion muestra es lo que el
+         panel pudo leer de la planilla con certeza. */
+      '<h3>Lo que dice la planilla</h3>' +
+      '<p class="muted">Lo que el panel pudo leer con certeza. ' +
+      'Abajo, lo que no se puede afirmar y por qué.</p></div>';
     if (!publicables.length) {
-      h += '<div class="vacio"><b>Ningún número de esta planilla se puede publicar</b>' +
+      h += '<div class="vacio"><b>De esta planilla no se puede afirmar ningún número</b>' +
         '<p>Están todos abajo, con el motivo de cada uno.</p></div></section>';
       return h;
     }
@@ -790,6 +793,18 @@
      para encontrarla.
      --------------------------------------------------------------- */
   function barraHTML(n, total) {
+    /* PUBLICAR A LA INTRANET NO SE MUESTRA.
+       Un reporte de derivaciones es para adentro: se mira, se baja en Word o
+       se imprime. La franja de "N de M publicados" con su medidor y el botón
+       de apagar todo ofrecía algo que no se usa, y ocupaba el lugar donde
+       empieza lo que sí importa.
+       Se devuelve vacío en vez de borrar la función: el motor sigue entero
+       —los interruptores, el guardado y los endpoints—, así que el día que
+       haya un informe que sí vaya al sitio, alcanza con sacar este return. */
+    return '';
+  }
+
+  function barraHTMLcompleta(n, total) {
     var pct = total ? Math.round(n / total * 100) : 0;
     return '<div class="dt-barra' + (n ? ' hay' : '') + '">' +
       '<span class="dt-cuenta"><b class="dt-cuenta-n">' + n + '</b> de <b>' + total +
@@ -864,9 +879,15 @@
        cada click perdía el foco del interruptor recién tocado y el scroll
        saltaba al principio. */
     function refrescarBarra() {
+      /* sin barra no hay nada que refrescar: barraHTML devuelve vacio desde
+         que la franja de publicados no se muestra, y sin este freno el
+         primer click en un interruptor reventaba con parentNode de null */
+      if (!barra) return;
       var n = prendidos().length;
       var nuevo = document.createElement('div');
-      nuevo.innerHTML = barraHTML(n, publicables.length);
+      var html = barraHTML(n, publicables.length);
+      if (!html) return;
+      nuevo.innerHTML = html;
       barra.parentNode.replaceChild(nuevo.firstChild, barra);
       barra = cont.querySelector('.dt-barra');
     }

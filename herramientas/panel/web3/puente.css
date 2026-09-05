@@ -336,11 +336,11 @@ main.lienzo{padding:0; max-width:none; margin:0}
    que no se usa. El motor sigue entero (los endpoints y `publicados` no se
    tocaron): el día que haya un informe que sí vaya a la intranet, se vuelve a
    mostrar sacando estas reglas. */
-/* la franja "N de M publicados" es OTRA .dt-barra, la que trae el recuento */
-#datosRaiz .dt-barra:has(.dt-cuenta){display:none !important}
-/* y el interruptor "Publicar" de cada número. El cartel de una lectura trabada
-   (.dt-num-traba) SÍ se deja: explica por qué un número no es confiable, que
-   sirve igual sin publicar nada. */
+/* La franja "N de M publicados" ya no se dibuja (ver barraHTML en
+   panel_datos.js): no hace falta taparla.
+   Acá queda el interruptor "Publicar" de cada número, que sí se dibuja. El
+   cartel de una lectura trabada (.dt-num-traba) SE DEJA: explica por qué un
+   número no es confiable, y eso sirve igual sin publicar nada. */
 #datosRaiz .dt-num .dt-sw{display:none !important}
 #datosRaiz .dt-num-p:empty{display:none}
 

@@ -39,6 +39,10 @@
     });
   }
 
+  /* El numerito del menu contaba CUANTOS NUMEROS ESTABAN PUBLICADOS a la
+     intranet. Como los reportes no se publican, ese numero no le decia nada a
+     nadie: ahora muestra cuantos reportes hay conectados, que es lo que la
+     persona quiere saber de un vistazo. */
   function contador(n) {
     var e = document.getElementById('navNDatos');
     if (!e) return;
@@ -50,7 +54,7 @@
   function traerLista() {
     return api('/api/datos/estado').then(function (r) {
       LISTA = (r && r.reportes) || [];
-      contador(r && r.publicados_total);
+      contador(LISTA.length);
       return LISTA;
     });
   }
@@ -61,10 +65,11 @@
       return '<button type="button" class="dt-rep" data-id="' + esc(r.id) + '">' +
         '<span class="dt-rep-t">' + esc(r.titulo) + '</span>' +
         '<span class="dt-rep-f">' + esc(r.archivo || 'sin planilla') + '</span>' +
-        (r.publicados
-          ? '<span class="dt-rep-p">' + r.publicados + ' publicado' +
-            (r.publicados === 1 ? '' : 's') + '</span>'
-          : '<span class="dt-rep-p apagado">nada publicado</span>') +
+        /* Sin la etiqueta de publicado: un reporte de derivaciones es para
+           adentro —se mira, se baja en Word o se imprime— y no va al sitio de
+           los vendedores. Poner «nada publicado» en cada fila anuncia una
+           función que no se usa. El dato sigue existiendo del lado del
+           servidor por si algún día vuelve. */
         '<span class="dt-rep-x" data-borrar="' + esc(r.id) + '" title="Quitar este reporte">×</span>' +
         '</button>';
     }).join('');
@@ -72,7 +77,7 @@
     RAIZ.innerHTML =
       '<div class="dt-cab"><h2>Datos</h2>' +
       '<p>Cada reporte tiene su planilla. El panel la lee, la entiende y arma ' +
-      'el tablero. Nada sale a la intranet hasta que lo prendas, número por número.</p></div>' +
+      'el tablero.</p></div>' +
       (mensaje ? '<div class="dt-error">' + esc(mensaje) + '</div>' : '') +
       (filas ? '<div class="dt-reps">' + filas + '</div>'
              : '<div class="dt-nada">Todavía no hay ningún reporte.</div>') +
@@ -810,7 +815,7 @@
          lo que el equipo explicó que significa la planilla, no de mirar las
          columnas, y el lugar donde se publican es el reporte con diseño. */
       nota: 'Estos tres salen de lo que el equipo explicó que significa la planilla, '
-        + 'no de leer las columnas. Para publicarlos está «Ver reporte».'
+        + 'no de leer las columnas. El reporte con diseño está en «Ver reporte».'
     };
   }
 
@@ -944,12 +949,8 @@
       e.stopPropagation();
       var id = x.getAttribute('data-borrar');
       var r = LISTA.filter(function (y) { return y.id === id; })[0] || {};
-      /* Se pregunta: quitar un reporte tambien apaga lo que estaba publicando,
-         y eso cambia lo que ven los vendedores. */
-      var texto = r.publicados
-        ? 'Quitar "' + r.titulo + '"? Tiene ' + r.publicados +
-          ' número(s) publicados y van a dejar de verse.'
-        : 'Quitar "' + r.titulo + '"?';
+      var texto = 'Quitar "' + r.titulo + '"? Se pierde lo que elegiste medir; ' +
+        'la planilla no se toca.';
       if (!window.confirm(texto)) return;
       post('/api/datos/borrar', { id: id }).then(function () {
         aviso('Reporte quitado', 'ok');
@@ -975,6 +976,6 @@
 
   /* el contador de la barra, apenas abre el panel */
   api('/api/datos/estado').then(function (r) {
-    if (r && !r.error) contador(r.publicados_total);
+    if (r && !r.error) contador(((r.reportes) || []).length);
   });
 })();
