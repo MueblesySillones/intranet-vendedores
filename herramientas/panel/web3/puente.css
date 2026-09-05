@@ -324,12 +324,13 @@ main.lienzo{padding:0; max-width:none; margin:0}
    #sucAv queda afuera: ese NO es el autor, es que computadora es esta
    (Central / el nombre de la sucursal), y ahi la inicial si sirve. */
 .av:not(#sucAv){
-  background-color:#2C2A26;
-  background-image:url("logo.png");
-  background-size:74% auto;
+  background-color:#fff;
+  background-image:url("avatar-marca.png");
+  background-size:88% auto;
   background-position:center;
   background-repeat:no-repeat;
   font-size:0;                    /* las iniciales del markup no se muestran */
+  border:1px solid var(--line);
 }
 
 /* ---------- 10. PUBLICAR: QUE SE VEA QUE ESTA PASANDO ALGO ----------
