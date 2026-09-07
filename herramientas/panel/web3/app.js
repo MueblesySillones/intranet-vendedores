@@ -4626,28 +4626,76 @@ async function chequearActualizacion() {
       updProgreso(12);
       abrirModal(mUpd);
     }
-    try {
-      const r = await api('/api/update-apply', { method: 'POST' });
-      if (r && r.aplicando) {
-        btn.hidden = true;
-        updPaso('bajar', 'ok'); updPaso('verificar', 'ok'); updPaso('instalar', 'ahora');
-        updProgreso(58);
-        setTxt('<b>Actualizando…</b> el panel se va a reiniciar solo. Esperá unos segundos.');
-        esperarReinicio();
-      } else {
-        if (mUpd) esconderModal(mUpd);
-        bar.classList.remove('aplicando'); btn.disabled = false; enCurso = false;
-        setTxt('<b>No se pudo actualizar.</b> ' + esc((r && r.error) || ''));
-        toast((r && r.error) || 'No se pudo actualizar', 'err');
-      }
-    } catch (e) {
-      // el POST responde ANTES de salir; si el fetch falla, es un error real -> reintentar
+    const fallo = (msg) => {
       if (mUpd) esconderModal(mUpd);
-      bar.classList.remove('aplicando'); btn.disabled = false; btn.hidden = false; enCurso = false;
-      setTxt('<b>No se pudo iniciar la actualización.</b> Probá de nuevo.');
-      toast('No se pudo iniciar la actualización', 'err');
+      bar.classList.remove('aplicando');
+      btn.disabled = false; btn.hidden = false; enCurso = false;
+      setTxt('<b>No se pudo actualizar.</b> ' + esc(msg || ''));
+      toast(msg || 'No se pudo actualizar', 'err');
+    };
+    try {
+      // El servidor contesta AL TOQUE con un numero de trabajo y hace la
+      // descarga en un hilo; el avance se sigue por /api/job. (Antes esto
+      // esperaba un `aplicando` que el servidor dejo de mandar, asi que
+      // siempre caia en el error aunque la actualizacion estuviera corriendo.)
+      const r = await api('/api/update-apply', { method: 'POST' });
+      if (!r || !r.ok || !r.job) { fallo((r && r.error) || 'No se pudo empezar'); return; }
+      btn.hidden = true;
+      setTxt('<b>Actualizando…</b> el panel se va a reiniciar solo. Esperá unos segundos.');
+      await seguirUpdate(r.job);
+    } catch (e) {
+      fallo(e.message);
     }
   };
+}
+
+/* Sigue el trabajo de actualizacion y va moviendo el modal.
+
+   Lo delicado esta al final: cuando la instalacion arranca, el panel se mata a
+   si mismo a proposito para que el .bat pueda reemplazar los archivos. O sea
+   que el server DEJA de responder, y eso no es una falla: es la senal de que
+   esta pasando lo que tiene que pasar. Por eso, una vez que empezo a instalar,
+   que se caiga la conexion manda a esperar el reinicio en vez de dar error. */
+async function seguirUpdate(jid) {
+  const mUpd = $('#mActualizando');
+  const msg = $('#updProgMsg');
+  const decir = t => { if (msg && t) msg.textContent = t; };
+  let instalando = false;
+
+  const alReinicio = () => {
+    updPaso('bajar', 'ok'); updPaso('verificar', 'ok'); updPaso('instalar', 'ok');
+    updPaso('reabrir', 'ahora');
+    updProgreso(100);
+    decir('Reabriendo el panel con la versión nueva…');
+    esperarReinicio();
+  };
+
+  for (;;) {
+    let j;
+    try {
+      j = await api('/api/job?id=' + encodeURIComponent(jid));
+    } catch (e) {
+      if (instalando) { alReinicio(); return; }
+      throw e;
+    }
+    const pct = Math.max(j.pct || 0, 4);
+    updProgreso(Math.min(pct, 99));
+    decir(j.msg);
+    // los pasos siguen los tramos que marca el servidor: baja hasta 82,
+    // verifica hasta 88, y de ahi instala
+    updPaso('bajar', pct < 82 ? 'ahora' : 'ok');
+    updPaso('verificar', pct < 82 ? 'falta' : (pct < 88 ? 'ahora' : 'ok'));
+    updPaso('instalar', pct < 88 ? 'falta' : 'ahora');
+    if (pct >= 88) instalando = true;
+
+    if (j.estado === 'listo') { alReinicio(); return; }
+    if (j.estado === 'error') {
+      // el trabajo puede haberse limpiado justo cuando el panel se cerraba
+      if (instalando) { alReinicio(); return; }
+      throw new Error(j.error || 'No se pudo actualizar');
+    }
+    await new Promise(r => setTimeout(r, 500));
+  }
 }
 
 // espera a que el panel se reinicie (server cae y vuelve) y recarga la version nueva

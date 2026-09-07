@@ -534,3 +534,6 @@ main.lienzo{padding:0; max-width:none; margin:0}
 #datosRaiz .dt-inf-r .dt-inf-o{background:var(--surface)}
 #datosRaiz .dt-inf-cmp{margin:2px 0 0; font-size:var(--t-nano); color:var(--ink3)}
 #datosRaiz .dt-inf-cmp::before{content:"↔ "}
+
+/* el mensaje que manda el servidor mientras actualiza ("Descargando… 4 de 20 MB") */
+#updProgMsg{margin-top:10px; font-size:var(--t-mini); color:var(--ink3); line-height:1.5}

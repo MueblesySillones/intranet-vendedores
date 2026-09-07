@@ -36,7 +36,8 @@ SUITES = [("w1 panel", "w1_web3_panel.py"),
           ("w3 avisos", "w3_web3_avisos.py"),
           ("w4 link a un bloque", "w4_web3_link_bloque.py"),
           ("w5 cargar a un modulo", "w5_web3_cargar_modulo.py"),
-          ("w6 reportes de una planilla", "w6_web3_informes.py")]
+          ("w6 reportes de una planilla", "w6_web3_informes.py"),
+          ("w7 boton actualizar", "w7_web3_actualizar.py")]
 
 
 def armar_sandbox():
