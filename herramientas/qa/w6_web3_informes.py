@@ -399,6 +399,67 @@ with sync_playwright() as pw:
         return "%d listas con barras/tabla: %s" % (n, ", ".join(secs))
     check("las listas dejan elegir cómo se ven", el_interruptor_de_vista)
 
+    def la_tabla_se_ve_al_toque():
+        """«cuando apreto tabla no pasa nada»: tenía que verse en el acto."""
+        d = ED["pg"]
+        d.evaluate("""() => {
+          const s = [...document.querySelectorAll('.slide')]
+            .findIndex(x => x.dataset.sec === 'vendedores');
+          if (s >= 0) ir(s);
+        }""")
+        d.wait_for_timeout(400)
+        antes = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          const v = sl.querySelector('.lista-v:not([hidden])');
+          return v ? v.dataset.vista : '';
+        }""")
+        d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          [...sl.querySelectorAll('.ed-v button')]
+            .find(b => b.textContent === 'Tabla').click();
+        }""")
+        d.wait_for_timeout(300)
+        ahora = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          const v = sl.querySelector('.lista-v:not([hidden])');
+          return v ? v.dataset.vista : '';
+        }""")
+        if antes != "barras" or ahora != "tabla":
+            raise AssertionError("no cambió al toque: %s -> %s" % (antes, ahora))
+        vista = d.eval_on_selector_all(
+            ".slide[data-sec=vendedores] .lista-v:not([hidden]) table.tablita",
+            "ns => ns.length")
+        if not vista:
+            raise AssertionError("dice tabla pero no se ve la tabla")
+        return "de %s a %s sin guardar" % (antes, ahora)
+    check("apretar Tabla cambia la vista en el acto", la_tabla_se_ve_al_toque)
+
+    def sacar_un_texto():
+        """«hay pequeños textos que pone el generador innecesarios»."""
+        d = ED["pg"]
+        hay = d.eval_on_selector_all(
+            ".slide[data-sec=vendedores] .ed-x", "ns => ns.length")
+        if not hay:
+            raise AssertionError("los textos no tienen × para sacarlos")
+        d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          const t = sl.querySelector('[data-txt="vendedores.bajada"]');
+          t.nextElementSibling.click();
+        }""")
+        d.wait_for_timeout(300)
+        est = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          const t = sl.querySelector('[data-txt="vendedores.bajada"]');
+          return { fuera: t.classList.contains('fuera'),
+                   volver: !!sl.querySelector('.ed-fuera') };
+        }""")
+        if not est["fuera"]:
+            raise AssertionError("no lo marcó como sacado")
+        if not est["volver"]:
+            raise AssertionError("no ofrece volver a mostrarlo")
+        return "%d textos con ×; el sacado queda tachado y se puede recuperar" % hay
+    check("cada texto se puede sacar del reporte", sacar_un_texto)
+
     def escribir_y_guardar():
         d = ED["pg"]
         # ir a la lámina del equipo, escribirle encima y pedirla en tabla
@@ -415,16 +476,21 @@ with sync_playwright() as pw:
           [...sl.querySelectorAll('.ed-v button')]
             .find(b => b.textContent === 'Tabla').click();
         }""")
-        d.click("#edOk")
-        d.wait_for_timeout(4000)
-        d.wait_for_load_state("load")
+        # guardar recarga la pagina (el reporte se rearma en el servidor y eso
+        # relee la planilla, o sea que tarda). Hay que esperar LA NAVEGACION,
+        # no un rato: si no, el evaluate de abajo cae justo mientras navega.
+        with d.expect_navigation(wait_until="load", timeout=240000):
+            d.click("#edOk")
         d.wait_for_timeout(2500)
         txt = d.evaluate("() => document.body.innerText")
         if "Pases por asesor" not in txt:
             raise AssertionError("el texto nuevo no quedó")
-        if not d.eval_on_selector_all("table.tablita", "ns => ns.length"):
+        if not d.eval_on_selector_all(
+                ".lista-v:not([hidden]) table.tablita", "ns => ns.length"):
             raise AssertionError("no aplicó la vista de tabla")
-        return "guardó el texto y la tabla, y volvió a armar el reporte"
+        if "Cuántas consultas recibió cada uno" in txt:
+            raise AssertionError("el texto que se sacó volvió a aparecer")
+        return "guardó el texto, la tabla y lo que se sacó"
     check("se escribe encima, se guarda y queda", escribir_y_guardar)
 
     def quedo_guardado_de_verdad():
@@ -435,6 +501,8 @@ with sync_playwright() as pw:
             timeout=240).read().decode("utf-8")
         if "Pases por asesor" not in html or "<table" not in html:
             raise AssertionError("se perdió al volver a pedirlo")
+        if "Cuántas consultas recibió cada uno" in html:
+            raise AssertionError("el texto sacado volvió al reporte guardado")
         ED["pg"].close()
         return "el reporte guardado ya dice lo nuevo"
     check("lo editado sobrevive a cerrar y volver", quedo_guardado_de_verdad)

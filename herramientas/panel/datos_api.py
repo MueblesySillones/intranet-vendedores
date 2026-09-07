@@ -348,12 +348,21 @@ def _limpiar_opciones(op, antes=None):
         else:
             textos.pop(k, None)
 
+    # los textos que el usuario saco del reporte. Llega la lista ENTERA cada
+    # vez —no un agregado—, porque «volver a mostrar» tiene que poder sacar uno
+    # de la lista, y con un merge eso sería imposible.
+    if isinstance(op.get("ocultos"), list):
+        ocultos = sorted({str(k)[:80] for k in op["ocultos"] if str(k).strip()})
+    else:
+        ocultos = list(vieja.get("ocultos") or [])
+
     return {
         "detalle": det if det in validos_det else "10",
         "comparar": cmp_ if cmp_ in validos_cmp else "anterior",
         "vista": vis if vis in validos_vis else "barras",
         "vistas": vistas,
         "textos": textos,
+        "ocultos": ocultos,
         "anonimo": bool(op.get("anonimo") if "anonimo" in op
                         else vieja.get("anonimo")),
         "nota": str(op.get("nota") if "nota" in op
