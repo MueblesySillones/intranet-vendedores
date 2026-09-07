@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.6.0"
-NUEVO_LABEL = "1.6.0 - el reporte se arma preguntando"
-NUEVAS_NOTAS = ("Crear un reporte ahora es contestar tres preguntas: como se llama, de que periodo (con atajos para el mes pasado, este mes o los ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por sucursal, por vendedor, seguimiento enviado, el cuello de botella del precio o por que se pierden. Cada reporte creado queda como una tarjeta con tres botones: Ver reporte, Descargar PDF y Descargar Word, y los tres salen con el diseno de las laminas, no con el tablero de antes. El Word baja apaisado, una lamina por hoja. Releer la planilla no toca los reportes ya creados. Ademas, el reporte ahora dice cuantas filas dejo afuera al recortar el periodo, para que nadie piense que faltan datos al compararlo con el total.")
+NUEVA_PUBLICA = "1.7.0"
+NUEVO_LABEL = "1.7.0 - el PDF baja de una"
+NUEVAS_NOTAS = ("El boton Descargar PDF ahora baja el archivo de una, sin abrir el dialogo de impresion ni pedirte donde guardarlo. Y al crear un reporte hay mas para elegir: pasa de tres preguntas a siete. Se sumaron tres cosas para medir -que productos consultan, de que campana vienen y por que canal entran- y se puede pedir que el reporte compare contra el periodo anterior o contra el ano pasado, elegir cuanto detalle entra en cada lista, sacar los nombres del equipo si el reporte sale del equipo, y escribir una aclaracion en la portada. Todo viene con una respuesta puesta, asi que hacer el reporte de siempre sigue siendo apretar dos botones.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

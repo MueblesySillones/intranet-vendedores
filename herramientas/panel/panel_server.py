@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 42
+VERSION = 43
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,21 +279,19 @@ VERSION = 42
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.6.0"
-VERSION_LABEL = "1.6.0 - el reporte se arma preguntando"
+VERSION_PUBLICA = "1.7.0"
+VERSION_LABEL = "1.7.0 - el PDF baja de una"
 VERSION_NOTES = (
-                 "Crear un reporte ahora es contestar tres preguntas: como se llama, "
-                 "de que periodo (con atajos para el mes pasado, este mes o los "
-                 "ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por "
-                 "sucursal, por vendedor, seguimiento enviado, el cuello de botella "
-                 "del precio o por que se pierden. Cada reporte creado queda como "
-                 "una tarjeta con tres botones: Ver reporte, Descargar PDF y "
-                 "Descargar Word, y los tres salen con el diseno de las laminas, no "
-                 "con el tablero de antes. El Word baja apaisado, una lamina por "
-                 "hoja. Releer la planilla no toca los reportes ya creados. Ademas, "
-                 "el reporte ahora dice cuantas filas dejo afuera al recortar el "
-                 "periodo, para que nadie piense que faltan datos al compararlo con "
-                 "el total.")
+                 "El boton Descargar PDF ahora baja el archivo de una, sin abrir el "
+                 "dialogo de impresion ni pedirte donde guardarlo. Y al crear un "
+                 "reporte hay mas para elegir: pasa de tres preguntas a siete. Se "
+                 "sumaron tres cosas para medir -que productos consultan, de que "
+                 "campana vienen y por que canal entran- y se puede pedir que el "
+                 "reporte compare contra el periodo anterior o contra el ano pasado, "
+                 "elegir cuanto detalle entra en cada lista, sacar los nombres del "
+                 "equipo si el reporte sale del equipo, y escribir una aclaracion en "
+                 "la portada. Todo viene con una respuesta puesta, asi que hacer el "
+                 "reporte de siempre sigue siendo apretar dos botones.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
