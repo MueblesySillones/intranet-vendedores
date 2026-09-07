@@ -2217,6 +2217,24 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as ex:        # noqa
                 return self._json({"ok": False, "error": str(ex)}, 400)
 
+        if path == "/api/datos/informe-textos":
+            # todo lo que se puede reescribir en ese informe, con su texto de
+            # fabrica. Sale de armar el reporte de verdad, asi que la pantalla
+            # de edicion no puede quedar desfasada de lo que se ve.
+            rep = datos_api.buscar(cfg, (q.get("id") or [""])[0])
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            inf = datos_api.buscar_informe(rep, (q.get("informe") or [""])[0])
+            if not inf:
+                return self._json({"error": "no encuentro ese informe"}, 404)
+            try:
+                lista, err = datos_api.textos_editables(rep, STATE_DIR, inf)
+            except Exception as ex:        # noqa
+                lista, err = None, str(ex)
+            if err or lista is None:
+                return self._json({"error": err or "no pude leerlo"}, 400)
+            return self._json({"ok": True, "textos": lista, "informe": inf})
+
         if path == "/api/datos/deck-pdf":
             # El PDF baja como archivo: nada de abrir el reporte y disparar
             # Ctrl+P, que no es descargar sino imprimir. Lo arma el navegador
@@ -2494,6 +2512,21 @@ class Handler(BaseHTTPRequestHandler):
                 rep, str(cuerpo.get("nombre") or "")[:80],
                 str(cuerpo.get("desde") or ""), str(cuerpo.get("hasta") or ""),
                 [str(x) for x in secs] if isinstance(secs, list) else None,
+                ops if isinstance(ops, dict) else None)
+            if err:
+                return self._json({"error": err}, 400)
+            datos_api.guardar(STATE_DIR, cfg)
+            return self._json({"ok": True, "informe": inf,
+                               "informes": datos_api.informes(rep)})
+
+        if path == "/api/datos/informe-editar":
+            rep = datos_api.buscar(cfg, str(cuerpo.get("id") or ""))
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            ops = cuerpo.get("opciones")
+            inf, err = datos_api.informe_editar(
+                rep, str(cuerpo.get("informe") or ""),
+                cuerpo.get("nombre"),
                 ops if isinstance(ops, dict) else None)
             if err:
                 return self._json({"error": err}, 400)

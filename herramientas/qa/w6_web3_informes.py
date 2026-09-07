@@ -37,6 +37,16 @@ def check(nombre, fn):
         print("FAIL | %s | %s" % (nombre, str(e).split("\n")[0][:220]))
 
 
+def abrir_lamina(p, clave):
+    """Despliega la lámina que contiene ese texto."""
+    p.evaluate("""(k) => {
+      const t = document.querySelector('[data-texto="' + k + '"]');
+      if (t) { const d = t.closest('details'); if (d) d.open = true; }
+    }""", clave)
+    p.wait_for_selector('#dtInfForm [data-texto="%s"]' % clave, state="visible",
+                        timeout=10000)
+
+
 def abrir_reporte(p):
     p.goto(BASE + "/", wait_until="domcontentloaded")
     p.wait_for_selector("#muroLista .pub", timeout=25000)
@@ -353,6 +363,80 @@ with sync_playwright() as pw:
             raise AssertionError("el segundo pisó al primero: %s" % nombres)
         return " + ".join(nombres)
     check("una planilla da varios reportes", dos_reportes)
+
+    def editar_palabras():
+        """Cambiar una palabra: el pedido fue «¿y si no le gusta lo que dice?»."""
+        # se edita la PRIMERA tarjeta y se anota SU id: para entonces ya hay dos
+        # reportes, y el que se abrio mas arriba puede no ser este
+        IDS["inf"] = p.get_attribute("#dtInformes .dt-inf-c", "data-inf")
+        p.click("#dtInformes [data-editar]")
+        p.wait_for_selector("#dtEdOk", state="visible", timeout=180000)
+        campos = p.eval_on_selector_all("#dtInfForm [data-texto]",
+                                        "ns => ns.map(n => n.dataset.texto)")
+        if "vendedores.titulo" not in campos:
+            raise AssertionError("no se puede editar el título del equipo: %s"
+                                 % campos[:6])
+        avisos = p.eval_on_selector_all("#dtInfForm .dt-ed-av", "ns => ns.length")
+        if not avisos:
+            raise AssertionError("no avisa cuáles textos llevan números")
+        # las láminas vienen plegadas: se abre la que se va a tocar, como haría
+        # cualquiera. Si esto dejara de hacer falta, el editor volvió a ser un
+        # muro de 40 campos.
+        if p.is_visible('#dtInfForm [data-texto="vendedores.titulo"]'):
+            raise AssertionError("las láminas no vienen plegadas")
+        abrir_lamina(p, "vendedores.titulo")
+        p.fill('#dtInfForm [data-texto="vendedores.titulo"]', "Pases por asesor")
+        p.click('#dtInfForm .dt-ed-v[data-sec="vendedores"] [data-vista="tabla"]')
+        p.click("#dtEdOk")
+        p.wait_for_timeout(1500)
+        return "%d textos editables, %d con números" % (len(campos), avisos)
+    check("se puede reescribir un texto y pedir tabla", editar_palabras)
+
+    def el_reporte_lo_respeta():
+        import urllib.request
+        url = ("%s/api/datos/deck?id=%s&informe=%s"
+               % (BASE, IDS["rep"], IDS["inf"]))
+        html = urllib.request.urlopen(url, timeout=240).read().decode("utf-8")
+        if "Pases por asesor" not in html:
+            raise AssertionError("el reporte no usa el texto nuevo")
+        if "Derivaciones por vendedor" in html:
+            raise AssertionError("sigue mostrando el texto viejo")
+        if "<table" not in html:
+            raise AssertionError("no dibujó la lista como tabla")
+        return "el reporte dice «Pases por asesor» y la lista es una tabla"
+    check("el reporte usa lo que se escribió", el_reporte_lo_respeta)
+
+    def el_word_tambien():
+        with p.expect_download() as d:
+            p.click("#dtInformes [data-doc]")
+        ruta = os.path.join(os.environ.get("TEMP", "."), "qa_textos.docx")
+        d.value.save_as(ruta)
+        with zipfile.ZipFile(ruta) as z:
+            xml = z.read("word/document.xml").decode("utf-8")
+        os.remove(ruta)
+        if "Pases por asesor" not in xml:
+            raise AssertionError("el Word quedó con el texto viejo")
+        return "el Word dice lo mismo que la pantalla"
+    check("el Word no queda diciendo otra cosa", el_word_tambien)
+
+    def volver_al_de_fabrica():
+        p.click("#dtInformes [data-editar]")
+        p.wait_for_selector("#dtEdOk", state="visible", timeout=180000)
+        abrir_lamina(p, "vendedores.titulo")
+        v = p.input_value('#dtInfForm [data-texto="vendedores.titulo"]')
+        if v != "Pases por asesor":
+            raise AssertionError("no muestra lo que se había escrito: %r" % v)
+        p.fill('#dtInfForm [data-texto="vendedores.titulo"]', "")
+        p.click("#dtEdOk")
+        p.wait_for_timeout(1500)
+        import urllib.request
+        html = urllib.request.urlopen(
+            "%s/api/datos/deck?id=%s&informe=%s" % (BASE, IDS["rep"], IDS["inf"]),
+            timeout=240).read().decode("utf-8")
+        if "Derivaciones por vendedor" not in html:
+            raise AssertionError("no volvió al texto de fábrica")
+        return "vaciar el campo devuelve el texto original"
+    check("dejarlo vacío vuelve al texto de fábrica", volver_al_de_fabrica)
 
     def quitar():
         antes = len(p.query_selector_all("#dtInformes .dt-inf-c"))
