@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.8.0"
-NUEVO_LABEL = "1.8.0 - los reportes se editan"
-NUEVAS_NOTAS = ("Si algo del reporte no dice lo que vos dirias, ahora se cambia. Cada reporte tiene el boton Editar palabras y vistas: se pueden reescribir todos los textos -titulos, bajadas y las notas de cada lamina- y dejar un campo vacio vuelve al texto original. Los numeros no se tocan: se calculan cada vez que abris el reporte. Ademas, cada lista se puede ver como barras o como tabla, una por una: la de vendedores en tabla y la de productos en barras, si asi te gusta. El Word y el PDF salen con los mismos textos que la pantalla. De paso se saco el bloque Para arreglar en la planilla, que ocupaba lo primero que se veia al entrar a Datos.")
+NUEVA_PUBLICA = "1.9.0"
+NUEVO_LABEL = "1.9.0 - el lapiz adentro del reporte"
+NUEVAS_NOTAS = ("Ahora el reporte se edita adentro del reporte. Lo abris con Ver reporte y arriba a la izquierda hay un lapiz que dice Editar: lo apretas, tocas cualquier titulo o texto y escribis encima. Al lado quedan Guardar edicion y Cancelar. Mientras editas, cada lista muestra arriba a la derecha si la queres en Barras o en Tabla, y se guarda junto con lo demas. Los numeros no se editan: se calculan solos cada vez que abris el reporte. El PDF y el Word salen con lo que dejaste escrito. Se saco el formulario de edicion que estaba en el panel, porque esto lo reemplaza.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
