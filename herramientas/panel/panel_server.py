@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 44
+VERSION = 45
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,15 +279,19 @@ VERSION = 44
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.7.1"
-VERSION_LABEL = "1.7.1 - el boton Actualizar dice la verdad"
+VERSION_PUBLICA = "1.8.0"
+VERSION_LABEL = "1.8.0 - los reportes se editan"
 VERSION_NOTES = (
-                 "Apretar Actualizar mostraba No se pudo actualizar aunque la "
-                 "actualizacion estuviera corriendo igual. Ahora se abre la ventana "
-                 "con la barra de progreso: va diciendo cuantos MB lleva bajados, "
-                 "marca los cuatro pasos -bajar, verificar, instalar, reabrir- y el "
-                 "panel se reinicia solo con la version nueva. Si de verdad falla "
-                 "algo, lo dice con el motivo y deja reintentar.")
+                 "Si algo del reporte no dice lo que vos dirias, ahora se cambia. "
+                 "Cada reporte tiene el boton Editar palabras y vistas: se pueden "
+                 "reescribir todos los textos -titulos, bajadas y las notas de cada "
+                 "lamina- y dejar un campo vacio vuelve al texto original. Los "
+                 "numeros no se tocan: se calculan cada vez que abris el reporte. "
+                 "Ademas, cada lista se puede ver como barras o como tabla, una por "
+                 "una: la de vendedores en tabla y la de productos en barras, si asi "
+                 "te gusta. El Word y el PDF salen con los mismos textos que la "
+                 "pantalla. De paso se saco el bloque Para arreglar en la planilla, "
+                 "que ocupaba lo primero que se veia al entrar a Datos.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

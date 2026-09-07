@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.7.1"
-NUEVO_LABEL = "1.7.1 - el boton Actualizar dice la verdad"
-NUEVAS_NOTAS = ("Apretar Actualizar mostraba No se pudo actualizar aunque la actualizacion estuviera corriendo igual. Ahora se abre la ventana con la barra de progreso: va diciendo cuantos MB lleva bajados, marca los cuatro pasos -bajar, verificar, instalar, reabrir- y el panel se reinicia solo con la version nueva. Si de verdad falla algo, lo dice con el motivo y deja reintentar.")
+NUEVA_PUBLICA = "1.8.0"
+NUEVO_LABEL = "1.8.0 - los reportes se editan"
+NUEVAS_NOTAS = ("Si algo del reporte no dice lo que vos dirias, ahora se cambia. Cada reporte tiene el boton Editar palabras y vistas: se pueden reescribir todos los textos -titulos, bajadas y las notas de cada lamina- y dejar un campo vacio vuelve al texto original. Los numeros no se tocan: se calculan cada vez que abris el reporte. Ademas, cada lista se puede ver como barras o como tabla, una por una: la de vendedores en tabla y la de productos en barras, si asi te gusta. El Word y el PDF salen con los mismos textos que la pantalla. De paso se saco el bloque Para arreglar en la planilla, que ocupaba lo primero que se veia al entrar a Datos.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
