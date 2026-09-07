@@ -1,8 +1,8 @@
 {
-  "version": 43,
-  "label": "1.7.0 - el PDF baja de una",
-  "notes": "El boton Descargar PDF ahora baja el archivo de una, sin abrir el dialogo de impresion ni pedirte donde guardarlo. Y al crear un reporte hay mas para elegir: pasa de tres preguntas a siete. Se sumaron tres cosas para medir -que productos consultan, de que campana vienen y por que canal entran- y se puede pedir que el reporte compare contra el periodo anterior o contra el ano pasado, elegir cuanto detalle entra en cada lista, sacar los nombres del equipo si el reporte sale del equipo, y escribir una aclaracion en la portada. Todo viene con una respuesta puesta, asi que hacer el reporte de siempre sigue siendo apretar dos botones.",
-  "sha256": "05e3d2546fa9aedf67ed0ce53b48c54b67ab3046c30284143de8080b5afedc2b",
-  "size": 20080688,
-  "url": "panel/PanelMyS-v43.zip"
+  "version": 44,
+  "label": "1.7.1 - el boton Actualizar dice la verdad",
+  "notes": "Apretar Actualizar mostraba No se pudo actualizar aunque la actualizacion estuviera corriendo igual. Ahora se abre la ventana con la barra de progreso: va diciendo cuantos MB lleva bajados, marca los cuatro pasos -bajar, verificar, instalar, reabrir- y el panel se reinicia solo con la version nueva. Si de verdad falla algo, lo dice con el motivo y deja reintentar.",
+  "sha256": "96167d6a1bc36974608a34a057251b43226e33f3b5d601a6ad94cdfc351509da",
+  "size": 20080913,
+  "url": "panel/PanelMyS-v44.zip"
 }
