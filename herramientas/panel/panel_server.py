@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 45
+VERSION = 46
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,19 +279,18 @@ VERSION = 45
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.8.0"
-VERSION_LABEL = "1.8.0 - los reportes se editan"
+VERSION_PUBLICA = "1.9.0"
+VERSION_LABEL = "1.9.0 - el lapiz adentro del reporte"
 VERSION_NOTES = (
-                 "Si algo del reporte no dice lo que vos dirias, ahora se cambia. "
-                 "Cada reporte tiene el boton Editar palabras y vistas: se pueden "
-                 "reescribir todos los textos -titulos, bajadas y las notas de cada "
-                 "lamina- y dejar un campo vacio vuelve al texto original. Los "
-                 "numeros no se tocan: se calculan cada vez que abris el reporte. "
-                 "Ademas, cada lista se puede ver como barras o como tabla, una por "
-                 "una: la de vendedores en tabla y la de productos en barras, si asi "
-                 "te gusta. El Word y el PDF salen con los mismos textos que la "
-                 "pantalla. De paso se saco el bloque Para arreglar en la planilla, "
-                 "que ocupaba lo primero que se veia al entrar a Datos.")
+                 "Ahora el reporte se edita adentro del reporte. Lo abris con Ver "
+                 "reporte y arriba a la izquierda hay un lapiz que dice Editar: lo "
+                 "apretas, tocas cualquier titulo o texto y escribis encima. Al lado "
+                 "quedan Guardar edicion y Cancelar. Mientras editas, cada lista "
+                 "muestra arriba a la derecha si la queres en Barras o en Tabla, y "
+                 "se guarda junto con lo demas. Los numeros no se editan: se "
+                 "calculan solos cada vez que abris el reporte. El PDF y el Word "
+                 "salen con lo que dejaste escrito. Se saco el formulario de edicion "
+                 "que estaba en el panel, porque esto lo reemplaza.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
