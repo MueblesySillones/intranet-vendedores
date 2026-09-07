@@ -919,6 +919,7 @@
        recibe el id del reporte. ABIERTO es el que se esta mirando. */
     if (d.es_derivaciones) {
       SECCIONES = d.secciones_posibles || SECCIONES;
+      OPCIONES = d.opciones_posibles || OPCIONES;
       pintarInformes(ABIERTO, d.informes || []);
     }
   }
@@ -958,6 +959,7 @@
      pantalla: si mañana el reporte aprende a mostrar otra cosa, aparece sola
      en el formulario y no hay que tocar dos archivos. */
   var SECCIONES = [];
+  var OPCIONES = {};
 
   function seccionesDe(inf) {
     var elegidas = inf.secciones || [];
@@ -993,6 +995,13 @@
   /* Cada reporte creado es una tarjeta, no una fila: adentro tiene sus tres
      botones —verlo, bajarlo en PDF, bajarlo en Word— y los tres abren el MISMO
      diseño. Ninguno toca la planilla ni los otros reportes. */
+  function contraQue(i) {
+    var c = (i.opciones || {}).comparar;
+    if (!c || c === 'nada') return '';
+    var o = (OPCIONES.comparar || []).filter(function (x) { return x.id === c; })[0];
+    return o ? o.titulo.toLowerCase() : '';
+  }
+
   function tarjeta(i) {
     return '<article class="dt-inf-c" data-inf="' + esc(i.id) + '">' +
       '<button type="button" class="dt-inf-x" data-borrar-inf="' + esc(i.id) +
@@ -1000,6 +1009,7 @@
       '<span class="dt-inf-p">' + esc(periodoTexto(i)) + '</span>' +
       '<h4 class="dt-inf-n">' + esc(i.nombre) + '</h4>' +
       '<p class="dt-inf-m">' + esc(seccionesDe(i)) + '</p>' +
+      (contraQue(i) ? '<p class="dt-inf-cmp">' + esc(contraQue(i)) + '</p>' : '') +
       '<div class="dt-inf-b">' +
         '<button type="button" class="btn active" data-ver="' + esc(i.id) +
           '">Ver reporte</button>' +
@@ -1010,10 +1020,25 @@
       '</div></article>';
   }
 
-  /* El formulario pregunta tres cosas, en el orden en que uno las piensa:
-     cómo se llama, de qué período habla y qué tiene que mostrar. El período
-     viene propuesto con el MES PASADO completo, que es el pedido de siempre;
-     dejarlo vacío obliga a escribir dos fechas para la tarea más común. */
+  /* El formulario pregunta, en el orden en que uno lo piensa: cómo se llama,
+     de cuándo habla, qué muestra, contra qué se compara y con cuánto detalle.
+     Todo viene con una respuesta puesta —el mes pasado, todo marcado, contra
+     el período anterior— así que crear el reporte de siempre sigue siendo
+     apretar dos botones; las preguntas están para el que quiere otra cosa. */
+  function grupo(id, opciones, elegido) {
+    return '<div class="dt-inf-r">' + (opciones || []).map(function (o) {
+      return '<label class="dt-inf-o"><input type="radio" name="' + id + '" ' +
+        'value="' + esc(o.id) + '"' + (o.id === elegido ? ' checked' : '') +
+        '><span><b>' + esc(o.titulo) + '</b><i>' + esc(o.detalle) +
+        '</i></span></label>';
+    }).join('') + '</div>';
+  }
+
+  function elegidoDe(id, porDefecto) {
+    var n = document.querySelector('input[name="' + id + '"]:checked');
+    return n ? n.value : porDefecto;
+  }
+
   function formInforme(id) {
     var caja = document.getElementById('dtInfForm');
     if (!caja) return;
@@ -1053,7 +1078,30 @@
           return '<label class="dt-inf-o"><input type="checkbox" value="' +
             esc(s.id) + '" checked><span><b>' + esc(s.titulo) + '</b>' +
             '<i>' + esc(s.detalle) + '</i></span></label>';
-        }).join('') + '</div></div>' +
+        }).join('') + '</div>' +
+        '<div class="dt-inf-at">' +
+          '<button type="button" class="dt-at" data-marca="todas">Marcar todas</button>' +
+          '<button type="button" class="dt-at" data-marca="ninguna">Desmarcar todas</button>' +
+        '</div></div>' +
+      '<div class="dt-inf-q"><b>4. ¿Contra qué lo comparás?</b>' +
+        '<span class="dt-chico">Un total solo no dice si estuvo bien o mal. ' +
+        'Con esto, el reporte abre diciendo qué cambió.</span>' +
+        grupo('dtInfCmp', (OPCIONES.comparar || []), 'anterior') + '</div>' +
+      '<div class="dt-inf-q"><b>5. ¿Cuánto detalle en las listas?</b>' +
+        '<span class="dt-chico">Cuántos entran en cada ranking: productos, ' +
+        'campañas, vendedores.</span>' +
+        grupo('dtInfDet', (OPCIONES.detalle || []), '10') + '</div>' +
+      '<div class="dt-inf-q"><b>6. ¿Se nombra a las personas?</b>' +
+        '<div class="dt-inf-s"><label class="dt-inf-o">' +
+        '<input type="checkbox" id="dtInfAnon"><span>' +
+        '<b>Sin los nombres del equipo</b><i>En vez del nombre se muestra el ' +
+        'puesto y la sucursal. Para el reporte que sale del equipo.</i>' +
+        '</span></label></div></div>' +
+      '<div class="dt-inf-q"><b>7. ¿Querés aclarar algo en la portada?</b>' +
+        '<span class="dt-chico">Opcional. Una línea que se lee al abrir: para ' +
+        'quién es, o qué hay que tener en cuenta.</span>' +
+        '<input type="text" id="dtInfNota" maxlength="280" ' +
+        'placeholder="Ej: Para la reunión de socios del 10/9"></div>' +
       '<div class="dt-inf-ac">' +
         '<button type="button" class="btn active" id="dtInfOk">Crear reporte</button>' +
         '<button type="button" class="dt-volver" id="dtInfNo">Cancelar</button>' +
@@ -1065,6 +1113,14 @@
     for (var k = 0; k < atajos.length; k++) {
       atajos[k].onclick = (function (b) {
         return function () {
+          var marca = b.getAttribute('data-marca');
+          if (marca) {
+            var cs = caja.querySelectorAll('.dt-inf-s input[type="checkbox"]');
+            for (var j = 0; j < cs.length; j++) {
+              if (cs[j].id !== 'dtInfAnon') cs[j].checked = (marca === 'todas');
+            }
+            return;
+          }
           var q = b.getAttribute('data-per'), a, z;
           if (q === 'mes-pasado') {
             a = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
@@ -1086,15 +1142,23 @@
     };
     document.getElementById('dtInfOk').onclick = function () {
       var mide = [];
-      var cs = caja.querySelectorAll('.dt-inf-s input');
-      for (var j = 0; j < cs.length; j++) if (cs[j].checked) mide.push(cs[j].value);
+      var cs = caja.querySelectorAll('.dt-inf-s input[type="checkbox"]');
+      for (var j = 0; j < cs.length; j++) {
+        if (cs[j].checked && cs[j].id !== 'dtInfAnon') mide.push(cs[j].value);
+      }
       if (!mide.length) { aviso('Marcá al menos una cosa para medir', 'err'); return; }
       post('/api/datos/informe-crear', {
         id: id,
         nombre: document.getElementById('dtInfN').value,
         desde: D.value,
         hasta: H.value,
-        secciones: mide
+        secciones: mide,
+        opciones: {
+          comparar: elegidoDe('dtInfCmp', 'anterior'),
+          detalle: elegidoDe('dtInfDet', '10'),
+          anonimo: document.getElementById('dtInfAnon').checked,
+          nota: document.getElementById('dtInfNota').value
+        }
       }).then(function (r) {
         if (r.error) { aviso(r.error, 'err'); return; }
         aviso('Reporte creado', 'ok');
@@ -1116,17 +1180,58 @@
     window.open('/api/datos/deck' + urlInforme(iid), '_blank');
   }
 
-  function pdfInforme(iid) {
-    /* el PDF lo hace el navegador desde el mismo deck: sale en 16:9, con el
+  function pdfInforme(iid, btn) {
+    /* el PDF lo imprime el navegador desde el mismo deck: sale en 16:9, con el
        diseño tal cual, y el panel no carga con una librería de PDF */
-    var v = window.open('/api/datos/deck' + urlInforme(iid) + '&imprimir=1',
-                        '_blank');
-    if (!v) aviso('El navegador bloqueó la ventana del reporte', 'err');
+    bajar('/api/datos/deck-pdf' + urlInforme(iid), btn, 'Armando el PDF…');
   }
 
-  function wordInforme(iid) {
-    aviso('Armando el Word…', 'ok');
-    window.location.href = '/api/datos/deck-word' + urlInforme(iid);
+  function wordInforme(iid, btn) {
+    bajar('/api/datos/deck-word' + urlInforme(iid), btn, 'Armando el Word…');
+  }
+
+  /* Baja un archivo del panel SIN salir de la pantalla.
+
+     Con `window.location.href` alcanzaba mientras todo saliera bien, pero el
+     día que el servidor contesta un error el navegador se lo lleva puesto: el
+     panel desaparece y en su lugar queda un JSON en crudo. Acá se pide con
+     fetch, se mira qué vino, y si es un archivo se baja; si es un error se
+     dice y la pantalla no se mueve.
+
+     Armar el PDF tarda unos segundos —lo imprime el navegador—, así que el
+     botón lo cuenta en vez de quedarse mudo. */
+  function bajar(url, btn, trabajando) {
+    var antes = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = trabajando; }
+    var listo = function () {
+      if (btn) { btn.disabled = false; btn.textContent = antes; }
+    };
+    fetch(url).then(function (r) {
+      var tipo = r.headers.get('content-type') || '';
+      if (!r.ok || tipo.indexOf('application/json') >= 0) {
+        return r.json().then(function (j) {
+          throw new Error((j && j.error) || 'no se pudo armar el archivo');
+        }, function () { throw new Error('no se pudo armar el archivo'); });
+      }
+      var nombre = 'reporte';
+      var cd = r.headers.get('content-disposition') || '';
+      var m = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd);
+      if (m) nombre = decodeURIComponent(m[1]);
+      return r.blob().then(function (b) {
+        var u = URL.createObjectURL(b);
+        var a = document.createElement('a');
+        a.href = u; a.download = nombre;
+        document.body.appendChild(a); a.click(); a.remove();
+        /* el revoke va diferido: si se corta el objeto en el mismo tic, hay
+           navegadores que bajan un archivo de 0 bytes */
+        setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+        aviso('Listo: ' + nombre, 'ok');
+        listo();
+      });
+    }).catch(function (e) {
+      aviso(e.message || 'no se pudo armar el archivo', 'err');
+      listo();
+    });
   }
 
   /* El Word se baja como archivo. El "PDF" abre el reporte en una pestaña y
@@ -1192,11 +1297,11 @@
     }
     var bp = e.target.closest('[data-pdf]');
     if (bp && RAIZ && RAIZ.contains(bp)) {
-      e.stopPropagation(); pdfInforme(bp.getAttribute('data-pdf')); return;
+      e.stopPropagation(); pdfInforme(bp.getAttribute('data-pdf'), bp); return;
     }
     var bw = e.target.closest('[data-doc]');
     if (bw && RAIZ && RAIZ.contains(bw)) {
-      e.stopPropagation(); wordInforme(bw.getAttribute('data-doc')); return;
+      e.stopPropagation(); wordInforme(bw.getAttribute('data-doc'), bw); return;
     }
 
     var x = e.target.closest('[data-borrar]');

@@ -527,3 +527,10 @@ main.lienzo{padding:0; max-width:none; margin:0}
   border:1px solid #BCD8BC !important; font-weight:700}
 #detSave.btn-hecho:hover,#detPublicar.btn-hecho:hover{background:#DCEBDC !important}
 #detPublicar.btn-hecho svg{color:#2E5E2E}
+
+/* las preguntas de una sola respuesta (comparación, detalle) */
+#datosRaiz .dt-inf-r{display:grid; gap:6px;
+  grid-template-columns:repeat(auto-fill, minmax(240px, 1fr))}
+#datosRaiz .dt-inf-r .dt-inf-o{background:var(--surface)}
+#datosRaiz .dt-inf-cmp{margin:2px 0 0; font-size:var(--t-nano); color:var(--ink3)}
+#datosRaiz .dt-inf-cmp::before{content:"↔ "}

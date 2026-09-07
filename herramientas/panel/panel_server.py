@@ -2223,6 +2223,23 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as ex:        # noqa
                 return self._json({"ok": False, "error": str(ex)}, 400)
 
+        if path == "/api/datos/deck-pdf":
+            # El PDF baja como archivo: nada de abrir el reporte y disparar
+            # Ctrl+P, que no es descargar sino imprimir. Lo arma el navegador
+            # de la maquina en modo headless, con la hoja print del deck.
+            rep = datos_api.buscar(cfg, (q.get("id") or [""])[0])
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            inf = datos_api.buscar_informe(rep, (q.get("informe") or [""])[0])
+            try:
+                ruta, err = datos_api.deck_derivaciones_pdf(rep, STATE_DIR, inf)
+            except Exception as ex:        # noqa
+                ruta, err = None, str(ex)
+            if err or not ruta:
+                return self._json({"error": err or "no pude armarlo"}, 400)
+            return self._file(ruta, "application/pdf",
+                              nombre=os.path.basename(ruta))
+
         if path == "/api/datos/deck-word":
             # El mismo reporte con diseno, pero en .docx: una lamina por hoja,
             # apaisada. No es el reporte generico de reporte.py, que es otro
@@ -2478,10 +2495,12 @@ class Handler(BaseHTTPRequestHandler):
             if not rep:
                 return self._json({"error": "no encuentro ese reporte"}, 404)
             secs = cuerpo.get("secciones")
+            ops = cuerpo.get("opciones")
             inf, err = datos_api.informe_nuevo(
                 rep, str(cuerpo.get("nombre") or "")[:80],
                 str(cuerpo.get("desde") or ""), str(cuerpo.get("hasta") or ""),
-                [str(x) for x in secs] if isinstance(secs, list) else None)
+                [str(x) for x in secs] if isinstance(secs, list) else None,
+                ops if isinstance(ops, dict) else None)
             if err:
                 return self._json({"error": err}, 400)
             datos_api.guardar(STATE_DIR, cfg)

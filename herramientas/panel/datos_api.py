@@ -19,8 +19,8 @@ import json
 import os
 import re
 
-from datos import (analizador, deck, deck_word, derivaciones, encabezado,
-                   fuentes, lecturas, medidas, reporte, revisor)
+from datos import (a_pdf, analizador, deck, deck_word, derivaciones,
+                   encabezado, fuentes, lecturas, medidas, reporte, revisor)
 
 try:
     from datos import google_sheets
@@ -240,7 +240,48 @@ def secciones_posibles():
     return [{"id": k, "titulo": t, "detalle": det} for k, t, det in deck.SECCIONES]
 
 
-def informe_nuevo(rep, nombre, desde, hasta, secciones=None):
+def opciones_posibles():
+    """El resto de las preguntas: detalle, comparación, nombres.
+
+    Salen de acá y no de la pantalla por lo mismo que las secciones: el día que
+    haya una forma más de comparar, aparece sola en el formulario.
+    """
+    return {
+        "detalle": [{"id": k, "titulo": t, "detalle": d}
+                    for k, t, d in deck.DETALLES],
+        "comparar": [{"id": k, "titulo": t, "detalle": d}
+                     for k, t, d in deck.COMPARACIONES],
+    }
+
+
+def _periodo_previo(desde, hasta, modo):
+    """(desde, hasta, cómo se llama) del período contra el que se compara.
+
+    Un mes entero se compara contra el mes ANTERIOR, no contra «los 31 días de
+    antes»: si agosto se comparara contra el 1 al 31 de julio corrido desde el
+    1 de agosto hacia atrás, daría del 2/7 al 1/8 y no sería julio. Para un
+    rango cualquiera sí se usa la misma cantidad de días, pegados atrás.
+    """
+    if not desde or not hasta or modo not in ("anterior", "ano"):
+        return None, None, ""
+    if modo == "ano":
+        try:
+            a, z = desde.replace(year=desde.year - 1), hasta.replace(year=hasta.year - 1)
+        except ValueError:                      # 29 de febrero
+            a = desde.replace(year=desde.year - 1, day=28)
+            z = hasta.replace(year=hasta.year - 1, day=28)
+        return a, z, "el mismo período de %d" % a.year
+    fin_de_mes = (hasta + datetime.timedelta(days=1)).day == 1
+    if desde.day == 1 and fin_de_mes and desde.month == hasta.month:
+        ultimo = desde - datetime.timedelta(days=1)         # el día previo
+        primero = ultimo.replace(day=1)
+        return primero, ultimo, deck._titulo_mes(primero.strftime("%Y-%m"))
+    dias = (hasta - desde).days + 1
+    z = desde - datetime.timedelta(days=1)
+    return z - datetime.timedelta(days=dias - 1), z, "los %d días anteriores" % dias
+
+
+def informe_nuevo(rep, nombre, desde, hasta, secciones=None, opciones=None):
     """Suma un informe al reporte. Devuelve (informe, error)."""
     nombre = (nombre or "").strip()
     if not nombre:
@@ -262,10 +303,26 @@ def informe_nuevo(rep, nombre, desde, hasta, secciones=None):
         "hasta": str(hasta or ""),
         # se guardan EN EL ORDEN del reporte, no en el que se tildaron
         "secciones": [k for k in deck.TODAS if k in elegidas],
+        "opciones": _limpiar_opciones(opciones),
         "creado": datetime.date.today().isoformat(),
     }
     rep.setdefault("informes", []).insert(0, inf)   # el último arriba
     return inf, None
+
+
+def _limpiar_opciones(op):
+    """Solo lo que el reporte entiende. Lo que llega de afuera no se guarda tal cual."""
+    op = op if isinstance(op, dict) else {}
+    validos_det = {k for k, _, _ in deck.DETALLES}
+    validos_cmp = {k for k, _, _ in deck.COMPARACIONES}
+    det = str(op.get("detalle") or "10")
+    cmp_ = str(op.get("comparar") or "anterior")
+    return {
+        "detalle": det if det in validos_det else "10",
+        "comparar": cmp_ if cmp_ in validos_cmp else "anterior",
+        "anonimo": bool(op.get("anonimo")),
+        "nota": str(op.get("nota") or "")[:280],
+    }
 
 
 def informe_borrar(rep, iid):
@@ -400,6 +457,7 @@ def analizar_fuente(rep, state_dir):
         # viaje en que dibuja el reporte
         "informes": informes(rep),
         "secciones_posibles": secciones_posibles(),
+        "opciones_posibles": opciones_posibles(),
         # Que se puede medir en esta planilla, y que se eligio medir. Van con el
         # analisis y no en una ruta aparte porque salen de el: pedirlos por
         # separado obligaria a analizar la planilla dos veces.
@@ -439,7 +497,48 @@ def deck_derivaciones(rep, state_dir, informe=None):
         return None, d.get("error")
     titulo = ((informe or {}).get("nombre")
               or rep.get("titulo") or "Derivaciones y ventas")
-    return deck.armar(d, titulo, (informe or {}).get("secciones")), None
+    return deck.armar(d, titulo, (informe or {}).get("secciones"),
+                      _opciones_de(informe, r["filas"], state_dir)), None
+
+
+def _opciones_de(informe, filas, state_dir):
+    """Las opciones del informe, ya con el período de comparación calculado.
+
+    El análisis del período anterior se hace acá y NO en el deck: el deck
+    dibuja, no lee planillas. Así también queda claro que los dos números
+    salen del mismo archivo leído una sola vez.
+    """
+    op = dict((informe or {}).get("opciones") or {})
+    op.setdefault("detalle", "10")
+    op.setdefault("comparar", "anterior")
+    desde = _fecha_de((informe or {}).get("desde"))
+    hasta = _fecha_de((informe or {}).get("hasta"))
+    a, z, comollama = _periodo_previo(desde, hasta, op.get("comparar"))
+    if a and z:
+        previo = derivaciones.analizar(filas, state_dir, desde_f=a, hasta_f=z)
+        if previo.get("ok") and previo["total"]["consultas"]:
+            op["previo"] = previo
+            op["previo_txt"] = comollama
+    return op
+
+
+def deck_derivaciones_pdf(rep, state_dir, informe=None):
+    """(ruta, error) del reporte con diseño en PDF, listo para bajar.
+
+    Sale del MISMO html que se ve en pantalla, impreso por el navegador con la
+    hoja `@media print` del deck. Por eso el PDF no puede quedar desfasado del
+    reporte: no hay una segunda versión del diseño que mantener.
+    """
+    html, err = deck_derivaciones(rep, state_dir, informe)
+    if err or not html:
+        return None, err or "no pude armar el reporte"
+    titulo = ((informe or {}).get("nombre")
+              or rep.get("titulo") or "Derivaciones y ventas")
+    carpeta = os.path.join(state_dir, "reportes")
+    if not os.path.isdir(carpeta):
+        os.makedirs(carpeta)
+    return a_pdf.desde_html(html, os.path.join(carpeta,
+                                               a_pdf.nombre_archivo(titulo)))
 
 
 def deck_derivaciones_word(rep, state_dir, informe=None):
@@ -468,7 +567,8 @@ def deck_derivaciones_word(rep, state_dir, informe=None):
     if not os.path.isdir(carpeta):
         os.makedirs(carpeta)
     ruta = os.path.join(carpeta, deck_word.nombre_archivo(titulo))
-    deck_word.a_word(d, ruta, titulo, (informe or {}).get("secciones"))
+    deck_word.a_word(d, ruta, titulo, (informe or {}).get("secciones"),
+                     _opciones_de(informe, r["filas"], state_dir))
     return ruta, None
 
 
