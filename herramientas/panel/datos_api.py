@@ -251,6 +251,9 @@ def opciones_posibles():
                     for k, t, d in deck.DETALLES],
         "comparar": [{"id": k, "titulo": t, "detalle": d}
                      for k, t, d in deck.COMPARACIONES],
+        "vista": [{"id": k, "titulo": t, "detalle": d}
+                  for k, t, d in deck.VISTAS],
+        "con_lista": list(deck.CON_LISTA),
     }
 
 
@@ -310,19 +313,89 @@ def informe_nuevo(rep, nombre, desde, hasta, secciones=None, opciones=None):
     return inf, None
 
 
-def _limpiar_opciones(op):
-    """Solo lo que el reporte entiende. Lo que llega de afuera no se guarda tal cual."""
+def _limpiar_opciones(op, antes=None):
+    """Solo lo que el reporte entiende. Lo que llega de afuera no se guarda tal cual.
+
+    `antes` son las opciones que ya tenía el informe: al editar llega solo lo
+    que se tocó, y lo que no viene tiene que quedar como estaba en vez de
+    volver al valor de fábrica.
+    """
     op = op if isinstance(op, dict) else {}
+    vieja = antes if isinstance(antes, dict) else {}
     validos_det = {k for k, _, _ in deck.DETALLES}
     validos_cmp = {k for k, _, _ in deck.COMPARACIONES}
-    det = str(op.get("detalle") or "10")
-    cmp_ = str(op.get("comparar") or "anterior")
+    validos_vis = {k for k, _, _ in deck.VISTAS}
+    det = str(op.get("detalle") or vieja.get("detalle") or "10")
+    cmp_ = str(op.get("comparar") or vieja.get("comparar") or "anterior")
+    vis = str(op.get("vista") or vieja.get("vista") or "barras")
+
+    # las vistas por sección: solo las que son una lista, y solo valores validos
+    vistas = dict(vieja.get("vistas") or {})
+    vistas.update(op.get("vistas") if isinstance(op.get("vistas"), dict) else {})
+    vistas = {k: v for k, v in vistas.items()
+              if k in deck.CON_LISTA and v in validos_vis}
+
+    # los textos reescritos. Un texto vacio BORRA el de encima y devuelve el de
+    # fabrica: es la unica forma de arrepentirse sin tener que acordarse del
+    # original.
+    textos = dict(vieja.get("textos") or {})
+    nuevos = op.get("textos") if isinstance(op.get("textos"), dict) else {}
+    for k, v in nuevos.items():
+        k = str(k)[:80]
+        v = str(v or "").strip()[:600]
+        if v:
+            textos[k] = v
+        else:
+            textos.pop(k, None)
+
     return {
         "detalle": det if det in validos_det else "10",
         "comparar": cmp_ if cmp_ in validos_cmp else "anterior",
-        "anonimo": bool(op.get("anonimo")),
-        "nota": str(op.get("nota") or "")[:280],
+        "vista": vis if vis in validos_vis else "barras",
+        "vistas": vistas,
+        "textos": textos,
+        "anonimo": bool(op.get("anonimo") if "anonimo" in op
+                        else vieja.get("anonimo")),
+        "nota": str(op.get("nota") if "nota" in op
+                    else (vieja.get("nota") or ""))[:280],
     }
+
+
+def informe_editar(rep, iid, nombre=None, opciones=None):
+    """Cambia un informe ya creado. Devuelve (informe, error).
+
+    Los números NO se guardan nunca: se recalculan al abrirlo. Acá solo se
+    guarda cómo se llama y cómo se muestra.
+    """
+    inf = buscar_informe(rep, iid)
+    if not inf:
+        return None, "no encuentro ese reporte"
+    if nombre is not None:
+        nombre = str(nombre).strip()[:80]
+        if not nombre:
+            return None, "Ponele un nombre."
+        inf["nombre"] = nombre
+    inf["opciones"] = _limpiar_opciones(opciones, inf.get("opciones"))
+    return inf, None
+
+
+def textos_editables(rep, state_dir, informe):
+    """(lista, error) de todo lo que se puede reescribir en ESE informe."""
+    r, an, _, _ = _leer_y_analizar(rep)
+    if not r.get("ok"):
+        return None, r.get("error")
+    if not derivaciones.es_derivaciones(an):
+        return None, "esto es para la planilla de derivaciones"
+    d = derivaciones.analizar(
+        r["filas"], state_dir,
+        desde_f=_fecha_de((informe or {}).get("desde")),
+        hasta_f=_fecha_de((informe or {}).get("hasta")))
+    if not d.get("ok"):
+        return None, d.get("error")
+    titulo = ((informe or {}).get("nombre")
+              or rep.get("titulo") or "Derivaciones y ventas")
+    return deck.catalogo(d, titulo, (informe or {}).get("secciones"),
+                         _opciones_de(informe, r["filas"], state_dir)), None
 
 
 def informe_borrar(rep, iid):

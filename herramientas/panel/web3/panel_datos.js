@@ -876,9 +876,14 @@
        (explicaba por qué una lectura no se podía publicar).
        Las funciones quedan enteras y sin llamar: el día que haya un informe
        que sí vaya al sitio, se vuelven a sumar acá. */
+    /* «Para arreglar en la planilla» tampoco se dibuja (pedido del usuario,
+       7-sep). Era una lista de valores cargados de dos formas para ir a
+       corregir a mano en Google; desde que el analizador junta solo las
+       escrituras del mismo texto, lo que quedaba ahí no cambia ningún número
+       —es orden de palabras y puntuación— y ocupaba lo primero que se ve al
+       entrar. `seccionArreglar` queda entera y sin llamar, como las otras. */
     cont.innerHTML =
       seccionIdentidad(datos.identidad) +
-      seccionArreglar(avisos, false) +
       seccionColumnas(an);
 
     var barra = cont.querySelector('.dt-barra');

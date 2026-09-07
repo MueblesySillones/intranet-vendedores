@@ -537,3 +537,39 @@ main.lienzo{padding:0; max-width:none; margin:0}
 
 /* el mensaje que manda el servidor mientras actualiza ("Descargando… 4 de 20 MB") */
 #updProgMsg{margin-top:10px; font-size:var(--t-mini); color:var(--ink3); line-height:1.5}
+
+/* ---------- EDITAR UN REPORTE: las palabras y la vista de cada lista ---------- */
+#datosRaiz .dt-inf-e{width:100%; margin-top:6px; padding:6px 10px; font:inherit;
+  font-size:var(--t-mini); color:var(--ink3); background:none; border:0;
+  border-top:1px solid var(--line); border-radius:0; cursor:pointer;
+  text-align:center}
+#datosRaiz .dt-inf-e:hover{color:var(--ink)}
+#datosRaiz .dt-ed-g{padding:14px 16px; background:var(--surface);
+  border:1px solid var(--line); border-radius:var(--r-md)}
+#datosRaiz .dt-ed-v{margin:0 0 10px}
+#datosRaiz .dt-at.on{background:var(--accent); color:#fff; border-color:transparent}
+#datosRaiz .dt-ed-t{display:block; margin:0 0 10px}
+#datosRaiz .dt-ed-d{display:block; font-size:var(--t-mini); color:var(--ink3);
+  line-height:1.45; margin:0 0 3px}
+#datosRaiz .dt-ed-av{display:block; font-size:var(--t-nano); color:var(--warn);
+  margin:0 0 3px}
+#datosRaiz .dt-ed-t textarea{width:100%; padding:7px 10px; font:inherit;
+  font-size:var(--t-mini); color:var(--ink); background:var(--panel);
+  border:1px solid var(--line); border-radius:var(--r-sm); resize:vertical}
+#datosRaiz .dt-ed-t textarea:focus{border-color:var(--line3); background:var(--surface)}
+#datosRaiz .dt-inf-ac .dt-chico{flex:1; min-width:200px}
+
+/* el editor va plegado por lámina: 40 campos de un tirón no se pueden trabajar */
+#datosRaiz details.dt-ed-g{padding:0}
+#datosRaiz details.dt-ed-g > summary{display:flex; align-items:center; gap:10px;
+  padding:12px 16px; cursor:pointer; list-style:none; border-radius:var(--r-md)}
+#datosRaiz details.dt-ed-g > summary::-webkit-details-marker{display:none}
+#datosRaiz details.dt-ed-g > summary::before{content:"›"; font-size:16px;
+  color:var(--ink3); transition:transform .16s var(--mov)}
+#datosRaiz details.dt-ed-g[open] > summary::before{transform:rotate(90deg)}
+#datosRaiz details.dt-ed-g > summary:hover{background:var(--panel)}
+#datosRaiz details.dt-ed-g > summary b{flex:1; font-size:var(--t-base)}
+#datosRaiz details.dt-ed-g > summary i{font-style:normal; font-size:var(--t-nano);
+  color:var(--ink3)}
+#datosRaiz details.dt-ed-g > *:not(summary){margin-left:16px; margin-right:16px}
+#datosRaiz details.dt-ed-g[open]{padding-bottom:12px}

@@ -1017,7 +1017,10 @@
           '">Descargar PDF</button>' +
         '<button type="button" class="btn" data-doc="' + esc(i.id) +
           '">Descargar Word</button>' +
-      '</div></article>';
+      '</div>' +
+      '<button type="button" class="dt-inf-e" data-editar="' + esc(i.id) +
+        '">Editar palabras y vistas</button>' +
+      '</article>';
   }
 
   /* El formulario pregunta, en el orden en que uno lo piensa: cómo se llama,
@@ -1168,6 +1171,158 @@
     };
   }
 
+  /* ══════════════════ EDITAR UN REPORTE YA CREADO ══════════════════
+     Dos cosas distintas, y las dos las pidió el usuario:
+
+     · Las PALABRAS. Un reporte lo lee gente y a veces una palabra no es la
+       que se usa en la casa. Cada texto se puede reescribir; dejarlo vacío
+       vuelve al de fábrica, que es la única forma de arrepentirse sin tener
+       que acordarse del original.
+
+     · La VISTA de cada lista: barras o tabla. Son los mismos números
+       dibujados distinto, así que las dos no pueden decir cosas diferentes.
+
+     ⚠️ Nunca se editan NÚMEROS: se calculan al abrir el reporte. Pero hay
+     frases que llevan un número adentro; ésas se marcan al editarlas, porque
+     si se reescriben el número queda a mano y no se actualiza más.
+     ══════════════════════════════════════════════════════════════════ */
+  var EDITANDO = null;
+
+  function editarInforme(iid) {
+    var inf = ((ULTIMO && ULTIMO.informes) || []).filter(
+      function (x) { return x.id === iid; })[0];
+    if (!inf) return;
+    EDITANDO = iid;
+    var caja = document.getElementById('dtInfForm');
+    if (!caja) return;
+    caja.hidden = false;
+    caja.innerHTML = '<div class="dt-inf-f"><div class="dt-cargando">' +
+      'Leyendo el reporte para ver qué se puede cambiar…</div></div>';
+    api('/api/datos/informe-textos?id=' + encodeURIComponent(ABIERTO) +
+        '&informe=' + encodeURIComponent(iid)).then(function (r) {
+      if (!r || r.error) {
+        caja.hidden = true; caja.innerHTML = '';
+        aviso((r && r.error) || 'No pude leer el reporte', 'err');
+        return;
+      }
+      pintarEditor(caja, r.informe || inf, r.textos || []);
+    });
+  }
+
+  /* Los textos vienen en el orden en que aparecen en el reporte y con la
+     clave «lamina.parte»; se agrupan por lámina para que la pantalla siga el
+     mismo orden que lo que se está mirando. */
+  function porLamina(textos) {
+    var orden = [], grupos = {};
+    textos.forEach(function (t) {
+      var k = String(t.clave).split('.')[0];
+      if (!grupos[k]) { grupos[k] = []; orden.push(k); }
+      grupos[k].push(t);
+    });
+    return orden.map(function (k) { return { id: k, textos: grupos[k] }; });
+  }
+
+  function nombreDeLamina(id) {
+    var s = SECCIONES.filter(function (x) { return x.id === id; })[0];
+    if (s) return s.titulo;
+    return { portada: 'La portada', comparacion: 'La comparación',
+             limites: 'Los límites' }[id] || id;
+  }
+
+  function pintarEditor(caja, inf, textos) {
+    var ops = inf.opciones || {};
+    var vistas = ops.vistas || {};
+    var conLista = OPCIONES.con_lista || [];
+    var grupos = porLamina(textos);
+
+    caja.innerHTML =
+      '<div class="dt-inf-f">' +
+      '<div class="dt-inf-q"><b>El nombre del reporte</b>' +
+        '<input type="text" id="dtEdN" maxlength="80" value="' +
+        esc(inf.nombre || '') + '"></div>' +
+      grupos.map(function (g) {
+        var eligeVista = conLista.indexOf(g.id) >= 0;
+        /* Cada lamina va plegada: son 40 campos y de un tiron no se puede
+           trabajar. Se abre la que se quiere tocar. */
+        return '<details class="dt-inf-q dt-ed-g"><summary><b>' +
+          esc(nombreDeLamina(g.id)) + '</b><i>' + g.textos.length +
+          (g.textos.length === 1 ? ' texto' : ' textos') + '</i></summary>' +
+          (eligeVista
+            ? '<div class="dt-inf-at dt-ed-v" data-sec="' + esc(g.id) + '">' +
+              (OPCIONES.vista || []).map(function (v) {
+                var puesta = (vistas[g.id] || ops.vista || 'barras') === v.id;
+                return '<button type="button" class="dt-at' +
+                  (puesta ? ' on' : '') + '" data-vista="' + esc(v.id) +
+                  '" title="' + esc(v.detalle) + '">' + esc(v.titulo) +
+                  '</button>';
+              }).join('') + '</div>'
+            : '') +
+          g.textos.map(function (t) {
+            return '<label class="dt-ed-t' + (t.numeros ? ' con-num' : '') + '">' +
+              '<span class="dt-ed-d">' + esc(t.defecto) + '</span>' +
+              (t.numeros
+                ? '<span class="dt-ed-av">Tiene números adentro: si lo ' +
+                  'reescribís, dejan de actualizarse solos.</span>'
+                : '') +
+              '<textarea rows="' + (t.defecto.length > 70 ? 3 : 1) +
+                '" data-texto="' + esc(t.clave) + '" maxlength="600" ' +
+                'placeholder="Dejalo vacío para usar el de arriba">' +
+                esc(t.propio ? t.valor : '') + '</textarea>' +
+              '</label>';
+          }).join('') + '</details>';
+      }).join('') +
+      '<div class="dt-inf-ac">' +
+        '<button type="button" class="btn active" id="dtEdOk">Guardar cambios</button>' +
+        '<button type="button" class="dt-volver" id="dtEdNo">Cancelar</button>' +
+        '<span class="dt-chico">Los números no se tocan: se calculan cada vez ' +
+        'que abrís el reporte.</span>' +
+      '</div></div>';
+
+    // los botones de vista: uno solo prendido por sección
+    var vs = caja.querySelectorAll('.dt-ed-v');
+    for (var i = 0; i < vs.length; i++) {
+      (function (fila) {
+        var bts = fila.querySelectorAll('.dt-at');
+        for (var j = 0; j < bts.length; j++) {
+          bts[j].onclick = (function (b) {
+            return function () {
+              for (var k = 0; k < bts.length; k++) bts[k].classList.remove('on');
+              b.classList.add('on');
+            };
+          }(bts[j]));
+        }
+      }(vs[i]));
+    }
+
+    document.getElementById('dtEdNo').onclick = function () {
+      EDITANDO = null; caja.hidden = true; caja.innerHTML = '';
+    };
+    document.getElementById('dtEdOk').onclick = function () {
+      var ts = {}, vv = {};
+      var tas = caja.querySelectorAll('[data-texto]');
+      for (var i = 0; i < tas.length; i++) {
+        // se manda TODO, tambien lo vacio: un vacio borra lo de encima
+        ts[tas[i].getAttribute('data-texto')] = tas[i].value;
+      }
+      var filas = caja.querySelectorAll('.dt-ed-v');
+      for (var j = 0; j < filas.length; j++) {
+        var on = filas[j].querySelector('.dt-at.on');
+        if (on) vv[filas[j].getAttribute('data-sec')] = on.getAttribute('data-vista');
+      }
+      post('/api/datos/informe-editar', {
+        id: ABIERTO, informe: inf.id,
+        nombre: document.getElementById('dtEdN').value,
+        opciones: { textos: ts, vistas: vv }
+      }).then(function (r) {
+        if (r.error) { aviso(r.error, 'err'); return; }
+        aviso('Reporte actualizado', 'ok');
+        EDITANDO = null;
+        if (ULTIMO) ULTIMO.informes = r.informes || [];
+        pintarInformes(ABIERTO, r.informes || []);
+      });
+    };
+  }
+
   /* Las tres salidas del mismo reporte. Van todas por `informe=` para que
      digan lo mismo: si el PDF y el Word salieran por caminos distintos, tarde
      o temprano uno de los dos mentiría. */
@@ -1291,6 +1446,10 @@
 
     /* los tres botones de una tarjeta: el mismo reporte con diseno, recortado
        a su periodo, mirandolo / en PDF / en Word */
+    var be = e.target.closest('[data-editar]');
+    if (be && RAIZ && RAIZ.contains(be)) {
+      e.stopPropagation(); editarInforme(be.getAttribute('data-editar')); return;
+    }
     var bv = e.target.closest('[data-ver]');
     if (bv && RAIZ && RAIZ.contains(bv)) {
       e.stopPropagation(); verInforme(bv.getAttribute('data-ver')); return;
