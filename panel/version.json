@@ -1,8 +1,8 @@
 {
-  "version": 42,
-  "label": "1.6.0 - el reporte se arma preguntando",
-  "notes": "Crear un reporte ahora es contestar tres preguntas: como se llama, de que periodo (con atajos para el mes pasado, este mes o los ultimos 7 dias) y que querés que mida: el embudo, mes a mes, por sucursal, por vendedor, seguimiento enviado, el cuello de botella del precio o por que se pierden. Cada reporte creado queda como una tarjeta con tres botones: Ver reporte, Descargar PDF y Descargar Word, y los tres salen con el diseno de las laminas, no con el tablero de antes. El Word baja apaisado, una lamina por hoja. Releer la planilla no toca los reportes ya creados. Ademas, el reporte ahora dice cuantas filas dejo afuera al recortar el periodo, para que nadie piense que faltan datos al compararlo con el total.",
-  "sha256": "8f5c249109c4cb4ef07dd6ed219e13635bf208dd61648ed986d51729d9d97759",
-  "size": 20062779,
-  "url": "panel/PanelMyS-v42.zip"
+  "version": 43,
+  "label": "1.7.0 - el PDF baja de una",
+  "notes": "El boton Descargar PDF ahora baja el archivo de una, sin abrir el dialogo de impresion ni pedirte donde guardarlo. Y al crear un reporte hay mas para elegir: pasa de tres preguntas a siete. Se sumaron tres cosas para medir -que productos consultan, de que campana vienen y por que canal entran- y se puede pedir que el reporte compare contra el periodo anterior o contra el ano pasado, elegir cuanto detalle entra en cada lista, sacar los nombres del equipo si el reporte sale del equipo, y escribir una aclaracion en la portada. Todo viene con una respuesta puesta, asi que hacer el reporte de siempre sigue siendo apretar dos botones.",
+  "sha256": "05e3d2546fa9aedf67ed0ce53b48c54b67ab3046c30284143de8080b5afedc2b",
+  "size": 20080688,
+  "url": "panel/PanelMyS-v43.zip"
 }
