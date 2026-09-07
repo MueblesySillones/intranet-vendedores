@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.7.0"
-NUEVO_LABEL = "1.7.0 - el PDF baja de una"
-NUEVAS_NOTAS = ("El boton Descargar PDF ahora baja el archivo de una, sin abrir el dialogo de impresion ni pedirte donde guardarlo. Y al crear un reporte hay mas para elegir: pasa de tres preguntas a siete. Se sumaron tres cosas para medir -que productos consultan, de que campana vienen y por que canal entran- y se puede pedir que el reporte compare contra el periodo anterior o contra el ano pasado, elegir cuanto detalle entra en cada lista, sacar los nombres del equipo si el reporte sale del equipo, y escribir una aclaracion en la portada. Todo viene con una respuesta puesta, asi que hacer el reporte de siempre sigue siendo apretar dos botones.")
+NUEVA_PUBLICA = "1.7.1"
+NUEVO_LABEL = "1.7.1 - el boton Actualizar dice la verdad"
+NUEVAS_NOTAS = ("Apretar Actualizar mostraba No se pudo actualizar aunque la actualizacion estuviera corriendo igual. Ahora se abre la ventana con la barra de progreso: va diciendo cuantos MB lleva bajados, marca los cuatro pasos -bajar, verificar, instalar, reabrir- y el panel se reinicia solo con la version nueva. Si de verdad falla algo, lo dice con el motivo y deja reintentar.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

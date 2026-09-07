@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 43
+VERSION = 44
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,19 +279,15 @@ VERSION = 43
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.7.0"
-VERSION_LABEL = "1.7.0 - el PDF baja de una"
+VERSION_PUBLICA = "1.7.1"
+VERSION_LABEL = "1.7.1 - el boton Actualizar dice la verdad"
 VERSION_NOTES = (
-                 "El boton Descargar PDF ahora baja el archivo de una, sin abrir el "
-                 "dialogo de impresion ni pedirte donde guardarlo. Y al crear un "
-                 "reporte hay mas para elegir: pasa de tres preguntas a siete. Se "
-                 "sumaron tres cosas para medir -que productos consultan, de que "
-                 "campana vienen y por que canal entran- y se puede pedir que el "
-                 "reporte compare contra el periodo anterior o contra el ano pasado, "
-                 "elegir cuanto detalle entra en cada lista, sacar los nombres del "
-                 "equipo si el reporte sale del equipo, y escribir una aclaracion en "
-                 "la portada. Todo viene con una respuesta puesta, asi que hacer el "
-                 "reporte de siempre sigue siendo apretar dos botones.")
+                 "Apretar Actualizar mostraba No se pudo actualizar aunque la "
+                 "actualizacion estuviera corriendo igual. Ahora se abre la ventana "
+                 "con la barra de progreso: va diciendo cuantos MB lleva bajados, "
+                 "marca los cuatro pasos -bajar, verificar, instalar, reabrir- y el "
+                 "panel se reinicia solo con la version nueva. Si de verdad falla "
+                 "algo, lo dice con el motivo y deja reintentar.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
