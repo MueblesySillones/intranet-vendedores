@@ -96,22 +96,68 @@ with sync_playwright() as pw:
     check("el formulario hace las tres preguntas", form_pregunta)
 
     def opciones_de_medir():
+        # solo la grilla de la pregunta 3, sin el «sin nombres» de la 6 ni los
+        # radios de las otras: son preguntas distintas y se cuentan aparte
         ops = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-o b", "ns => ns.map(n => n.textContent.trim())")
-        if len(ops) < 5:
+            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s .dt-inf-o b",
+            "ns => ns.map(n => n.textContent.trim())")
+        if len(ops) < 8:
             raise AssertionError("solo %d cosas para medir: %s" % (len(ops), ops))
-        falta = [x for x in ("El embudo", "Por sucursal", "Por vendedor")
+        falta = [x for x in ("El embudo", "Por sucursal", "Por vendedor",
+                             "Qué productos consultan", "De qué campaña vienen",
+                             "Por qué canal entran")
                  if x not in ops]
         if falta:
             raise AssertionError("no se puede elegir: %s" % falta)
         marcadas = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-o input",
+            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s input",
             "ns => ns.filter(n => n.checked).length")
         if marcadas != len(ops):
             raise AssertionError("no vienen todas marcadas: %d de %d"
                                  % (marcadas, len(ops)))
         return "%d cosas para medir, todas marcadas" % len(ops)
     check("se puede elegir qué medir", opciones_de_medir)
+
+    def preguntas_extra():
+        """Las respuestas vienen puestas: crear el reporte de siempre es
+        apretar dos botones, y las preguntas están para el que quiere otra."""
+        v = p.evaluate("""() => ({
+          cmp: (document.querySelector('input[name=dtInfCmp]:checked')||{}).value,
+          det: (document.querySelector('input[name=dtInfDet]:checked')||{}).value,
+          anon: document.getElementById('dtInfAnon').checked,
+          nota: document.getElementById('dtInfNota') ? 'sí' : 'no',
+          ncmp: document.querySelectorAll('input[name=dtInfCmp]').length,
+          ndet: document.querySelectorAll('input[name=dtInfDet]').length
+        })""")
+        if v["cmp"] != "anterior":
+            raise AssertionError("la comparación no viene en «anterior»: %s" % v)
+        if v["det"] != "10":
+            raise AssertionError("el detalle no viene en 10: %s" % v)
+        if v["anon"]:
+            raise AssertionError("viene sin nombres por defecto")
+        if v["nota"] != "sí" or v["ncmp"] < 3 or v["ndet"] < 3:
+            raise AssertionError("faltan opciones: %s" % v)
+        return ("comparar=%s (%d opciones) · detalle=%s (%d) · con nombres · "
+                "con nota" % (v["cmp"], v["ncmp"], v["det"], v["ndet"]))
+    check("comparación, detalle, nombres y nota vienen resueltos", preguntas_extra)
+
+    def desmarcar_todas():
+        p.click('#dtInfForm .dt-at[data-marca="ninguna"]')
+        n = p.eval_on_selector_all(
+            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s input",
+            "ns => ns.filter(x => x.checked).length")
+        if n:
+            raise AssertionError("quedaron %d marcadas" % n)
+        p.click("#dtInfOk")
+        p.wait_for_timeout(600)
+        p.click('#dtInfForm .dt-at[data-marca="todas"]')
+        n2 = p.eval_on_selector_all(
+            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s input",
+            "ns => ns.filter(x => x.checked).length")
+        if not n2:
+            raise AssertionError("«marcar todas» no marcó nada")
+        return "marcar/desmarcar todas anda, y sin nada marcado no deja crear"
+    check("los atajos de «qué medir» funcionan", desmarcar_todas)
 
     def atajo_de_periodo():
         p.click('#dtInfForm .dt-at[data-per="semana"]')
@@ -134,10 +180,13 @@ with sync_playwright() as pw:
           if (t) t.querySelector('input').checked = false;
         }""")
         p.click("#dtInfOk")
-        p.wait_for_selector("#dtInformes .dt-inf-c", timeout=30000)
-        txt = p.text_content("#dtInformes") or ""
-        if NOMBRE not in txt:
-            raise AssertionError("no aparece en la biblioteca: %r" % txt[:120])
+        # se espera LA tarjeta de este reporte, no «alguna tarjeta»: si la
+        # biblioteca ya tiene otras, esperar .dt-inf-c vuelve al instante y se
+        # lee la lista antes de que el guardado termine
+        p.wait_for_function(
+            """n => [...document.querySelectorAll('#dtInformes .dt-inf-n')]
+                     .some(e => e.textContent.trim() === n)""",
+            arg=NOMBRE, timeout=40000)
         return "creado y listado como tarjeta"
     check("se crea y aparece como tarjeta", crear)
 
@@ -192,6 +241,28 @@ with sync_playwright() as pw:
         return "abre recortado a agosto, %d láminas" % laminas
     check("«Ver reporte» abre el deck de SU período", ver_reporte)
 
+    def compara_contra_julio():
+        """El reporte de agosto tiene que abrir diciendo qué cambió.
+
+        Es lo que se pidió desde el principio —«comparación con el mes pasado,
+        aumentó un 20%»— y es lo primero que se mira: un total suelto no dice
+        si estuvo bien o mal.
+        """
+        import re
+        import urllib.request
+        url = ("%s/api/datos/deck?id=%s&informe=%s"
+               % (BASE, IDS["rep"], IDS["inf"]))
+        html = urllib.request.urlopen(url, timeout=240).read().decode("utf-8")
+        if "La comparación" not in html:
+            raise AssertionError("no trae la lámina de comparación")
+        if "julio" not in html.lower():
+            raise AssertionError("no dice contra qué compara")
+        m = re.search(r"Las derivaciones (subieron|bajaron) un ([\d,]+%)", html)
+        if not m:
+            raise AssertionError("no dice cuánto cambió")
+        return "compara agosto contra julio: %s un %s" % (m.group(1), m.group(2))
+    check("el reporte compara contra el período anterior", compara_contra_julio)
+
     def word_disenado():
         with p.expect_download() as d:
             p.click("#dtInformes [data-doc]")
@@ -215,19 +286,57 @@ with sync_playwright() as pw:
                                              xml.count('w:type="page"') + 1)
     check("«Descargar Word» baja el diseño, no el tablero", word_disenado)
 
-    def pdf_imprime():
-        """El PDF es el mismo deck con el diálogo de impresión abierto."""
-        p3 = ctx.new_page()
-        p3.set_default_timeout(240000)
-        p3.goto("%s/api/datos/deck?id=%s&informe=%s&imprimir=1"
-                % (BASE, IDS["rep"], IDS["inf"]), wait_until="domcontentloaded")
-        tiene = p3.evaluate(
-            "() => [...document.scripts].some(s => /window.print/.test(s.text))")
-        p3.close()
-        if not tiene:
-            raise AssertionError("la página del PDF no dispara la impresión")
-        return "el mismo deck, imprimiéndose"
-    check("«Descargar PDF» sale del mismo deck", pdf_imprime)
+    def pdf_baja_solo():
+        """Un click y el archivo baja. Nada de abrir el reporte y hacer Ctrl+P.
+
+        Lo que se prueba es el botón de la tarjeta, no la ruta: el pedido fue
+        «cuando haga click se descargue de una», así que si el botón dejara de
+        disparar la descarga, la ruta andando no alcanza.
+        """
+        with p.expect_download(timeout=180000) as d:
+            p.click("#dtInformes [data-pdf]")
+        des = d.value
+        ruta = os.path.join(os.environ.get("TEMP", "."), "qa_deck.pdf")
+        des.save_as(ruta)
+        if not des.suggested_filename.lower().endswith(".pdf"):
+            raise AssertionError("no bajó un .pdf: %s" % des.suggested_filename)
+        with open(ruta, "rb") as f:
+            cabeza = f.read(5)
+        tam = os.path.getsize(ruta)
+        os.remove(ruta)
+        if cabeza != b"%PDF-":
+            raise AssertionError("el archivo no es un PDF: %r" % cabeza)
+        if tam < 20000:
+            raise AssertionError("el PDF vino casi vacío: %d bytes" % tam)
+        return "%s · %d KB" % (des.suggested_filename, tam // 1024)
+    check("«Descargar PDF» baja el archivo de una", pdf_baja_solo)
+
+    def pdf_con_el_diseno():
+        """Que sea un PDF no alcanza: tiene que ser EL reporte, en 16:9."""
+        import urllib.request
+        url = ("%s/api/datos/deck-pdf?id=%s&informe=%s"
+               % (BASE, IDS["rep"], IDS["inf"]))
+        ruta = os.path.join(os.environ.get("TEMP", "."), "qa_deck2.pdf")
+        urllib.request.urlretrieve(url, ruta)
+        try:
+            import fitz
+        except ImportError:
+            os.remove(ruta)
+            return "PDF bajado (sin PyMuPDF no se puede mirar adentro)"
+        doc = fitz.open(ruta)
+        hojas, caja = doc.page_count, doc[0].rect
+        texto = doc[0].get_text() + doc[1].get_text()
+        doc.close()
+        os.remove(ruta)
+        forma = caja.width / float(caja.height)
+        if abs(forma - 16 / 9.0) > 0.02:
+            raise AssertionError("no es 16:9: %.3f" % forma)
+        if hojas < 3:
+            raise AssertionError("solo %d hoja(s): no es el deck" % hojas)
+        if NOMBRE not in texto:
+            raise AssertionError("la portada no dice el nombre del reporte")
+        return "%d hojas en 16:9, con la portada del reporte" % hojas
+    check("el PDF es el deck con su diseño", pdf_con_el_diseno)
 
     def dos_reportes():
         """Dos reportes distintos de la MISMA planilla, sin pisarse."""
