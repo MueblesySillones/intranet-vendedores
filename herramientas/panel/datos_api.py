@@ -379,25 +379,6 @@ def informe_editar(rep, iid, nombre=None, opciones=None):
     return inf, None
 
 
-def textos_editables(rep, state_dir, informe):
-    """(lista, error) de todo lo que se puede reescribir en ESE informe."""
-    r, an, _, _ = _leer_y_analizar(rep)
-    if not r.get("ok"):
-        return None, r.get("error")
-    if not derivaciones.es_derivaciones(an):
-        return None, "esto es para la planilla de derivaciones"
-    d = derivaciones.analizar(
-        r["filas"], state_dir,
-        desde_f=_fecha_de((informe or {}).get("desde")),
-        hasta_f=_fecha_de((informe or {}).get("hasta")))
-    if not d.get("ok"):
-        return None, d.get("error")
-    titulo = ((informe or {}).get("nombre")
-              or rep.get("titulo") or "Derivaciones y ventas")
-    return deck.catalogo(d, titulo, (informe or {}).get("secciones"),
-                         _opciones_de(informe, r["filas"], state_dir)), None
-
-
 def informe_borrar(rep, iid):
     antes = informes(rep)
     rep["informes"] = [i for i in antes if i.get("id") != iid]
