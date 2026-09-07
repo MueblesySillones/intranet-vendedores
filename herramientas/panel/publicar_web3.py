@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.9.0"
-NUEVO_LABEL = "1.9.0 - el lapiz adentro del reporte"
-NUEVAS_NOTAS = ("Ahora el reporte se edita adentro del reporte. Lo abris con Ver reporte y arriba a la izquierda hay un lapiz que dice Editar: lo apretas, tocas cualquier titulo o texto y escribis encima. Al lado quedan Guardar edicion y Cancelar. Mientras editas, cada lista muestra arriba a la derecha si la queres en Barras o en Tabla, y se guarda junto con lo demas. Los numeros no se editan: se calculan solos cada vez que abris el reporte. El PDF y el Word salen con lo que dejaste escrito. Se saco el formulario de edicion que estaba en el panel, porque esto lo reemplaza.")
+NUEVA_PUBLICA = "1.9.1"
+NUEVO_LABEL = "1.9.1 - la tabla se ve al toque y los textos se sacan"
+NUEVAS_NOTAS = ("Dos arreglos de la edicion del reporte. Apretar Tabla ahora cambia la lista en el acto, sin esperar a guardar: antes anotaba la eleccion y no pasaba nada, que es lo mismo que estar roto. Y cada texto tiene una × al lado para sacarlo del reporte, para esos textos que el generador pone y no hacen falta; sacar no borra, el texto queda tachado con un boton Volver a mostrar por si te arrepentis. Ademas la barra de edicion se fue arriba a la derecha, porque a la izquierda tapaba justo el titulo que ibas a editar, y la ayuda amarilla se va sola a los pocos segundos.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
