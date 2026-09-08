@@ -805,7 +805,7 @@
   function pintarAside(cuenta, porEtiqueta) {
     var est = document.getElementById('asideEstado');
     if (est) {
-      var pend = (typeof editados !== 'undefined' && editados) ? editados.size : 0;
+      var pend = (typeof contarPendientes === 'function') ? contarPendientes() : 0;
       est.innerHTML =
         '<div class="dato"><span>A la vista</span><b>' + cuenta.vivas + '</b></div>' +
         '<div class="dato"><span>Fijadas arriba</span><b>' + cuenta.fijadas + '</b></div>' +
@@ -2456,7 +2456,7 @@
     var est = document.getElementById('estadoNav');
     var tit = document.getElementById('estadoTit'), sub = document.getElementById('estadoSub');
     if (!est || !tit) return;
-    var pend = (typeof editados !== 'undefined' && editados) ? editados.size : 0;
+    var pend = (typeof contarPendientes === 'function') ? contarPendientes() : 0;
     est.classList.toggle('pendiente', pend > 0);
     if (pend > 0) {
       tit.textContent = pend === 1 ? '1 cambio sin publicar' : pend + ' cambios sin publicar';

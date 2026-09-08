@@ -734,10 +734,23 @@ function seccionLista(t){ return t.ready || ((window.GALLERIES||{})[t.key]||[]).
    El panel guarda en cada modulo la fecha del ultimo cambio (`actualizado`).
    Con eso el vendedor ve de un vistazo QUE se movio desde la ultima vez que
    entro, en vez de tener que abrir todo para descubrirlo. */
-const DIAS_NOVEDAD = 14;
-/* Se comparan DIAS DE CALENDARIO, no milisegundos: si se mezcla la fecha
-   guardada con la hora local, un cambio de hoy puede dar -1 dia y quedar
-   afuera de las novedades. */
+/* Cuanto dura el cartel «Nuevo». Lo elige la central desde el panel y viaja en
+   modulos.js; 24 horas si el archivo es viejo y no lo trae.
+
+   Por que se vence: NO hay forma de saber si el vendedor lo vio. Un cartel que
+   no se apaga solo termina siendo parte del decorado y deja de avisar nada,
+   que es justo lo contrario de para lo que esta. */
+function horasNovedad(){
+  const h = ((window.AJUSTES||{}).novedad_horas)|0;
+  return h > 0 ? h : 24;
+}
+/* Cuantas horas pasaron. Acepta las dos formas que puede tener la marca:
+   AAAA-MM-DD (lo que ya estaba guardado, se toma como ese dia a las 00:00) y
+   AAAA-MM-DDTHH:MM (lo que escribe el panel desde ahora). */
+/* Los DIAS de calendario. Lo usan la Cartelera (vencimiento y fecha de cada
+   publicacion) y el resumen «lo de esta semana»: ahi lo que importa es el dia,
+   no la hora. Se compara en dias enteros a proposito — mezclar la fecha
+   guardada con la hora local hacia que algo de hoy diera -1 dia. */
 function diasDesde(f){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(f||'')) return null;
   const p = f.split('-').map(Number);
@@ -746,21 +759,30 @@ function diasDesde(f){
   const hoy = Date.UTC(h.getFullYear(), h.getMonth(), h.getDate());
   return Math.round((hoy - cuando) / 86400000);
 }
+function horasDesde(f){
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?$/.exec(f||'');
+  if(!m) return null;
+  const cuando = new Date(+m[1], +m[2]-1, +m[3], +(m[4]||0), +(m[5]||0));
+  return (Date.now() - cuando.getTime()) / 3600000;
+}
 function esNovedad(key){
   const m = MODMAP[key];
   if(!m) return false;
-  const d = diasDesde(m.actualizado);
-  if(d !== null && d <= DIAS_NOVEDAD) return true;   // negativo = guardado hoy en otra franja horaria
+  const tope = horasNovedad();
+  const d = horasDesde(m.actualizado);
+  if(d !== null && d <= tope) return true;   // negativo = otra franja horaria
   /* Un aviso archivado no toca `actualizado` del modulo, porque el modulo no
      se guardo. Pero para el vendedor ES material nuevo ahi adentro. */
   const post = archivadosEn(key)[0];
-  const da = post ? diasDesde(post.fecha) : null;
-  return da !== null && da <= DIAS_NOVEDAD;
+  const da = post ? horasDesde(post.fecha) : null;
+  return da !== null && da <= tope;
 }
 function textoNovedad(key){
-  const d = diasDesde((MODMAP[key]||{}).actualizado);
-  if(d === null) return '';
-  if(d <= 0) return 'Actualizado hoy';
+  const h = horasDesde((MODMAP[key]||{}).actualizado);
+  if(h === null) return '';
+  if(h < 1) return 'Actualizado recién';
+  if(h < 24) return 'Actualizado hace ' + Math.round(h) + (Math.round(h)===1?' hora':' horas');
+  const d = Math.round(h/24);
   if(d === 1) return 'Actualizado ayer';
   if(d <= 7) return 'Actualizado hace ' + d + ' días';
   return 'Actualizado hace ' + Math.round(d/7) + ' semanas';
