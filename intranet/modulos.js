@@ -28,7 +28,7 @@ window.MODULES = [
           "bloques": [
             {
               "t": "parrafo",
-              "texto": "Ya está disponible el reporte de métricas de derivaciones de Agosto.\n\nLes dejamos vinculado el módulo para que puedan revisar los resultados de mes y el ranking de ventas.\n\n🚀 ¡Vamos por un septiembre con mejores ventas!"
+              "texto": "Ya está disponible el reporte de métricas de derivaciones de Agosto.\n\nLes dejamos vinculado el módulo para que puedan revisar los resultados del mes y el ranking de ventas.\n\n🚀 ¡Vamos por un septiembre con mejores ventas!"
             },
             {
               "t": "ref",
@@ -43,7 +43,7 @@ window.MODULES = [
               "color": "--c-success"
             }
           ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Ya está disponible el reporte de métricas de derivaciones de Agosto.<br><br>Les dejamos vinculado el módulo para que puedan revisar los resultados de mes y el ranking de ventas.<br><br>🚀 ¡Vamos por un septiembre con mejores ventas!</p></div><div class=\"db\" data-bi=\"1\"><a class=\"m-ref\" href=\"#reporte\"><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Reporte de métricas<span class=\"mr-sub\">AGOSTO 2026</span></span><span class=\"mr-d\">reporte</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Ya está disponible el reporte de métricas de derivaciones de Agosto.<br><br>Les dejamos vinculado el módulo para que puedan revisar los resultados del mes y el ranking de ventas.<br><br>🚀 ¡Vamos por un septiembre con mejores ventas!</p></div><div class=\"db\" data-bi=\"1\"><a class=\"m-ref\" href=\"#reporte\"><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Reporte de métricas<span class=\"mr-sub\">AGOSTO 2026</span></span><span class=\"mr-d\">reporte</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
         },
         {
           "id": "dmtom0jmihwcf",
