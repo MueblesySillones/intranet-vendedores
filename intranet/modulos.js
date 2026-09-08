@@ -1423,6 +1423,7 @@ window.MODULES = [
     "color": "--c-success",
     "ready": true,
     "builtin": true,
+    "actualizado": "2026-09-08",
     "content": {
       "tipo": "coleccion",
       "palabra": "reporte",
