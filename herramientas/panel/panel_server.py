@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 47
+VERSION = 48
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,18 +279,18 @@ VERSION = 47
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.9.1"
-VERSION_LABEL = "1.9.1 - la tabla se ve al toque y los textos se sacan"
+VERSION_PUBLICA = "1.10.0"
+VERSION_LABEL = "1.10.0 - borrar queda pendiente y el aviso se vence"
 VERSION_NOTES = (
-                 "Dos arreglos de la edicion del reporte. Apretar Tabla ahora cambia "
-                 "la lista en el acto, sin esperar a guardar: antes anotaba la "
-                 "eleccion y no pasaba nada, que es lo mismo que estar roto. Y cada "
-                 "texto tiene una × al lado para sacarlo del reporte, para esos "
-                 "textos que el generador pone y no hacen falta; sacar no borra, el "
-                 "texto queda tachado con un boton Volver a mostrar por si te "
-                 "arrepentis. Ademas la barra de edicion se fue arriba a la derecha, "
-                 "porque a la izquierda tapaba justo el titulo que ibas a editar, y "
-                 "la ayuda amarilla se va sola a los pocos segundos.")
+                 "Tres arreglos. Borrar un modulo, cambiar el orden o vaciar la "
+                 "papelera ahora quedan como cambio sin publicar: antes el boton "
+                 "seguia diciendo Todo publicado y el cambio no subia nunca. El "
+                 "boton Duplicar del Reporte de metricas mostraba el codigo del "
+                 "icono como texto y tapaba a los otros dos botones; ya se ve bien. "
+                 "Y la chapita Nuevo de la intranet se vence sola: en Avisar novedad "
+                 "elegis cuanto dura -24 horas de fabrica, o hasta 2 semanas- y los "
+                 "avisos viejos dejan de aparecer tildados. Antes duraba 14 dias "
+                 "fijos.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

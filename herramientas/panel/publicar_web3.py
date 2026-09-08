@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.9.1"
-NUEVO_LABEL = "1.9.1 - la tabla se ve al toque y los textos se sacan"
-NUEVAS_NOTAS = ("Dos arreglos de la edicion del reporte. Apretar Tabla ahora cambia la lista en el acto, sin esperar a guardar: antes anotaba la eleccion y no pasaba nada, que es lo mismo que estar roto. Y cada texto tiene una × al lado para sacarlo del reporte, para esos textos que el generador pone y no hacen falta; sacar no borra, el texto queda tachado con un boton Volver a mostrar por si te arrepentis. Ademas la barra de edicion se fue arriba a la derecha, porque a la izquierda tapaba justo el titulo que ibas a editar, y la ayuda amarilla se va sola a los pocos segundos.")
+NUEVA_PUBLICA = "1.10.0"
+NUEVO_LABEL = "1.10.0 - borrar queda pendiente y el aviso se vence"
+NUEVAS_NOTAS = ("Tres arreglos. Borrar un modulo, cambiar el orden o vaciar la papelera ahora quedan como cambio sin publicar: antes el boton seguia diciendo Todo publicado y el cambio no subia nunca. El boton Duplicar del Reporte de metricas mostraba el codigo del icono como texto y tapaba a los otros dos botones; ya se ve bien. Y la chapita Nuevo de la intranet se vence sola: en Avisar novedad elegis cuanto dura -24 horas de fabrica, o hasta 2 semanas- y los avisos viejos dejan de aparecer tildados. Antes duraba 14 dias fijos.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
