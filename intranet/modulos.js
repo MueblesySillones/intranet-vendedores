@@ -14,6 +14,38 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmtt0sl6nl2y7",
+          "titulo": "📊 Reporte de métricas -  Agosto",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-08",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Ya está disponible el reporte de métricas de derivaciones de Agosto.\n\nLes dejamos vinculado el módulo para que puedan revisar los resultados de mes y el ranking de ventas.\n\n🚀 ¡Vamos por un septiembre con mejores ventas!"
+            },
+            {
+              "t": "ref",
+              "key": "reporte",
+              "mod": "Reporte de métricas",
+              "sub": "AGOSTO 2026",
+              "bi": null,
+              "clase": "reporte",
+              "detalle": "",
+              "prev": null,
+              "icon": "chart",
+              "color": "--c-success"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Ya está disponible el reporte de métricas de derivaciones de Agosto.<br><br>Les dejamos vinculado el módulo para que puedan revisar los resultados de mes y el ranking de ventas.<br><br>🚀 ¡Vamos por un septiembre con mejores ventas!</p></div><div class=\"db\" data-bi=\"1\"><a class=\"m-ref\" href=\"#reporte\"><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-success)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Reporte de métricas<span class=\"mr-sub\">AGOSTO 2026</span></span><span class=\"mr-d\">reporte</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
+        },
+        {
           "id": "dmtom0jmihwcf",
           "titulo": "COMUNICADO A VENDEDORES",
           "autor": "Marketing",
@@ -167,50 +199,7 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>"
         }
       ],
-      "papelera": [
-        {
-          "id": "dmtd1hbkbx4b1",
-          "titulo": "Les presentamos el nuevo espacio de NOVEDADES",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-08-28",
-          "etiqueta": "anuncio",
-          "fijado": true,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "*Les presentamos el nuevo espacio de NOVEDADES*\n \nLes contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. \n\nLo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.\n  \n   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.\n   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.\n   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos."
-            }
-          ],
-          "html": "<div class=\"db\"><p class=\"m-p\">*Les presentamos el nuevo espacio de NOVEDADES*<br> <br>Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>",
-          "borradoEl": "2026-08-28"
-        },
-        {
-          "id": "dmtd1gmm6qvlu",
-          "titulo": "Les presentamos el nuevo espacio de NOVEDADES",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-08-28",
-          "etiqueta": "anuncio",
-          "fijado": true,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "*Les presentamos el nuevo espacio de NOVEDADES*\n \nLes contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. \n\nLo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.\n  \n   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.\n   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.\n   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos."
-            }
-          ],
-          "html": "<div class=\"db\"><p class=\"m-p\">*Les presentamos el nuevo espacio de NOVEDADES*<br> <br>Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>",
-          "borradoEl": "2026-08-28"
-        }
-      ]
+      "papelera": []
     }
   },
   {
@@ -4096,6 +4085,7 @@ window.MODULES = [
     "icon": "search",
     "color": "--c-info",
     "ready": false,
-    "builtin": true
+    "builtin": true,
+    "hidden": true
   }
 ];
