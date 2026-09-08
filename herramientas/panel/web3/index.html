@@ -592,8 +592,14 @@
 <div class="fondo" id="avisarModal">
   <div class="modal medio" role="dialog" aria-modal="true">
     <div class="modal-cab izq">
-      <h2>Avisar novedad a los vendedores<span class="sub">Los marcados salen con la chapita "NUEVO" en la intranet durante 14 días</span></h2>
+      <h2>Avisar novedad a los vendedores<span class="sub">Los marcados salen con la chapita "NUEVO" en la intranet</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-avisar aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="av-vig">
+      <label for="avisarVig"><b>¿Cuánto dura la chapita?</b>
+        <span>No hay forma de saber si el vendedor la vio, así que se apaga sola.</span>
+      </label>
+      <select id="avisarVig"></select>
     </div>
     <div class="modal-cuerpo p16" id="avisarLista"></div>
     <div class="modal-pie" style="display:flex;gap:8px">

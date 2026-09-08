@@ -1813,11 +1813,24 @@ def aprobaciones_pendientes():
 # =====================================================================
 #  Modulos (botones del menu) - leer/escribir modulos.js
 # =====================================================================
+# Cuanto dura el cartel «Nuevo» en la intranet. 24 horas por defecto: no hay
+# forma de saber si el vendedor lo vio, asi que lo unico honesto es que se
+# venza solo. Antes eran 14 dias escritos a mano en cuatro lugares.
+AJUSTES_POR_DEFECTO = {"novedad_horas": 24}
+NOVEDAD_HORAS_VALIDAS = [24, 48, 72, 168, 336]
+
+
 def leer_modulos():
     if not os.path.exists(MODULOS_JS):
         return []
     txt = open(MODULOS_JS, encoding="utf-8").read()
-    i, j = txt.find("["), txt.rfind("]")
+    # se ancla en window.MODULES: desde que el archivo tambien lleva
+    # window.AJUSTES, buscar el primer "[" del archivo entero podria agarrar
+    # cualquier otra cosa
+    k = txt.find("window.MODULES")
+    if k == -1:
+        k = 0
+    i, j = txt.find("[", k), txt.rfind("]")
     if i == -1 or j == -1 or j < i:
         return []
     try:
@@ -1826,13 +1839,50 @@ def leer_modulos():
         return []
 
 
-def escribir_modulos(lista):
+def leer_ajustes():
+    """Los ajustes globales del sitio, con los de fabrica si falta alguno."""
+    d = dict(AJUSTES_POR_DEFECTO)
+    if not os.path.exists(MODULOS_JS):
+        return d
+    try:
+        txt = open(MODULOS_JS, encoding="utf-8").read()
+        k = txt.find("window.AJUSTES")
+        if k == -1:
+            return d
+        i, j = txt.find("{", k), txt.find("}", k)
+        if i == -1 or j == -1:
+            return d
+        d.update(json.loads(txt[i:j + 1]))
+    except (ValueError, OSError):
+        return dict(AJUSTES_POR_DEFECTO)
+    return validar_ajustes(d)
+
+
+def validar_ajustes(d):
+    """Solo lo que el sitio entiende, y con valores que existen."""
+    d = d if isinstance(d, dict) else {}
+    try:
+        h = int(d.get("novedad_horas", 24))
+    except (TypeError, ValueError):
+        h = 24
+    if h not in NOVEDAD_HORAS_VALIDAS:
+        h = 24
+    return {"novedad_horas": h}
+
+
+def escribir_modulos(lista, ajustes=None):
+    """Escribe modulos.js. Los ajustes viajan en el MISMO archivo a proposito:
+    asi se publican en el mismo commit que los modulos y no puede pasar que el
+    sitio tenga los modulos nuevos con los ajustes viejos."""
     cuerpo = json.dumps(lista, ensure_ascii=False, indent=2)
+    aj = validar_ajustes(ajustes if ajustes is not None else leer_ajustes())
     with open(MODULOS_JS, "w", encoding="utf-8") as fh:
         fh.write("/* Generado/editado por el Panel de administracion. Define los modulos (botones)\n"
                  "   de la intranet. builtin:true = el contenido vive en index.html (no editable\n"
                  "   desde el panel); builtin:false = modulo creado en el panel, su texto esta en \"body\". */\n")
         fh.write("window.MODULES = " + cuerpo + ";\n")
+        fh.write("/* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */\n")
+        fh.write("window.AJUSTES = " + json.dumps(aj, ensure_ascii=False) + ";\n")
 
 
 def leer_originales():
@@ -2028,12 +2078,13 @@ def validar_modulos(lista):
         }
         if m.get("hidden"):
             out["hidden"] = True
-        # fecha del ultimo cambio (AAAA-MM-DD): la intranet marca con esto las
-        # novedades para los vendedores. Se valida el formato para que no entre
-        # cualquier cosa al archivo publicado.
+        # Cuando se anuncio el modulo. Puede venir como AAAA-MM-DD (lo de
+        # siempre, y lo que ya esta guardado) o con hora, AAAA-MM-DDTHH:MM.
+        # La hora hace falta desde que el cartel «Nuevo» dura 24 horas: sin
+        # ella, lo mas fino que se podia medir era el dia entero.
         act = (m.get("actualizado") or "").strip()
-        if re.match(r"^\d{4}-\d{2}-\d{2}$", act):
-            out["actualizado"] = act
+        if re.match(r"^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2})?$", act):
+            out["actualizado"] = act.replace(" ", "T")
         if not builtin and m.get("body") and not m.get("content"):
             out["body"] = m.get("body")
         c = validar_content(m.get("content"))
@@ -2718,7 +2769,9 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/secciones":
             return self._json({"secciones": estado_secciones(), "git": estado_git()})
         if path == "/api/modulos":
-            return self._json({"modulos": leer_modulos()})
+            return self._json({"modulos": leer_modulos(),
+                               "ajustes": leer_ajustes(),
+                               "novedad_opciones": NOVEDAD_HORAS_VALIDAS})
         if path == "/api/contenido":
             q = parse_qs(u.query)
             key = (q.get("key") or [""])[0]
@@ -2806,8 +2859,11 @@ class Handler(BaseHTTPRequestHandler):
                 lista, err = validar_modulos(d.get("modulos"))
                 if err:
                     return self._json({"error": err}, 400)
-                escribir_modulos(lista)
-                return self._json({"ok": True, "modulos": lista})
+                aj = (validar_ajustes(d["ajustes"])
+                      if isinstance(d.get("ajustes"), dict) else None)
+                escribir_modulos(lista, aj)
+                return self._json({"ok": True, "modulos": lista,
+                                   "ajustes": leer_ajustes()})
             if path == "/api/regenerar":
                 rc, out, err = regenerar_galerias()
                 return self._json({"ok": rc == 0, "log": (out + err).strip()})

@@ -283,8 +283,11 @@ async function publicarCambios(_reintento, sinPreguntar) {
     const nombres = (Array.isArray(MODULOS) ? MODULOS : [])
       .filter(m => editados.has(m.key)).map(m => '·  ' + m.title);
     const detalle = nombres.length
-      ? 'Se van a publicar estos módulos:\n' + nombres.join('\n')
-      : 'No hay cambios anotados en esta computadora. Se sube igual lo que haya.';
+      ? ('Se van a publicar estos módulos:\n' + nombres.join('\n') +
+         (otrosCambios ? '\n\nY otros ajustes (borrados, orden, papelera).' : ''))
+      : (otrosCambios
+        ? 'Se van a publicar los ajustes que hiciste: borrados, orden o papelera.'
+        : 'No hay cambios anotados en esta computadora. Se sube igual lo que haya.');
     if (!await confirmar(detalle + '\n\nLos vendedores lo ven en ~30 segundos.',
       'Sí, publicar', 'Publicar al sitio', 'ok')) return;
   }
@@ -544,6 +547,10 @@ let det = null, detIdx = null, detNew = false, detOriginal = null;
 async function cargarModulos() {
   try {
     const d = await api('/api/modulos');
+    if (d.ajustes) AJUSTES = d.ajustes;
+    if (Array.isArray(d.novedad_opciones) && d.novedad_opciones.length) {
+      NOVEDAD_OPCIONES = d.novedad_opciones;
+    }
     MODULOS = d.modulos || [];
     pintarModulos();
   } catch (e) { toast(e.message, 'err'); }
@@ -682,7 +689,32 @@ let editados = new Set();
 try { const v = localStorage.getItem(EDITADOS_KEY); if (v) editados = new Set(JSON.parse(v)); } catch (e) {}
 function guardarEditados() { try { localStorage.setItem(EDITADOS_KEY, JSON.stringify([...editados])); } catch (e) {} }
 function marcarEditado(key) { if (!key) return; editados.add(key); guardarEditados(); actualizarPublicarHome(); }
-function limpiarEditados() { editados.clear(); guardarEditados(); if (Array.isArray(MODULOS)) pintarModulos(); actualizarPublicarHome(); }
+/* `editados` son módulos con nombre y apellido, para el cartel «Sin publicar»
+   de cada tarjeta. Pero hay cambios que NO son de un módulo: borrar uno,
+   cambiar el orden, ocultarlo del menú, vaciar la papelera. Esos no tienen
+   tarjeta donde ponerse, así que necesitan su propia marca. Sin ella, borrar
+   un módulo dejaba el botón en «Todo publicado» con el borrado sin subir. */
+const OTROS_KEY = 'mys_otros_cambios_sin_publicar';
+let otrosCambios = false;
+try { otrosCambios = localStorage.getItem(OTROS_KEY) === '1'; } catch (e) {}
+function marcarOtroCambio() {
+  otrosCambios = true;
+  try { localStorage.setItem(OTROS_KEY, '1'); } catch (e) {}
+  actualizarPublicarHome();
+}
+function hayPendientes() { return editados.size > 0 || otrosCambios; }
+/* Los cambios que no son de un módulo cuentan como UNO: son un paquete
+   («borrados, orden, papelera»), no una lista que se pueda enumerar. Sirve
+   para que el botón, el aside y el estado del menú digan todos el mismo
+   número, en vez de tres cuentas distintas de lo mismo. */
+function contarPendientes() { return editados.size + (otrosCambios ? 1 : 0); }
+function limpiarEditados() {
+  editados.clear(); guardarEditados();
+  otrosCambios = false;
+  try { localStorage.removeItem(OTROS_KEY); } catch (e) {}
+  if (Array.isArray(MODULOS)) pintarModulos();
+  actualizarPublicarHome();
+}
 
 /* El panel YA sabe cuántos módulos faltan publicar (`editados`), pero la home
    mostraba siempre el mismo botón, tocaras 3 módulos o ninguno. Ahora lo dice.
@@ -693,7 +725,10 @@ function limpiarEditados() { editados.clear(); guardarEditados(); if (Array.isAr
    del servidor. */
 function actualizarPublicarHome() {
   const b = $('#btnPublicar'); if (!b) return;
-  const n = MODO_CEREBRO ? editados.size : (gitPendiente ? -1 : 0);
+  /* Con un cambio que no es de un módulo (un borrado, el orden) no hay número
+     honesto para mostrar: se dice «Publicar cambios» y listo. Inventar un
+     número es peor que no darlo. */
+  const n = MODO_CEREBRO ? contarPendientes() : (gitPendiente ? -1 : 0);
   b.disabled = false;
   if (n === 0) {
     b.textContent = 'Todo publicado ✓';
@@ -712,8 +747,7 @@ function modCard(m, idx, pos) {
   // tarjeta de la maqueta: ícono neutro + orden + título/desc + pie con meta
   const c = document.createElement('button');
   c.type = 'button';
-  const dNov = diasDeNovedad(m.actualizado);
-  const esNuevo = dNov !== null && dNov <= 14;
+  const esNuevo = estaAnunciado(m.actualizado);   // usa la vigencia elegida
   c.className = 'card mod' + (esNuevo ? ' con-nuevo' : '') + (m.hidden ? ' mod-oculto' : '');
   c.dataset.idx = idx;
   const cu = m.content || {};
@@ -746,11 +780,16 @@ function modCard(m, idx, pos) {
   return c;
 }
 
-async function persistModulos(msg) {
+/* `deQuien` es la clave del módulo que se tocó, si fue uno solo. Sin ella, el
+   cambio se anota como «otro cambio»: igual queda pendiente de publicar, que es
+   lo único que no puede fallar acá. */
+async function persistModulos(msg, deQuien) {
   const r = await api('/api/modulos', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ modulos: MODULOS })
+    body: JSON.stringify({ modulos: MODULOS, ajustes: AJUSTES })
   });
+  if (r.ajustes) AJUSTES = r.ajustes;
+  if (deQuien) marcarEditado(deQuien); else marcarOtroCambio();
   MODULOS = r.modulos; pintarModulos();
   if (typeof renderMuro === 'function' && !$('#viewMuro').hidden) renderMuro();
   if (msg !== false) toast(msg || 'Módulos guardados. Acordate de Publicar para subirlo.', 'ok');
@@ -1200,7 +1239,14 @@ function resumenDoc(d) {
 function pintarPalabra() {
   $('#colTitulo').textContent = ES_MURO ? 'Publicaciones del muro' : mayus(palabras()) + ' de este módulo';
   $('#colAdd').textContent = ES_MURO ? '+ Nueva publicación' : '+ ' + (fem() ? 'Nueva' : 'Nuevo') + ' ' + palabra();
-  $('#colDup').textContent = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 9h10v10H9zM5 15V5h10"/></svg> Duplicar ' + elLa() + ' primer' + (fem() ? 'a' : '') + ' ' + palabra();
+  /* ⚠️ textContent, NO innerHTML: acá adentro va `palabra()`, que es lo que la
+     persona escribió en «Cómo se llama cada uno». Con innerHTML, cualquier
+     cosa que escriba ahí se metería como HTML en su propio panel.
+     Acá vivía un <svg> pegado a mano dentro del textContent: el botón mostraba
+     el código del ícono como texto, se estiraba a lo ancho de la fila y
+     empujaba a los otros dos botones fuera de la pantalla. Sin ícono, igual
+     que sus hermanos. */
+  $('#colDup').textContent = 'Duplicar ' + elLa() + ' primer' + (fem() ? 'a' : '') + ' ' + palabra();
   if ($('#colPalabra').value !== (COL_PALABRA || '')) $('#colPalabra').value = COL_PALABRA || '';
   /* en un muro no aplican: cada publicación se escribe de cero, no se clona una
      estructura de números mes a mes, y el nombre de la pieza es fijo. */
@@ -1887,12 +1933,43 @@ function hoyLocal() {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
-function diasDeNovedad(f) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(f || '')) return null;
-  const p = f.split('-').map(Number);
-  const h = new Date();
-  return Math.round((Date.UTC(h.getFullYear(), h.getMonth(), h.getDate()) -
-    Date.UTC(p[0], p[1] - 1, p[2])) / 86400000);
+/* Cuánto dura la chapita «Nuevo». Lo guarda el sitio (window.AJUSTES en
+   modulos.js) y lo elige la central acá. 24 horas de fábrica: como no hay
+   manera de saber si el vendedor la vio, lo único honesto es que se venza
+   sola. Antes eran 14 días fijos escritos a mano en cuatro lugares. */
+let AJUSTES = { novedad_horas: 24 };
+let NOVEDAD_OPCIONES = [24, 48, 72, 168, 336];
+const NOVEDAD_TEXTO = {
+  24: '24 horas', 48: '2 días', 72: '3 días', 168: '1 semana', 336: '2 semanas'
+};
+function horasNovedad() { return (AJUSTES.novedad_horas | 0) || 24; }
+
+/* Las horas desde que se anunció. Acepta AAAA-MM-DD (lo ya guardado, que se
+   toma como ese día a las 00:00) y AAAA-MM-DDTHH:MM (lo que se escribe ahora).
+   Sin la hora no se puede hablar de 24 horas: lo más fino era el día entero. */
+function horasDeNovedad(f) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?$/.exec(f || '');
+  if (!m) return null;
+  const cuando = new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0));
+  return (Date.now() - cuando.getTime()) / 3600000;
+}
+function estaAnunciado(f, tope) {
+  const h = horasDeNovedad(f);
+  return h !== null && h <= (tope || horasNovedad());
+}
+/* «hace 3 horas» / «hace 2 días»: la misma cuenta que ve el vendedor. */
+function haceCuanto(f) {
+  const h = horasDeNovedad(f);
+  if (h === null) return '';
+  if (h < 1) return 'recién';
+  if (h < 24) { const n = Math.round(h); return 'hace ' + n + (n === 1 ? ' hora' : ' horas'); }
+  const d = Math.round(h / 24);
+  return d === 1 ? 'ayer' : 'hace ' + d + ' días';
+}
+function ahoraLocal() {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+    'T' + p(d.getHours()) + ':' + p(d.getMinutes());
 }
 
 (function initAvisar() {
@@ -1900,12 +1977,35 @@ function diasDeNovedad(f) {
   const cerrar = () => { esconderModal(modal); };
   modal.querySelectorAll('[data-cerrar-avisar]').forEach(b => { b.onclick = cerrar; });
 
-  $('#btnAvisar').onclick = () => {
+  const pintarVigencia = () => {
+    const sel = $('#avisarVig'); if (!sel) return;
+    sel.innerHTML = NOVEDAD_OPCIONES.map(h =>
+      '<option value="' + h + '"' + (h === horasNovedad() ? ' selected' : '') +
+      '>' + (NOVEDAD_TEXTO[h] || (h + ' horas')) + '</option>').join('');
+    /* al cambiarla se repinta la lista: con una vigencia más corta, avisos que
+       figuraban como puestos pasan a estar vencidos, y hay que verlo ANTES de
+       guardar y no después */
+    /* ⚠️ NO se toca AJUSTES acá. Si se pisara el valor guardado al elegir en el
+       selector, al apretar Guardar «nada habría cambiado» y no se guardaría
+       nunca. El valor del <select> es la elección; AJUSTES es lo que está
+       guardado, y recién se igualan al guardar. */
+    sel.onchange = () => { pintarLista(); };
+  };
+
+  /* La vigencia que se está mirando: la del selector si ya se tocó, y si no la
+     guardada. Se usa para pintar la lista, así se ve ANTES de guardar qué
+     avisos quedan vencidos con la vigencia nueva. */
+  const vigEnPantalla = () => {
+    const sel = $('#avisarVig');
+    return (sel && +sel.value) || horasNovedad();
+  };
+
+  const pintarLista = () => {
     const caja = $('#avisarLista'); caja.innerHTML = '';
+    const tope = vigEnPantalla();
     (MODULOS || []).forEach((m, i) => {
       if (esCartelera(m.content)) return;   // la cartelera avisa por sí sola
-      const d = diasDeNovedad(m.actualizado);
-      const anunciado = d !== null && d <= 14;
+      const anunciado = estaAnunciado(m.actualizado, tope);
       // fila de la maqueta: casilla dibujada + título + estado
       const fila = document.createElement('button');
       fila.type = 'button';
@@ -1917,29 +2017,41 @@ function diasDeNovedad(f) {
         c.checked = !c.checked;
         fila.setAttribute('aria-pressed', c.checked ? 'true' : 'false');
       };
+      /* Un aviso vencido decía «Se anunció el 2026-08-14», una fecha suelta
+         que no explica por qué ya no está tildado. Ahora lo dice. */
       const sub = anunciado
-        ? 'Anunciado ' + (d <= 0 ? 'hoy' : 'hace ' + d + (d === 1 ? ' día' : ' días'))
-        : (m.actualizado ? 'Se anunció el ' + m.actualizado : 'Sin anunciar');
+        ? 'Anunciado ' + haceCuanto(m.actualizado)
+        : (m.actualizado ? 'Se anunció ' + haceCuanto(m.actualizado) + ' · ya venció'
+                         : 'Sin anunciar');
       fila.innerHTML = '<span class="caja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>' +
         '<span class="t"><b>' + esc(m.title || m.key) + '</b><span>' + esc(sub) + '</span></span>' +
         (anunciado ? '<span class="ya">Ya avisado</span>' : '');
       fila.appendChild(c);
       caja.appendChild(fila);
     });
+  };
+
+  $('#btnAvisar').onclick = () => {
+    pintarVigencia();
+    pintarLista();
     abrirModal(modal);
   };
 
   $('#avisarGuardar').onclick = async () => {
-    const hoy = hoyLocal();
+    const ahora = ahoraLocal();
+    const vig = vigEnPantalla();
     let n = 0;
+    const cambioVig = vig !== horasNovedad();
     $('#avisarLista').querySelectorAll('input[type=checkbox]').forEach(c => {
       const m = MODULOS[+c.dataset.i]; if (!m) return;
-      const d = diasDeNovedad(m.actualizado);
-      const estaba = d !== null && d <= 14;
-      if (c.checked && !estaba) { m.actualizado = hoy; n++; }        // se anuncia
+      /* se compara contra la vigencia NUEVA, que es la que se va a guardar:
+         con una más corta, un aviso que figuraba puesto ya está vencido */
+      const estaba = estaAnunciado(m.actualizado, vig);
+      if (c.checked && !estaba) { m.actualizado = ahora; n++; }      // se anuncia
       else if (!c.checked && estaba) { delete m.actualizado; n++; }  // se saca del aviso
     });
-    if (!n) { cerrar(); toast('No cambiaste ningún aviso.'); return; }
+    if (!n && !cambioVig) { cerrar(); toast('No cambiaste ningún aviso.'); return; }
+    AJUSTES.novedad_horas = vig;      // recién acá se da por elegida
     try {
       await persistModulos(false);
       cerrar();
@@ -3986,7 +4098,7 @@ function actualizarBotones() {
   const dirty = hayCambios() || detNew;   // hay cambios sin guardar (o módulo nuevo)
   // Publicar pendiente: en modo cerebro se basa en si hay ediciones sin publicar
   // (no en git). Ambos roles ven el mismo estado.
-  const pubPend = dirty || (MODO_CEREBRO ? (editados && editados.size > 0) : gitPendiente);
+  const pubPend = dirty || (MODO_CEREBRO ? hayPendientes() : gitPendiente);
   /* 2B decia ESTADO ≠ ACCION y mandaba el resultado a un chip gris de 11px
      al costado. En uso real no alcanza: se apreta Guardar, el boton sigue
      diciendo "Guardar" y la persona no sabe si paso algo (lo reporto el
@@ -4407,7 +4519,8 @@ async function guardarModulo({ salir = true, auto = false } = {}) {
   }
   else MODULOS[detIdx] = det;
   try {
-    await persistModulos(auto ? false : 'Guardado ✓ No te olvides de publicar.');
+    await persistModulos(auto ? false : 'Guardado ✓ No te olvides de publicar.',
+                         (MODULOS[detIdx] || det).key);
     marcarEditado((MODULOS[detIdx] || det).key);   // queda "Editado" hasta que se publique
     editorSnapshot = estadoEditor();   // lo guardado pasa a ser la nueva base
     ultimoEstado = editorSnapshot;
@@ -4427,9 +4540,13 @@ $('#detSave').onclick = () => conBoton('#detSave', 'Guardando…',
 $('#detDelete').onclick = async () => {
   if (detNew) return;
   if (!await confirmar('¿Estás seguro que querés eliminar el módulo "' + det.title + '"? No se puede deshacer.', 'Sí, eliminar', 'Eliminar módulo')) return;
+  /* se saca de `editados` porque su tarjeta ya no existe —el cartel «Sin
+     publicar» no tendría dónde ponerse—, pero el BORRADO sí queda pendiente:
+     lo anota persistModulos. Antes esto solo restaba, y borrar el único módulo
+     tocado dejaba el botón en «Todo publicado» con el borrado sin subir. */
   editados.delete(det.key); guardarEditados();
   MODULOS.splice(detIdx, 1);
-  try { await persistModulos('Módulo eliminado.'); mostrarDetalle(false); }
+  try { await persistModulos('Módulo eliminado. Acordate de Publicar.'); mostrarDetalle(false); }
   catch (e) { toast(e.message, 'err'); }
 };
 
