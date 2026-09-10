@@ -1,8 +1,8 @@
 {
-  "version": 51,
-  "label": "1.12.1 - zona norte es de la sucursal que la atendio",
-  "notes": "Ahora zona norte y zona oeste se le atribuyen a la sucursal que las atendio: si en la planilla dice Norcenter, zona norte, Flor, esa consulta es de Norcenter. Van en su propia fila del reporte y no mezcladas con las de la localidad del local, por una razon concreta: esas 154 consultas cerraron cero ventas, y metidas ahi adentro ese dato desaparecia. Asi se ve de quien es la consulta Y se ve que no cierra.",
-  "sha256": "1a93b9e103a491ff5c155bb880d4933b209cd324aabfcf174a6692d25b3c58e0",
-  "size": 20111307,
-  "url": "panel/PanelMyS-v51.zip"
+  "version": 52,
+  "label": "1.12.2 - quien recibe mas del interior",
+  "notes": "La lamina del reparto ahora ordena por consultas del interior del pais, que es lo que se queria ver: quien recibe mas de las distintas provincias. Antes ordenaba por todo lo lejano junto y arriba quedaba gente que casi no recibe del interior. Ademas muestra de cuantas provincias distintas le llega a cada uno -no es lo mismo diez consultas de Cordoba que diez de diez lugares- y que parte de su cartera representa.",
+  "sha256": "53c9e075bc4b4199e68e5a541bcabe954492790b49a750d25c1bd43e4ca19b4b",
+  "size": 20114120,
+  "url": "panel/PanelMyS-v52.zip"
 }
