@@ -1,8 +1,8 @@
 {
-  "version": 52,
-  "label": "1.12.2 - quien recibe mas del interior",
-  "notes": "La lamina del reparto ahora ordena por consultas del interior del pais, que es lo que se queria ver: quien recibe mas de las distintas provincias. Antes ordenaba por todo lo lejano junto y arriba quedaba gente que casi no recibe del interior. Ademas muestra de cuantas provincias distintas le llega a cada uno -no es lo mismo diez consultas de Cordoba que diez de diez lugares- y que parte de su cartera representa.",
-  "sha256": "53c9e075bc4b4199e68e5a541bcabe954492790b49a750d25c1bd43e4ca19b4b",
-  "size": 20114120,
-  "url": "panel/PanelMyS-v52.zip"
+  "version": 53,
+  "label": "1.13.0 - el ritmo de la semana y que trae cada producto",
+  "notes": "Dos laminas nuevas, las que faltaban de la lista: EL RITMO DE LA SEMANA -cuantas consultas entran por dia y que dias entran mas- y DE QUE CAMPANA VIENE CADA PRODUCTO, el cruce para saber de donde salen las consultas de sillones. En el ritmo aparece algo para mirar: el sabado entra casi lo mismo que un dia de semana y se deriva la mitad. La lamina de origenes ahora dice ademas cuantas consultas entraron sin origen cargado, que es sobre cuantas estan calculados sus porcentajes. Ademas el Word dejo de estar cinco laminas atras del PDF -zonas, provincias y reparto no estaban- y los dos formatos salen de la misma cuenta, asi que no pueden decir numeros distintos. Y un reporte ya creado puede cambiar que mide sin borrarlo: el boton Cambiar que mide reabre el asistente con las respuestas puestas, que es como un reporte viejo toma las laminas nuevas.",
+  "sha256": "358afd669ca9d93399a19cb2f7b3755346c675fc62ac3823df99df9caeaa86c4",
+  "size": 20124091,
+  "url": "panel/PanelMyS-v53.zip"
 }
