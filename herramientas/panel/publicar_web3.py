@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.12.2"
-NUEVO_LABEL = "1.12.2 - quien recibe mas del interior"
-NUEVAS_NOTAS = ("La lamina del reparto ahora ordena por consultas del interior del pais, que es lo que se queria ver: quien recibe mas de las distintas provincias. Antes ordenaba por todo lo lejano junto y arriba quedaba gente que casi no recibe del interior. Ademas muestra de cuantas provincias distintas le llega a cada uno -no es lo mismo diez consultas de Cordoba que diez de diez lugares- y que parte de su cartera representa.")
+NUEVA_PUBLICA = "1.13.0"
+NUEVO_LABEL = "1.13.0 - el ritmo de la semana y que trae cada producto"
+NUEVAS_NOTAS = ("Dos laminas nuevas, las que faltaban de la lista: EL RITMO DE LA SEMANA -cuantas consultas entran por dia y que dias entran mas- y DE QUE CAMPANA VIENE CADA PRODUCTO, el cruce para saber de donde salen las consultas de sillones. En el ritmo aparece algo para mirar: el sabado entra casi lo mismo que un dia de semana y se deriva la mitad. La lamina de origenes ahora dice ademas cuantas consultas entraron sin origen cargado, que es sobre cuantas estan calculados sus porcentajes. Ademas el Word dejo de estar cinco laminas atras del PDF -zonas, provincias y reparto no estaban- y los dos formatos salen de la misma cuenta, asi que no pueden decir numeros distintos. Y un reporte ya creado puede cambiar que mide sin borrarlo: el boton Cambiar que mide reabre el asistente con las respuestas puestas, que es como un reporte viejo toma las laminas nuevas.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -201,12 +201,18 @@ msg = ("Panel v%d (%s): %s\n\n%s\n"
           (NUEVO_CUERPO or NUEVAS_NOTAS).strip())) + FIRMA
 subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 
-# el FUENTE tambien viaja al repo: sin esto la otra compu compila otra cosa
+# el FUENTE tambien viaja al repo: sin esto la otra compu compila otra cosa.
+# ⚠️ datos_api.py es fuente, no un archivo aparte: panel_server lo llama. Falto
+#    en la lista hasta la v53, y la otra maquina podia compilar un panel donde
+#    el server pide cosas que su datos_api no sabe hacer. Las pruebas viajan por
+#    lo mismo: una prueba que no esta al lado del codigo que prueba no corre.
 subprocess.run(["git", "add", "--",
                 "herramientas/panel/panel_server.py",
+                "herramientas/panel/datos_api.py",
                 "herramientas/panel/PanelMyS.spec",
                 "herramientas/panel/web3",
-                "herramientas/panel/publicar_web3.py"], cwd=repo_raiz, check=True)
+                "herramientas/panel/publicar_web3.py",
+                "herramientas/qa"], cwd=repo_raiz, check=True)
 subprocess.run(["git", "commit", "-m",
                 "Fuente al dia con lo publicado: VERSION %d + web3 como panel principal"
                 % NUEVA_VERSION + FIRMA], cwd=repo_raiz, check=True)

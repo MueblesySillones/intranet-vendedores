@@ -544,6 +544,13 @@ main.lienzo{padding:0; max-width:none; margin:0}
   border-top:1px solid var(--line); border-radius:0; cursor:pointer;
   text-align:center}
 #datosRaiz .dt-inf-e:hover{color:var(--ink)}
+/* las dos puertas de edicion, una al lado de la otra: la linea de arriba es
+   del par, no de cada boton, o se dibujarian dos rayas pegadas */
+#datosRaiz .dt-inf-ee{display:flex; margin-top:6px;
+  border-top:1px solid var(--line)}
+#datosRaiz .dt-inf-ee .dt-inf-e{margin-top:0; border-top:0; flex:1 1 0;
+  min-width:0}
+#datosRaiz .dt-inf-ee .dt-inf-e + .dt-inf-e{border-left:1px solid var(--line)}
 #datosRaiz .dt-ed-g{padding:14px 16px; background:var(--surface);
   border:1px solid var(--line); border-radius:var(--r-md)}
 #datosRaiz .dt-ed-v{margin:0 0 10px}

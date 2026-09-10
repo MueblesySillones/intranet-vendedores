@@ -284,20 +284,37 @@ def _periodo_previo(desde, hasta, modo):
     return z - datetime.timedelta(days=dias - 1), z, "los %d días anteriores" % dias
 
 
+def _revisar_periodo(desde, hasta):
+    """El período, o el error para mostrar. Lo revisan crear Y editar: escrito
+    dos veces, una de las dos se olvida de algo."""
+    for _, q in (("desde", desde), ("hasta", hasta)):
+        if q and not re.match(r"^\d{4}-\d{2}-\d{2}$", str(q)):
+            return "La fecha «%s» no está bien escrita." % q
+    if desde and hasta and str(desde) > str(hasta):
+        return "El desde tiene que ser anterior al hasta."
+    return ""
+
+
+def _revisar_secciones(secciones):
+    """Las secciones válidas EN EL ORDEN del reporte, o el error."""
+    validas = set(deck.TODAS)
+    elegidas = [k for k in deck.TODAS if k in set(secciones or []) & validas]
+    if not elegidas:
+        return None, "Elegí al menos una cosa para medir."
+    return elegidas, ""
+
+
 def informe_nuevo(rep, nombre, desde, hasta, secciones=None, opciones=None):
     """Suma un informe al reporte. Devuelve (informe, error)."""
     nombre = (nombre or "").strip()
     if not nombre:
         return None, "Ponele un nombre al informe."
-    for c, q in (("desde", desde), ("hasta", hasta)):
-        if q and not re.match(r"^\d{4}-\d{2}-\d{2}$", str(q)):
-            return None, "La fecha «%s» no está bien escrita." % q
-    if desde and hasta and str(desde) > str(hasta):
-        return None, "El desde tiene que ser anterior al hasta."
-    validas = set(deck.TODAS)
-    elegidas = [x for x in (secciones or []) if x in validas]
-    if not elegidas:
-        return None, "Elegí al menos una cosa para medir."
+    mal = _revisar_periodo(desde, hasta)
+    if mal:
+        return None, mal
+    elegidas, mal = _revisar_secciones(secciones)
+    if mal:
+        return None, mal
     inf = {
         "id": "i" + hashlib.md5(
             (str(datetime.datetime.now()) + os.urandom(4).hex()).encode()).hexdigest()[:10],
@@ -305,7 +322,7 @@ def informe_nuevo(rep, nombre, desde, hasta, secciones=None, opciones=None):
         "desde": str(desde or ""),
         "hasta": str(hasta or ""),
         # se guardan EN EL ORDEN del reporte, no en el que se tildaron
-        "secciones": [k for k in deck.TODAS if k in elegidas],
+        "secciones": elegidas,
         "opciones": _limpiar_opciones(opciones),
         "creado": datetime.date.today().isoformat(),
     }
@@ -370,11 +387,15 @@ def _limpiar_opciones(op, antes=None):
     }
 
 
-def informe_editar(rep, iid, nombre=None, opciones=None):
+def informe_editar(rep, iid, nombre=None, opciones=None, desde=None,
+                   hasta=None, secciones=None):
     """Cambia un informe ya creado. Devuelve (informe, error).
 
     Los números NO se guardan nunca: se recalculan al abrirlo. Acá solo se
-    guarda cómo se llama y cómo se muestra.
+    guarda cómo se llama, qué período toma, qué mide y cómo se muestra.
+
+    Cada cosa se toca solo si vino: el lápiz de adentro del reporte manda
+    `opciones` y nada más, y no puede quedarse sin período por eso.
     """
     inf = buscar_informe(rep, iid)
     if not inf:
@@ -384,6 +405,18 @@ def informe_editar(rep, iid, nombre=None, opciones=None):
         if not nombre:
             return None, "Ponele un nombre."
         inf["nombre"] = nombre
+    if desde is not None or hasta is not None:
+        d = str(desde if desde is not None else inf.get("desde") or "")
+        h = str(hasta if hasta is not None else inf.get("hasta") or "")
+        mal = _revisar_periodo(d, h)
+        if mal:
+            return None, mal
+        inf["desde"], inf["hasta"] = d, h
+    if secciones is not None:
+        elegidas, mal = _revisar_secciones(secciones)
+        if mal:
+            return None, mal
+        inf["secciones"] = elegidas
     inf["opciones"] = _limpiar_opciones(opciones, inf.get("opciones"))
     return inf, None
 

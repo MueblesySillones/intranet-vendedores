@@ -1017,10 +1017,18 @@
         '<button type="button" class="btn" data-doc="' + esc(i.id) +
           '">Descargar Word</button>' +
       '</div>' +
-      /* Editar es adentro del reporte, no en un formulario aparte: se abre
-         el deck y ahi esta el lapiz. Una sola forma de hacer la misma cosa. */
-      '<button type="button" class="dt-inf-e" data-editar="' + esc(i.id) +
-        '">Abrir para editar</button>' +
+      /* Dos ediciones distintas, y por eso dos puertas.
+         · Los TEXTOS y como se ve cada lista se editan adentro del reporte,
+           con el lapiz: hay que estar viendolo para saber que cambiar.
+         · QUE MIDE —el nombre, el periodo, las laminas— vuelve al asistente
+           con las respuestas puestas. Es lo que permite que un reporte hecho
+           el mes pasado tome una lamina que el panel aprendio despues. */
+      '<div class="dt-inf-ee">' +
+        '<button type="button" class="dt-inf-e" data-editar="' + esc(i.id) +
+          '">Abrir para editar</button>' +
+        '<button type="button" class="dt-inf-e" data-cambiar="' + esc(i.id) +
+          '">Cambiar qué mide</button>' +
+      '</div>' +
       '</article>';
   }
 
@@ -1054,6 +1062,8 @@
   var BORRADOR = null;
   var PASO = 0;
   var REP_ID = null;
+  /* el informe que se esta editando, o null cuando el asistente crea uno */
+  var EDITANDO = null;
 
   function iso(f) {
     return f.getFullYear() + '-' + ('0' + (f.getMonth() + 1)).slice(-2) +
@@ -1269,10 +1279,34 @@
     return '<span class="rep-r"><i>' + esc(k) + '</i>' + esc(v) + '</span>';
   }
 
+  /* Un reporte que ya existe, contestado. Las mismas preguntas del asistente
+     con las respuestas que tiene puestas: por eso editar no es otra pantalla.
+
+     ⚠️ `secciones` se filtra contra las que el panel sabe hacer HOY. Si un
+     reporte guarda una lamina que se saco, no puede quedar tildada una casilla
+     que no existe. */
+  function borradorDe(inf) {
+    var op = inf.opciones || {};
+    var vivas = SECCIONES.map(function (s) { return s.id; });
+    return {
+      nombre: inf.nombre || '',
+      desde: inf.desde || '',
+      hasta: inf.hasta || '',
+      secciones: (inf.secciones || []).filter(function (k) {
+        return vivas.indexOf(k) >= 0;
+      }),
+      comparar: op.comparar || 'anterior',
+      detalle: op.detalle || '10',
+      anonimo: !!op.anonimo,
+      nota: op.nota || ''
+    };
+  }
+
   /* ─────────── el motor del asistente ─────────── */
-  function abrirAsistente(id) {
+  function abrirAsistente(id, inf) {
     REP_ID = id;
-    BORRADOR = borradorNuevo();
+    EDITANDO = inf ? inf.id : null;
+    BORRADOR = inf ? borradorDe(inf) : borradorNuevo();
     PASO = 0;
     var modal = document.getElementById('repModal');
     if (!modal) return;
@@ -1292,6 +1326,7 @@
     var modal = document.getElementById('repModal');
     if (window.esconderModal) window.esconderModal(modal);
     BORRADOR = null;
+    EDITANDO = null;
   }
 
   function pintarPaso() {
@@ -1305,7 +1340,8 @@
       Math.round(100 * (PASO + 1) / ps.length) + '%';
     document.getElementById('repAtras').disabled = PASO === 0;
     document.getElementById('repSiguiente').textContent =
-      PASO === ps.length - 1 ? 'Crear reporte' : 'Siguiente →';
+      PASO !== ps.length - 1 ? 'Siguiente →'
+        : (EDITANDO ? 'Guardar cambios' : 'Crear reporte');
     cuerpo.innerHTML =
       '<div class="rep-p"><b>' + esc(p.t) + '</b>' +
       (p.ayuda ? '<span class="dt-chico">' + esc(p.ayuda) + '</span>' : '') +
@@ -1345,10 +1381,15 @@
     pintarPaso();
   }
 
+  /* El final del asistente: crea o guarda, segun por donde se entro. Es el
+     mismo cuerpo en los dos casos —las mismas preguntas dan las mismas
+     respuestas— y por eso no hay dos funciones que puedan separarse. */
   function crearDesdeAsistente() {
+    var editando = EDITANDO;
     var b = document.getElementById('repSiguiente');
-    b.disabled = true; b.textContent = 'Creando…';
-    post('/api/datos/informe-crear', {
+    var final = editando ? 'Guardar cambios' : 'Crear reporte';
+    b.disabled = true; b.textContent = editando ? 'Guardando…' : 'Creando…';
+    var cuerpo = {
       id: REP_ID,
       nombre: BORRADOR.nombre,
       desde: BORRADOR.desde,
@@ -1360,15 +1401,18 @@
         anonimo: BORRADOR.anonimo,
         nota: BORRADOR.nota
       }
-    }).then(function (r) {
-      b.disabled = false; b.textContent = 'Crear reporte';
+    };
+    if (editando) cuerpo.informe = editando;
+    post(editando ? '/api/datos/informe-editar' : '/api/datos/informe-crear',
+         cuerpo).then(function (r) {
+      b.disabled = false; b.textContent = final;
       if (r.error) {
         var m = document.getElementById('repMal');
         if (m) { m.textContent = r.error; m.hidden = false; }
         return;
       }
       cerrarAsistente();
-      aviso('Reporte creado', 'ok');
+      aviso(editando ? 'Reporte actualizado' : 'Reporte creado', 'ok');
       if (ULTIMO) ULTIMO.informes = r.informes || [];
       pintarInformes(REP_ID, r.informes || []);
     });
@@ -1512,6 +1556,16 @@
     var be = e.target.closest('[data-editar]');
     if (be && RAIZ && RAIZ.contains(be)) {
       e.stopPropagation(); verInforme(be.getAttribute('data-editar')); return;
+    }
+    var bc = e.target.closest('[data-cambiar]');
+    if (bc && RAIZ && RAIZ.contains(bc)) {
+      e.stopPropagation();
+      var cid = bc.getAttribute('data-cambiar');
+      var quien = ((ULTIMO || {}).informes || []).filter(function (x) {
+        return x.id === cid;
+      })[0];
+      if (quien) abrirAsistente(ABIERTO, quien);
+      return;
     }
     var bv = e.target.closest('[data-ver]');
     if (bv && RAIZ && RAIZ.contains(bv)) {
