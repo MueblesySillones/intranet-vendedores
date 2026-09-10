@@ -124,30 +124,36 @@ with sync_playwright() as pw:
         return "%s · %r · propone %r" % (v["sub"], v["preg"], v["nombre"])
     check("el paso 1 es el nombre, en una ventana flotante", paso_uno_es_el_nombre)
 
-    def son_siete_pasos():
+    def los_pasos_llevan_a_crear():
+        """⚠️ No se cuentan los clicks: se avanza hasta que el botón ofrece
+        crear. Contar a ciegas se rompe el día que hay una pregunta más, y eso
+        no es una falla del asistente."""
         vistos = []
-        for i in range(6):
+        for _ in range(20):
+            if "Crear reporte" in (p.text_content("#repSiguiente") or ""):
+                break
             p.click("#repSiguiente")
             p.wait_for_timeout(400)
             vistos.append(p.evaluate(
                 "() => (document.querySelector('#repCuerpo .rep-p b')||{}).textContent"))
+        else:
+            raise AssertionError("el asistente nunca llega a crear")
         falta = [x for x in ("¿De qué período?", "¿Qué querés medir?",
-                             "¿Contra qué lo comparás?")
+                             "¿Contra qué lo comparás?", "¿Cómo sale el PDF?")
                  if x not in vistos]
         if falta:
             raise AssertionError("no pasó por: %s" % falta)
-        if "Crear reporte" not in (p.text_content("#repSiguiente") or ""):
-            raise AssertionError("el último paso no ofrece crear")
-        return " → ".join(v[:22] for v in vistos)
-    check("son siete pasos y el último crea", son_siete_pasos)
+        return "%d pasos · %s" % (len(vistos) + 1,
+                                  " → ".join(v[:20] for v in vistos))
+    check("las preguntas llevan a crear el reporte", los_pasos_llevan_a_crear)
 
     def el_ultimo_repasa():
         """Sin un repaso, revisar lo contestado obliga a volver paso por paso."""
         t = p.evaluate("() => (document.getElementById('repResumen')||{}).textContent || ''")
-        for x in ("Nombre", "Período", "Mide", "Compara"):
+        for x in ("Nombre", "Período", "Mide", "Compara", "PDF"):
             if x not in t:
                 raise AssertionError("el repaso no dice %r: %r" % (x, t[:90]))
-        return "repasa nombre, período, qué mide y contra qué"
+        return "repasa nombre, período, qué mide, contra qué y cómo sale el PDF"
     check("el último paso repasa lo contestado", el_ultimo_repasa)
 
     def atras_no_pierde():
@@ -433,6 +439,55 @@ with sync_playwright() as pw:
         return "%d hojas en 16:9, con la portada del reporte" % hojas
     check("el PDF es el deck con su diseño", pdf_con_el_diseno)
 
+    def la_hoja_del_pdf_se_elige():
+        """El pedido: «la generación de pdf en horizontal, que sea ajustable».
+
+        Ya salía horizontal (16:9), pero era el único tamaño posible. Se prueba
+        que elegir A4 apaisada cambie de verdad la hoja del archivo —no que se
+        guarde la opción y el PDF salga igual, que es el bug que tuvo el
+        interruptor de barras/tabla—.
+        """
+        import urllib.request
+        try:
+            import fitz
+        except ImportError:
+            return "(sin PyMuPDF no se puede medir la hoja, salteado)"
+
+        def hoja_de(cual):
+            p.evaluate("""async (d) => {
+              await fetch('/api/datos/informe-editar', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: d.rep, informe: d.inf,
+                                      opciones: {hoja: d.hoja}})});
+            }""", {"rep": IDS["rep"], "inf": IDS["inf"], "hoja": cual})
+            ruta = os.path.join(os.environ.get("TEMP", "."), "qa_hoja.pdf")
+            urllib.request.urlretrieve(
+                "%s/api/datos/deck-pdf?id=%s&informe=%s"
+                % (BASE, IDS["rep"], IDS["inf"]), ruta)
+            doc = fitz.open(ruta)
+            r, n = doc[0].rect, doc.page_count
+            doc.close()
+            os.remove(ruta)
+            return round(r.width, 1), round(r.height, 1), n
+
+        an1, al1, n1 = hoja_de("a4h")
+        # A4 apaisada = 297 x 210 mm = 842 x 595 puntos
+        if not (835 < an1 < 850 and 590 < al1 < 600):
+            raise AssertionError("A4 apaisada dio %sx%s pt" % (an1, al1))
+        an2, al2, n2 = hoja_de("a4v")
+        if not (590 < an2 < 600 and 835 < al2 < 850):
+            raise AssertionError("A4 vertical dio %sx%s pt" % (an2, al2))
+        if n1 != n2:
+            raise AssertionError("cambiar la hoja cambió la cantidad de "
+                                 "láminas: %d vs %d" % (n1, n2))
+        an3, al3, _ = hoja_de("pantalla")     # y se deja como estaba
+        if abs(an3 / float(al3) - 16 / 9.0) > 0.02:
+            raise AssertionError("no volvió a 16:9: %sx%s" % (an3, al3))
+        return ("A4 apaisada %sx%s · A4 vertical %sx%s · pantalla %sx%s, "
+                "siempre %d hojas" % (an1, al1, an2, al2, an3, al3, n1))
+    check("la hoja del PDF se elige y cambia el archivo",
+          la_hoja_del_pdf_se_elige)
+
     def dos_reportes():
         """Dos reportes distintos de la MISMA planilla, sin pisarse."""
         asistente(p, "QA julio 2026", "2026-07-01", "2026-07-31")
@@ -461,6 +516,33 @@ with sync_playwright() as pw:
         return (d.text_content("#edBtn") or "").strip()
     check("el reporte tiene el lápiz en una esquina", el_lapiz_esta)
 
+    def el_pdf_se_baja_desde_el_reporte():
+        """El pedido: «cuando apretes descargar en pdf se pueda descargar con
+        facilidad». Mirando el reporte no había forma de bajarlo: había que
+        cerrar la pestaña y volver al panel a buscar la tarjeta."""
+        d = ED["pg"]
+        if not d.is_visible("#edPdf"):
+            raise AssertionError("no hay botón de bajar el PDF en el reporte")
+        with d.expect_download(timeout=180000) as des:
+            d.click("#edPdf")
+        ruta = os.path.join(os.environ.get("TEMP", "."), "qa_desde_deck.pdf")
+        des.value.save_as(ruta)
+        with open(ruta, "rb") as f:
+            cabeza = f.read(5)
+        tam = os.path.getsize(ruta)
+        os.remove(ruta)
+        if cabeza != b"%PDF-":
+            raise AssertionError("no bajó un PDF: %r" % cabeza)
+        if tam < 20000:
+            raise AssertionError("el PDF vino casi vacío: %d bytes" % tam)
+        d.wait_for_timeout(400)
+        if d.is_disabled("#edPdf"):
+            raise AssertionError("el botón quedó trabado después de bajar")
+        return "%s · %d KB, sin salir del reporte" % (
+            des.value.suggested_filename, tam // 1024)
+    check("el PDF se baja desde adentro del reporte",
+          el_pdf_se_baja_desde_el_reporte)
+
     def al_apretar_se_edita():
         d = ED["pg"]
         d.click("#edBtn")
@@ -474,6 +556,21 @@ with sync_playwright() as pw:
         return "%d textos editables · %s" % (
             editables, (d.text_content("#edOk") or "").strip())
     check("al apretar el lápiz los textos se pueden tocar", al_apretar_se_edita)
+
+    def editando_no_se_baja():
+        """El reporte lo arma el servidor con lo ÚLTIMO GUARDADO: bajarlo con
+        cambios sin guardar daría un PDF sin ellos y nadie entendería por qué."""
+        d = ED["pg"]
+        if d.is_visible("#edPdf"):
+            raise AssertionError("se puede bajar el PDF con cambios sin guardar")
+        d.click("#edBtn")                       # sale de edición
+        d.wait_for_timeout(500)
+        if not d.is_visible("#edPdf"):
+            raise AssertionError("al salir de edición no volvió el botón")
+        d.click("#edBtn")                       # vuelve a entrar, como estaba
+        d.wait_for_selector("#edOk", state="visible", timeout=15000)
+        return "editando no está, y vuelve al salir"
+    check("editando, el PDF no se puede bajar a medias", editando_no_se_baja)
 
     def el_interruptor_de_vista():
         d = ED["pg"]
