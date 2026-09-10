@@ -573,16 +573,190 @@ with sync_playwright() as pw:
     check("editando, el PDF no se puede bajar a medias", editando_no_se_baja)
 
     def el_interruptor_de_vista():
+        """La vista es de las LISTAS; el fondo es de todas.
+
+        El embudo y los límites no son listas: ofrecerles «barras o tabla» es
+        ofrecer algo que no existe. El fondo sí, porque cualquier lámina se
+        puede pintar clara u oscura.
+        """
         d = ED["pg"]
-        n = d.eval_on_selector_all(".ed-v", "ns => ns.length")
-        if not n:
-            raise AssertionError("las listas no ofrecen barras/tabla")
-        secs = d.eval_on_selector_all(".slide[data-sec]",
-                                      "ns => ns.map(x => x.dataset.sec)")
-        if "vendedores" not in secs:
-            raise AssertionError("la lista del equipo no se puede cambiar: %s" % secs)
-        return "%d listas con barras/tabla: %s" % (n, ", ".join(secs))
-    check("las listas dejan elegir cómo se ven", el_interruptor_de_vista)
+        r = d.evaluate("""() => {
+          const out = {conVista: [], sinVista: [], sinFondo: []};
+          document.querySelectorAll('.slide[data-sec]').forEach(sl => {
+            const filas = [...sl.querySelectorAll('.ed-fila > span')]
+              .map(x => x.textContent);
+            if (filas.indexOf('Vista') >= 0) out.conVista.push(sl.dataset.sec);
+            else out.sinVista.push(sl.dataset.sec);
+            if (filas.indexOf('Fondo') < 0) out.sinFondo.push(sl.dataset.sec);
+          });
+          return out;
+        }""")
+        if "vendedores" not in r["conVista"]:
+            raise AssertionError("la lista del equipo no ofrece vista: %s" % r)
+        for sec in ("embudo", "limites"):
+            if sec in r["conVista"]:
+                raise AssertionError("«%s» no es una lista y ofrece vista" % sec)
+        if r["sinFondo"]:
+            raise AssertionError("sin interruptor de fondo: %s" % r["sinFondo"])
+        return ("%d listas eligen vista, %d láminas más solo fondo"
+                % (len(r["conVista"]), len(r["sinVista"])))
+    check("la vista es de las listas y el fondo es de todas",
+          el_interruptor_de_vista)
+
+    def hay_tres_vistas():
+        """«así sea un gráfico barra horizontal o vertical»: columnas."""
+        d = ED["pg"]
+        botones = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=ritmo]');
+          if (!sl) return null;
+          const f = [...sl.querySelectorAll('.ed-fila')]
+            .find(x => x.querySelector('span').textContent === 'Vista');
+          return f ? [...f.querySelectorAll('button')].map(b => b.textContent) : null;
+        }""")
+        if not botones or "Columnas" not in botones:
+            raise AssertionError("no se puede elegir columnas: %s" % botones)
+        puesta = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=ritmo]');
+          const v = sl.querySelector('.lista-v:not([hidden])');
+          return {vista: v ? v.dataset.vista : '', cols: !!v.querySelector('.cols')};
+        }""")
+        if puesta["vista"] != "columnas" or not puesta["cols"]:
+            raise AssertionError("el ritmo no sale en columnas: %s" % puesta)
+        return "barras · columnas · tabla, y el ritmo sale en columnas"
+    check("el ritmo se muestra como gráfico de columnas", hay_tres_vistas)
+
+    def la_tabla_del_equipo_tiene_las_columnas():
+        """«si hay que mostrar en una tabla entera vendedores, derivaciones,
+        ventas y conversión, hagámoslo más prolijo»."""
+        d = ED["pg"]
+        d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          [...sl.querySelectorAll('.ed-fila')]
+            .find(f => f.querySelector('span').textContent === 'Vista')
+            .querySelectorAll('button').forEach(b => {
+              if (b.textContent === 'Tabla') b.click();
+            });
+        }""")
+        d.wait_for_timeout(350)
+        cols = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          const t = sl.querySelector('.lista-v:not([hidden]) table');
+          if (!t) return null;
+          return {
+            cabezas: [...t.querySelectorAll('thead th')].map(
+              x => (x.querySelector('.ed-t') || x).textContent.trim()),
+            celdas: [...t.querySelectorAll('tbody tr')][0]
+              ? [...t.querySelectorAll('tbody tr')][0].children.length : 0
+          };
+        }""")
+        if not cols:
+            raise AssertionError("no hay tabla en la lámina del equipo")
+        for c in ("Vendedor", "Derivaciones", "Ventas", "Conversión"):
+            if c not in cols["cabezas"]:
+                raise AssertionError("falta la columna %r: %s" % (c, cols["cabezas"]))
+        # se la deja en barras: el caso que sigue prueba justamente el paso
+        # de barras a tabla, y encontrarla ya en tabla no probaría nada
+        d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=vendedores]');
+          [...sl.querySelectorAll('.ed-fila')]
+            .find(f => f.querySelector('span').textContent === 'Vista')
+            .querySelectorAll('button').forEach(b => {
+              if (b.textContent === 'Barras') b.click();
+            });
+        }""")
+        d.wait_for_timeout(300)
+        return " · ".join(x for x in cols["cabezas"] if x)
+    check("la tabla del equipo muestra ventas y conversión",
+          la_tabla_del_equipo_tiene_las_columnas)
+
+    def el_embudo_dice_cuanto_cambio():
+        """«en la parte de abajo tiene que mostrarse un porcentaje así sea
+        positivo o negativo y un texto que diga "vs el mes pasado"»."""
+        d = ED["pg"]
+        chips = d.evaluate("""() => [...document.querySelectorAll(
+          '.slide[data-sec=embudo] .conv-card .ccmp')].map(x => ({
+            texto: x.textContent.trim(),
+            bueno: x.classList.contains('sube')}))""")
+        if len(chips) < 4:
+            raise AssertionError("solo %d tarjetas comparan: %s" % (len(chips), chips))
+        if not all("vs" in c["texto"] for c in chips):
+            raise AssertionError("no dicen contra qué: %s" % chips)
+        # «sin derivar» sube y eso es MALO: el color no puede salir del signo
+        sd = chips[2]
+        if sd["texto"].startswith("▲") and sd["bueno"]:
+            raise AssertionError("pintó de bueno que suba lo que no se deriva")
+        return " · ".join(c["texto"] for c in chips)
+    check("el embudo dice cuánto cambió contra el período anterior",
+          el_embudo_dice_cuanto_cambio)
+
+    def sacar_una_tarjeta_entera():
+        """«eso tiene que tener la opción de editarlo o eliminar esa tarjeta…
+        si el usuario quiere dejar 1, que la tarjeta se centre»."""
+        d = ED["pg"]
+        antes = d.evaluate("""() => {
+          const c = document.querySelector('.slide[data-sec=embudo] .notas');
+          return {tarjetas: c.querySelectorAll('.nota').length,
+                  equis: c.querySelectorAll('.ed-nx').length,
+                  sola: c.classList.contains('sola')};
+        }""")
+        if antes["tarjetas"] < 2:
+            raise AssertionError("el embudo no tiene dos tarjetas")
+        if antes["equis"] != antes["tarjetas"]:
+            raise AssertionError("no todas las tarjetas tienen ×: %s" % antes)
+        if antes["sola"]:
+            raise AssertionError("dice «sola» con dos tarjetas")
+        d.evaluate("""() => document.querySelector(
+          '.slide[data-sec=embudo] .notas .nota .ed-nx').click()""")
+        d.wait_for_timeout(350)
+        ahora = d.evaluate("""() => {
+          const c = document.querySelector('.slide[data-sec=embudo] .notas');
+          const n = c.querySelector('.nota');
+          return {fuera: n.classList.contains('fuera'),
+                  volver: !!c.querySelector('.ed-nv:not([hidden])'),
+                  sola: c.classList.contains('sola')};
+        }""")
+        if not ahora["fuera"]:
+            raise AssertionError("no marcó la tarjeta como sacada")
+        if not ahora["volver"]:
+            raise AssertionError("no ofrece volver a mostrarla")
+        if not ahora["sola"]:
+            raise AssertionError("la que queda no se centró")
+        # se la devuelve: esta prueba no tiene que dejar el reporte cambiado
+        d.evaluate("""() => document.querySelector(
+          '.slide[data-sec=embudo] .notas .ed-nv').click()""")
+        d.wait_for_timeout(300)
+        return "sacada, la otra se centra, y vuelve con un click"
+    check("una tarjeta se saca entera y la que queda se centra",
+          sacar_una_tarjeta_entera)
+
+    def el_fondo_se_elige():
+        """«que puedas elegir de qué color querés el fondo, si oscuro o claro»."""
+        d = ED["pg"]
+        r = d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=embudo]');
+          const f = [...sl.querySelectorAll('.ed-fila')]
+            .find(x => x.querySelector('span').textContent === 'Fondo');
+          if (!f) return null;
+          const antes = sl.classList.contains('dark');
+          [...f.querySelectorAll('button')]
+            .find(b => b.textContent === 'Oscuro').click();
+          return {antes: antes, ahora: sl.classList.contains('dark')};
+        }""")
+        if not r:
+            raise AssertionError("la lámina no ofrece elegir el fondo")
+        if r["antes"] or not r["ahora"]:
+            raise AssertionError("el fondo no cambió en el acto: %s" % r)
+        d.evaluate("""() => {
+          const sl = document.querySelector('.slide[data-sec=embudo]');
+          [...sl.querySelectorAll('.ed-fila')]
+            .find(x => x.querySelector('span').textContent === 'Fondo')
+            .querySelectorAll('button').forEach(b => {
+              if (b.textContent === 'Claro') b.click();
+            });
+        }""")
+        d.wait_for_timeout(200)
+        return "de claro a oscuro en el acto, y vuelve"
+    check("el fondo de cada lámina se elige al editar", el_fondo_se_elige)
 
     def la_tabla_se_ve_al_toque():
         """«cuando apreto tabla no pasa nada»: tenía que verse en el acto."""
@@ -704,6 +878,49 @@ with sync_playwright() as pw:
             raise AssertionError("el Word quedó con el texto viejo")
         return "el Word dice lo mismo que la pantalla"
     check("el Word no queda diciendo otra cosa", el_word_tambien)
+
+    def una_lista_larga_se_reparte():
+        """«esta tabla acá es una lista enorme… así tenga que usar más hojas,
+        usémoslas, pero demos el dato prolijo».
+
+        Se mide con el navegador en modo IMPRESIÓN, que es la hoja del PDF: en
+        pantalla una lista que se derrama se puede scrollear y no se nota.
+        """
+        p.evaluate("""async (d) => {
+          await fetch('/api/datos/informe-editar', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: d.rep, informe: d.inf,
+                                  opciones: {detalle: 'todos', fondos: {embudo: 'oscuro'}}})});
+        }""", {"rep": IDS["rep"], "inf": IDS["inf"]})
+        d2 = ctx.new_page()
+        d2.set_default_timeout(240000)
+        d2.emulate_media(media="print")
+        d2.goto(BASE + "/api/datos/deck?id=%s&informe=%s" % (IDS["rep"], IDS["inf"]))
+        d2.wait_for_timeout(2500)
+        r = d2.evaluate("""() => {
+          const secs = {}, malas = [];
+          document.querySelectorAll('.slide').forEach(s => {
+            const k = s.dataset.sec || '?';
+            secs[k] = (secs[k] || 0) + 1;
+            const inner = s.querySelector('.slide-inner');
+            if (inner.scrollHeight - s.clientHeight > 1) malas.push(k);
+          });
+          return {secs: secs, malas: malas,
+                  oscuro: document.querySelector('.slide[data-sec=embudo]')
+                            .classList.contains('dark')};
+        }""")
+        d2.close()
+        if r["malas"]:
+            raise AssertionError("se pasan de la hoja: %s" % r["malas"])
+        if r["secs"].get("vendedores", 0) < 2:
+            raise AssertionError("19 vendedores siguen en una sola lámina: %s"
+                                 % r["secs"])
+        if not r["oscuro"]:
+            raise AssertionError("el fondo elegido no quedó guardado")
+        return ("el equipo en %d láminas, ninguna se pasa, y el fondo oscuro "
+                "quedó guardado" % r["secs"]["vendedores"])
+    check("una lista larga se reparte en varias láminas y ninguna se derrama",
+          una_lista_larga_se_reparte)
 
     def quitar():
         antes = len(p.query_selector_all("#dtInformes .dt-inf-c"))

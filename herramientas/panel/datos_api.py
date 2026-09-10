@@ -358,6 +358,16 @@ def _limpiar_opciones(op, antes=None):
     vistas = {k: v for k, v in vistas.items()
               if k in deck.CON_LISTA and v in validos_vis}
 
+    # el fondo de cada lámina: claro u oscuro. Se acepta para CUALQUIER
+    # sección —el embudo y los límites no son listas y también se pintan—,
+    # pero solo esos dos valores: un color suelto rompería el contraste que
+    # el deck ya tiene resuelto para las dos variantes.
+    fondos = dict(vieja.get("fondos") or {})
+    fondos.update(op.get("fondos") if isinstance(op.get("fondos"), dict) else {})
+    validas_sec = set(deck.TODAS) | {"portada", "limites", "comparacion"}
+    fondos = {str(k): v for k, v in fondos.items()
+              if str(k) in validas_sec and v in ("claro", "oscuro")}
+
     # los textos reescritos. Un texto vacio BORRA el de encima y devuelve el de
     # fabrica: es la unica forma de arrepentirse sin tener que acordarse del
     # original.
@@ -385,6 +395,7 @@ def _limpiar_opciones(op, antes=None):
         "vista": vis if vis in validos_vis else "barras",
         "hoja": hoja if hoja in validos_hoja else "pantalla",
         "vistas": vistas,
+        "fondos": fondos,
         "textos": textos,
         "ocultos": ocultos,
         "anonimo": bool(op.get("anonimo") if "anonimo" in op
