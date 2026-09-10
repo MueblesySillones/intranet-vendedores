@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.12.0"
-NUEVO_LABEL = "1.12.0 - de donde viene cada consulta"
-NUEVAS_NOTAS = ("El reporte ahora sabe de donde viene cada consulta: si es de la localidad del local, de la zona, de lejos o del interior del pais. Y aparece un dato fuerte: lo que viene de la zona cierra diez veces mas que lo que viene de lejos (3,8% contra 0,4%), verificado sucursal por sucursal. Hay tres laminas nuevas para elegir al crear un reporte: De la zona o de lejos, De que provincias escriben, y A quien le toca lo de lejos, que muestra que parte de lo que recibe cada vendedor viene de fuera de su zona. Esa ultima conviene mirarla ANTES de comparar conversiones: quien recibe mas material lejano arranca con parte de su cartera en consultas que casi no cierran.")
+NUEVA_PUBLICA = "1.12.1"
+NUEVO_LABEL = "1.12.1 - zona norte es de la sucursal que la atendio"
+NUEVAS_NOTAS = ("Ahora zona norte y zona oeste se le atribuyen a la sucursal que las atendio: si en la planilla dice Norcenter, zona norte, Flor, esa consulta es de Norcenter. Van en su propia fila del reporte y no mezcladas con las de la localidad del local, por una razon concreta: esas 154 consultas cerraron cero ventas, y metidas ahi adentro ese dato desaparecia. Asi se ve de quien es la consulta Y se ve que no cierra.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
