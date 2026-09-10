@@ -1082,6 +1082,7 @@
       secciones: SECCIONES.map(function (s) { return s.id; }),
       comparar: 'anterior',
       detalle: '10',
+      hoja: 'pantalla',
       anonimo: false,
       nota: ''
     };
@@ -1220,6 +1221,17 @@
         }
       },
       {
+        t: '¿Cómo sale el PDF?',
+        ayuda: 'El reporte se ve en 16:9 como una presentación. Si lo vas a ' +
+               'imprimir o mandar por mail, conviene una hoja A4.',
+        pinta: function () {
+          return grupo('repHoja', OPCIONES.hoja || [], BORRADOR.hoja);
+        },
+        toma: function () {
+          BORRADOR.hoja = elegidoDe('repHoja', 'pantalla');
+        }
+      },
+      {
         t: '¿Se nombra a las personas?',
         ayuda: 'Si el reporte sale del equipo, conviene mostrar el puesto y la ' +
                'sucursal en vez del nombre.',
@@ -1266,12 +1278,16 @@
     var det = (OPCIONES.detalle || []).filter(function (x) {
       return x.id === BORRADOR.detalle;
     })[0];
+    var hoja = (OPCIONES.hoja || []).filter(function (x) {
+      return x.id === BORRADOR.hoja;
+    })[0];
     caja.innerHTML = '<b>Va a quedar así</b>' +
       fila('Nombre', BORRADOR.nombre) +
       fila('Período', periodoTexto(BORRADOR)) +
       fila('Mide', nombres.join(' · ') || '—') +
       fila('Compara', cmp ? cmp.titulo : '—') +
       fila('Detalle', det ? det.titulo : '—') +
+      fila('PDF', hoja ? hoja.titulo : '—') +
       (BORRADOR.anonimo ? fila('Personas', 'sin nombres') : '');
   }
 
@@ -1297,6 +1313,7 @@
       }),
       comparar: op.comparar || 'anterior',
       detalle: op.detalle || '10',
+      hoja: op.hoja || 'pantalla',
       anonimo: !!op.anonimo,
       nota: op.nota || ''
     };
@@ -1398,6 +1415,7 @@
       opciones: {
         comparar: BORRADOR.comparar,
         detalle: BORRADOR.detalle,
+        hoja: BORRADOR.hoja,
         anonimo: BORRADOR.anonimo,
         nota: BORRADOR.nota
       }

@@ -253,6 +253,8 @@ def opciones_posibles():
                      for k, t, d in deck.COMPARACIONES],
         "vista": [{"id": k, "titulo": t, "detalle": d}
                   for k, t, d in deck.VISTAS],
+        "hoja": [{"id": k, "titulo": t, "detalle": d}
+                 for k, t, d in deck.HOJAS],
         "con_lista": list(deck.CON_LISTA),
     }
 
@@ -342,9 +344,13 @@ def _limpiar_opciones(op, antes=None):
     validos_det = {k for k, _, _ in deck.DETALLES}
     validos_cmp = {k for k, _, _ in deck.COMPARACIONES}
     validos_vis = {k for k, _, _ in deck.VISTAS}
+    validos_hoja = {k for k, _, _ in deck.HOJAS}
     det = str(op.get("detalle") or vieja.get("detalle") or "10")
     cmp_ = str(op.get("comparar") or vieja.get("comparar") or "anterior")
     vis = str(op.get("vista") or vieja.get("vista") or "barras")
+    # el tamaño de hoja del PDF. Los reportes de antes de que esto existiera no
+    # lo tienen, y caen en «pantalla», que es como salian.
+    hoja = str(op.get("hoja") or vieja.get("hoja") or "pantalla")
 
     # las vistas por sección: solo las que son una lista, y solo valores validos
     vistas = dict(vieja.get("vistas") or {})
@@ -377,6 +383,7 @@ def _limpiar_opciones(op, antes=None):
         "detalle": det if det in validos_det else "10",
         "comparar": cmp_ if cmp_ in validos_cmp else "anterior",
         "vista": vis if vis in validos_vis else "barras",
+        "hoja": hoja if hoja in validos_hoja else "pantalla",
         "vistas": vistas,
         "textos": textos,
         "ocultos": ocultos,

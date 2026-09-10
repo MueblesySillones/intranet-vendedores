@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 53
+VERSION = 54
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,23 +279,21 @@ VERSION = 53
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.13.0"
-VERSION_LABEL = "1.13.0 - el ritmo de la semana y que trae cada producto"
+VERSION_PUBLICA = "1.14.0"
+VERSION_LABEL = "1.14.0 - el PDF se elige y se baja desde el reporte"
 VERSION_NOTES = (
-                 "Dos laminas nuevas, las que faltaban de la lista: EL RITMO DE LA "
-                 "SEMANA -cuantas consultas entran por dia y que dias entran mas- y "
-                 "DE QUE CAMPANA VIENE CADA PRODUCTO, el cruce para saber de donde "
-                 "salen las consultas de sillones. En el ritmo aparece algo para "
-                 "mirar: el sabado entra casi lo mismo que un dia de semana y se "
-                 "deriva la mitad. La lamina de origenes ahora dice ademas cuantas "
-                 "consultas entraron sin origen cargado, que es sobre cuantas estan "
-                 "calculados sus porcentajes. Ademas el Word dejo de estar cinco "
-                 "laminas atras del PDF -zonas, provincias y reparto no estaban- y "
-                 "los dos formatos salen de la misma cuenta, asi que no pueden decir "
-                 "numeros distintos. Y un reporte ya creado puede cambiar que mide "
-                 "sin borrarlo: el boton Cambiar que mide reabre el asistente con "
-                 "las respuestas puestas, que es como un reporte viejo toma las "
-                 "laminas nuevas.")
+                 "El PDF del reporte ya salia horizontal -16:9, como una "
+                 "diapositiva- pero era el unico tamano posible. Ahora se elige: "
+                 "PANTALLA 16:9 para mostrar o proyectar, HOJA A4 APAISADA para "
+                 "imprimir, y HOJA A4 VERTICAL para mandar por mail o archivar. No "
+                 "es la lamina metida adentro de una hoja mas grande con bandas "
+                 "blancas: se le cambia el tamano a la lamina y el diseno se "
+                 "reacomoda solo. Es una pregunta mas del asistente, y en un reporte "
+                 "que ya existe se cambia con Cambiar que mide. Ademas, mirando el "
+                 "reporte ahora hay un boton Descargar PDF al lado del lapiz: antes "
+                 "habia que cerrar la pestana y volver al panel a buscar la tarjeta. "
+                 "Mientras se edita el boton no aparece, porque el PDF sale con lo "
+                 "ultimo guardado.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
