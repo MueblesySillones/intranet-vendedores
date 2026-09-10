@@ -982,14 +982,13 @@
       '<div class="dt-inf-h"><h3>Reportes</h3>' +
       '<button type="button" class="btn active" id="dtInfNuevo">Crear reporte</button>' +
       '</div>' +
-      '<div id="dtInfForm" hidden></div>' +
       (lista.length
         ? '<div class="dt-inf-l">' + lista.map(tarjeta).join('') + '</div>'
         : '<p class="dt-chico" id="dtInfVacio">Todavía no creaste ninguno. ' +
           'Un reporte es un período con nombre —«Agosto», «Semana del 1 al 7»— ' +
           'y las cosas que querés que muestre. Los números se sacan de la ' +
           'planilla cada vez que lo abrís.</p>');
-    document.getElementById('dtInfNuevo').onclick = function () { formInforme(id); };
+    document.getElementById('dtInfNuevo').onclick = function () { abrirAsistente(id); };
   }
 
   /* Cada reporte creado es una tarjeta, no una fila: adentro tiene sus tres
@@ -1025,11 +1024,19 @@
       '</article>';
   }
 
-  /* El formulario pregunta, en el orden en que uno lo piensa: cómo se llama,
-     de cuándo habla, qué muestra, contra qué se compara y con cuánto detalle.
-     Todo viene con una respuesta puesta —el mes pasado, todo marcado, contra
-     el período anterior— así que crear el reporte de siempre sigue siendo
-     apretar dos botones; las preguntas están para el que quiere otra cosa. */
+  /* ══════════════ CREAR UN REPORTE, PASO A PASO ══════════════
+     Las mismas siete preguntas de antes, pero de a una y en una ventana
+     flotante. Antes caían todas juntas en una tira larga adentro de la
+     pantalla: se veía como un formulario de trámite y había que bajar para
+     encontrar el botón de crear.
+
+     Las respuestas viven en BORRADOR mientras se contesta, así que ir y volver
+     entre pasos no pierde nada. Cada paso trae su respuesta puesta: el que
+     quiere el reporte de siempre aprieta Siguiente cinco veces y listo.
+     ═══════════════════════════════════════════════════════════ */
+  /* Una pregunta de UNA sola respuesta, dibujada como opciones grandes y no
+     como un <select>: se ve todo lo que hay sin desplegar nada, y cada opción
+     puede explicar para qué sirve. */
   function grupo(id, opciones, elegido) {
     return '<div class="dt-inf-r">' + (opciones || []).map(function (o) {
       return '<label class="dt-inf-o"><input type="radio" name="' + id + '" ' +
@@ -1044,134 +1051,340 @@
     return n ? n.value : porDefecto;
   }
 
-  function formInforme(id) {
-    var caja = document.getElementById('dtInfForm');
-    if (!caja) return;
-    if (!caja.hidden) { caja.hidden = true; caja.innerHTML = ''; return; }
+  var BORRADOR = null;
+  var PASO = 0;
+  var REP_ID = null;
+
+  function iso(f) {
+    return f.getFullYear() + '-' + ('0' + (f.getMonth() + 1)).slice(-2) +
+           '-' + ('0' + f.getDate()).slice(-2);
+  }
+
+  function borradorNuevo() {
     var hoy = new Date();
     var m = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
-    var ini = new Date(m.getFullYear(), m.getMonth(), 1);
-    var fin = new Date(m.getFullYear(), m.getMonth() + 1, 0);
-    var iso = function (f) {
-      return f.getFullYear() + '-' + ('0' + (f.getMonth() + 1)).slice(-2) +
-             '-' + ('0' + f.getDate()).slice(-2);
-    };
-    caja.hidden = false;
-    caja.innerHTML =
-      '<div class="dt-inf-f">' +
-      '<div class="dt-inf-q"><b>1. ¿Cómo se va a llamar?</b>' +
-        '<input type="text" id="dtInfN" maxlength="80" value="' +
-        esc((MESES[m.getMonth()] || '').replace(/^./, function (c) { return c.toUpperCase(); }) +
-            ' ' + m.getFullYear()) + '"></div>' +
-      '<div class="dt-inf-q"><b>2. ¿De qué período?</b>' +
-        '<span class="dt-chico">Se cuentan las consultas cargadas entre esas ' +
-        'dos fechas, los dos días incluidos.</span>' +
-        '<div class="dt-inf-fe">' +
-          '<label>Desde<input type="date" id="dtInfD" value="' + iso(ini) + '"></label>' +
-          '<label>Hasta<input type="date" id="dtInfH" value="' + iso(fin) + '"></label>' +
-        '</div>' +
-        '<div class="dt-inf-at">' +
-          '<button type="button" class="dt-at" data-per="mes-pasado">El mes pasado</button>' +
-          '<button type="button" class="dt-at" data-per="este-mes">Este mes</button>' +
-          '<button type="button" class="dt-at" data-per="semana">Últimos 7 días</button>' +
-          '<button type="button" class="dt-at" data-per="todo">Toda la planilla</button>' +
-        '</div></div>' +
-      '<div class="dt-inf-q"><b>3. ¿Qué querés medir?</b>' +
-        '<span class="dt-chico">Cada cosa que marques es una lámina del ' +
-        'reporte. Después podés crear otro con otras.</span>' +
-        '<div class="dt-inf-s">' + SECCIONES.map(function (s) {
-          return '<label class="dt-inf-o"><input type="checkbox" value="' +
-            esc(s.id) + '" checked><span><b>' + esc(s.titulo) + '</b>' +
-            '<i>' + esc(s.detalle) + '</i></span></label>';
-        }).join('') + '</div>' +
-        '<div class="dt-inf-at">' +
-          '<button type="button" class="dt-at" data-marca="todas">Marcar todas</button>' +
-          '<button type="button" class="dt-at" data-marca="ninguna">Desmarcar todas</button>' +
-        '</div></div>' +
-      '<div class="dt-inf-q"><b>4. ¿Contra qué lo comparás?</b>' +
-        '<span class="dt-chico">Un total solo no dice si estuvo bien o mal. ' +
-        'Con esto, el reporte abre diciendo qué cambió.</span>' +
-        grupo('dtInfCmp', (OPCIONES.comparar || []), 'anterior') + '</div>' +
-      '<div class="dt-inf-q"><b>5. ¿Cuánto detalle en las listas?</b>' +
-        '<span class="dt-chico">Cuántos entran en cada ranking: productos, ' +
-        'campañas, vendedores.</span>' +
-        grupo('dtInfDet', (OPCIONES.detalle || []), '10') + '</div>' +
-      '<div class="dt-inf-q"><b>6. ¿Se nombra a las personas?</b>' +
-        '<div class="dt-inf-s"><label class="dt-inf-o">' +
-        '<input type="checkbox" id="dtInfAnon"><span>' +
-        '<b>Sin los nombres del equipo</b><i>En vez del nombre se muestra el ' +
-        'puesto y la sucursal. Para el reporte que sale del equipo.</i>' +
-        '</span></label></div></div>' +
-      '<div class="dt-inf-q"><b>7. ¿Querés aclarar algo en la portada?</b>' +
-        '<span class="dt-chico">Opcional. Una línea que se lee al abrir: para ' +
-        'quién es, o qué hay que tener en cuenta.</span>' +
-        '<input type="text" id="dtInfNota" maxlength="280" ' +
-        'placeholder="Ej: Para la reunión de socios del 10/9"></div>' +
-      '<div class="dt-inf-ac">' +
-        '<button type="button" class="btn active" id="dtInfOk">Crear reporte</button>' +
-        '<button type="button" class="dt-volver" id="dtInfNo">Cancelar</button>' +
-      '</div></div>';
-
-    var D = document.getElementById('dtInfD');
-    var H = document.getElementById('dtInfH');
-    var atajos = caja.querySelectorAll('.dt-at');
-    for (var k = 0; k < atajos.length; k++) {
-      atajos[k].onclick = (function (b) {
-        return function () {
-          var marca = b.getAttribute('data-marca');
-          if (marca) {
-            var cs = caja.querySelectorAll('.dt-inf-s input[type="checkbox"]');
-            for (var j = 0; j < cs.length; j++) {
-              if (cs[j].id !== 'dtInfAnon') cs[j].checked = (marca === 'todas');
-            }
-            return;
-          }
-          var q = b.getAttribute('data-per'), a, z;
-          if (q === 'mes-pasado') {
-            a = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
-            z = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
-          } else if (q === 'este-mes') {
-            a = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-            z = hoy;
-          } else if (q === 'semana') {
-            a = new Date(hoy.getTime() - 6 * 86400000);
-            z = hoy;
-          } else { D.value = ''; H.value = ''; return; }
-          D.value = iso(a); H.value = iso(z);
-        };
-      }(atajos[k]));
-    }
-
-    document.getElementById('dtInfNo').onclick = function () {
-      caja.hidden = true; caja.innerHTML = '';
-    };
-    document.getElementById('dtInfOk').onclick = function () {
-      var mide = [];
-      var cs = caja.querySelectorAll('.dt-inf-s input[type="checkbox"]');
-      for (var j = 0; j < cs.length; j++) {
-        if (cs[j].checked && cs[j].id !== 'dtInfAnon') mide.push(cs[j].value);
-      }
-      if (!mide.length) { aviso('Marcá al menos una cosa para medir', 'err'); return; }
-      post('/api/datos/informe-crear', {
-        id: id,
-        nombre: document.getElementById('dtInfN').value,
-        desde: D.value,
-        hasta: H.value,
-        secciones: mide,
-        opciones: {
-          comparar: elegidoDe('dtInfCmp', 'anterior'),
-          detalle: elegidoDe('dtInfDet', '10'),
-          anonimo: document.getElementById('dtInfAnon').checked,
-          nota: document.getElementById('dtInfNota').value
-        }
-      }).then(function (r) {
-        if (r.error) { aviso(r.error, 'err'); return; }
-        aviso('Reporte creado', 'ok');
-        if (ULTIMO) ULTIMO.informes = r.informes || [];
-        pintarInformes(id, r.informes || []);
-      });
+    return {
+      nombre: (MESES[m.getMonth()] || '').replace(/^./, function (c) {
+        return c.toUpperCase();
+      }) + ' ' + m.getFullYear(),
+      desde: iso(new Date(m.getFullYear(), m.getMonth(), 1)),
+      hasta: iso(new Date(m.getFullYear(), m.getMonth() + 1, 0)),
+      secciones: SECCIONES.map(function (s) { return s.id; }),
+      comparar: 'anterior',
+      detalle: '10',
+      anonimo: false,
+      nota: ''
     };
   }
+
+  /* Cada paso: título, ayuda, cómo se dibuja y qué revisa antes de seguir.
+     Está todo junto a propósito —la pregunta al lado de su validación— para
+     que agregar una pregunta sea agregar una entrada acá y nada más. */
+  function pasos() {
+    return [
+      {
+        t: '¿Cómo se va a llamar?',
+        ayuda: 'Es el nombre que vas a ver en la lista y el que sale en la ' +
+               'portada del reporte.',
+        pinta: function () {
+          return '<input type="text" id="repNombre" maxlength="80" value="' +
+            esc(BORRADOR.nombre) + '" placeholder="Ej: Agosto 2026">';
+        },
+        toma: function () {
+          BORRADOR.nombre = (document.getElementById('repNombre').value || '').trim();
+        },
+        revisa: function () {
+          return BORRADOR.nombre ? '' : 'Ponele un nombre para poder encontrarlo después.';
+        }
+      },
+      {
+        t: '¿De qué período?',
+        ayuda: 'Se cuentan las consultas cargadas entre esas dos fechas, los ' +
+               'dos días incluidos.',
+        pinta: function () {
+          return '<div class="dt-inf-fe">' +
+            '<label>Desde<input type="date" id="repDesde" value="' + esc(BORRADOR.desde) + '"></label>' +
+            '<label>Hasta<input type="date" id="repHasta" value="' + esc(BORRADOR.hasta) + '"></label>' +
+            '</div>' +
+            '<div class="dt-inf-at">' +
+              '<button type="button" class="dt-at" data-per="mes-pasado">El mes pasado</button>' +
+              '<button type="button" class="dt-at" data-per="este-mes">Este mes</button>' +
+              '<button type="button" class="dt-at" data-per="semana">Últimos 7 días</button>' +
+              '<button type="button" class="dt-at" data-per="todo">Toda la planilla</button>' +
+            '</div>';
+        },
+        arma: function () {
+          var hoy = new Date();
+          var D = document.getElementById('repDesde');
+          var H = document.getElementById('repHasta');
+          var bts = document.querySelectorAll('#repCuerpo .dt-at');
+          for (var i = 0; i < bts.length; i++) {
+            bts[i].onclick = (function (b) {
+              return function () {
+                var q = b.getAttribute('data-per'), a, z;
+                if (q === 'mes-pasado') {
+                  a = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+                  z = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+                } else if (q === 'este-mes') {
+                  a = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+                  z = hoy;
+                } else if (q === 'semana') {
+                  a = new Date(hoy.getTime() - 6 * 86400000);
+                  z = hoy;
+                } else { D.value = ''; H.value = ''; return; }
+                D.value = iso(a); H.value = iso(z);
+              };
+            }(bts[i]));
+          }
+        },
+        toma: function () {
+          BORRADOR.desde = document.getElementById('repDesde').value;
+          BORRADOR.hasta = document.getElementById('repHasta').value;
+        },
+        revisa: function () {
+          if (BORRADOR.desde && BORRADOR.hasta && BORRADOR.desde > BORRADOR.hasta) {
+            return 'El «desde» quedó después del «hasta».';
+          }
+          return '';
+        }
+      },
+      {
+        t: '¿Qué querés medir?',
+        ayuda: 'Cada cosa que marques es una lámina del reporte. Después podés ' +
+               'crear otro con otras.',
+        pinta: function () {
+          return '<div class="dt-inf-s">' + SECCIONES.map(function (s) {
+            return '<label class="dt-inf-o"><input type="checkbox" value="' +
+              esc(s.id) + '"' +
+              (BORRADOR.secciones.indexOf(s.id) >= 0 ? ' checked' : '') +
+              '><span><b>' + esc(s.titulo) + '</b><i>' + esc(s.detalle) +
+              '</i></span></label>';
+          }).join('') + '</div>' +
+          '<div class="dt-inf-at">' +
+            '<button type="button" class="dt-at" data-marca="todas">Marcar todas</button>' +
+            '<button type="button" class="dt-at" data-marca="ninguna">Desmarcar todas</button>' +
+          '</div>';
+        },
+        arma: function () {
+          var bts = document.querySelectorAll('#repCuerpo .dt-at');
+          for (var i = 0; i < bts.length; i++) {
+            bts[i].onclick = (function (b) {
+              return function () {
+                var todas = b.getAttribute('data-marca') === 'todas';
+                var cs = document.querySelectorAll('#repCuerpo .dt-inf-s input');
+                for (var j = 0; j < cs.length; j++) cs[j].checked = todas;
+              };
+            }(bts[i]));
+          }
+        },
+        toma: function () {
+          var out = [];
+          var cs = document.querySelectorAll('#repCuerpo .dt-inf-s input');
+          for (var i = 0; i < cs.length; i++) if (cs[i].checked) out.push(cs[i].value);
+          BORRADOR.secciones = out;
+        },
+        revisa: function () {
+          return BORRADOR.secciones.length ? ''
+            : 'Marcá al menos una cosa: un reporte sin nada adentro no dice nada.';
+        }
+      },
+      {
+        t: '¿Contra qué lo comparás?',
+        ayuda: 'Un total solo no dice si estuvo bien o mal. Con esto, el ' +
+               'reporte abre diciendo qué cambió.',
+        pinta: function () {
+          return grupo('repCmp', OPCIONES.comparar || [], BORRADOR.comparar);
+        },
+        toma: function () {
+          BORRADOR.comparar = elegidoDe('repCmp', 'anterior');
+        }
+      },
+      {
+        t: '¿Cuánto detalle en las listas?',
+        ayuda: 'Cuántos entran en cada ranking: productos, campañas, vendedores.',
+        pinta: function () {
+          return grupo('repDet', OPCIONES.detalle || [], BORRADOR.detalle);
+        },
+        toma: function () {
+          BORRADOR.detalle = elegidoDe('repDet', '10');
+        }
+      },
+      {
+        t: '¿Se nombra a las personas?',
+        ayuda: 'Si el reporte sale del equipo, conviene mostrar el puesto y la ' +
+               'sucursal en vez del nombre.',
+        pinta: function () {
+          return '<div class="dt-inf-s"><label class="dt-inf-o">' +
+            '<input type="checkbox" id="repAnon"' +
+            (BORRADOR.anonimo ? ' checked' : '') + '><span>' +
+            '<b>Sin los nombres del equipo</b><i>En vez del nombre se muestra ' +
+            'el puesto y la sucursal.</i></span></label></div>';
+        },
+        toma: function () {
+          BORRADOR.anonimo = document.getElementById('repAnon').checked;
+        }
+      },
+      {
+        t: '¿Querés aclarar algo en la portada?',
+        ayuda: 'Opcional. Una línea que se lee al abrir: para quién es, o qué ' +
+               'hay que tener en cuenta.',
+        pinta: function () {
+          return '<input type="text" id="repNota" maxlength="280" value="' +
+            esc(BORRADOR.nota) + '" ' +
+            'placeholder="Ej: Para la reunión de socios del 10/9">' +
+            '<div class="rep-resumen" id="repResumen"></div>';
+        },
+        arma: function () { pintarResumen(); },
+        toma: function () {
+          BORRADOR.nota = (document.getElementById('repNota').value || '').trim();
+        }
+      }
+    ];
+  }
+
+  /* El último paso muestra lo que se contestó. Es la única forma de que
+     alguien pueda revisar antes de crear sin tener que volver paso por paso. */
+  function pintarResumen() {
+    var caja = document.getElementById('repResumen');
+    if (!caja) return;
+    var nombres = SECCIONES.filter(function (s) {
+      return BORRADOR.secciones.indexOf(s.id) >= 0;
+    }).map(function (s) { return s.titulo; });
+    var cmp = (OPCIONES.comparar || []).filter(function (x) {
+      return x.id === BORRADOR.comparar;
+    })[0];
+    var det = (OPCIONES.detalle || []).filter(function (x) {
+      return x.id === BORRADOR.detalle;
+    })[0];
+    caja.innerHTML = '<b>Va a quedar así</b>' +
+      fila('Nombre', BORRADOR.nombre) +
+      fila('Período', periodoTexto(BORRADOR)) +
+      fila('Mide', nombres.join(' · ') || '—') +
+      fila('Compara', cmp ? cmp.titulo : '—') +
+      fila('Detalle', det ? det.titulo : '—') +
+      (BORRADOR.anonimo ? fila('Personas', 'sin nombres') : '');
+  }
+
+  function fila(k, v) {
+    return '<span class="rep-r"><i>' + esc(k) + '</i>' + esc(v) + '</span>';
+  }
+
+  /* ─────────── el motor del asistente ─────────── */
+  function abrirAsistente(id) {
+    REP_ID = id;
+    BORRADOR = borradorNuevo();
+    PASO = 0;
+    var modal = document.getElementById('repModal');
+    if (!modal) return;
+    modal.querySelectorAll('[data-cerrar-rep]').forEach(function (b) {
+      b.onclick = cerrarAsistente;
+    });
+    document.getElementById('repAtras').onclick = function () { mover(-1); };
+    document.getElementById('repSiguiente').onclick = function () { mover(1); };
+    if (window.abrirModal) window.abrirModal(modal);
+    /* ⚠️ el paso se pinta DESPUES de abrir: mientras el modal esta `hidden` no
+       se le puede dar foco a nada, y el cursor se quedaba en el boton que lo
+       abrio — habia que ir al campo con el mouse antes de escribir. */
+    pintarPaso();
+  }
+
+  function cerrarAsistente() {
+    var modal = document.getElementById('repModal');
+    if (window.esconderModal) window.esconderModal(modal);
+    BORRADOR = null;
+  }
+
+  function pintarPaso() {
+    var ps = pasos(), p = ps[PASO];
+    var cuerpo = document.getElementById('repCuerpo');
+    document.getElementById('repSub').textContent =
+      'Paso ' + (PASO + 1) + ' de ' + ps.length;
+    document.getElementById('repPasos').textContent =
+      (PASO + 1) + ' / ' + ps.length;
+    document.getElementById('repProg').style.width =
+      Math.round(100 * (PASO + 1) / ps.length) + '%';
+    document.getElementById('repAtras').disabled = PASO === 0;
+    document.getElementById('repSiguiente').textContent =
+      PASO === ps.length - 1 ? 'Crear reporte' : 'Siguiente →';
+    cuerpo.innerHTML =
+      '<div class="rep-p"><b>' + esc(p.t) + '</b>' +
+      (p.ayuda ? '<span class="dt-chico">' + esc(p.ayuda) + '</span>' : '') +
+      p.pinta() + '</div>' +
+      '<div class="rep-mal" id="repMal" hidden></div>';
+    if (p.arma) p.arma();
+    /* El foco va al primer campo: con el teclado se contesta y se pasa con
+       Enter, sin tener que ir al botón con el mouse en cada paso.
+
+       ⚠️ Va diferido. `abrirModal` deja el fondo en `visibility:hidden` hasta
+       el frame siguiente, y a un elemento invisible el navegador NO le da
+       foco: al abrir el asistente el cursor se quedaba en el botón que lo
+       abrió y había que ir al campo a mano. */
+    var f = cuerpo.querySelector('input[type=text], input[type=date], input');
+    if (f) setTimeout(function () {
+      try { f.focus(); if (f.select) f.select(); } catch (e) {}
+    }, 60);
+  }
+
+  function mover(d) {
+    var ps = pasos(), p = ps[PASO];
+    if (d > 0) {
+      if (p.toma) p.toma();
+      var mal = p.revisa ? p.revisa() : '';
+      if (mal) {
+        var m = document.getElementById('repMal');
+        if (m) { m.textContent = mal; m.hidden = false; }
+        return;
+      }
+      if (PASO === ps.length - 1) { crearDesdeAsistente(); return; }
+    } else if (p.toma) {
+      /* también se guarda al ir para atrás: si no, contestar y volver perdía
+         lo que se acababa de escribir */
+      try { p.toma(); } catch (e) {}
+    }
+    PASO = Math.max(0, Math.min(ps.length - 1, PASO + d));
+    pintarPaso();
+  }
+
+  function crearDesdeAsistente() {
+    var b = document.getElementById('repSiguiente');
+    b.disabled = true; b.textContent = 'Creando…';
+    post('/api/datos/informe-crear', {
+      id: REP_ID,
+      nombre: BORRADOR.nombre,
+      desde: BORRADOR.desde,
+      hasta: BORRADOR.hasta,
+      secciones: BORRADOR.secciones,
+      opciones: {
+        comparar: BORRADOR.comparar,
+        detalle: BORRADOR.detalle,
+        anonimo: BORRADOR.anonimo,
+        nota: BORRADOR.nota
+      }
+    }).then(function (r) {
+      b.disabled = false; b.textContent = 'Crear reporte';
+      if (r.error) {
+        var m = document.getElementById('repMal');
+        if (m) { m.textContent = r.error; m.hidden = false; }
+        return;
+      }
+      cerrarAsistente();
+      aviso('Reporte creado', 'ok');
+      if (ULTIMO) ULTIMO.informes = r.informes || [];
+      pintarInformes(REP_ID, r.informes || []);
+    });
+  }
+
+  /* Enter pasa al siguiente y Escape cierra: un asistente que obliga a ir al
+     botón con el mouse en cada paso se hace largo. */
+  document.addEventListener('keydown', function (e) {
+    var modal = document.getElementById('repModal');
+    if (!modal || !modal.classList.contains('on')) return;
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault(); mover(1);
+    } else if (e.key === 'Escape') {
+      e.preventDefault(); cerrarAsistente();
+    }
+  });
 
   /* Las tres salidas del mismo reporte. Van todas por `informe=` para que
      digan lo mismo: si el PDF y el Word salieran por caminos distintos, tarde
