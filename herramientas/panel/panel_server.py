@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 50
+VERSION = 51
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,20 +279,16 @@ VERSION = 50
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.12.0"
-VERSION_LABEL = "1.12.0 - de donde viene cada consulta"
+VERSION_PUBLICA = "1.12.1"
+VERSION_LABEL = "1.12.1 - zona norte es de la sucursal que la atendio"
 VERSION_NOTES = (
-                 "El reporte ahora sabe de donde viene cada consulta: si es de la "
-                 "localidad del local, de la zona, de lejos o del interior del pais. "
-                 "Y aparece un dato fuerte: lo que viene de la zona cierra diez "
-                 "veces mas que lo que viene de lejos (3,8% contra 0,4%), verificado "
-                 "sucursal por sucursal. Hay tres laminas nuevas para elegir al "
-                 "crear un reporte: De la zona o de lejos, De que provincias "
-                 "escriben, y A quien le toca lo de lejos, que muestra que parte de "
-                 "lo que recibe cada vendedor viene de fuera de su zona. Esa ultima "
-                 "conviene mirarla ANTES de comparar conversiones: quien recibe mas "
-                 "material lejano arranca con parte de su cartera en consultas que "
-                 "casi no cierran.")
+                 "Ahora zona norte y zona oeste se le atribuyen a la sucursal que "
+                 "las atendio: si en la planilla dice Norcenter, zona norte, Flor, "
+                 "esa consulta es de Norcenter. Van en su propia fila del reporte y "
+                 "no mezcladas con las de la localidad del local, por una razon "
+                 "concreta: esas 154 consultas cerraron cero ventas, y metidas ahi "
+                 "adentro ese dato desaparecia. Asi se ve de quien es la consulta Y "
+                 "se ve que no cierra.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
