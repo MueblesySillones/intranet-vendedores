@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.11.0"
-NUEVO_LABEL = "1.11.0 - crear un reporte es paso a paso"
-NUEVAS_NOTAS = ("Crear un reporte ahora es un asistente. Apretas Crear reporte y se abre una ventana que te va preguntando de a una: primero como se llama, despues de que periodo, que queres medir, contra que comparar, cuanto detalle, si se nombra a las personas y si queres aclarar algo en la portada. Arriba una barra te muestra por donde vas y podes ir y volver sin perder lo contestado; el ultimo paso te repasa todo antes de crear. Todo viene con la respuesta puesta, asi que el reporte de siempre sale apretando Siguiente. De paso se arreglaron dos cosas del diseno que cortaban el contenido de las ventanas flotantes, incluida la de Avisar novedad.")
+NUEVA_PUBLICA = "1.12.0"
+NUEVO_LABEL = "1.12.0 - de donde viene cada consulta"
+NUEVAS_NOTAS = ("El reporte ahora sabe de donde viene cada consulta: si es de la localidad del local, de la zona, de lejos o del interior del pais. Y aparece un dato fuerte: lo que viene de la zona cierra diez veces mas que lo que viene de lejos (3,8% contra 0,4%), verificado sucursal por sucursal. Hay tres laminas nuevas para elegir al crear un reporte: De la zona o de lejos, De que provincias escriben, y A quien le toca lo de lejos, que muestra que parte de lo que recibe cada vendedor viene de fuera de su zona. Esa ultima conviene mirarla ANTES de comparar conversiones: quien recibe mas material lejano arranca con parte de su cartera en consultas que casi no cierran.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

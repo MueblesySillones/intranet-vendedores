@@ -30,6 +30,7 @@ a = Analysis(
         'datos.encabezado',
         'datos.medidas',
         'datos.derivaciones', 'datos.deck', 'datos.deck_word', 'datos.a_pdf',
+        'datos.zonas',
     ],
     hookspath=[],
     hooksconfig={},
