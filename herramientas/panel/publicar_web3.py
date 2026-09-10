@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.10.0"
-NUEVO_LABEL = "1.10.0 - borrar queda pendiente y el aviso se vence"
-NUEVAS_NOTAS = ("Tres arreglos. Borrar un modulo, cambiar el orden o vaciar la papelera ahora quedan como cambio sin publicar: antes el boton seguia diciendo Todo publicado y el cambio no subia nunca. El boton Duplicar del Reporte de metricas mostraba el codigo del icono como texto y tapaba a los otros dos botones; ya se ve bien. Y la chapita Nuevo de la intranet se vence sola: en Avisar novedad elegis cuanto dura -24 horas de fabrica, o hasta 2 semanas- y los avisos viejos dejan de aparecer tildados. Antes duraba 14 dias fijos.")
+NUEVA_PUBLICA = "1.11.0"
+NUEVO_LABEL = "1.11.0 - crear un reporte es paso a paso"
+NUEVAS_NOTAS = ("Crear un reporte ahora es un asistente. Apretas Crear reporte y se abre una ventana que te va preguntando de a una: primero como se llama, despues de que periodo, que queres medir, contra que comparar, cuanto detalle, si se nombra a las personas y si queres aclarar algo en la portada. Arriba una barra te muestra por donde vas y podes ir y volver sin perder lo contestado; el ultimo paso te repasa todo antes de crear. Todo viene con la respuesta puesta, asi que el reporte de siempre sale apretando Siguiente. De paso se arreglaron dos cosas del diseno que cortaban el contenido de las ventanas flotantes, incluida la de Avisar novedad.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

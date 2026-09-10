@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 48
+VERSION = 49
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,18 +279,19 @@ VERSION = 48
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.10.0"
-VERSION_LABEL = "1.10.0 - borrar queda pendiente y el aviso se vence"
+VERSION_PUBLICA = "1.11.0"
+VERSION_LABEL = "1.11.0 - crear un reporte es paso a paso"
 VERSION_NOTES = (
-                 "Tres arreglos. Borrar un modulo, cambiar el orden o vaciar la "
-                 "papelera ahora quedan como cambio sin publicar: antes el boton "
-                 "seguia diciendo Todo publicado y el cambio no subia nunca. El "
-                 "boton Duplicar del Reporte de metricas mostraba el codigo del "
-                 "icono como texto y tapaba a los otros dos botones; ya se ve bien. "
-                 "Y la chapita Nuevo de la intranet se vence sola: en Avisar novedad "
-                 "elegis cuanto dura -24 horas de fabrica, o hasta 2 semanas- y los "
-                 "avisos viejos dejan de aparecer tildados. Antes duraba 14 dias "
-                 "fijos.")
+                 "Crear un reporte ahora es un asistente. Apretas Crear reporte y se "
+                 "abre una ventana que te va preguntando de a una: primero como se "
+                 "llama, despues de que periodo, que queres medir, contra que "
+                 "comparar, cuanto detalle, si se nombra a las personas y si queres "
+                 "aclarar algo en la portada. Arriba una barra te muestra por donde "
+                 "vas y podes ir y volver sin perder lo contestado; el ultimo paso "
+                 "te repasa todo antes de crear. Todo viene con la respuesta puesta, "
+                 "asi que el reporte de siempre sale apretando Siguiente. De paso se "
+                 "arreglaron dos cosas del diseno que cortaban el contenido de las "
+                 "ventanas flotantes, incluida la de Avisar novedad.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
