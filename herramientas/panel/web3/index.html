@@ -706,6 +706,27 @@
   </div>
 </div>
 
+<!-- ============ MODAL: crear un reporte, paso a paso ============
+     Antes las siete preguntas caían todas juntas en una tira larga adentro de
+     la pantalla de Datos: se veía como un formulario de trámite y había que
+     bajar para encontrar el botón. Acá se contesta de a una, con el nombre
+     primero, y en cada paso solo se ve la pregunta de ese paso. -->
+<div class="fondo" id="repModal">
+  <div class="modal medio" role="dialog" aria-modal="true" aria-labelledby="repTit">
+    <div class="modal-cab izq">
+      <h2 id="repTit">Crear un reporte<span class="sub" id="repSub">Paso 1</span></h2>
+      <button class="comp-cerrar" type="button" data-cerrar-rep aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="rep-barra"><i id="repProg"></i></div>
+    <div class="modal-cuerpo p16" id="repCuerpo"></div>
+    <div class="modal-pie rep-pie">
+      <button class="btn btn-2" type="button" id="repAtras">← Atrás</button>
+      <span class="rep-pasos" id="repPasos"></span>
+      <button class="btn btn-1" type="button" id="repSiguiente">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
 <!-- ====================== VER IMAGEN EN GRANDE ====================== -->
 <div id="imgLightbox" class="img-lightbox" hidden>
   <button class="lb-x" id="imgLbClose" type="button" title="Cerrar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>

@@ -37,6 +37,33 @@ def check(nombre, fn):
         print("FAIL | %s | %s" % (nombre, str(e).split("\n")[0][:220]))
 
 
+def asistente(p, nombre, desde, hasta, sacar=None):
+    """Contesta el asistente de punta a punta y crea el reporte.
+
+    `sacar` es lo que se destilda en «qué querés medir»: sirve para comprobar
+    después que el reporte respeta lo que NO se pidió.
+    """
+    p.click("#dtInfNuevo")
+    p.wait_for_selector("#repModal.on", state="visible", timeout=25000)
+    p.wait_for_timeout(400)
+    p.fill("#repNombre", nombre)
+    p.click("#repSiguiente"); p.wait_for_timeout(400)
+    p.fill("#repDesde", desde)
+    p.fill("#repHasta", hasta)
+    p.click("#repSiguiente"); p.wait_for_timeout(400)
+    if sacar:
+        p.evaluate("""(t) => {
+          const os = [...document.querySelectorAll('#repCuerpo .dt-inf-o')];
+          const o = os.find(x => x.textContent.indexOf(t) >= 0);
+          if (o) o.querySelector('input').checked = false;
+        }""", sacar)
+    while "Crear reporte" not in (p.text_content("#repSiguiente") or ""):
+        p.click("#repSiguiente")
+        p.wait_for_timeout(300)
+    p.click("#repSiguiente")
+    p.wait_for_timeout(2500)
+
+
 def abrir_reporte(p):
     p.goto(BASE + "/", wait_until="domcontentloaded")
     p.wait_for_selector("#muroLista .pub", timeout=25000)
@@ -73,113 +100,97 @@ with sync_playwright() as pw:
         p.wait_for_selector("#dtInfNuevo", state="visible"),
         p.text_content("#dtInformes .dt-inf-h h3").strip())[-1])
 
-    def form_pregunta():
-        """El formulario pregunta, no pide datos sueltos."""
+    def paso_uno_es_el_nombre():
+        """El pedido: «que se abra una ventana flotante con las distintas
+        preguntas para ir creando paso a paso, empezando desde el nombre»."""
         p.click("#dtInfNuevo")
-        p.wait_for_selector("#dtInfOk", state="visible")
-        preguntas = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-q > b", "ns => ns.map(n => n.textContent.trim())")
-        if len(preguntas) < 3:
-            raise AssertionError("son %d preguntas: %s" % (len(preguntas), preguntas))
-        v = p.evaluate("""() => ({
-          nombre: document.getElementById('dtInfN').value,
-          desde: document.getElementById('dtInfD').value,
-          hasta: document.getElementById('dtInfH').value
-        })""")
-        if not v["desde"] or not v["hasta"]:
-            raise AssertionError("no propuso un período: %s" % v)
-        if v["desde"][8:] != "01":
-            raise AssertionError("el desde no arranca el día 1: %s" % v["desde"])
-        if v["desde"][:7] != v["hasta"][:7]:
-            raise AssertionError("propuso un rango que cruza meses: %s" % v)
-        return "%s | propone %r" % (" / ".join(preguntas), v["nombre"])
-    check("el formulario hace las tres preguntas", form_pregunta)
-
-    def opciones_de_medir():
-        # solo la grilla de la pregunta 3, sin el «sin nombres» de la 6 ni los
-        # radios de las otras: son preguntas distintas y se cuentan aparte
-        ops = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s .dt-inf-o b",
-            "ns => ns.map(n => n.textContent.trim())")
-        if len(ops) < 8:
-            raise AssertionError("solo %d cosas para medir: %s" % (len(ops), ops))
-        falta = [x for x in ("El embudo", "Por sucursal", "Por vendedor",
-                             "Qué productos consultan", "De qué campaña vienen",
-                             "Por qué canal entran")
-                 if x not in ops]
-        if falta:
-            raise AssertionError("no se puede elegir: %s" % falta)
-        marcadas = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s input",
-            "ns => ns.filter(n => n.checked).length")
-        if marcadas != len(ops):
-            raise AssertionError("no vienen todas marcadas: %d de %d"
-                                 % (marcadas, len(ops)))
-        return "%d cosas para medir, todas marcadas" % len(ops)
-    check("se puede elegir qué medir", opciones_de_medir)
-
-    def preguntas_extra():
-        """Las respuestas vienen puestas: crear el reporte de siempre es
-        apretar dos botones, y las preguntas están para el que quiere otra."""
-        v = p.evaluate("""() => ({
-          cmp: (document.querySelector('input[name=dtInfCmp]:checked')||{}).value,
-          det: (document.querySelector('input[name=dtInfDet]:checked')||{}).value,
-          anon: document.getElementById('dtInfAnon').checked,
-          nota: document.getElementById('dtInfNota') ? 'sí' : 'no',
-          ncmp: document.querySelectorAll('input[name=dtInfCmp]').length,
-          ndet: document.querySelectorAll('input[name=dtInfDet]').length
-        })""")
-        if v["cmp"] != "anterior":
-            raise AssertionError("la comparación no viene en «anterior»: %s" % v)
-        if v["det"] != "10":
-            raise AssertionError("el detalle no viene en 10: %s" % v)
-        if v["anon"]:
-            raise AssertionError("viene sin nombres por defecto")
-        if v["nota"] != "sí" or v["ncmp"] < 3 or v["ndet"] < 3:
-            raise AssertionError("faltan opciones: %s" % v)
-        return ("comparar=%s (%d opciones) · detalle=%s (%d) · con nombres · "
-                "con nota" % (v["cmp"], v["ncmp"], v["det"], v["ndet"]))
-    check("comparación, detalle, nombres y nota vienen resueltos", preguntas_extra)
-
-    def desmarcar_todas():
-        p.click('#dtInfForm .dt-at[data-marca="ninguna"]')
-        n = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s input",
-            "ns => ns.filter(x => x.checked).length")
-        if n:
-            raise AssertionError("quedaron %d marcadas" % n)
-        p.click("#dtInfOk")
+        p.wait_for_selector("#repModal.on", state="visible", timeout=25000)
         p.wait_for_timeout(600)
-        p.click('#dtInfForm .dt-at[data-marca="todas"]')
-        n2 = p.eval_on_selector_all(
-            "#dtInfForm .dt-inf-q:nth-of-type(3) .dt-inf-s input",
-            "ns => ns.filter(x => x.checked).length")
-        if not n2:
-            raise AssertionError("«marcar todas» no marcó nada")
-        return "marcar/desmarcar todas anda, y sin nada marcado no deja crear"
-    check("los atajos de «qué medir» funcionan", desmarcar_todas)
+        v = p.evaluate("""() => ({
+          sub: document.getElementById('repSub').textContent,
+          preg: (document.querySelector('#repCuerpo .rep-p b')||{}).textContent,
+          nombre: (document.getElementById('repNombre')||{}).value,
+          atras: document.getElementById('repAtras').disabled,
+          foco: (document.activeElement||{}).id
+        })""")
+        if "nombre" not in (v["preg"] or "").lower() and "llamar" not in (v["preg"] or "").lower():
+            raise AssertionError("el paso 1 no pregunta el nombre: %r" % v["preg"])
+        if not v["nombre"]:
+            raise AssertionError("no propone un nombre")
+        if not v["atras"]:
+            raise AssertionError("«Atrás» está habilitado en el primer paso")
+        if v["foco"] != "repNombre":
+            raise AssertionError("el foco no está en el campo: %r" % v["foco"])
+        return "%s · %r · propone %r" % (v["sub"], v["preg"], v["nombre"])
+    check("el paso 1 es el nombre, en una ventana flotante", paso_uno_es_el_nombre)
 
-    def atajo_de_periodo():
-        p.click('#dtInfForm .dt-at[data-per="semana"]')
-        v = p.evaluate("""() => [document.getElementById('dtInfD').value,
-                                 document.getElementById('dtInfH').value]""")
-        if v[0] == v[1] or not v[0]:
-            raise AssertionError("el atajo no puso 7 días: %s" % v)
-        p.click('#dtInfForm .dt-at[data-per="mes-pasado"]')
-        return "los atajos de período cambian las fechas"
-    check("los atajos de período funcionan", atajo_de_periodo)
+    def son_siete_pasos():
+        vistos = []
+        for i in range(6):
+            p.click("#repSiguiente")
+            p.wait_for_timeout(400)
+            vistos.append(p.evaluate(
+                "() => (document.querySelector('#repCuerpo .rep-p b')||{}).textContent"))
+        falta = [x for x in ("¿De qué período?", "¿Qué querés medir?",
+                             "¿Contra qué lo comparás?")
+                 if x not in vistos]
+        if falta:
+            raise AssertionError("no pasó por: %s" % falta)
+        if "Crear reporte" not in (p.text_content("#repSiguiente") or ""):
+            raise AssertionError("el último paso no ofrece crear")
+        return " → ".join(v[:22] for v in vistos)
+    check("son siete pasos y el último crea", son_siete_pasos)
+
+    def el_ultimo_repasa():
+        """Sin un repaso, revisar lo contestado obliga a volver paso por paso."""
+        t = p.evaluate("() => (document.getElementById('repResumen')||{}).textContent || ''")
+        for x in ("Nombre", "Período", "Mide", "Compara"):
+            if x not in t:
+                raise AssertionError("el repaso no dice %r: %r" % (x, t[:90]))
+        return "repasa nombre, período, qué mide y contra qué"
+    check("el último paso repasa lo contestado", el_ultimo_repasa)
+
+    def atras_no_pierde():
+        # se vuelve hasta el paso de «qué querés medir», que es el que tiene
+        # algo que perder. Se busca la opción POR SU VALOR y no por la clase:
+        # el paso «¿se nombra a las personas?» usa la misma clase y el bucle
+        # frenaba ahí. Contar clicks a ciegas tampoco sirve: se rompe el día
+        # que haya un paso más.
+        while not p.evaluate("""() => !!document.querySelector(
+                '#repCuerpo input[value=template]')"""):
+            if p.evaluate("() => document.getElementById('repAtras').disabled"):
+                raise AssertionError("no encontré el paso de las opciones")
+            p.click("#repAtras")
+            p.wait_for_timeout(350)
+        # se cambia algo y se vuelve adelante: tiene que seguir puesto
+        p.evaluate("""() => {
+          const os = [...document.querySelectorAll('#repCuerpo .dt-inf-s input')];
+          const t = os.find(i => i.value === 'template');
+          if (t) t.checked = false;
+        }""")
+        p.click("#repSiguiente"); p.wait_for_timeout(300)
+        p.click("#repAtras"); p.wait_for_timeout(400)
+        sigue = p.evaluate("""() => {
+          const t = [...document.querySelectorAll('#repCuerpo .dt-inf-s input')]
+            .find(i => i.value === 'template');
+          return t ? t.checked : null;
+        }""")
+        if sigue is not False:
+            raise AssertionError("ir y volver perdió lo destildado: %s" % sigue)
+        while "Crear reporte" not in (p.text_content("#repSiguiente") or ""):
+            p.click("#repSiguiente")
+            p.wait_for_timeout(300)
+        return "ir y volver entre pasos no pierde lo contestado"
+    check("ir y volver no pierde las respuestas", atras_no_pierde)
 
     def crear():
-        p.fill("#dtInfN", NOMBRE)
-        p.fill("#dtInfD", "2026-08-01")
-        p.fill("#dtInfH", "2026-08-31")
-        # se destilda "Seguimiento enviado": el reporte tiene que respetarlo
-        p.evaluate("""() => {
-          const os = [...document.querySelectorAll('#dtInfForm .dt-inf-o')];
-          const t = os.find(o => /Seguimiento enviado/.test(o.textContent));
-          if (t) t.querySelector('input').checked = false;
-        }""")
-        p.click("#dtInfOk")
+        # el asistente quedó abierto de las pruebas de arriba: se cierra y se
+        # arranca de cero, que es lo que haría cualquiera
+        if p.is_visible("#repModal.on"):
+            p.keyboard.press("Escape")
+            p.wait_for_timeout(500)
+        asistente(p, NOMBRE, "2026-08-01", "2026-08-31",
+                  sacar="Seguimiento enviado")
         # se espera LA tarjeta de este reporte, no «alguna tarjeta»: si la
         # biblioteca ya tiene otras, esperar .dt-inf-c vuelve al instante y se
         # lee la lista antes de que el guardado termine
@@ -341,13 +352,7 @@ with sync_playwright() as pw:
 
     def dos_reportes():
         """Dos reportes distintos de la MISMA planilla, sin pisarse."""
-        p.click("#dtInfNuevo")
-        p.wait_for_selector("#dtInfOk", state="visible")
-        p.fill("#dtInfN", "QA julio 2026")
-        p.fill("#dtInfD", "2026-07-01")
-        p.fill("#dtInfH", "2026-07-31")
-        p.click("#dtInfOk")
-        p.wait_for_timeout(1500)
+        asistente(p, "QA julio 2026", "2026-07-01", "2026-07-31")
         nombres = p.eval_on_selector_all(
             "#dtInformes .dt-inf-n", "ns => ns.map(n => n.textContent.trim())")
         if len(nombres) < 2:
