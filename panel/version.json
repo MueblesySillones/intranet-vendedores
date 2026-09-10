@@ -1,8 +1,8 @@
 {
-  "version": 49,
-  "label": "1.11.0 - crear un reporte es paso a paso",
-  "notes": "Crear un reporte ahora es un asistente. Apretas Crear reporte y se abre una ventana que te va preguntando de a una: primero como se llama, despues de que periodo, que queres medir, contra que comparar, cuanto detalle, si se nombra a las personas y si queres aclarar algo en la portada. Arriba una barra te muestra por donde vas y podes ir y volver sin perder lo contestado; el ultimo paso te repasa todo antes de crear. Todo viene con la respuesta puesta, asi que el reporte de siempre sale apretando Siguiente. De paso se arreglaron dos cosas del diseno que cortaban el contenido de las ventanas flotantes, incluida la de Avisar novedad.",
-  "sha256": "ce8e549b5471b0bf60e9963114a6ffa1b940be83968e98eae8e8f440ec72d42c",
-  "size": 20100380,
-  "url": "panel/PanelMyS-v49.zip"
+  "version": 50,
+  "label": "1.12.0 - de donde viene cada consulta",
+  "notes": "El reporte ahora sabe de donde viene cada consulta: si es de la localidad del local, de la zona, de lejos o del interior del pais. Y aparece un dato fuerte: lo que viene de la zona cierra diez veces mas que lo que viene de lejos (3,8% contra 0,4%), verificado sucursal por sucursal. Hay tres laminas nuevas para elegir al crear un reporte: De la zona o de lejos, De que provincias escriben, y A quien le toca lo de lejos, que muestra que parte de lo que recibe cada vendedor viene de fuera de su zona. Esa ultima conviene mirarla ANTES de comparar conversiones: quien recibe mas material lejano arranca con parte de su cartera en consultas que casi no cierran.",
+  "sha256": "acfc7645606eecaf1e6f50326aef5b722e5dab5981119328736412a0b6342dcb",
+  "size": 20113424,
+  "url": "panel/PanelMyS-v50.zip"
 }
