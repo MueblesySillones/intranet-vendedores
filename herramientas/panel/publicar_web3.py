@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.14.0"
-NUEVO_LABEL = "1.14.0 - el PDF se elige y se baja desde el reporte"
-NUEVAS_NOTAS = ("El PDF del reporte ya salia horizontal -16:9, como una diapositiva- pero era el unico tamano posible. Ahora se elige: PANTALLA 16:9 para mostrar o proyectar, HOJA A4 APAISADA para imprimir, y HOJA A4 VERTICAL para mandar por mail o archivar. No es la lamina metida adentro de una hoja mas grande con bandas blancas: se le cambia el tamano a la lamina y el diseno se reacomoda solo. Es una pregunta mas del asistente, y en un reporte que ya existe se cambia con Cambiar que mide. Ademas, mirando el reporte ahora hay un boton Descargar PDF al lado del lapiz: antes habia que cerrar la pestana y volver al panel a buscar la tarjeta. Mientras se edita el boton no aparece, porque el PDF sale con lo ultimo guardado.")
+NUEVA_PUBLICA = "1.15.0"
+NUEVO_LABEL = "1.15.0 - listas que entran en la hoja, y todo editable"
+NUEVAS_NOTAS = ("Las listas largas ya no se derraman. Una lista de 19 vendedores o de 40 campanas SE REPARTE EN VARIAS HOJAS de 12 filas, con 1 de 3 en el rotulo, tanto en la pantalla como en el PDF y en el Word: antes las filas que sobraban directamente no estaban. La tabla del equipo muestra ahora VENDEDOR, DERIVACIONES, VENTAS Y CONVERSION juntas. El embudo dice debajo de cada numero cuanto cambio contra el periodo anterior -vs el mes anterior-, en verde o rojo segun si el cambio es bueno: en sin derivar, subir es malo. Hay una tercera forma de ver cualquier lista, COLUMNAS (barras paradas), y el ritmo de la semana sale asi de fabrica. Al editar hay dos cosas nuevas: cada tarjeta de conclusion tiene su propia x para sacarla entera -y si queda una sola, se centra-, y cada lamina elige si va con FONDO CLARO U OSCURO, con los colores del texto ajustados solos. Y ahora se puede editar TODO: la hoja de los limites, la del precio, la de sucursales y mes a mes tenian textos que el lapiz no tocaba.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
