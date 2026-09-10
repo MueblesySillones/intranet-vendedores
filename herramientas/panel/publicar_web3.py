@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.12.1"
-NUEVO_LABEL = "1.12.1 - zona norte es de la sucursal que la atendio"
-NUEVAS_NOTAS = ("Ahora zona norte y zona oeste se le atribuyen a la sucursal que las atendio: si en la planilla dice Norcenter, zona norte, Flor, esa consulta es de Norcenter. Van en su propia fila del reporte y no mezcladas con las de la localidad del local, por una razon concreta: esas 154 consultas cerraron cero ventas, y metidas ahi adentro ese dato desaparecia. Asi se ve de quien es la consulta Y se ve que no cierra.")
+NUEVA_PUBLICA = "1.12.2"
+NUEVO_LABEL = "1.12.2 - quien recibe mas del interior"
+NUEVAS_NOTAS = ("La lamina del reparto ahora ordena por consultas del interior del pais, que es lo que se queria ver: quien recibe mas de las distintas provincias. Antes ordenaba por todo lo lejano junto y arriba quedaba gente que casi no recibe del interior. Ademas muestra de cuantas provincias distintas le llega a cada uno -no es lo mismo diez consultas de Cordoba que diez de diez lugares- y que parte de su cartera representa.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
