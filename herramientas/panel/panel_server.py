@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 52
+VERSION = 53
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,16 +279,23 @@ VERSION = 52
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.12.2"
-VERSION_LABEL = "1.12.2 - quien recibe mas del interior"
+VERSION_PUBLICA = "1.13.0"
+VERSION_LABEL = "1.13.0 - el ritmo de la semana y que trae cada producto"
 VERSION_NOTES = (
-                 "La lamina del reparto ahora ordena por consultas del interior del "
-                 "pais, que es lo que se queria ver: quien recibe mas de las "
-                 "distintas provincias. Antes ordenaba por todo lo lejano junto y "
-                 "arriba quedaba gente que casi no recibe del interior. Ademas "
-                 "muestra de cuantas provincias distintas le llega a cada uno -no es "
-                 "lo mismo diez consultas de Cordoba que diez de diez lugares- y que "
-                 "parte de su cartera representa.")
+                 "Dos laminas nuevas, las que faltaban de la lista: EL RITMO DE LA "
+                 "SEMANA -cuantas consultas entran por dia y que dias entran mas- y "
+                 "DE QUE CAMPANA VIENE CADA PRODUCTO, el cruce para saber de donde "
+                 "salen las consultas de sillones. En el ritmo aparece algo para "
+                 "mirar: el sabado entra casi lo mismo que un dia de semana y se "
+                 "deriva la mitad. La lamina de origenes ahora dice ademas cuantas "
+                 "consultas entraron sin origen cargado, que es sobre cuantas estan "
+                 "calculados sus porcentajes. Ademas el Word dejo de estar cinco "
+                 "laminas atras del PDF -zonas, provincias y reparto no estaban- y "
+                 "los dos formatos salen de la misma cuenta, asi que no pueden decir "
+                 "numeros distintos. Y un reporte ya creado puede cambiar que mide "
+                 "sin borrarlo: el boton Cambiar que mide reabre el asistente con "
+                 "las respuestas puestas, que es como un reporte viejo toma las "
+                 "laminas nuevas.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2558,10 +2565,13 @@ class Handler(BaseHTTPRequestHandler):
             if not rep:
                 return self._json({"error": "no encuentro ese reporte"}, 404)
             ops = cuerpo.get("opciones")
+            secs = cuerpo.get("secciones")
             inf, err = datos_api.informe_editar(
                 rep, str(cuerpo.get("informe") or ""),
                 cuerpo.get("nombre"),
-                ops if isinstance(ops, dict) else None)
+                ops if isinstance(ops, dict) else None,
+                desde=cuerpo.get("desde"), hasta=cuerpo.get("hasta"),
+                secciones=secs if isinstance(secs, list) else None)
             if err:
                 return self._json({"error": err}, 400)
             datos_api.guardar(STATE_DIR, cfg)

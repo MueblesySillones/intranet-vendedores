@@ -228,6 +228,89 @@ with sync_playwright() as pw:
         return "%d reporte(s) guardados tras releer la planilla" % n
     check("releer la planilla no toca los reportes creados", sobrevive)
 
+    def cambiar_que_mide():
+        """Un reporte guarda las láminas que se tildaron el día que se creó.
+        Cuando el panel aprende a mostrar algo nuevo, ese reporte no lo tiene
+        destildado: nunca se lo preguntaron. Sin esta puerta habría que
+        borrarlo y hacerlo de nuevo."""
+        c = p.query_selector("#dtInformes .dt-inf-c")
+        if not c.query_selector("[data-cambiar]"):
+            raise AssertionError("la tarjeta no ofrece cambiar qué mide")
+        p.click("#dtInformes .dt-inf-c [data-cambiar]")
+        p.wait_for_selector("#repModal.on", state="visible", timeout=25000)
+        p.wait_for_timeout(700)
+        v = p.evaluate("""() => ({
+          nombre: (document.getElementById('repNombre')||{}).value,
+          paso: (document.querySelector('#repCuerpo .rep-p b')||{}).textContent
+        })""")
+        if (v["nombre"] or "").strip() != NOMBRE:
+            raise AssertionError("no vino con el nombre puesto: %r" % v["nombre"])
+        # hasta el paso de las láminas
+        while not p.evaluate("""() => !!document.querySelector(
+                '#repCuerpo input[value=ritmo]')"""):
+            p.click("#repSiguiente")
+            p.wait_for_timeout(350)
+        puesto = p.evaluate("""() => {
+          const q = v => {
+            const i = [...document.querySelectorAll('#repCuerpo .dt-inf-s input')]
+              .find(x => x.value === v);
+            return i ? i.checked : null;
+          };
+          return {template: q('template'), embudo: q('embudo')};
+        }""")
+        if puesto["template"] is not False:
+            raise AssertionError("no trajo lo destildado: %s" % puesto)
+        if puesto["embudo"] is not True:
+            raise AssertionError("perdió lo que sí estaba tildado: %s" % puesto)
+        # se tilda una lámina que el reporte no tenía
+        p.evaluate("""() => {
+          const i = [...document.querySelectorAll('#repCuerpo .dt-inf-s input')]
+            .find(x => x.value === 'ritmo');
+          if (i) i.checked = true;
+        }""")
+        while "Guardar cambios" not in (p.text_content("#repSiguiente") or ""):
+            p.click("#repSiguiente")
+            p.wait_for_timeout(350)
+        return "vino contestado (%s) y el botón final guarda" % v["paso"][:24]
+    check("cambiar qué mide reabre el asistente contestado", cambiar_que_mide)
+
+    def guardar_el_cambio():
+        antes = len(p.query_selector_all("#dtInformes .dt-inf-c"))
+        p.click("#repSiguiente")
+        p.wait_for_function(
+            """() => !document.querySelector('#repModal.on')""", timeout=40000)
+        p.wait_for_timeout(1200)
+        ahora = len(p.query_selector_all("#dtInformes .dt-inf-c"))
+        if ahora != antes:
+            raise AssertionError("creó otro en vez de editar: %d → %d"
+                                 % (antes, ahora))
+        mide = (p.text_content("#dtInformes .dt-inf-c .dt-inf-m") or "").strip()
+        if "ritmo" not in mide.lower():
+            raise AssertionError("no tomó la lámina nueva: %r" % mide)
+        if "Seguimiento enviado" in mide:
+            raise AssertionError("volvió a poner lo destildado: %r" % mide)
+        return "la tarjeta ahora mide también el ritmo, y sigue siendo una"
+    check("guardar cambia el reporte y no crea otro", guardar_el_cambio)
+
+    def el_reporte_muestra_la_lamina_nueva():
+        """Y lo que importa: que la lámina esté de verdad adentro del reporte."""
+        rid = p.evaluate("""async () => {
+          const r = await fetch('/api/datos/estado'); const j = await r.json();
+          return (j.reportes || [])[0].id;
+        }""")
+        iid = p.get_attribute("#dtInformes .dt-inf-c", "data-inf")
+        import urllib.request
+        html = urllib.request.urlopen(
+            "%s/api/datos/deck?id=%s&informe=%s" % (BASE, rid, iid),
+            timeout=240).read().decode("utf-8")
+        if 'data-sec="ritmo"' not in html:
+            raise AssertionError("el reporte sigue sin la lámina del ritmo")
+        if "Cuánto entra por día" not in html:
+            raise AssertionError("la lámina está vacía")
+        return "el reporte ya trae «Cuánto entra por día»"
+    check("la lámina nueva aparece en el reporte",
+          el_reporte_muestra_la_lamina_nueva)
+
     IDS = {}
     ED = {}
 
