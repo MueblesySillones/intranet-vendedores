@@ -351,6 +351,12 @@ def _limpiar_opciones(op, antes=None):
     # el tamaño de hoja del PDF. Los reportes de antes de que esto existiera no
     # lo tienen, y caen en «pantalla», que es como salian.
     hoja = str(op.get("hoja") or vieja.get("hoja") or "pantalla")
+    # ⚠️ La sucursal NO se valida contra una lista fija: los locales salen de
+    # la planilla y el día que abra uno nuevo tiene que poder elegirse sin
+    # tocar el código. Se limpia el texto y listo; una sucursal que no existe
+    # da un reporte vacío, que es visible, y no un error escondido.
+    suc = str(op.get("sucursal") if "sucursal" in op
+              else vieja.get("sucursal") or "").strip()[:60]
 
     # las vistas por sección: solo las que son una lista, y solo valores validos
     vistas = dict(vieja.get("vistas") or {})
@@ -394,6 +400,7 @@ def _limpiar_opciones(op, antes=None):
         "comparar": cmp_ if cmp_ in validos_cmp else "anterior",
         "vista": vis if vis in validos_vis else "barras",
         "hoja": hoja if hoja in validos_hoja else "pantalla",
+        "sucursal": suc,
         "vistas": vistas,
         "fondos": fondos,
         "textos": textos,
@@ -441,6 +448,11 @@ def informe_borrar(rep, iid):
     antes = informes(rep)
     rep["informes"] = [i for i in antes if i.get("id") != iid]
     return len(rep["informes"]) != len(antes)
+
+
+def _sucursal_de(informe):
+    """La sucursal a la que está recortado el reporte, o "" si es de todas."""
+    return ((informe or {}).get("opciones") or {}).get("sucursal") or ""
 
 
 def _fecha_de(txt):
@@ -543,6 +555,8 @@ def analizar_fuente(rep, state_dir):
                     # dato leido en dos lugares terminaria diciendo periodos
                     # distintos.
                     "periodo": _periodo_txt(d),
+                    # para que el asistente pueda ofrecer «solo esta sucursal»
+                    "sucursales": sorted((d.get("sucursales") or {}).keys()),
                 }
         except Exception:              # noqa: el tablero anda igual sin esto
             der_resumen = {}
@@ -604,7 +618,8 @@ def deck_derivaciones(rep, state_dir, informe=None):
     d = derivaciones.analizar(
         r["filas"], state_dir,
         desde_f=_fecha_de((informe or {}).get("desde")),
-        hasta_f=_fecha_de((informe or {}).get("hasta")))
+        hasta_f=_fecha_de((informe or {}).get("hasta")),
+        sucursal_f=_sucursal_de(informe))
     if not d.get("ok"):
         return None, d.get("error")
     titulo = ((informe or {}).get("nombre")
@@ -627,7 +642,10 @@ def _opciones_de(informe, filas, state_dir):
     hasta = _fecha_de((informe or {}).get("hasta"))
     a, z, comollama = _periodo_previo(desde, hasta, op.get("comparar"))
     if a and z:
-        previo = derivaciones.analizar(filas, state_dir, desde_f=a, hasta_f=z)
+        # ⚠️ con la MISMA sucursal: el reporte de Hudson de agosto contra la
+        # empresa entera de julio daría porcentajes que no significan nada
+        previo = derivaciones.analizar(filas, state_dir, desde_f=a, hasta_f=z,
+                                       sucursal_f=_sucursal_de(informe))
         if previo.get("ok") and previo["total"]["consultas"]:
             op["previo"] = previo
             op["previo_txt"] = comollama
@@ -670,7 +688,8 @@ def deck_derivaciones_word(rep, state_dir, informe=None):
     d = derivaciones.analizar(
         r["filas"], state_dir,
         desde_f=_fecha_de((informe or {}).get("desde")),
-        hasta_f=_fecha_de((informe or {}).get("hasta")))
+        hasta_f=_fecha_de((informe or {}).get("hasta")),
+        sucursal_f=_sucursal_de(informe))
     if not d.get("ok"):
         return None, d.get("error")
     titulo = ((informe or {}).get("nombre")
@@ -683,6 +702,93 @@ def deck_derivaciones_word(rep, state_dir, informe=None):
                      _opciones_de(informe, r["filas"], state_dir))
     return ruta, None
 
+
+
+def _pc(x):
+    """«20%» si es redondo, «13,33%» si no. Copia el formato de los documentos
+    que ya hay en el módulo: ahí conviven los dos y esa es la regla."""
+    v = 100.0 * (x or 0)
+    if abs(v - round(v)) < 0.005:
+        return "%d%%" % int(round(v))
+    return ("%.2f%%" % v).replace(".", ",")
+
+
+def _cambio(ahora, antes):
+    """«+27,4% vs período anterior», como en los documentos hechos a mano."""
+    if not antes:
+        return "", "up"
+    dif = 100.0 * (ahora - antes) / float(antes)
+    signo = "+" if dif > 0 else ("-" if dif < 0 else "")
+    return (("%s%.1f%% vs período anterior" % (signo, abs(dif))).replace(".", ","),
+            "up" if dif >= 0 else "down")
+
+
+def metricas_de(rep, state_dir, informe=None):
+    """Los números del reporte de vendedores, listos para armar el documento.
+
+    ⚠️ Devuelve NÚMEROS, no HTML. El documento lo arma la pantalla con el mismo
+    armador que el editor de módulos, para que quede editable como si lo
+    hubieran hecho a mano. Ver el comentario de arriba del archivo del parche.
+    """
+    r, an, _, _ = _leer_y_analizar(rep)
+    if not r.get("ok"):
+        return None, r.get("error")
+    if not derivaciones.es_derivaciones(an):
+        return None, ("El reporte de vendedores sale de la planilla de "
+                      "derivaciones.")
+    foco = _sucursal_de(informe)
+    d = derivaciones.analizar(
+        r["filas"], state_dir,
+        desde_f=_fecha_de((informe or {}).get("desde")),
+        hasta_f=_fecha_de((informe or {}).get("hasta")),
+        sucursal_f=foco)
+    if not d.get("ok"):
+        return None, d.get("error")
+
+    op = _opciones_de(informe, r["filas"], state_dir)
+    prev = (op.get("previo") or {}).get("total") if op.get("previo") else None
+    t = d["total"]
+
+    def conv(b):
+        return b.get("ventas", 0) / float(max(1, b.get("derivaciones", 0)))
+
+    vs = sorted(d["vendedores"].items(),
+                key=lambda x: (-conv(x[1]), -x[1].get("ventas", 0), x[0]))
+    podio = sorted(d["vendedores"].items(),
+                   key=lambda x: (-x[1].get("ventas", 0), -conv(x[1]), x[0]))
+    podio = [x for x in podio if x[1].get("ventas")][:4]
+
+    sucs = sorted(d["sucursales"].items(),
+                  key=lambda x: -x[1]["derivaciones"])
+    cam_der, tend_der = _cambio(t["derivaciones"],
+                                prev and prev.get("derivaciones"))
+    cam_ven, tend_ven = _cambio(t["ventas"], prev and prev.get("ventas"))
+    cam_con, tend_con = _cambio(t["consultas"], prev and prev.get("consultas"))
+    return {
+        "ok": True,
+        "titulo": ((informe or {}).get("nombre") or _periodo_txt(d) or
+                   "Derivaciones").upper(),
+        "sucursal": foco,
+        "periodo": _periodo_txt(d),
+        "kpis": [
+            {"label": "Derivaciones totales", "valor": str(t["derivaciones"]),
+             "pie": cam_der, "tend": tend_der, "lead": True},
+            {"label": "Ventas", "valor": str(t["ventas"]),
+             "pie": cam_ven, "tend": tend_ven, "lead": False},
+            {"label": "Consultas", "valor": str(t["consultas"]),
+             "pie": cam_con, "tend": tend_con, "lead": False},
+        ],
+        "sucursales": [{"label": n.upper(), "valor": str(b["derivaciones"])}
+                       for n, b in sucs],
+        "podio": [{"puesto": "%d°" % (i + 1), "nombre": v.upper(),
+                   "suc": (b.get("sucursal") or "").upper(),
+                   "valor": str(b.get("ventas", 0)), "vlabel": "ventas",
+                   "extra": "conv. " + _pc(conv(b)), "lead": i == 0}
+                  for i, (v, b) in enumerate(podio)],
+        "tabla": [[v.upper(), str(b.get("derivaciones", 0)),
+                   str(b.get("ventas", 0)), _pc(conv(b))]
+                  for v, b in vs if b.get("derivaciones")],
+    }, None
 
 def resumen_derivaciones(rep, state_dir):
     """Los números del embudo, para mostrarlos en el panel sin abrir el deck."""
