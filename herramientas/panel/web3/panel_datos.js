@@ -320,18 +320,26 @@
     return h;
   }
 
+  /* ⚠️ Va PLEGADA. Lo pidió el usuario así: «que es lo que controla la
+     planilla… pongámoslo como un desplegable, porque es información que el
+     usuario que crea las plantillas no le va a estar prestando atención, pero
+     sí es importante, al menos para mí que soy el desarrollador».
+
+     El resumen —filas, columnas, cuántas traen datos de clientes— queda a la
+     vista SIN abrirla: eso sí hay que poder mirarlo de un vistazo, sobre todo
+     el número rojo. Lo que se esconde es el inventario de nombres. */
   function seccionColumnas(an) {
     var cs = (an && an.columnas) || [];
     var sens = cs.filter(function (c) { return c.sensible; }).length;
-    var h = '<section class="dt-sec"><div class="dt-sec-h">' +
+    var h = '<details class="dt-sec dt-plegable"><summary class="dt-sec-h">' +
       '<h3>Qué encontró en la planilla</h3><p class="muted">' +
       '<b>' + miles((an && an.filas) || 0) + '</b> filas · <b>' + miles(cs.length) +
       '</b> columnas' +
       (sens ? ' · <b class="dt-rojo">' + miles(sens) + ' con datos de clientes</b>' : '') +
-      '</p></div>';
+      '</p></summary>';
     if (!cs.length) {
       h += '<div class="vacio"><b>No se pudo leer la planilla</b><p>' +
-        esc((an && an.error) || 'No trajo ninguna columna.') + '</p></div></section>';
+        esc((an && an.error) || 'No trajo ninguna columna.') + '</p></details>';
       return h;
     }
     /* Un resumen, no un inventario. Antes esto eran 18 tarjetas y mil pixeles
@@ -348,7 +356,7 @@
       h += '<p class="dt-nota-cli">Las ' + miles(sens) + ' en rojo tienen datos de ' +
         'clientes: no se publican nunca, ni siquiera sumadas.</p>';
     }
-    h += '</section>';
+    h += '</details>';
     return h;
   }
 
