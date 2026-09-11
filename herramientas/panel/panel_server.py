@@ -272,7 +272,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 59
+VERSION = 60
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -280,25 +280,26 @@ VERSION = 59
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.17.2"
-VERSION_LABEL = "1.17.2 - la pantalla de Datos, ordenada"
+VERSION_PUBLICA = "1.18.0"
+VERSION_LABEL = "1.18.0 - reporte por sucursal, podio y vinculo con metricas"
 VERSION_NOTES = (
-                 "La pantalla de una planilla, rearmada para que no se acumulen "
-                 "cosas abajo. El encabezado grande -Datos, cada reporte sale de una "
-                 "planilla- no se dibuja mientras hay una planilla abierta: la barra "
-                 "de abajo ya dice donde estas, y con el nombre de la planilla. "
-                 "Volver atras es ahora una flecha redonda en vez de un boton con "
-                 "texto. La ULTIMA LECTURA tiene su propio renglon con rotulo, en "
-                 "vez de ser la cola de la linea gris del origen: es el dato que "
-                 "dice si lo que estas mirando es de hoy. Los tres numeros de la "
-                 "planilla -consultas, derivaciones, ventas- suben al encabezado "
-                 "como una tira compacta al lado del nombre: son la identidad de la "
-                 "planilla, no un resultado, y abajo solo acumulaban. Y QUE ENCONTRO "
-                 "EN LA PLANILLA pasa a ser un desplegable cerrado: el resumen "
-                 "-filas, columnas, cuantas con datos de clientes- se sigue viendo "
-                 "sin abrirlo, que es lo que hay que mirar de un vistazo; adentro "
-                 "queda el inventario de columnas, que el que crea reportes no "
-                 "necesita y el que programa si.")
+                 "Tres cosas nuevas en los reportes. UNO: el asistente pregunta DE "
+                 "QUE SUCURSAL es el reporte. Si elegis una, el embudo dice cuantas "
+                 "derivaciones recibio ESE local, cuantas fueron a otro y cuantas "
+                 "vendio. Ojo con esto: las derivaciones y las ventas son de la "
+                 "sucursal, pero las consultas son las del periodo entero, porque "
+                 "una consulta que todavia no atendio nadie no es de ningun local; "
+                 "la lamina lo aclara. DOS: una lamina de PODIO con los cuatro que "
+                 "mas cerraron, para felicitar. Ordena por VENTAS y no por "
+                 "conversion -la conversion sobre pocos casos se mueve sola- y avisa "
+                 "como se lee. TRES, la grande: el boton PUBLICAR EN REPORTE DE "
+                 "METRICAS. Genera el documento del modulo que el equipo ya venia "
+                 "haciendo a mano -los KPIs con el porcentaje contra el periodo "
+                 "anterior, las barras por sucursal, el ranking de ventas y la tabla "
+                 "de vendedores- y lo deja arriba de todo en ese modulo. Y lo "
+                 "importante: se arma con los MISMOS BLOQUES que el editor, no con "
+                 "HTML escrito aparte, asi que se puede abrir y editar bloque por "
+                 "bloque como si se hubiera hecho a mano.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2393,6 +2394,23 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(datos_api.resumen_derivaciones(rep, STATE_DIR))
             except Exception as ex:        # noqa
                 return self._json({"ok": False, "error": str(ex)}, 400)
+
+        if path == "/api/datos/metricas":
+            # Los NUMEROS del reporte de vendedores. El DOCUMENTO lo arma la
+            # pantalla con el mismo armador de bloques que el editor de
+            # modulos: asi el documento generado queda editable como si lo
+            # hubieran hecho a mano, que es todo el punto de vincularlo.
+            rep = datos_api.buscar(cfg, (q.get("id") or [""])[0])
+            if not rep:
+                return self._json({"error": "no encuentro ese reporte"}, 404)
+            inf = datos_api.buscar_informe(rep, (q.get("informe") or [""])[0])
+            try:
+                m, err = datos_api.metricas_de(rep, STATE_DIR, inf)
+            except Exception as ex:        # noqa
+                m, err = None, str(ex)
+            if err or not m:
+                return self._json({"error": err or "no pude calcularlo"}, 400)
+            return self._json(m)
 
         if path == "/api/datos/deck-pdf":
             # El PDF baja como archivo: nada de abrir el reporte y disparar

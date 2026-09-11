@@ -961,6 +961,7 @@
        recibe el id del reporte. ABIERTO es el que se esta mirando. */
     if (d.es_derivaciones) {
       SECCIONES = d.secciones_posibles || SECCIONES;
+      SUCURSALES = (d.derivaciones && d.derivaciones.sucursales) || SUCURSALES;
       OPCIONES = d.opciones_posibles || OPCIONES;
       pintarInformes(ABIERTO, d.informes || []);
     }
@@ -1002,6 +1003,9 @@
      en el formulario y no hay que tocar dos archivos. */
   var SECCIONES = [];
   var OPCIONES = {};
+  /* Los locales salen de la planilla, no de una lista escrita acá: el día que
+     abra uno nuevo aparece solo. */
+  var SUCURSALES = [];
 
   /* Qué mide un reporte, en un renglón.
 
@@ -1084,7 +1088,110 @@
         '<button type="button" class="dt-inf-e" data-cambiar="' + esc(i.id) +
           '">Cambiar qué mide</button>' +
       '</div>' +
+      /* El reporte de vendedores va al módulo donde el equipo ya los viene
+         publicando, armado con los mismos bloques que si se hubiera hecho a
+         mano. Los reportes que no se vinculan quedan solo para descargar. */
+      '<button type="button" class="dt-inf-e dt-inf-v" data-metricas="' +
+        esc(i.id) + '">↗ Publicar en Reporte de métricas</button>' +
       '</article>';
+  }
+
+  /* ══════════════ VINCULAR AL MÓDULO DE MÉTRICAS ══════════════
+     El reporte de vendedores que el equipo ya publica a mano, armado solo.
+
+     ⚠️ Se arman BLOQUES, no HTML. Los bloques son los mismos que crea el
+     editor de módulos cuando alguien aprieta «agregar KPIs» o «agregar
+     tabla», y el HTML lo dibuja `bloquesHTML()` —la función del editor—. Así
+     el documento generado queda con sus doce bloques, cada uno editable,
+     movible y borrable: mañana se entra al módulo y se lo toca como a
+     cualquier otro. Con el HTML escrito acá se vería igual pero sería un
+     ladrillo que el editor no sabe de qué está hecho.
+     ══════════════════════════════════════════════════════════════ */
+  var COLOR_SUC = ['--c-hudson', '--c-caba', '--c-canning', '--c-hudson',
+                   '--c-caba', '--c-canning'];
+
+  function bloquesDeMetricas(m) {
+    var bl = [
+      { t: 'titulo', nivel: 'h1',
+        html: esc(m.sucursal ? ('Derivaciones de ' + m.sucursal)
+                             : 'Derivaciones del mes') },
+      { t: 'kpis', items: (m.kpis || []).map(function (k) {
+          return { label: k.label, valor: k.valor, pie: k.pie,
+                   tend: k.tend || 'up', lead: !!k.lead };
+        }) },
+      { t: 'espacio', alto: 'md' }
+    ];
+    /* las barras por sucursal solo tienen sentido con TODAS: en el reporte de
+       un local sería una sola barra al 100%, que no dice nada */
+    if (!m.sucursal && (m.sucursales || []).length > 1) {
+      bl.push({ t: 'barras', items: m.sucursales.map(function (x, i) {
+        return { label: x.label, valor: x.valor,
+                 color: COLOR_SUC[i % COLOR_SUC.length], chip: '', tono: 'gr' };
+      }) });
+      bl.push({ t: 'espacio', alto: 'md' });
+    }
+    if ((m.podio || []).length) {
+      bl.push({ t: 'separador', grosor: 4 });
+      bl.push({ t: 'titulo', nivel: 'h2', html: 'RANKING DE VENTAS' });
+      bl.push({ t: 'podio', items: m.podio.map(function (p) {
+        return { puesto: p.puesto, nombre: p.nombre, suc: p.suc,
+                 valor: p.valor, vlabel: p.vlabel || 'ventas',
+                 extra: p.extra, lead: !!p.lead };
+      }) });
+      bl.push({ t: 'espacio', alto: 'md' });
+    }
+    if ((m.tabla || []).length) {
+      bl.push({ t: 'separador', grosor: 4 });
+      bl.push({ t: 'titulo', nivel: 'h2', html: 'TABLA DE VENDEDORES' });
+      bl.push({ t: 'tabla', orden: true, buscar: false,
+        cols: [{ h: 'Concepto', num: false }, { h: 'Derivaciones', num: true },
+               { h: 'ventas', num: true }, { h: 'conversión', num: true }],
+        filas: m.tabla.map(function (f) {
+          return { celdas: f.slice(0), destaque: '' };
+        }) });
+    }
+    return bl;
+  }
+
+  function vincularAMetricas(iid, btn) {
+    var antes = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Armando el reporte…'; }
+    var volver = function () {
+      if (btn) { btn.disabled = false; btn.textContent = antes; }
+    };
+    api('/api/datos/metricas?id=' + encodeURIComponent(ABIERTO) +
+        '&informe=' + encodeURIComponent(iid)).then(function (m) {
+      if (!m || m.error) throw new Error((m && m.error) || 'no pude calcularlo');
+      var mods = (typeof MODULOS !== 'undefined' && MODULOS) || [];
+      var mod = mods.filter(function (x) { return x.key === 'reporte'; })[0];
+      if (!mod) throw new Error('no encuentro el módulo «Reporte de métricas»');
+      var c = mod.content;
+      if (!c || c.tipo !== 'coleccion' || !Array.isArray(c.docs)) {
+        throw new Error('el módulo «Reporte de métricas» no es una colección');
+      }
+      var bloques = bloquesDeMetricas(m);
+      var doc = {
+        id: (typeof nuevoId === 'function') ? nuevoId()
+              : ('d' + Date.now().toString(36)),
+        titulo: m.titulo || 'REPORTE',
+        etiqueta: '',
+        archivado: false,
+        presentacion: false,
+        bloques: bloques,
+        /* el MISMO armador que el editor: por eso el documento queda editable */
+        html: bloquesHTML(bloques, false)
+      };
+      // el más nuevo arriba, como los que se cargan a mano
+      c.docs.unshift(doc);
+      return persistModulos(false, 'reporte').then(function () {
+        aviso('«' + doc.titulo + '» quedó en Reporte de métricas. ' +
+              'Acordate de Publicar.', 'ok');
+        volver();
+      });
+    }).catch(function (e) {
+      aviso(e.message || 'No se pudo vincular', 'err');
+      volver();
+    });
   }
 
   /* ══════════════ CREAR UN REPORTE, PASO A PASO ══════════════
@@ -1138,6 +1245,7 @@
       comparar: 'anterior',
       detalle: '10',
       hoja: 'pantalla',
+      sucursal: '',
       nota: ''
     };
   }
@@ -1266,6 +1374,27 @@
         }
       },
       {
+        t: '¿De qué sucursal?',
+        ayuda: 'De todas, o de una sola. Si elegís una, el reporte cuenta lo ' +
+               'que recibió y cerró ESE local.',
+        pinta: function () {
+          var ops = [{ id: '', titulo: 'Todas las sucursales',
+                       detalle: 'El reporte de toda la empresa' }];
+          (SUCURSALES || []).forEach(function (x) {
+            ops.push({ id: x, titulo: x,
+                       detalle: 'Solo lo que recibió y cerró ' + x });
+          });
+          return grupo('repSuc', ops, BORRADOR.sucursal) +
+            '<p class="dt-chico">⚠️ Con una sucursal elegida, las <b>derivaciones ' +
+            'y las ventas</b> son de ese local. Las <b>consultas</b> son las del ' +
+            'período entero: una consulta que todavía no atendió nadie no es de ' +
+            'ninguna sucursal, así que repartirlas sería inventar un número.</p>';
+        },
+        toma: function () {
+          BORRADOR.sucursal = elegidoDe('repSuc', '');
+        }
+      },
+      {
         t: '¿Contra qué lo comparás?',
         ayuda: 'Un total solo no dice si estuvo bien o mal. Con esto, el ' +
                'reporte abre diciendo qué cambió.',
@@ -1338,7 +1467,8 @@
       fila('Mide', resumirSecciones(nombres)) +
       fila('Compara', cmp ? cmp.titulo : '—') +
       fila('Detalle', det ? det.titulo : '—') +
-      fila('PDF', hoja ? hoja.titulo : '—');
+      fila('PDF', hoja ? hoja.titulo : '—') +
+      fila('Sucursal', BORRADOR.sucursal || 'todas');
   }
 
   function fila(k, v) {
@@ -1364,6 +1494,7 @@
       comparar: op.comparar || 'anterior',
       detalle: op.detalle || '10',
       hoja: op.hoja || 'pantalla',
+      sucursal: op.sucursal || '',
       nota: op.nota || ''
     };
   }
@@ -1465,6 +1596,7 @@
         comparar: BORRADOR.comparar,
         detalle: BORRADOR.detalle,
         hoja: BORRADOR.hoja,
+        sucursal: BORRADOR.sucursal,
         nota: BORRADOR.nota
       }
     };
@@ -1622,6 +1754,12 @@
     var be = e.target.closest('[data-editar]');
     if (be && RAIZ && RAIZ.contains(be)) {
       e.stopPropagation(); verInforme(be.getAttribute('data-editar')); return;
+    }
+    var bm2 = e.target.closest('[data-metricas]');
+    if (bm2 && RAIZ && RAIZ.contains(bm2)) {
+      e.stopPropagation();
+      vincularAMetricas(bm2.getAttribute('data-metricas'), bm2);
+      return;
     }
     var bc = e.target.closest('[data-cambiar]');
     if (bc && RAIZ && RAIZ.contains(bc)) {

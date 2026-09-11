@@ -604,6 +604,10 @@ main.lienzo{padding:0; max-width:none; margin:0}
 #datosRaiz .dt-inf-ee .dt-inf-e{margin-top:0; border-top:0; flex:1 1 0;
   min-width:0}
 #datosRaiz .dt-inf-ee .dt-inf-e + .dt-inf-e{border-left:1px solid var(--line)}
+/* vincular al modulo de metricas: la tercera puerta, abajo de las otras dos */
+#datosRaiz .dt-inf-v{margin-top:0; border-top:1px solid var(--line);
+  font-weight:700; color:var(--accent)}
+#datosRaiz .dt-inf-v:hover{background:var(--panel); color:var(--ink)}
 #datosRaiz .dt-ed-g{padding:14px 16px; background:var(--surface);
   border:1px solid var(--line); border-radius:var(--r-md)}
 #datosRaiz .dt-ed-v{margin:0 0 10px}

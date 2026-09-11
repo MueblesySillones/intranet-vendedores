@@ -139,7 +139,8 @@ with sync_playwright() as pw:
         else:
             raise AssertionError("el asistente nunca llega a crear")
         falta = [x for x in ("¿De qué período?", "¿Qué querés medir?",
-                             "¿Contra qué lo comparás?", "¿Cómo sale el PDF?")
+                             "¿De qué sucursal?", "¿Contra qué lo comparás?",
+                             "¿Cómo sale el PDF?")
                  if x not in vistos]
         if falta:
             raise AssertionError("no pasó por: %s" % falta)
@@ -931,7 +932,114 @@ with sync_playwright() as pw:
     check("una lista larga se reparte en varias láminas y ninguna se derrama",
           una_lista_larga_se_reparte)
 
+    def la_pregunta_por_sucursal():
+        """«un apartado donde se pueda seleccionar si el reporte que se va a
+        hacer es por la cantidad de derivaciones a una sola sucursal»."""
+        p.click("#dtInformes .dt-inf-c [data-cambiar]")
+        p.wait_for_selector("#repModal.on", state="visible", timeout=25000)
+        p.wait_for_timeout(700)
+        while not p.evaluate("""() => !!document.querySelector(
+                '#repCuerpo input[name=repSuc]')"""):
+            if p.evaluate("() => document.getElementById('repSiguiente').textContent"
+                          ).find("Guardar") >= 0:
+                raise AssertionError("el asistente no pregunta por la sucursal")
+            p.click("#repSiguiente"); p.wait_for_timeout(350)
+        ops = p.eval_on_selector_all(
+            "#repCuerpo input[name=repSuc]", "ns => ns.map(x => x.value)")
+        if "" not in ops:
+            raise AssertionError("no se puede elegir «todas»: %s" % ops)
+        if len(ops) < 3:
+            raise AssertionError("no ofrece las sucursales de la planilla: %s" % ops)
+        aviso = p.text_content("#repCuerpo") or ""
+        if "no es de ninguna sucursal" not in aviso:
+            raise AssertionError("no avisa que las consultas no se reparten")
+        p.keyboard.press("Escape"); p.wait_for_timeout(600)
+        return "todas + %d sucursales, con la aclaración" % (len(ops) - 1)
+    check("el asistente pregunta de qué sucursal es el reporte",
+          la_pregunta_por_sucursal)
+
+    def vincular_a_metricas():
+        """«que se construya literalmente como lo vamos construyendo
+        manualmente… podemos editar todo lo que se estuvo generando, porque
+        pareciera que se creó a mano»."""
+        antes = p.evaluate("""() => {
+          const m = (MODULOS||[]).find(x => x.key === 'reporte');
+          return ((m && m.content && m.content.docs) || []).length;
+        }""")
+        if not antes:
+            raise AssertionError("el módulo de métricas no tiene documentos: "
+                                 "la prueba no podría comparar")
+        if not p.is_visible("#dtInformes [data-metricas]"):
+            raise AssertionError("la tarjeta no ofrece publicar en métricas")
+        p.click("#dtInformes [data-metricas]")
+        p.wait_for_function(
+            """(n) => { const m = (MODULOS||[]).find(x => x.key === 'reporte');
+                        return ((m && m.content && m.content.docs) || []).length > n; }""",
+            arg=antes, timeout=300000)
+        p.wait_for_timeout(1500)
+        d = p.evaluate("""() => {
+          const m = (MODULOS||[]).find(x => x.key === 'reporte');
+          const d = m.content.docs[0];
+          return {titulo: d.titulo, tipos: d.bloques.map(b => b.t),
+                  html: (d.html || '').length,
+                  podio: ((d.bloques.find(b=>b.t==='podio')||{}).items||[]).length,
+                  filas: ((d.bloques.find(b=>b.t==='tabla')||{}).filas||[]).length};
+        }""")
+        for t in ("kpis", "barras", "podio", "tabla"):
+            if t not in d["tipos"]:
+                raise AssertionError("al documento le falta el bloque %r: %s"
+                                     % (t, d["tipos"]))
+        if not d["html"]:
+            raise AssertionError("el documento salió sin HTML dibujado")
+        if d["podio"] < 1 or d["filas"] < 1:
+            raise AssertionError("podio o tabla vacíos: %s" % d)
+        IDS["doc"] = d["titulo"]
+        return "«%s» · %d bloques · podio de %d · tabla de %d filas" % (
+            d["titulo"], len(d["tipos"]), d["podio"], d["filas"])
+    check("el reporte se publica en Reporte de métricas", vincular_a_metricas)
+
+    def el_documento_se_puede_editar():
+        """⚠️ LA PRUEBA QUE IMPORTA. Un documento con el HTML escrito a mano se
+        vería igual pero el editor no sabría de qué está hecho: sería un
+        ladrillo. Acá se abre en el editor y se cuentan sus bloques."""
+        p.goto(BASE + "/", wait_until="domcontentloaded")
+        p.wait_for_selector("#muroLista .pub", timeout=60000)
+        p.click('[data-sec="modulos"]')
+        p.wait_for_timeout(1500)
+        p.query_selector('#viewModulos .mod:has-text("Reporte de métricas")').click()
+        p.wait_for_selector("#colList", state="visible", timeout=25000)
+        p.wait_for_timeout(1200)
+        primero = (p.text_content("#colList > *:first-child") or "")
+        if IDS.get("doc") and IDS["doc"] not in primero:
+            raise AssertionError("el generado no quedó primero: %r" % primero[:70])
+        if "12 bloques" not in primero.replace("\n", " "):
+            raise AssertionError("la ficha no lo cuenta como 12 bloques: %r"
+                                 % primero[:70])
+        p.click("#colList > *:first-child button:has-text('Editar')")
+        p.wait_for_timeout(3000)
+        r = p.evaluate("""() => ({
+          bloques: document.getElementById('gbDoc')
+            ? document.getElementById('gbDoc').children.length : -1,
+          editables: document.querySelectorAll('#gbDoc [contenteditable]').length,
+          kpis: !!document.querySelector('#gbDoc .m-kpis'),
+          podio: !!document.querySelector('#gbDoc .m-podio'),
+          filas: document.querySelectorAll('#gbDoc .m-tabla tbody tr').length
+        })""")
+        if r["bloques"] < 10:
+            raise AssertionError("abrió con %d bloques: no es editable" % r["bloques"])
+        if r["editables"] < 20:
+            raise AssertionError("solo %d campos editables" % r["editables"])
+        if not r["kpis"] or not r["podio"] or r["filas"] < 1:
+            raise AssertionError("los bloques no se dibujaron: %s" % r)
+        return ("%d bloques y %d campos editables, como uno hecho a mano"
+                % (r["bloques"], r["editables"]))
+    check("el documento generado se edita como uno hecho a mano",
+          el_documento_se_puede_editar)
+
     def quitar():
+        p.goto(BASE + "/", wait_until="domcontentloaded")
+        p.wait_for_selector("#muroLista .pub", timeout=60000)
+        abrir_reporte(p)
         antes = len(p.query_selector_all("#dtInformes .dt-inf-c"))
         p.click("#dtInformes .dt-inf-c .dt-inf-x")
         p.wait_for_timeout(1500)
