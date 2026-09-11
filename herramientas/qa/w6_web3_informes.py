@@ -348,20 +348,29 @@ with sync_playwright() as pw:
         Es lo que se pidió desde el principio —«comparación con el mes pasado,
         aumentó un 20%»— y es lo primero que se mira: un total suelto no dice
         si estuvo bien o mal.
+
+        ⚠️ Vive DEBAJO DE CADA TARJETA del embudo, no en una lámina aparte.
+        Hubo una lámina de comparación hasta la v55 y se sacó: decía lo mismo
+        que estas cuatro tarjetas, en otra hoja y con otro dibujo. Por eso acá
+        se comprueba las dos cosas —que el porcentaje esté, y que la lámina no
+        haya vuelto—: una prueba que solo mira lo nuevo deja pasar que lo viejo
+        siga ahí duplicando.
         """
         import re
         import urllib.request
         url = ("%s/api/datos/deck?id=%s&informe=%s"
                % (BASE, IDS["rep"], IDS["inf"]))
         html = urllib.request.urlopen(url, timeout=240).read().decode("utf-8")
-        if "La comparación" not in html:
-            raise AssertionError("no trae la lámina de comparación")
-        if "julio" not in html.lower():
-            raise AssertionError("no dice contra qué compara")
-        m = re.search(r"Las derivaciones (subieron|bajaron) un ([\d,]+%)", html)
-        if not m:
-            raise AssertionError("no dice cuánto cambió")
-        return "compara agosto contra julio: %s un %s" % (m.group(1), m.group(2))
+        if 'data-sec="comparacion"' in html or "La comparación" in html:
+            raise AssertionError("volvió la lámina de comparación")
+        chips = re.findall(r'class="ccmp [^"]*">([^<]+)<', html)
+        if len(chips) < 4:
+            raise AssertionError("el embudo no compara: %s" % chips)
+        if not all("vs" in c for c in chips):
+            raise AssertionError("no dicen contra qué comparan: %s" % chips)
+        if "julio" not in " ".join(chips).lower():
+            raise AssertionError("no compara contra julio: %s" % chips)
+        return "en las tarjetas del embudo: %s" % " · ".join(chips)
     check("el reporte compara contra el período anterior", compara_contra_julio)
 
     def word_disenado():
