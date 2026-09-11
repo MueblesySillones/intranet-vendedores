@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  const SECS = ['muro', 'modulos', 'datos', 'metricas', 'archivadas'];
+  const SECS = ['muro', 'modulos', 'datos', 'metricas', 'tutoriales', 'archivadas'];
   let SEC = 'muro';
   let FILTRO = 'todas';
 
@@ -18,6 +18,7 @@
       sec === 'muro' ? 'viewMuro' :
       sec === 'modulos' ? 'viewModulos' :
       sec === 'datos' ? 'viewDatos' :
+      sec === 'tutoriales' ? 'viewTutoriales' :
       sec === 'archivadas' ? 'viewArch' : 'viewMetricas');
   }
   function irASeccion(sec) {
@@ -42,6 +43,11 @@
     /* Datos se pinta al ENTRAR, venga por click o por código: sin esto la
        pantalla quedaba vacía si el enganche por click no llegaba a correr. */
     if (sec === 'datos' && typeof window.refrescarDatos === 'function') window.refrescarDatos();
+    /* Tutoriales, igual que Datos: se pinta al ENTRAR. Traer la lista al abrir
+       el panel seria un viaje al servidor que nadie pidio. */
+    if (sec === 'tutoriales' && typeof window.refrescarTutoriales === 'function') {
+      window.refrescarTutoriales();
+    }
     /* Métricas es la vista previa de la maqueta: estática, no se pinta. */
     /* Datos NO se pinta desde aca: lo hace datos_puente.js, que va a buscar la
        planilla al servidor. Leerla al entrar al panel seria una espera que

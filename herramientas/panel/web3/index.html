@@ -67,6 +67,13 @@
         </button>
       </div>
       <div class="grupo">
+        <h4>Aprender <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></h4>
+        <button class="item" type="button" data-sec="tutoriales">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>
+          Tutoriales <span class="n" id="navNTut" hidden></span>
+        </button>
+      </div>
+      <div class="grupo">
         <h4>Papelera <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></h4>
         <button class="item" type="button" data-sec="archivadas">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
@@ -296,6 +303,19 @@
           </span>
         </div>
         <div id="archLista"></div>
+      </div></div>
+    </section>
+
+    <!-- ---------- TUTORIALES ---------- -->
+    <section data-vista="tutoriales" class="main-sec" id="viewTutoriales" hidden>
+      <header class="top"><div class="top-in">
+        <div>
+          <h1>Tutoriales</h1>
+          <p>Videos de cómo se usa el panel, con los minutos marcados</p>
+        </div>
+      </div></header>
+      <div class="hoja"><div class="wrap-1col">
+        <div id="tutRaiz"></div>
       </div></div>
     </section>
 
@@ -753,11 +773,47 @@
 <!-- puente del compositor viejo (mp-modo): el motor lo consulta -->
 <div id="mpModo" hidden><button type="button" data-modo="escritorio" class="on"></button><button type="button" data-modo="celular"></button></div>
 
+<div class="fondo" id="tutModal" hidden>
+  <div class="modal medio" role="dialog" aria-modal="true" aria-labelledby="tutModalT">
+    <div class="modal-cab">
+      <div>
+        <h3 id="tutModalT">Subir un tutorial</h3>
+        <p>Un video de cómo se hace algo. Después le marcás los minutos.</p>
+      </div>
+      <button class="cerrar" type="button" data-cerrar-tut aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-cuerpo" id="tutModalCuerpo">
+      <label class="tut-f">
+        <span>¿Cómo se llama?</span>
+        <input type="text" id="tutTitulo" maxlength="120" placeholder="Ej: Cómo editar un módulo">
+      </label>
+      <label class="tut-f">
+        <span>Una línea de qué muestra (opcional)</span>
+        <input type="text" id="tutNota" maxlength="400" placeholder="Ej: Desde entrar al panel hasta publicarlo">
+      </label>
+      <label class="tut-f">
+        <span>El video · mp4, mov o webm</span>
+        <input type="file" id="tutArchivo" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm">
+      </label>
+      <p class="dt-chico">Si el video es pesado o viene de un celular, el panel lo achica solo antes de guardarlo.</p>
+      <p class="rep-mal" id="tutSubirMal" hidden></p>
+      <p class="dt-chico" id="tutSubirPaso" hidden></p>
+    </div>
+    <div class="modal-pie rep-pie">
+      <button class="btn" type="button" data-cerrar-tut>Cancelar</button>
+      <button class="btn active" type="button" id="tutSubir">Subir el tutorial</button>
+    </div>
+  </div>
+</div>
+
 <script src="/static/iconos-ui.js"></script>
 <script src="/static/app.js"></script>
 <!-- la cáscara: usa el motor de app.js, no lo reemplaza -->
 <script src="/static/muro.js"></script>
 <script src="/static/panel_datos.js"></script>
 <script src="/static/datos_puente.js"></script>
+<script src="/static/tutoriales.js"></script>
 </body>
 </html>

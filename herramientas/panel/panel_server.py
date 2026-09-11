@@ -125,6 +125,7 @@ GALERIAS_JS = os.path.join(INTRANET, "galerias.js") if PROYECTO else ""
 MODULOS_JS = os.path.join(INTRANET, "modulos.js") if PROYECTO else ""
 ORIGINALES = os.path.join(RES_DIR, "originales.json")     # empaquetado en el exe
 MOD_ASSETS = os.path.join(ASSETS, "_modulos") if PROYECTO else ""   # imagenes de contenido de modulos
+TUT_ASSETS = os.path.join(ASSETS, "_tutoriales") if PROYECTO else ""  # videos de los tutoriales
 
 
 # --- configuracion de rol: central (esta PC) vs colaborador (las otras) ---
@@ -271,7 +272,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 56
+VERSION = 57
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,27 +280,26 @@ VERSION = 56
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.16.0"
-VERSION_LABEL = "1.16.0 - el reporte, prolijo para proyectar"
+VERSION_PUBLICA = "1.17.0"
+VERSION_LABEL = "1.17.0 - Tutoriales: videos con linea de tiempo"
 VERSION_NOTES = (
-                 "Pasada de diseno, mirando lamina por lamina con el navegador, para "
-                 "que el reporte se pueda proyectar sin que nada se vea desprolijo. "
-                 "LAS BARRAS YA NO OCUPAN TODA LA PANTALLA: de seis filas en "
-                 "adelante van en DOS COLUMNAS -mas cortas y mas juntas, de mayor a "
-                 "menor hacia abajo y despues a la derecha-, y las dos comparten la "
-                 "misma escala, asi que la de la derecha no se ve mas larga de lo "
-                 "que es. Con pocas filas la barra tampoco se estira de punta a "
-                 "punta. Los rotulos largos entran en dos renglones en vez de "
-                 "cortarse con puntos suspensivos, y el carril de atras de la barra "
-                 "se ve apenas, para que lo que salte a la vista sea el dato y no el "
-                 "hueco. El grafico de columnas tiene linea de base y ancho maximo: "
-                 "antes eran siete bloques. SE SACO LA HOJA DE COMPARACION, que "
-                 "decia lo mismo que las cuatro tarjetas del embudo. Un reporte de "
-                 "un solo mes ya no trae la hoja de mes a mes, que era una tarjeta "
-                 "negra sola diciendo AGO 475. Y dos detalles que se notan al "
-                 "proyectar: PROMO ESQUINEROS Y SILLONES se escribe Promo Esquineros "
-                 "y Sillones, y algo que existe nunca se escribe 0% -2 sobre 475 "
-                 "ahora dice menos de 1%-.")
+                 "Novedad grande: TUTORIALES, una seccion nueva en el menu. Se suben "
+                 "videos de como se usa el panel y se les marca una LINEA DE TIEMPO "
+                 "con capitulos, como los de YouTube: se pone el video donde empieza "
+                 "un tema, se aprieta Marcar aca y se escribe de que habla. Despues, "
+                 "al mirarlo, la barra sale partida en tramos -el ancho de cada uno "
+                 "es lo que dura ese capitulo-, abajo esta la lista completa, y "
+                 "apretando un capitulo el video salta ahi. Se ve en pantalla "
+                 "completa con la linea de capitulos incluida. Los sube la central y "
+                 "llegan a las sucursales igual que todo lo demas, al traer la "
+                 "ultima version. El reproductor es propio: con los controles del "
+                 "navegador quedaban dos barras de progreso, una arriba de la otra. "
+                 "Ademas, en Datos: la lista de lo que mide un reporte era un "
+                 "parrafo de quince nombres y ahora dice cuantas laminas son y "
+                 "nombra las tres primeras; y en el asistente, el paso de que queres "
+                 "medir muestra los botones de marcar todas ARRIBA con la cuenta al "
+                 "lado, y avisa que la lista sigue para abajo, que antes se cortaba "
+                 "sin que nada lo dijera.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1219,7 +1219,7 @@ def publicar_cerebro(mensaje=""):
 #  El CODIGO del sitio (index.html, app.js, galerias.js, etc.) NUNCA se pisa
 #  con una propuesta: galerias.js se regenera localmente tras aplicar.
 CENTRAL_TIMEOUT = 40                     # segundos para hablar con la central
-SECCIONES_ASSETS = list(SECCIONES) + ["_modulos"]
+SECCIONES_ASSETS = list(SECCIONES) + ["_modulos", "_tutoriales"]
 
 
 def _pc():
@@ -1829,23 +1829,48 @@ AJUSTES_POR_DEFECTO = {"novedad_horas": 24}
 NOVEDAD_HORAS_VALIDAS = [24, 48, 72, 168, 336]
 
 
-def leer_modulos():
-    if not os.path.exists(MODULOS_JS):
-        return []
-    txt = open(MODULOS_JS, encoding="utf-8").read()
-    # se ancla en window.MODULES: desde que el archivo tambien lleva
-    # window.AJUSTES, buscar el primer "[" del archivo entero podria agarrar
-    # cualquier otra cosa
-    k = txt.find("window.MODULES")
+def _lista_de(txt, nombre):
+    """La lista JSON que sigue a `window.<nombre>` adentro de modulos.js.
+
+    ⚠️ El cierre se busca CONTANDO CORCHETES, no con rfind("]"). En ese archivo
+    conviven varios bloques: mientras MODULES fue el ultimo, rfind acertaba de
+    casualidad; el dia que se sumo TUTORIALES abajo, rfind agarraba el cierre
+    del ultimo y leer los modulos devolvia [] —o sea que el guardado siguiente
+    dejaba la intranet SIN MODULOS, sin ningun error a la vista—. Paso en el
+    sandbox de prueba; en produccion habria borrado los nueve modulos.
+    """
+    k = txt.find("window." + nombre)
     if k == -1:
-        k = 0
-    i, j = txt.find("[", k), txt.rfind("]")
-    if i == -1 or j == -1 or j < i:
-        return []
+        return None
+    i = txt.find("[", k)
+    if i == -1:
+        return None
+    hondo, j = 0, i
+    while j < len(txt):
+        if txt[j] == "[":
+            hondo += 1
+        elif txt[j] == "]":
+            hondo -= 1
+            if hondo == 0:
+                break
+        j += 1
+    if hondo != 0:
+        return None
     try:
         return json.loads(txt[i:j + 1])
     except ValueError:
+        return None
+
+
+def leer_modulos():
+    if not MODULOS_JS or not os.path.exists(MODULOS_JS):
         return []
+    try:
+        txt = open(MODULOS_JS, encoding="utf-8").read()
+    except OSError:
+        return []
+    lista = _lista_de(txt, "MODULES")
+    return lista if isinstance(lista, list) else []
 
 
 def leer_ajustes():
@@ -1879,12 +1904,82 @@ def validar_ajustes(d):
     return {"novedad_horas": h}
 
 
-def escribir_modulos(lista, ajustes=None):
-    """Escribe modulos.js. Los ajustes viajan en el MISMO archivo a proposito:
-    asi se publican en el mismo commit que los modulos y no puede pasar que el
-    sitio tenga los modulos nuevos con los ajustes viejos."""
+def leer_tutoriales():
+    """Los tutoriales cargados, o lista vacia.
+
+    Viven adentro de modulos.js como `window.TUTORIALES`. Se ancla en ese
+    nombre —y no en el primer "[" del archivo— porque ahi conviven tres cosas
+    y el primer corchete es el de los modulos.
+    """
+    if not MODULOS_JS or not os.path.exists(MODULOS_JS):
+        return []
+    try:
+        txt = open(MODULOS_JS, encoding="utf-8").read()
+    except OSError:
+        return []
+    lista = _lista_de(txt, "TUTORIALES")
+    return lista if isinstance(lista, list) else []
+
+
+def validar_tutoriales(lista):
+    """Solo lo que la pantalla entiende, y con valores que existen.
+
+    ⚠️ Los capitulos se guardan ORDENADOS POR TIEMPO y sin repetir el segundo:
+    una linea de tiempo con dos marcas en el mismo lugar no se puede dibujar, y
+    desordenada haria que «el capitulo de ahora» salte para atras mientras el
+    video avanza.
+    """
+    out = []
+    for t in (lista if isinstance(lista, list) else [])[:80]:
+        if not isinstance(t, dict):
+            continue
+        clave = slug(str(t.get("id") or ""))
+        titulo = str(t.get("titulo") or "").strip()[:120]
+        if not clave or not titulo:
+            continue
+        caps, vistos = [], set()
+        for c in (t.get("capitulos") or [])[:120]:
+            if not isinstance(c, dict):
+                continue
+            try:
+                seg = max(0, int(float(c.get("t", 0))))
+            except (TypeError, ValueError):
+                continue
+            texto = str(c.get("texto") or "").strip()[:120]
+            if not texto or seg in vistos:
+                continue
+            vistos.add(seg)
+            caps.append({"t": seg, "texto": texto})
+        caps.sort(key=lambda c: c["t"])
+        try:
+            dur = max(0, int(float(t.get("duracion", 0))))
+        except (TypeError, ValueError):
+            dur = 0
+        out.append({
+            "id": clave,
+            "titulo": titulo,
+            "nota": str(t.get("nota") or "").strip()[:400],
+            "src": str(t.get("src") or "")[:200],
+            "duracion": dur,
+            "capitulos": caps,
+            "creado": str(t.get("creado") or "")[:10],
+        })
+    return out
+
+
+def escribir_modulos(lista, ajustes=None, tutoriales=None):
+    """⚠️ Ver `_lista_de`: si la lectura de los modulos falla, lo que llega aca
+    es [] y este guardado deja la intranet vacia. El freno esta en el llamador
+    que no toca los modulos (guardar tutoriales), que ahora pasa lo que leyo y
+    aborta si leyo vacio teniendo un archivo con contenido."""
+    """Escribe modulos.js. Los ajustes y los tutoriales viajan en el MISMO
+    archivo a proposito: asi se publican en el mismo commit que los modulos y
+    no puede pasar que el sitio tenga los modulos nuevos con los ajustes o los
+    tutoriales viejos."""
     cuerpo = json.dumps(lista, ensure_ascii=False, indent=2)
     aj = validar_ajustes(ajustes if ajustes is not None else leer_ajustes())
+    tut = validar_tutoriales(tutoriales if tutoriales is not None
+                             else leer_tutoriales())
     with open(MODULOS_JS, "w", encoding="utf-8") as fh:
         fh.write("/* Generado/editado por el Panel de administracion. Define los modulos (botones)\n"
                  "   de la intranet. builtin:true = el contenido vive en index.html (no editable\n"
@@ -1892,6 +1987,28 @@ def escribir_modulos(lista, ajustes=None):
         fh.write("window.MODULES = " + cuerpo + ";\n")
         fh.write("/* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */\n")
         fh.write("window.AJUSTES = " + json.dumps(aj, ensure_ascii=False) + ";\n")
+        fh.write("/* Tutoriales del panel: el video y su linea de tiempo con capitulos. */\n")
+        fh.write("window.TUTORIALES = " + json.dumps(tut, ensure_ascii=False,
+                                                     indent=2) + ";\n")
+
+
+def _barrer_tutoriales(usados):
+    """Tira los videos de tutoriales que ya no usa ninguno.
+
+    Un mp4 de 16 MB que queda huerfano no molesta en la pantalla, pero se
+    publica igual, viaja a cada sucursal y se clona en cada build para siempre.
+    """
+    if not TUT_ASSETS or not os.path.isdir(TUT_ASSETS):
+        return
+    for n in os.listdir(TUT_ASSETS):
+        if not n.lower().endswith(EXTS_VIDEO):
+            continue
+        if ("assets/_tutoriales/" + n) in usados:
+            continue
+        try:
+            os.remove(os.path.join(TUT_ASSETS, n))
+        except OSError:
+            pass
 
 
 def leer_originales():
@@ -2780,6 +2897,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(j or {"estado": "error", "error": "ese trabajo ya no existe"})
         if path == "/api/secciones":
             return self._json({"secciones": estado_secciones(), "git": estado_git()})
+        if path == "/api/tutoriales":
+            return self._json({"ok": True, "tutoriales": leer_tutoriales()})
         if path == "/api/modulos":
             return self._json({"modulos": leer_modulos(),
                                "ajustes": leer_ajustes(),
@@ -2852,6 +2971,29 @@ class Handler(BaseHTTPRequestHandler):
                 return self._upload_pdf()
             if path == "/api/upload-video":
                 return self._upload_video()
+            if path == "/api/upload-tutorial":
+                return self._upload_video(TUT_ASSETS, "_tutoriales")
+            if path == "/api/tutoriales":
+                d = self._leer_json()
+                lista = d.get("tutoriales")
+                if not isinstance(lista, list):
+                    return self._json({"error": "faltan los tutoriales"}, 400)
+                limpios = validar_tutoriales(lista)
+                # los videos que dejaron de estar referenciados se borran: un
+                # mp4 de 16 MB huerfano se publica igual y se clona en cada
+                # build para siempre
+                usados = {t["src"] for t in limpios if t.get("src")}
+                # ⚠️ Guardar tutoriales reescribe TODO modulos.js. Si por lo que
+                # sea los modulos se leyeran vacios, este guardado borraria la
+                # intranet entera sin decir nada. Antes de escribir, se
+                # comprueba que lo leido tenga sentido.
+                mods = leer_modulos()
+                if not mods and os.path.isfile(MODULOS_JS) and                         os.path.getsize(MODULOS_JS) > 400:
+                    return self._json(
+                        {"error": "no pude leer los modulos; no toco nada"}, 500)
+                _barrer_tutoriales(usados)
+                escribir_modulos(mods, None, limpios)
+                return self._json({"ok": True, "tutoriales": limpios})
             if path == "/api/preparar-compresor":
                 if ffmpeg_local():
                     return self._json({"ok": True, "ya": True})
@@ -3175,12 +3317,19 @@ class Handler(BaseHTTPRequestHandler):
             return None, "", "no vino ningun archivo"
         return campos, nombre, ""
 
-    def _upload_video(self):
-        """Sube UN video como contenido de un modulo -> assets/_modulos/<key>.mp4.
-        Si pesa mas del tope publicable, lo comprime (en un hilo) y devuelve un job."""
+    def _upload_video(self, carpeta=None, subcarpeta="_modulos"):
+        """Sube UN video -> assets/<subcarpeta>/<key>.mp4.
+
+        Sirve para el contenido de un modulo y para un tutorial: es el mismo
+        trabajo —mirar el codec, comprimir si no entra, guardar— y escribirlo
+        dos veces significaria que un dia uno de los dos acepte un video que el
+        otro rechaza. Si pesa mas del tope publicable, lo comprime en un hilo y
+        devuelve un job.
+        """
         if not STATE_DIR:
             return self._json({"error": "no hay carpeta de trabajo"}, 500)
-        os.makedirs(MOD_ASSETS, exist_ok=True)
+        carpeta = carpeta or MOD_ASSETS
+        os.makedirs(carpeta, exist_ok=True)
         os.makedirs(STATE_DIR, exist_ok=True)
         # nombre unico: dos subidas a la vez no se pueden pisar el temporal
         marca = base64.b16encode(os.urandom(4)).decode("ascii").lower()
@@ -3202,15 +3351,15 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": "el archivo no parece un video (se aceptan mp4, mov y webm)"}, 400)
 
         peso = os.path.getsize(tmp)
-        final = os.path.join(MOD_ASSETS, key + ".mp4")
-        src = "assets/_modulos/%s.mp4" % key
+        final = os.path.join(carpeta, key + ".mp4")
+        src = "assets/%s/%s.mp4" % (subcarpeta, key)
 
         # ¿se puede publicar tal cual? Manda el CODEC, no solo el peso.
         apto, porque = video_apto(tmp, peso)
 
         # ya entra: se guarda tal cual
         if apto and (campos or {}).get("forzar") != "1":
-            self._limpiar_videos_previos(key)
+            self._limpiar_videos_previos(key, carpeta)
             try:
                 os.replace(tmp, final)
             except OSError as e:
@@ -3241,7 +3390,7 @@ class Handler(BaseHTTPRequestHandler):
                                     "es %d MB. Proba con un video mas corto."
                                     % (nuevo / 1048576.0, MAX_VIDEO // 1048576)))
                     return
-                self._limpiar_videos_previos(key)
+                self._limpiar_videos_previos(key, carpeta)
                 os.replace(salida, final)
                 _job_set(jid, estado="listo", pct=100, src=src,
                          info="%.1f MB -> %.1f MB" % (peso / 1048576.0, nuevo / 1048576.0))
@@ -3262,11 +3411,11 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
     @staticmethod
-    def _limpiar_videos_previos(key):
+    def _limpiar_videos_previos(key, carpeta=None):
         """Un video de 16 MB que queda huerfano se publica igual y se clona en cada
         build para siempre. Al reemplazar, borrar la version con otra extension."""
         for ext in EXTS_VIDEO:
-            viejo = os.path.join(MOD_ASSETS, key + ext)
+            viejo = os.path.join(carpeta or MOD_ASSETS, key + ext)
             if ext != ".mp4" and os.path.isfile(viejo):
                 try:
                     os.remove(viejo)

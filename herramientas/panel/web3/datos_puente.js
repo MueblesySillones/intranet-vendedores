@@ -961,12 +961,25 @@
   var SECCIONES = [];
   var OPCIONES = {};
 
+  /* Qué mide un reporte, en un renglón.
+
+     Con quince láminas, nombrarlas todas daba ocho renglones de texto corrido
+     donde no se distingue nada —y hacía que una tarjeta midiera el doble que
+     la de al lado—. Lo que se quiere saber de un vistazo es cuántas son; los
+     nombres completos están adentro del reporte. */
   function seccionesDe(inf) {
     var elegidas = inf.secciones || [];
     var nombres = SECCIONES.filter(function (s) {
       return elegidas.indexOf(s.id) >= 0;
     }).map(function (s) { return s.titulo; });
-    return nombres.length ? nombres.join(' · ') : 'todo';
+    return resumirSecciones(nombres);
+  }
+
+  function resumirSecciones(nombres) {
+    if (!nombres.length) return 'todo';
+    if (nombres.length <= 3) return nombres.join(' · ');
+    return nombres.length + ' láminas · ' + nombres.slice(0, 3).join(' · ') +
+      ' y ' + (nombres.length - 3) + ' más';
   }
 
   function pintarInformes(id, lista) {
@@ -1164,29 +1177,41 @@
         ayuda: 'Cada cosa que marques es una lámina del reporte. Después podés ' +
                'crear otro con otras.',
         pinta: function () {
-          return '<div class="dt-inf-s">' + SECCIONES.map(function (s) {
+          /* los botones de marcar van ARRIBA: abajo de quince opciones con
+             scroll quedaban fuera de la pantalla, o sea que no existían */
+          return '<div class="dt-inf-at dt-inf-at1">' +
+            '<button type="button" class="dt-at" data-marca="todas">Marcar todas</button>' +
+            '<button type="button" class="dt-at" data-marca="ninguna">Desmarcar todas</button>' +
+            '<span class="dt-inf-cu" id="repCuenta"></span>' +
+          '</div>' +
+          '<div class="dt-inf-s">' + SECCIONES.map(function (s) {
             return '<label class="dt-inf-o"><input type="checkbox" value="' +
               esc(s.id) + '"' +
               (BORRADOR.secciones.indexOf(s.id) >= 0 ? ' checked' : '') +
               '><span><b>' + esc(s.titulo) + '</b><i>' + esc(s.detalle) +
               '</i></span></label>';
-          }).join('') + '</div>' +
-          '<div class="dt-inf-at">' +
-            '<button type="button" class="dt-at" data-marca="todas">Marcar todas</button>' +
-            '<button type="button" class="dt-at" data-marca="ninguna">Desmarcar todas</button>' +
-          '</div>';
+          }).join('') + '</div>';
         },
         arma: function () {
+          var cs = document.querySelectorAll('#repCuerpo .dt-inf-s input');
+          var cuenta = function () {
+            var n = 0, j;
+            for (j = 0; j < cs.length; j++) if (cs[j].checked) n++;
+            var e = document.getElementById('repCuenta');
+            if (e) e.textContent = n + ' de ' + cs.length + ' marcadas';
+          };
+          for (var j = 0; j < cs.length; j++) cs[j].onchange = cuenta;
           var bts = document.querySelectorAll('#repCuerpo .dt-at');
           for (var i = 0; i < bts.length; i++) {
             bts[i].onclick = (function (b) {
               return function () {
                 var todas = b.getAttribute('data-marca') === 'todas';
-                var cs = document.querySelectorAll('#repCuerpo .dt-inf-s input');
-                for (var j = 0; j < cs.length; j++) cs[j].checked = todas;
+                for (var k = 0; k < cs.length; k++) cs[k].checked = todas;
+                cuenta();
               };
             }(bts[i]));
           }
+          cuenta();
         },
         toma: function () {
           var out = [];
@@ -1284,7 +1309,7 @@
     caja.innerHTML = '<b>Va a quedar así</b>' +
       fila('Nombre', BORRADOR.nombre) +
       fila('Período', periodoTexto(BORRADOR)) +
-      fila('Mide', nombres.join(' · ') || '—') +
+      fila('Mide', resumirSecciones(nombres)) +
       fila('Compara', cmp ? cmp.titulo : '—') +
       fila('Detalle', det ? det.titulo : '—') +
       fila('PDF', hoja ? hoja.titulo : '—') +
