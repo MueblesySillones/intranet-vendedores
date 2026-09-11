@@ -159,9 +159,9 @@ with sync_playwright() as pw:
     def atras_no_pierde():
         # se vuelve hasta el paso de «qué querés medir», que es el que tiene
         # algo que perder. Se busca la opción POR SU VALOR y no por la clase:
-        # el paso «¿se nombra a las personas?» usa la misma clase y el bucle
-        # frenaba ahí. Contar clicks a ciegas tampoco sirve: se rompe el día
-        # que haya un paso más.
+        # otros pasos usan la misma clase para sus opciones y el bucle frenaba
+        # en el primero que encontraba. Contar clicks a ciegas tampoco sirve:
+        # se rompe el día que haya un paso más, o uno menos.
         while not p.evaluate("""() => !!document.querySelector(
                 '#repCuerpo input[value=template]')"""):
             if p.evaluate("() => document.getElementById('repAtras').disabled"):

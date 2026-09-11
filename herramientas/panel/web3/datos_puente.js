@@ -1096,7 +1096,6 @@
       comparar: 'anterior',
       detalle: '10',
       hoja: 'pantalla',
-      anonimo: false,
       nota: ''
     };
   }
@@ -1257,21 +1256,6 @@
         }
       },
       {
-        t: '¿Se nombra a las personas?',
-        ayuda: 'Si el reporte sale del equipo, conviene mostrar el puesto y la ' +
-               'sucursal en vez del nombre.',
-        pinta: function () {
-          return '<div class="dt-inf-s"><label class="dt-inf-o">' +
-            '<input type="checkbox" id="repAnon"' +
-            (BORRADOR.anonimo ? ' checked' : '') + '><span>' +
-            '<b>Sin los nombres del equipo</b><i>En vez del nombre se muestra ' +
-            'el puesto y la sucursal.</i></span></label></div>';
-        },
-        toma: function () {
-          BORRADOR.anonimo = document.getElementById('repAnon').checked;
-        }
-      },
-      {
         t: '¿Querés aclarar algo en la portada?',
         ayuda: 'Opcional. Una línea que se lee al abrir: para quién es, o qué ' +
                'hay que tener en cuenta.',
@@ -1312,8 +1296,7 @@
       fila('Mide', resumirSecciones(nombres)) +
       fila('Compara', cmp ? cmp.titulo : '—') +
       fila('Detalle', det ? det.titulo : '—') +
-      fila('PDF', hoja ? hoja.titulo : '—') +
-      (BORRADOR.anonimo ? fila('Personas', 'sin nombres') : '');
+      fila('PDF', hoja ? hoja.titulo : '—');
   }
 
   function fila(k, v) {
@@ -1339,7 +1322,6 @@
       comparar: op.comparar || 'anterior',
       detalle: op.detalle || '10',
       hoja: op.hoja || 'pantalla',
-      anonimo: !!op.anonimo,
       nota: op.nota || ''
     };
   }
@@ -1441,7 +1423,6 @@
         comparar: BORRADOR.comparar,
         detalle: BORRADOR.detalle,
         hoja: BORRADOR.hoja,
-        anonimo: BORRADOR.anonimo,
         nota: BORRADOR.nota
       }
     };

@@ -558,18 +558,48 @@ def main():
         page.click("#detMore")
         page.wait_for_selector("#detMoreMenu", state="visible")
         tx = page.text_content("#detMoreMenu")
+        # ⚠️ y que Escape lo CIERRE de verdad. Mientras seguía abierto tapaba el
+        # bloque de abajo: el primer click iba a cerrar el menú en vez de entrar
+        # al texto, y las tres pruebas siguientes fallaban por eso —parecía un
+        # problema del editor y era este menú—.
         page.keyboard.press("Escape")
-        page.wait_for_timeout(300)
+        page.wait_for_selector("#detMoreMenu", state="hidden", timeout=5000)
         return "opciones: " + " / ".join(t.strip() for t in tx.split("\n") if t.strip())[:90]
     check("editor", "menú ⋯ Más", menu_mas)
 
     def guardas_salida():
+        # el menu de arriba se acaba de cerrar con Escape: hasta que su capa no
+        # se va, el click cae sobre ella y lo que se escribe no llega al bloque
+        page.wait_for_selector("#detMoreMenu", state="hidden")
         zona = page.query_selector("#gbDoc [contenteditable]")
+        antes = zona.text_content() or ""
         zona.click()
         page.keyboard.type("XX")
-        page.wait_for_timeout(300)
+        # ⚠️ se comprueba que el texto ENTRO antes de salir. Sin esto, un click
+        # que no llego al bloque hacia que no hubiera cambios que guardar, el
+        # editor salia sin preguntar nada, y la prueba fallaba —junto con las
+        # dos siguientes, que ya no estaban donde creian estar— por una carrera
+        # y no por un problema del panel.
+        page.wait_for_function(
+            """([sel, antes]) => {
+                 const z = document.querySelector(sel);
+                 return z && (z.textContent || '').length > antes.length;
+               }""",
+            arg=["#gbDoc [contenteditable]", antes], timeout=8000)
         page.click("#detBack")
-        page.wait_for_selector("#confirmModal.on", state="visible")
+        try:
+            page.wait_for_selector("#confirmModal.on", state="visible", timeout=8000)
+        except Exception:
+            # deja rastro de COMO quedo la pantalla: sin esto, el timeout dice
+            # que algo no aparecio pero no que estaba pasando en su lugar
+            page.screenshot(path=os.path.join(SHOTS, "w1_guardas_salida.png"))
+            estado = page.evaluate("""() => ({
+              detalle: !document.getElementById('viewDetalle').hidden,
+              modulos: !document.getElementById('viewModulos').hidden,
+              confirm: (document.getElementById('confirmModal')||{}).className,
+              texto: (document.querySelector('#gbDoc [contenteditable]')||{}).textContent || ''
+            })""")
+            raise AssertionError("no pregunto por los cambios. Estado: %s" % estado)
         botones = page.text_content("#confirmModal")
         # seguir editando
         page.click("#confirmNo")

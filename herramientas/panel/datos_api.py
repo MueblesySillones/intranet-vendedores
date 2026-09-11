@@ -398,8 +398,6 @@ def _limpiar_opciones(op, antes=None):
         "fondos": fondos,
         "textos": textos,
         "ocultos": ocultos,
-        "anonimo": bool(op.get("anonimo") if "anonimo" in op
-                        else vieja.get("anonimo")),
         "nota": str(op.get("nota") if "nota" in op
                     else (vieja.get("nota") or ""))[:280],
     }

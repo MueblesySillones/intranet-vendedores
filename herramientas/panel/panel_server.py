@@ -272,7 +272,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 57
+VERSION = 58
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -280,26 +280,21 @@ VERSION = 57
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.17.0"
-VERSION_LABEL = "1.17.0 - Tutoriales: videos con linea de tiempo"
+VERSION_PUBLICA = "1.17.1"
+VERSION_LABEL = "1.17.1 - una pregunta menos, y dos arreglos de fondo"
 VERSION_NOTES = (
-                 "Novedad grande: TUTORIALES, una seccion nueva en el menu. Se suben "
-                 "videos de como se usa el panel y se les marca una LINEA DE TIEMPO "
-                 "con capitulos, como los de YouTube: se pone el video donde empieza "
-                 "un tema, se aprieta Marcar aca y se escribe de que habla. Despues, "
-                 "al mirarlo, la barra sale partida en tramos -el ancho de cada uno "
-                 "es lo que dura ese capitulo-, abajo esta la lista completa, y "
-                 "apretando un capitulo el video salta ahi. Se ve en pantalla "
-                 "completa con la linea de capitulos incluida. Los sube la central y "
-                 "llegan a las sucursales igual que todo lo demas, al traer la "
-                 "ultima version. El reproductor es propio: con los controles del "
-                 "navegador quedaban dos barras de progreso, una arriba de la otra. "
-                 "Ademas, en Datos: la lista de lo que mide un reporte era un "
-                 "parrafo de quince nombres y ahora dice cuantas laminas son y "
-                 "nombra las tres primeras; y en el asistente, el paso de que queres "
-                 "medir muestra los botones de marcar todas ARRIBA con la cuenta al "
-                 "lado, y avisa que la lista sigue para abajo, que antes se cortaba "
-                 "sin que nada lo dijera.")
+                 "Se saco la pregunta -se nombra a las personas- del asistente: eran "
+                 "ocho pasos y ahora son siete. Se saco entera, no solo la pregunta: "
+                 "una opcion guardada que no se puede prender es codigo que no corre "
+                 "nunca y que igual hay que entender cada vez. Ninguno de los "
+                 "reportes que existen la tenia prendida, asi que no cambia lo que "
+                 "dice ninguno. Y dos arreglos que no se ven pero importan: el "
+                 "lector de modulos.js ahora usa el decodificador de JSON en vez de "
+                 "buscar el corchete de cierre a mano -con los tutoriales guardados "
+                 "en el mismo archivo, leer los modulos podia devolver vacio y el "
+                 "guardado siguiente dejaba la intranet sin modulos-, y el menu de "
+                 "tres puntos del editor ahora cierra con Escape: mientras quedaba "
+                 "abierto tapaba el bloque de abajo y se comia el primer click.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1832,12 +1827,21 @@ NOVEDAD_HORAS_VALIDAS = [24, 48, 72, 168, 336]
 def _lista_de(txt, nombre):
     """La lista JSON que sigue a `window.<nombre>` adentro de modulos.js.
 
-    ⚠️ El cierre se busca CONTANDO CORCHETES, no con rfind("]"). En ese archivo
-    conviven varios bloques: mientras MODULES fue el ultimo, rfind acertaba de
-    casualidad; el dia que se sumo TUTORIALES abajo, rfind agarraba el cierre
-    del ultimo y leer los modulos devolvia [] —o sea que el guardado siguiente
-    dejaba la intranet SIN MODULOS, sin ningun error a la vista—. Paso en el
-    sandbox de prueba; en produccion habria borrado los nueve modulos.
+    ⚠️ Se parsea con el DECODIFICADOR DE JSON, no buscando el corchete de
+    cierre. Las dos formas caseras que se probaron fallan con este archivo:
+
+      · `rfind("]")` agarra el cierre del ULTIMO bloque del archivo. Mientras
+        MODULES fue el ultimo acertaba de casualidad; el dia que se sumo
+        TUTORIALES abajo, leer los modulos devolvia [] y el guardado siguiente
+        dejo la intranet SIN MODULOS, sin un solo error a la vista.
+
+      · Contar corchetes tampoco: los modulos guardan su HTML adentro, y en
+        276 KB de HTML hay corchetes en medio de un texto. Un `]` suelto en el
+        cuerpo de un modulo desbalancea la cuenta y corta el JSON en el lugar
+        equivocado. Asi se perdio una publicacion de la cartelera al guardarla.
+
+    `raw_decode` sabe de comillas y de escapes, que es exactamente lo que hace
+    falta, y ademas devuelve donde termino.
     """
     k = txt.find("window." + nombre)
     if k == -1:
@@ -1845,22 +1849,11 @@ def _lista_de(txt, nombre):
     i = txt.find("[", k)
     if i == -1:
         return None
-    hondo, j = 0, i
-    while j < len(txt):
-        if txt[j] == "[":
-            hondo += 1
-        elif txt[j] == "]":
-            hondo -= 1
-            if hondo == 0:
-                break
-        j += 1
-    if hondo != 0:
-        return None
     try:
-        return json.loads(txt[i:j + 1])
+        valor, _fin = json.JSONDecoder().raw_decode(txt, i)
     except ValueError:
         return None
-
+    return valor if isinstance(valor, list) else None
 
 def leer_modulos():
     if not MODULOS_JS or not os.path.exists(MODULOS_JS):
