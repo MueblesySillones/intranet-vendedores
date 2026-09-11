@@ -272,7 +272,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 58
+VERSION = 59
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -280,21 +280,25 @@ VERSION = 58
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.17.1"
-VERSION_LABEL = "1.17.1 - una pregunta menos, y dos arreglos de fondo"
+VERSION_PUBLICA = "1.17.2"
+VERSION_LABEL = "1.17.2 - la pantalla de Datos, ordenada"
 VERSION_NOTES = (
-                 "Se saco la pregunta -se nombra a las personas- del asistente: eran "
-                 "ocho pasos y ahora son siete. Se saco entera, no solo la pregunta: "
-                 "una opcion guardada que no se puede prender es codigo que no corre "
-                 "nunca y que igual hay que entender cada vez. Ninguno de los "
-                 "reportes que existen la tenia prendida, asi que no cambia lo que "
-                 "dice ninguno. Y dos arreglos que no se ven pero importan: el "
-                 "lector de modulos.js ahora usa el decodificador de JSON en vez de "
-                 "buscar el corchete de cierre a mano -con los tutoriales guardados "
-                 "en el mismo archivo, leer los modulos podia devolver vacio y el "
-                 "guardado siguiente dejaba la intranet sin modulos-, y el menu de "
-                 "tres puntos del editor ahora cierra con Escape: mientras quedaba "
-                 "abierto tapaba el bloque de abajo y se comia el primer click.")
+                 "La pantalla de una planilla, rearmada para que no se acumulen "
+                 "cosas abajo. El encabezado grande -Datos, cada reporte sale de una "
+                 "planilla- no se dibuja mientras hay una planilla abierta: la barra "
+                 "de abajo ya dice donde estas, y con el nombre de la planilla. "
+                 "Volver atras es ahora una flecha redonda en vez de un boton con "
+                 "texto. La ULTIMA LECTURA tiene su propio renglon con rotulo, en "
+                 "vez de ser la cola de la linea gris del origen: es el dato que "
+                 "dice si lo que estas mirando es de hoy. Los tres numeros de la "
+                 "planilla -consultas, derivaciones, ventas- suben al encabezado "
+                 "como una tira compacta al lado del nombre: son la identidad de la "
+                 "planilla, no un resultado, y abajo solo acumulaban. Y QUE ENCONTRO "
+                 "EN LA PLANILLA pasa a ser un desplegable cerrado: el resumen "
+                 "-filas, columnas, cuantas con datos de clientes- se sigue viendo "
+                 "sin abrirlo, que es lo que hay que mirar de un vistazo; adentro "
+                 "queda el inventario de columnas, que el que crea reportes no "
+                 "necesita y el que programa si.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

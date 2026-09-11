@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.17.1"
-NUEVO_LABEL = "1.17.1 - una pregunta menos, y dos arreglos de fondo"
-NUEVAS_NOTAS = ("Se saco la pregunta -se nombra a las personas- del asistente: eran ocho pasos y ahora son siete. Se saco entera, no solo la pregunta: una opcion guardada que no se puede prender es codigo que no corre nunca y que igual hay que entender cada vez. Ninguno de los reportes que existen la tenia prendida, asi que no cambia lo que dice ninguno. Y dos arreglos que no se ven pero importan: el lector de modulos.js ahora usa el decodificador de JSON en vez de buscar el corchete de cierre a mano -con los tutoriales guardados en el mismo archivo, leer los modulos podia devolver vacio y el guardado siguiente dejaba la intranet sin modulos-, y el menu de tres puntos del editor ahora cierra con Escape: mientras quedaba abierto tapaba el bloque de abajo y se comia el primer click.")
+NUEVA_PUBLICA = "1.17.2"
+NUEVO_LABEL = "1.17.2 - la pantalla de Datos, ordenada"
+NUEVAS_NOTAS = ("La pantalla de una planilla, rearmada para que no se acumulen cosas abajo. El encabezado grande -Datos, cada reporte sale de una planilla- no se dibuja mientras hay una planilla abierta: la barra de abajo ya dice donde estas, y con el nombre de la planilla. Volver atras es ahora una flecha redonda en vez de un boton con texto. La ULTIMA LECTURA tiene su propio renglon con rotulo, en vez de ser la cola de la linea gris del origen: es el dato que dice si lo que estas mirando es de hoy. Los tres numeros de la planilla -consultas, derivaciones, ventas- suben al encabezado como una tira compacta al lado del nombre: son la identidad de la planilla, no un resultado, y abajo solo acumulaban. Y QUE ENCONTRO EN LA PLANILLA pasa a ser un desplegable cerrado: el resumen -filas, columnas, cuantas con datos de clientes- se sigue viendo sin abrirlo, que es lo que hay que mirar de un vistazo; adentro queda el inventario de columnas, que el que crea reportes no necesita y el que programa si.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

@@ -61,6 +61,7 @@
 
   function pintarLista(mensaje) {
     ABIERTO = null;
+    conPlanillaAbierta(false);
     var filas = LISTA.map(function (r) {
       return '<button type="button" class="dt-rep" data-id="' + esc(r.id) + '">' +
         '<span class="dt-rep-t">' + esc(r.titulo) + '</span>' +
@@ -573,6 +574,15 @@
   }
 
   /* ─────────────────────── un reporte abierto ─────────────────────── */
+  /* El encabezado grande de la sección («Datos · Cada reporte sale de una
+     planilla») se esconde mientras hay una planilla abierta: con la barra de
+     la planilla justo abajo, dice dos veces dónde estás y se come una franja
+     de pantalla que hace falta para los reportes. */
+  function conPlanillaAbierta(si) {
+    var v = document.getElementById('viewDatos');
+    if (v) v.classList.toggle('dt-abierta', !!si);
+  }
+
   function abrir(id) {
     ABIERTO = id;
     RAIZ.innerHTML = '<div class="dt-cargando">Leyendo la planilla…</div>';
@@ -833,7 +843,10 @@
           ? d.revision.concat([]) : d.revision,
         lecturas: d.lecturas,
         publicados: d.publicados || [],
-        identidad: identidadDe(d),
+        /* null a propósito: las cifras ahora van arriba, en la tira del
+           encabezado. Dibujarlas también abajo sería decir lo mismo dos
+           veces y volver a acumular al final de la pantalla. */
+        identidad: null,
         alCambiar: function (ids) { guardarPublicados(id, ids); },
         alArreglar: function (av) {
           /* Todavía no se puede abrir la planilla en la fila exacta: sería
@@ -865,16 +878,45 @@
       });
   }
 
+  /* La tira de cifras de la planilla, al lado de su nombre.
+
+     Vivía abajo de todo, después de la biblioteca de reportes, como una
+     sección con tres números gigantes. Pero no es un resultado: es la
+     IDENTIDAD de la planilla —cuántas consultas tiene, de cuándo a cuándo—,
+     y eso va donde está su nombre. Abajo solo acumulaba cosas. */
+  function tiraIdentidad(d) {
+    var id = identidadDe(d);
+    if (!id || !id.cifras || !id.cifras.length) return '';
+    return '<div class="dt-tira"' + (id.nota ? ' title="' + esc(id.nota) + '"' : '') + '>' +
+      id.cifras.map(function (c) {
+        return '<span class="dt-tc"><b>' + esc(miles(c.n)) + '</b> ' + esc(c.r) + '</span>';
+      }).join('') +
+      '<span class="dt-tp">de toda la planilla' +
+        (id.cuando ? ' · ' + esc(id.cuando) : '') + '</span>' +
+      '</div>';
+  }
+
   function barra(d) {
-    var cuando = d.cuando ? (' · leída ' + d.cuando) : '';
-    var cache = d.desde_cache ? ' (de la copia guardada)' : '';
+    conPlanillaAbierta(true);
+    var cache = d.desde_cache ? ' · de la copia guardada' : '';
     RAIZ.innerHTML =
       '<div class="dt-barra">' +
-      '<button type="button" class="dt-volver" id="dtVolver">‹ Reportes</button>' +
+      '<button type="button" class="dt-atras" id="dtVolver" ' +
+        'title="Volver a los reportes" aria-label="Volver a los reportes">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="m15 18-6-6 6-6"/></svg></button>' +
       /* el <b> y el <span> son bloques distintos: en una sola línea el título
          quedaba pegado al origen ("DerivacionesPlanilla de Google") */
       '<div class="dt-barra-t"><b>' + esc(d.titulo || 'Reporte') + '</b>' +
-      '<span>' + esc((d.origen || '') + cuando + cache) + '</span></div>' +
+      '<span>' + esc((d.origen || '') + cache) + '</span>' +
+      /* ⚠️ La última lectura, en su propio renglón y con rótulo. Era la cola
+         de la línea gris del origen —«… (por link) · leída 11/09 09:22»— y
+         justamente es el dato que dice si lo que se está mirando es de hoy. */
+      (d.cuando ? '<span class="dt-leida"><i>Última lectura</i>' +
+                  esc(d.cuando) + '</span>' : '') +
+      tiraIdentidad(d) +
+      '</div>' +
       '<div class="dt-barra-b">' +
       '<button type="button" class="dt-volver" id="dtMedir">Qué se mide</button>' +
       /* En la planilla de derivaciones, bajar el archivo es cosa de CADA
