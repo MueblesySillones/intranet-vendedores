@@ -364,7 +364,7 @@ def _limpiar_opciones(op, antes=None):
     # el deck ya tiene resuelto para las dos variantes.
     fondos = dict(vieja.get("fondos") or {})
     fondos.update(op.get("fondos") if isinstance(op.get("fondos"), dict) else {})
-    validas_sec = set(deck.TODAS) | {"portada", "limites", "comparacion"}
+    validas_sec = set(deck.TODAS) | {"portada", "limites"}
     fondos = {str(k): v for k, v in fondos.items()
               if str(k) in validas_sec and v in ("claro", "oscuro")}
 

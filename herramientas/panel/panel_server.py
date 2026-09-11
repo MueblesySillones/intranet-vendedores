@@ -271,7 +271,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 55
+VERSION = 56
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -279,25 +279,27 @@ VERSION = 55
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.15.0"
-VERSION_LABEL = "1.15.0 - listas que entran en la hoja, y todo editable"
+VERSION_PUBLICA = "1.16.0"
+VERSION_LABEL = "1.16.0 - el reporte, prolijo para proyectar"
 VERSION_NOTES = (
-                 "Las listas largas ya no se derraman. Una lista de 19 vendedores o "
-                 "de 40 campanas SE REPARTE EN VARIAS HOJAS de 12 filas, con 1 de 3 "
-                 "en el rotulo, tanto en la pantalla como en el PDF y en el Word: "
-                 "antes las filas que sobraban directamente no estaban. La tabla del "
-                 "equipo muestra ahora VENDEDOR, DERIVACIONES, VENTAS Y CONVERSION "
-                 "juntas. El embudo dice debajo de cada numero cuanto cambio contra "
-                 "el periodo anterior -vs el mes anterior-, en verde o rojo segun si "
-                 "el cambio es bueno: en sin derivar, subir es malo. Hay una tercera "
-                 "forma de ver cualquier lista, COLUMNAS (barras paradas), y el "
-                 "ritmo de la semana sale asi de fabrica. Al editar hay dos cosas "
-                 "nuevas: cada tarjeta de conclusion tiene su propia x para sacarla "
-                 "entera -y si queda una sola, se centra-, y cada lamina elige si va "
-                 "con FONDO CLARO U OSCURO, con los colores del texto ajustados "
-                 "solos. Y ahora se puede editar TODO: la hoja de los limites, la "
-                 "del precio, la de sucursales y mes a mes tenian textos que el "
-                 "lapiz no tocaba.")
+                 "Pasada de diseno, mirando lamina por lamina con el navegador, para "
+                 "que el reporte se pueda proyectar sin que nada se vea desprolijo. "
+                 "LAS BARRAS YA NO OCUPAN TODA LA PANTALLA: de seis filas en "
+                 "adelante van en DOS COLUMNAS -mas cortas y mas juntas, de mayor a "
+                 "menor hacia abajo y despues a la derecha-, y las dos comparten la "
+                 "misma escala, asi que la de la derecha no se ve mas larga de lo "
+                 "que es. Con pocas filas la barra tampoco se estira de punta a "
+                 "punta. Los rotulos largos entran en dos renglones en vez de "
+                 "cortarse con puntos suspensivos, y el carril de atras de la barra "
+                 "se ve apenas, para que lo que salte a la vista sea el dato y no el "
+                 "hueco. El grafico de columnas tiene linea de base y ancho maximo: "
+                 "antes eran siete bloques. SE SACO LA HOJA DE COMPARACION, que "
+                 "decia lo mismo que las cuatro tarjetas del embudo. Un reporte de "
+                 "un solo mes ya no trae la hoja de mes a mes, que era una tarjeta "
+                 "negra sola diciendo AGO 475. Y dos detalles que se notan al "
+                 "proyectar: PROMO ESQUINEROS Y SILLONES se escribe Promo Esquineros "
+                 "y Sillones, y algo que existe nunca se escribe 0% -2 sobre 475 "
+                 "ahora dice menos de 1%-.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
