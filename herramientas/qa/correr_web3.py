@@ -18,6 +18,8 @@ prueba puede llegar al sitio que ven los vendedores.
 """
 import os
 import shutil
+import json
+import re
 import subprocess
 import sys
 import time
@@ -44,9 +46,26 @@ SUITES = [("w1 panel", "w1_web3_panel.py"),
 
 def armar_sandbox():
     """Copia descartable. El estado sale del estado de desarrollo si existe
-    (trae los reportes de Datos conectados); si no, arranca vacío."""
+    (trae los reportes de Datos conectados); si no, arranca vacío.
+
+    ⚠️ SE FRENA SI NO PUDO BORRAR LA COPIA VIEJA. `rmtree(ignore_errors=True)`
+    deja en silencio los archivos que no puede tocar —y no puede tocar los que
+    tiene abiertos un panel que quedó corriendo de una prueba anterior—. El
+    sandbox queda mitad viejo y mitad nuevo, y las suites empiezan a fallar por
+    cosas que no pasaron: tres pruebas del editor de módulos fallaron así,
+    varias corridas seguidas, con el código intacto. Mejor frenar y decirlo.
+    """
     if os.path.isdir(SANDBOX):
         shutil.rmtree(SANDBOX, ignore_errors=True)
+    if os.path.isdir(SANDBOX):
+        quedan = sum(len(a) for _r, _d, a in os.walk(SANDBOX))
+        raise SystemExit(
+            "No pude borrar la copia de prueba: quedan %d archivos en\n"
+            "  %s\n"
+            "Casi siempre es un panel de una prueba anterior que sigue "
+            "corriendo y tiene los archivos abiertos.\n"
+            "Cerralo (Administrador de tareas -> python.exe) y probá de nuevo."
+            % (quedan, SANDBOX))
     os.makedirs(os.path.join(SANDBOX, "herramientas"), exist_ok=True)
     os.makedirs(os.path.join(SANDBOX, "state"), exist_ok=True)
     shutil.copytree(os.path.join(PROYECTO, "intranet"),
@@ -80,18 +99,57 @@ def levantar():
                 "MYS_PANEL_WEB": "web3",
                 "MYS_PANEL_PORT": str(PUERTO),
                 "BROWSER": "none"})       # que no abra el navegador en la cara
+    # ⚠️ SI EL PUERTO YA ESTA OCUPADO, FRENAR. Si hay otro panel escuchando ahi
+    #    —un PanelMyS.exe olvidado, una prueba anterior— el que arrancamos acá
+    #    no puede tomar el puerto y muere; pero el chequeo de abajo le pega al
+    #    VIEJO, lo encuentra vivo y la corrida sigue. Todas las suites terminan
+    #    probando codigo viejo: paso, y durante varias corridas los fallos
+    #    parecian del codigo nuevo cuando el codigo nuevo ni siquiera corria.
+    try:
+        urllib.request.urlopen(BASE + "/api/config", timeout=2).read()
+        ocupado = True
+    except (urllib.error.URLError, OSError):
+        ocupado = False
+    if ocupado:
+        raise SystemExit(
+            "Ya hay un panel escuchando en %s.\n"
+            "Las pruebas le hablarian a ESE y no al codigo de ahora.\n"
+            "Cerralo (Administrador de tareas -> PanelMyS.exe o python.exe) "
+            "y proba de nuevo." % BASE)
+
     log = open(os.path.join(SALIDA, "panel-web3.log"), "w", encoding="utf-8")
     p = subprocess.Popen([sys.executable, "panel_server.py"], cwd=PANEL_SRC,
                          env=env, stdout=log, stderr=subprocess.STDOUT)
     for _ in range(40):
         try:
-            urllib.request.urlopen(BASE + "/api/config", timeout=1).read()
-            print("panel web3 arriba en %s/" % BASE)
+            crudo = urllib.request.urlopen(BASE + "/api/config", timeout=1).read()
+            cfg = json.loads(crudo.decode("utf-8"))
+            # y que sea EL NUESTRO: se compara la version que dice con la que
+            # tiene el fuente que acabamos de arrancar
+            if _version_del_fuente() and cfg.get("version") != _version_del_fuente():
+                p.terminate()
+                raise SystemExit(
+                    "El panel que contesta en %s dice VERSION %s y el fuente "
+                    "es %s: hay otro panel ocupando el puerto."
+                    % (BASE, cfg.get("version"), _version_del_fuente()))
+            print("panel web3 arriba en %s/ (VERSION %s)" % (BASE, cfg.get("version")))
             return p
-        except (urllib.error.URLError, OSError):
+        except (urllib.error.URLError, OSError, ValueError):
             time.sleep(0.5)
     p.terminate()
     raise SystemExit("el panel no levantó; mirá salida/panel-web3.log")
+
+
+def _version_del_fuente():
+    """El VERSION que declara panel_server.py, para poder comprobar que el que
+    contesta es el que acabamos de arrancar."""
+    try:
+        txt = open(os.path.join(PANEL_SRC, "panel_server.py"),
+                   encoding="utf-8").read()
+        m = re.search(r"^VERSION = (\d+)", txt, re.M)
+        return int(m.group(1)) if m else 0
+    except (OSError, ValueError):
+        return 0
 
 
 def main():

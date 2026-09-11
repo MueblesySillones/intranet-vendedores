@@ -4023,6 +4023,16 @@ $('#detMore').onclick = e => {
   $('#detMoreMenu').hidden = !$('#detMoreMenu').hidden;
 };
 document.addEventListener('click', e => { if (!e.target.closest('.ebar-more')) $('#detMoreMenu').hidden = true; });
+/* ⚠️ Y con Escape. Cerraba SOLO haciendo click afuera, y mientras seguía
+   abierto tapaba el bloque que estaba justo debajo: el primer click iba a
+   cerrar el menú en vez de entrar al texto, y lo que se escribía después no
+   llegaba a ningún lado. Todo lo demás en el panel cierra con Escape; este
+   menú era el único que no, y era el único que se comía un click. */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const m = $('#detMoreMenu');
+  if (m && !m.hidden) { m.hidden = true; e.stopPropagation(); }
+});
 // vista previa: abre el módulo en la intranet local, en otra pestaña
 if ($('#detVista')) $('#detVista').onclick = () => {
   $('#detMoreMenu').hidden = true;

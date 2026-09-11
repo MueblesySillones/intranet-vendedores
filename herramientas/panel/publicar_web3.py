@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.17.0"
-NUEVO_LABEL = "1.17.0 - Tutoriales: videos con linea de tiempo"
-NUEVAS_NOTAS = ("Novedad grande: TUTORIALES, una seccion nueva en el menu. Se suben videos de como se usa el panel y se les marca una LINEA DE TIEMPO con capitulos, como los de YouTube: se pone el video donde empieza un tema, se aprieta Marcar aca y se escribe de que habla. Despues, al mirarlo, la barra sale partida en tramos -el ancho de cada uno es lo que dura ese capitulo-, abajo esta la lista completa, y apretando un capitulo el video salta ahi. Se ve en pantalla completa con la linea de capitulos incluida. Los sube la central y llegan a las sucursales igual que todo lo demas, al traer la ultima version. El reproductor es propio: con los controles del navegador quedaban dos barras de progreso, una arriba de la otra. Ademas, en Datos: la lista de lo que mide un reporte era un parrafo de quince nombres y ahora dice cuantas laminas son y nombra las tres primeras; y en el asistente, el paso de que queres medir muestra los botones de marcar todas ARRIBA con la cuenta al lado, y avisa que la lista sigue para abajo, que antes se cortaba sin que nada lo dijera.")
+NUEVA_PUBLICA = "1.17.1"
+NUEVO_LABEL = "1.17.1 - una pregunta menos, y dos arreglos de fondo"
+NUEVAS_NOTAS = ("Se saco la pregunta -se nombra a las personas- del asistente: eran ocho pasos y ahora son siete. Se saco entera, no solo la pregunta: una opcion guardada que no se puede prender es codigo que no corre nunca y que igual hay que entender cada vez. Ninguno de los reportes que existen la tenia prendida, asi que no cambia lo que dice ninguno. Y dos arreglos que no se ven pero importan: el lector de modulos.js ahora usa el decodificador de JSON en vez de buscar el corchete de cierre a mano -con los tutoriales guardados en el mismo archivo, leer los modulos podia devolver vacio y el guardado siguiente dejaba la intranet sin modulos-, y el menu de tres puntos del editor ahora cierra con Escape: mientras quedaba abierto tapaba el bloque de abajo y se comia el primer click.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
