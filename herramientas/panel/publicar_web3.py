@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.16.0"
-NUEVO_LABEL = "1.16.0 - el reporte, prolijo para proyectar"
-NUEVAS_NOTAS = ("Pasada de diseno, mirando lamina por lamina con el navegador, para que el reporte se pueda proyectar sin que nada se vea desprolijo. LAS BARRAS YA NO OCUPAN TODA LA PANTALLA: de seis filas en adelante van en DOS COLUMNAS -mas cortas y mas juntas, de mayor a menor hacia abajo y despues a la derecha-, y las dos comparten la misma escala, asi que la de la derecha no se ve mas larga de lo que es. Con pocas filas la barra tampoco se estira de punta a punta. Los rotulos largos entran en dos renglones en vez de cortarse con puntos suspensivos, y el carril de atras de la barra se ve apenas, para que lo que salte a la vista sea el dato y no el hueco. El grafico de columnas tiene linea de base y ancho maximo: antes eran siete bloques. SE SACO LA HOJA DE COMPARACION, que decia lo mismo que las cuatro tarjetas del embudo. Un reporte de un solo mes ya no trae la hoja de mes a mes, que era una tarjeta negra sola diciendo AGO 475. Y dos detalles que se notan al proyectar: PROMO ESQUINEROS Y SILLONES se escribe Promo Esquineros y Sillones, y algo que existe nunca se escribe 0% -2 sobre 475 ahora dice menos de 1%-.")
+NUEVA_PUBLICA = "1.17.0"
+NUEVO_LABEL = "1.17.0 - Tutoriales: videos con linea de tiempo"
+NUEVAS_NOTAS = ("Novedad grande: TUTORIALES, una seccion nueva en el menu. Se suben videos de como se usa el panel y se les marca una LINEA DE TIEMPO con capitulos, como los de YouTube: se pone el video donde empieza un tema, se aprieta Marcar aca y se escribe de que habla. Despues, al mirarlo, la barra sale partida en tramos -el ancho de cada uno es lo que dura ese capitulo-, abajo esta la lista completa, y apretando un capitulo el video salta ahi. Se ve en pantalla completa con la linea de capitulos incluida. Los sube la central y llegan a las sucursales igual que todo lo demas, al traer la ultima version. El reproductor es propio: con los controles del navegador quedaban dos barras de progreso, una arriba de la otra. Ademas, en Datos: la lista de lo que mide un reporte era un parrafo de quince nombres y ahora dice cuantas laminas son y nombra las tres primeras; y en el asistente, el paso de que queres medir muestra los botones de marcar todas ARRIBA con la cuenta al lado, y avisa que la lista sigue para abajo, que antes se cortaba sin que nada lo dijera.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -42,6 +42,7 @@ FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",
+                 "tutoriales.js",
                  "iconos-ui.js", "styles.css", "rediseno.css",
                  "logo-marca.png", "logo.png", "favicon.png",
                  "avatar-marca.png"]
