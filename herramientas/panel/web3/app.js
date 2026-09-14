@@ -321,6 +321,7 @@ async function publicarCambios(_reintento, sinPreguntar) {
       } else {
         pubCardListo();
       }
+      await avisarFusion(r.fusion, !!r.nada);
       limpiarEditados();
       if (typeof actualizarBotones === 'function') actualizarBotones();
     }
@@ -337,6 +338,45 @@ async function publicarCambios(_reintento, sinPreguntar) {
     // el rotulo definitivo lo decide actualizarBotones (Publicar / Publicado ✓)
     if (typeof actualizarBotones === 'function') actualizarBotones();
   }
+}
+
+/* Antes de subir, el servidor combina esta copia con lo publicado HOY (así no
+   se pisa lo que subieron otras computadoras). Si trajo algo, lo que la
+   pantalla tiene en memoria quedó viejo: hay que recargarlo YA. Si no, el
+   próximo guardado mandaría la lista vieja y borraría justo lo que se trajo. */
+async function avisarFusion(fu, nada) {
+  if (!fu) return;
+  const traidos = fu.traidos || [], choques = fu.choques || [];
+  if (traidos.length || choques.length || fu.imagenes) {
+    try {
+      const d = await api('/api/modulos');
+      if (Array.isArray(d.modulos)) MODULOS = d.modulos;
+      if (d.ajustes) AJUSTES = d.ajustes;
+      // el editor abierto sigue apuntando a SU módulo aunque haya cambiado el orden
+      if (det && det.key && detIdx != null) {
+        const i = MODULOS.findIndex(m => m.key === det.key);
+        if (i >= 0) detIdx = i;
+      }
+      pintarModulos();
+      if (typeof renderMuro === 'function' && $('#viewMuro') && !$('#viewMuro').hidden) renderMuro();
+    } catch (e) { /* si falla, recargar la página lo arregla */ }
+  }
+  const lista = xs => xs.slice(0, 4).join(', ') + (xs.length > 4 ? ' y ' + (xs.length - 4) + ' más' : '');
+  let msg = '';
+  if (traidos.length) {
+    msg = (nada ? 'Tu copia se puso al día con lo que publicaron otras computadoras: '
+                : 'Se sumó lo que publicaron otras computadoras: ') + lista(traidos) + '.';
+  }
+  if (choques.length) {
+    msg += (msg ? ' ' : '') + 'Ojo: en ' + lista(choques) +
+      ' otra computadora también había cambiado algo, y quedó tu versión.';
+  }
+  if (!msg && fu.aviso) msg = fu.aviso;
+  if (!msg) return;
+  toast(msg, choques.length || fu.aviso ? 'err' : 'ok');
+  // más tiempo que un aviso común: es algo que conviene leer entero
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => ocultarToast($('#toast')), 12000);
 }
 
 // pide y guarda la clave de publicacion (una sola vez por computadora)
@@ -380,13 +420,12 @@ function aplicarRol(cfg) {
   $('#btnPublicar').hidden = false;
   $('#btnBandeja').hidden  = true;    // el modelo de aprobaciones ya no se usa
   $('#btnEnviar').hidden   = true;
-  /* "Traer última versión" baja una copia desde la central, y eso necesita
-     que la computadora tenga una central a la que llegar. Desde que las
-     sucursales se instalan sin Tailscale, muchas no la tienen: el botón
-     estaba a la vista y lo único que hacía era dar un error. Se muestra sólo
-     si hay una dirección de central configurada. */
-  const hayCentral = !!(cfg && (cfg.central_url || '').trim());
-  $('#btnTraer').hidden    = central || !hayCentral;
+  /* "Traer última versión" para TODA sucursal. Hasta la v60 se escondía si no
+     había dirección de central, creyendo que bajaba de la central; pero baja
+     primero por INTERNET. Resultado: las sucursales instaladas sin Tailscale
+     no tenían ninguna forma de ponerse al día, y al publicar su copia vieja
+     pisaba lo que habían subido los demás. */
+  $('#btnTraer').hidden    = central;
   // con el cerebro, el estado de git local no aplica
   const gs = $('#gitState');
   if (gs) gs.hidden = true;
@@ -438,7 +477,7 @@ async function enviarPropuesta() {
 async function traerUltima() {
   const btn = $('#btnTraer');
   const sigue = await confirmar(
-    'Se va a reemplazar tu copia local con la última versión publicada. Los cambios que no hayas enviado se pierden.',
+    'Se baja la última versión publicada. Lo que cambiaste en esta computadora y todavía no publicaste se conserva.',
     'Traer última versión', 'Traer última versión');
   if (!sigue) return;
   const bar = $('#traerBar'), txt = bar.querySelector('.traer-txt'), rel = bar.querySelector('.traer-relleno');

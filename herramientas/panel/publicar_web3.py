@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.18.0"
-NUEVO_LABEL = "1.18.0 - reporte por sucursal, podio y vinculo con metricas"
-NUEVAS_NOTAS = ("Tres cosas nuevas en los reportes. UNO: el asistente pregunta DE QUE SUCURSAL es el reporte. Si elegis una, el embudo dice cuantas derivaciones recibio ESE local, cuantas fueron a otro y cuantas vendio. Ojo con esto: las derivaciones y las ventas son de la sucursal, pero las consultas son las del periodo entero, porque una consulta que todavia no atendio nadie no es de ningun local; la lamina lo aclara. DOS: una lamina de PODIO con los cuatro que mas cerraron, para felicitar. Ordena por VENTAS y no por conversion -la conversion sobre pocos casos se mueve sola- y avisa como se lee. TRES, la grande: el boton PUBLICAR EN REPORTE DE METRICAS. Genera el documento del modulo que el equipo ya venia haciendo a mano -los KPIs con el porcentaje contra el periodo anterior, las barras por sucursal, el ranking de ventas y la tabla de vendedores- y lo deja arriba de todo en ese modulo. Y lo importante: se arma con los MISMOS BLOQUES que el editor, no con HTML escrito aparte, asi que se puede abrir y editar bloque por bloque como si se hubiera hecho a mano.")
+NUEVA_PUBLICA = "1.19.0"
+NUEVO_LABEL = "1.19.0 - publicar ya no pisa lo que subieron otras computadoras"
+NUEVAS_NOTAS = ("Publicar ya no borra lo que subieron las otras computadoras. UNO: antes de subir, el panel baja lo que esta publicado HOY y lo combina con lo tuyo. Lo hace modulo por modulo y, en la Cartelera y en el Reporte de metricas, publicacion por publicacion: si dos sucursales publican el mismo dia, quedan las dos. Si las dos cambiaron el mismo modulo, queda la version de quien publica y el panel lo avisa. Hasta ahora una computadora con la copia vieja subia su archivo entero y se llevaba puesto lo de los demas. DOS: el boton TRAER ULTIMA VERSION aparece en todas las sucursales -antes se escondia si no habia central, y las instaladas sin Tailscale no tenian forma de ponerse al dia- y ya no borra lo que cambiaste y todavia no publicaste. TRES: volver a una version vieja desde el historial no andaba, toda version salia como danada. Arreglado.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -37,8 +37,8 @@ NUEVAS_NOTAS = ("Tres cosas nuevas en los reportes. UNO: el asistente pregunta D
 NUEVO_CUERPO = ""
 
 # firma de los commits que arma este guion
-FIRMA = ("\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>\n"
-         "Claude-Session: https://claude.ai/code/session_01UztbDef1C6mxrqdPB2WieL\n")
+FIRMA = ("\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>\n"
+         "Claude-Session: https://claude.ai/code/session_0196UcFB1vXvn57qLw8rSPAa\n")
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",
@@ -191,6 +191,44 @@ if int(dec["version"]) != NUEVA_VERSION:
     morir("version.json quedo en %s y esperaba %d" % (dec["version"], NUEVA_VERSION))
 print("    ok: version.json en v%d" % NUEVA_VERSION)
 
+# ------------------------------------------------------- 6b. que el exe arranque
+# Un modulo que PyInstaller no empaqueto (fusion.py, por ejemplo, que se importa
+# al cargar) no se ve en el zip: el exe revienta recien al abrirlo, en todas las
+# computadoras a la vez. Se abre el exe compilado en una carpeta de prueba y
+# tiene que contestar con la version nueva.
+paso(6, "Abriendo el exe compilado en una carpeta de prueba")
+import shutil, socket, tempfile, time, urllib.request
+prueba = tempfile.mkdtemp(prefix="exe-release-")
+try:
+    os.makedirs(os.path.join(prueba, "p", "intranet"))
+    os.makedirs(os.path.join(prueba, "p", "herramientas"))
+    os.makedirs(os.path.join(prueba, "e"))
+    for f in ("index.html", "modulos.js", "galerias.js"):
+        shutil.copy2(os.path.join(repo_raiz, "intranet", f), os.path.join(prueba, "p", "intranet", f))
+    so = socket.socket(); so.bind(("127.0.0.1", 0)); puerto = so.getsockname()[1]; so.close()
+    env = dict(os.environ, MYS_PROYECTO=os.path.join(prueba, "p"), MYS_PANEL_STATE=os.path.join(prueba, "e"),
+               MYS_PANEL_PORT=str(puerto), BROWSER="cmd.exe /c echo")
+    exe = subprocess.Popen([os.path.join(aqui, "dist", "PanelMyS", "PanelMyS.exe")], env=env,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    cfg = None
+    for _ in range(60):
+        try:
+            with urllib.request.urlopen("http://127.0.0.1:%d/api/config" % puerto, timeout=3) as rr:
+                cfg = json.loads(rr.read().decode("utf-8"))
+            break
+        except Exception:
+            if exe.poll() is not None:
+                break
+            time.sleep(0.5)
+    exe.kill()
+    exe.wait(10)
+    if not cfg or int(cfg.get("version") or 0) != NUEVA_VERSION:
+        morir("el exe compilado no arranco o no contesta con la v%d (%s)" % (NUEVA_VERSION, cfg))
+    print("    ok: el exe abre y contesta v%d" % NUEVA_VERSION)
+finally:
+    time.sleep(0.5)
+    shutil.rmtree(prueba, ignore_errors=True)
+
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
@@ -210,6 +248,11 @@ subprocess.run(["git", "commit", "-m", msg], cwd=repo_raiz, check=True)
 subprocess.run(["git", "add", "--",
                 "herramientas/panel/panel_server.py",
                 "herramientas/panel/datos_api.py",
+                "herramientas/panel/fusion.py",
+                "herramientas/panel/test_fusion.py",
+                "herramientas/panel/armar_instalador.py",
+                "herramientas/panel/SucursalAuto.iss",
+                "herramientas/panel/PanelMyS.iss",
                 "herramientas/panel/PanelMyS.spec",
                 "herramientas/panel/web3",
                 "herramientas/panel/publicar_web3.py",
