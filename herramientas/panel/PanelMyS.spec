@@ -23,6 +23,7 @@ a = Analysis(
     # seccion Datos aparece vacia sin decir por que.
     hiddenimports=[
         'receptor_server',
+        'fusion',
         'datos_api',
         'datos', 'datos.analizador', 'datos.fuentes', 'datos.lecturas',
         'datos.reporte', 'datos.revisor',

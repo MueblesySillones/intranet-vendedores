@@ -5,8 +5,8 @@
 ;   2) deja la carpeta del proyecto en Documentos
 ;   3) instala el panel limpio, como COLABORADOR, con la clave de publicacion
 ;
-; Compilar:
-;   ISCC.exe SucursalAuto.iss
+; Compilar:  python armar_instalador.py   (arma los DOS instaladores al dia)
+;   a mano: ISCC.exe /DAppVer=1.18.0 SucursalAuto.iss
 ;
 ; TAILSCALE: ya NO se instala. Se usaba para que la sucursal llegara a la
 ; central, pero desde que la publicacion va al cerebro de Cloudflare y las
@@ -40,6 +40,11 @@
 #ifndef PubKey
   #define PubKey ""
 #endif
+; Version: la pone armar_instalador.py con /DAppVer=<VERSION_PUBLICA del panel>.
+; Antes estaba escrita a mano y quedaba vieja (decia 1.17.0 con el panel en 1.18.0).
+#ifndef AppVer
+  #define AppVer "0.0.0"
+#endif
 #define AppName   "Panel Sucursal - Muebles y Sillones"
 #define AppShort  "PanelMyS"
 #define AppExe    "PanelMyS.exe"
@@ -50,7 +55,7 @@
 [Setup]
 AppId={{C9F1D3B2-77A4-4E10-9C55-2B7E6D0A9F31}
 AppName={#AppName}
-AppVersion=1.17.0
+AppVersion={#AppVer}
 AppPublisher=Muebles y Sillones
 DefaultDirName={localappdata}\{#AppShort}
 DisableProgramGroupPage=yes

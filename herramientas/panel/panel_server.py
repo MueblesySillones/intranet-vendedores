@@ -39,6 +39,10 @@ from urllib.parse import urlparse, parse_qs, unquote, quote
 
 from PIL import Image, ImageOps
 
+# La fusion vive aparte para poder probarla sola (test_fusion.py). Sin ella el
+# panel no puede publicar sin riesgo de pisar a otros: no va en un try.
+import fusion
+
 # --- rutas (funciona tanto como script suelto como empaquetado en .exe) ---
 # Cuando corre dentro de un .exe de PyInstaller:
 #   - sys.frozen == True
@@ -272,7 +276,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 60
+VERSION = 61
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -280,26 +284,23 @@ VERSION = 60
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.18.0"
-VERSION_LABEL = "1.18.0 - reporte por sucursal, podio y vinculo con metricas"
+VERSION_PUBLICA = "1.19.0"
+VERSION_LABEL = "1.19.0 - publicar ya no pisa lo que subieron otras computadoras"
 VERSION_NOTES = (
-                 "Tres cosas nuevas en los reportes. UNO: el asistente pregunta DE "
-                 "QUE SUCURSAL es el reporte. Si elegis una, el embudo dice cuantas "
-                 "derivaciones recibio ESE local, cuantas fueron a otro y cuantas "
-                 "vendio. Ojo con esto: las derivaciones y las ventas son de la "
-                 "sucursal, pero las consultas son las del periodo entero, porque "
-                 "una consulta que todavia no atendio nadie no es de ningun local; "
-                 "la lamina lo aclara. DOS: una lamina de PODIO con los cuatro que "
-                 "mas cerraron, para felicitar. Ordena por VENTAS y no por "
-                 "conversion -la conversion sobre pocos casos se mueve sola- y avisa "
-                 "como se lee. TRES, la grande: el boton PUBLICAR EN REPORTE DE "
-                 "METRICAS. Genera el documento del modulo que el equipo ya venia "
-                 "haciendo a mano -los KPIs con el porcentaje contra el periodo "
-                 "anterior, las barras por sucursal, el ranking de ventas y la tabla "
-                 "de vendedores- y lo deja arriba de todo en ese modulo. Y lo "
-                 "importante: se arma con los MISMOS BLOQUES que el editor, no con "
-                 "HTML escrito aparte, asi que se puede abrir y editar bloque por "
-                 "bloque como si se hubiera hecho a mano.")
+                 "Publicar ya no borra lo que subieron las otras computadoras. UNO: "
+                 "antes de subir, el panel baja lo que esta publicado HOY y lo "
+                 "combina con lo tuyo. Lo hace modulo por modulo y, en la Cartelera "
+                 "y en el Reporte de metricas, publicacion por publicacion: si dos "
+                 "sucursales publican el mismo dia, quedan las dos. Si las dos "
+                 "cambiaron el mismo modulo, queda la version de quien publica y el "
+                 "panel lo avisa. Hasta ahora una computadora con la copia vieja "
+                 "subia su archivo entero y se llevaba puesto lo de los demas. DOS: "
+                 "el boton TRAER ULTIMA VERSION aparece en todas las sucursales "
+                 "-antes se escondia si no habia central, y las instaladas sin "
+                 "Tailscale no tenian forma de ponerse al dia- y ya no borra lo que "
+                 "cambiaste y todavia no publicaste. TRES: volver a una version "
+                 "vieja desde el historial no andaba, toda version salia como "
+                 "danada. Arreglado.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -628,9 +629,7 @@ def restaurar_version(sha):
     Publicar. Guarda antes una copia de lo que habia."""
     if not re.match(r"^[0-9a-f]{7,40}$", (sha or "").strip()):
         return {"ok": False, "error": "version invalida"}
-    r = _repo_del_cerebro()
-    url = "https://raw.githubusercontent.com/%s/%s/%s/intranet/modulos.js" % (
-        r["owner"], r["repo"], sha)
+    url = _publicado_url(sha, "modulos.js")
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "PanelMyS/1.0"})
         with urllib.request.urlopen(req, timeout=30) as resp:
@@ -638,13 +637,13 @@ def restaurar_version(sha):
     except Exception as e:  # noqa
         return {"ok": False, "error": "No pude bajar esa version: %s" % e}
 
-    # que sea de verdad un modulos.js antes de pisar nada
-    try:
-        i, j = crudo.index("["), crudo.rindex("]") + 1
-        mods = json.loads(crudo[i:j])
-        if not isinstance(mods, list) or not mods:
-            raise ValueError("vacio")
-    except Exception:  # noqa
+    # que sea de verdad un modulos.js antes de pisar nada.
+    # ⚠️ Antes se leia con rindex("]"): desde que TUTORIALES va al final del
+    # archivo ese corchete es el de los tutoriales, el JSON no parseaba y TODA
+    # version se rechazaba como "dañada". Mismo bug que describe _lista_de.
+    p = fusion.partes(crudo)
+    mods = p["modulos"] if p else None
+    if not mods:
         return {"ok": False, "error": "Esa version no se pudo leer (archivo dañado)."}
 
     destino = os.path.join(INTRANET, "modulos.js")
@@ -1052,6 +1051,302 @@ def regenerar_galerias():
 
 
 # =====================================================================
+#  SINCRONIZAR CON LO PUBLICADO antes de publicar (14-sep-2026, v61)
+# =====================================================================
+#  Publicar sube modulos.js ENTERO y el cerebro no fusiona: una computadora con
+#  la copia vieja borraba lo que otras publicaron despues. Ahora, antes de
+#  subir, se baja lo publicado HOY y se combina con lo de esta computadora
+#  (ver fusion.py). Para saber que cambio cada uno hace falta la "base": lo
+#  publicado de lo que partio esta copia. Se guarda en el estado despues de
+#  cada publicacion y de cada "Traer ultima version"; si no esta (una PC que
+#  nunca la anoto) se adivina buscando en el historial la version mas cercana.
+#
+#  Lo publicado se lee de GitHub por COMMIT, no del sitio: Vercel tarda ~30 s
+#  en mostrar lo nuevo, y en esa ventana otra publicacion se veria vieja.
+BASE_PUBLICADA = os.path.join(STATE_DIR, "base_publicada") if STATE_DIR else ""
+
+
+def _repo_urls():
+    r = _repo_del_cerebro()
+    api = (CONFIG.get("repo_api") or
+           "https://api.github.com/repos/%s/%s" % (r["owner"], r["repo"])).rstrip("/")
+    raw = (CONFIG.get("repo_raw") or
+           "https://raw.githubusercontent.com/%s/%s" % (r["owner"], r["repo"])).rstrip("/")
+    return api, raw, r["rama"]
+
+
+def _bajar(url, timeout=40, accept=None):
+    h = {"User-Agent": "PanelMyS/1.0"}
+    if accept:
+        h["Accept"] = accept
+    with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=timeout) as r:
+        return r.read()
+
+
+def _ultimo_commit():
+    api, _raw, rama = _repo_urls()
+    sha = _bajar(api + "/commits/" + quote(rama), 20,
+                 "application/vnd.github.sha").decode("ascii", "replace").strip()
+    if not re.match(r"^[0-9a-f]{40}$", sha):
+        raise ValueError("GitHub no devolvio un commit valido")
+    return sha
+
+
+def _publicado_url(sha, rel):
+    _api, raw, _rama = _repo_urls()
+    return "%s/%s/intranet/%s" % (raw, sha, quote(rel))
+
+
+def _publicado_texto(sha, rel, obligatorio=True):
+    try:
+        return _bajar(_publicado_url(sha, rel)).decode("utf-8")
+    except urllib.error.HTTPError as e:
+        if e.code == 404 and not obligatorio:
+            return None
+        raise
+
+
+def _lf(txt):
+    return (txt or "").replace("\r\n", "\n").replace("\r", "\n")
+
+
+def _leer_base():
+    if not BASE_PUBLICADA:
+        return None, None
+    out = []
+    for n in ("modulos.js", "galerias.js"):
+        try:
+            with open(os.path.join(BASE_PUBLICADA, n), encoding="utf-8") as fh:
+                out.append(fh.read())
+        except OSError:
+            out.append(None)
+    return out[0], out[1]
+
+
+def _guardar_base(mod_txt, gal_txt):
+    """Anota lo publicado de lo que parte esta copia. Solo si se lee bien:
+    una base rota es peor que ninguna (sin base se hace union y no se pierde)."""
+    if not BASE_PUBLICADA or fusion.partes(mod_txt) is None:
+        return
+    try:
+        os.makedirs(BASE_PUBLICADA, exist_ok=True)
+        with open(os.path.join(BASE_PUBLICADA, "modulos.js"), "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(_lf(mod_txt))
+        if gal_txt is not None:
+            with open(os.path.join(BASE_PUBLICADA, "galerias.js"), "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(_lf(gal_txt))
+    except OSError:
+        pass
+
+
+def _adivinar_base(local):
+    """La version publicada mas cercana a la copia local (ver fusion.distancia).
+    En un empate gana la MAS VIEJA: equivocarse para ese lado resucita algo
+    que otro borro; para el otro, borraria algo que otro publico."""
+    api, _raw, rama = _repo_urls()
+    commits = json.loads(_bajar(api + "/commits?path=intranet/modulos.js&sha=%s&per_page=15"
+                                % quote(rama), 25, "application/vnd.github+json").decode("utf-8"))
+    mejor = None
+    for c in commits:                      # de la mas nueva a la mas vieja
+        sha = (c or {}).get("sha") or ""
+        if not re.match(r"^[0-9a-f]{40}$", sha):
+            continue
+        try:
+            txt = _publicado_texto(sha, "modulos.js")
+        except Exception:  # noqa
+            continue
+        p = fusion.partes(txt)
+        if p is None:
+            continue
+        d = fusion.distancia(p, local)
+        if mejor is None or d <= mejor[0]:
+            mejor = (d, sha, txt)
+        if d == 0:
+            break
+    if mejor is None:
+        return None
+    return mejor[2], _publicado_texto(mejor[1], "galerias.js", obligatorio=False)
+
+
+def _base_para(local):
+    """(partes_base, galerias_base_txt). Sin base -> (None, None) = union."""
+    base_txt, base_gal = _leer_base()
+    base = fusion.partes(base_txt) if base_txt else None
+    if base is None:
+        try:
+            g = _adivinar_base(local)
+        except Exception:  # noqa: sin historial se hace union, que no pierde nada
+            g = None
+        if g:
+            base, base_gal = fusion.partes(g[0]), g[1]
+    return base, base_gal
+
+
+def _respaldar_modulos(motivo):
+    """Copia de modulos.js antes de reescribirlo por una fusion (quedan las 10 ultimas)."""
+    if not STATE_DIR or not os.path.isfile(MODULOS_JS):
+        return
+    try:
+        d = os.path.join(STATE_DIR, "respaldos_modulos")
+        os.makedirs(d, exist_ok=True)
+        marca = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        shutil.copy2(MODULOS_JS, os.path.join(d, "modulos.js.antes-de-%s-%s" % (motivo, marca)))
+        for n in sorted(os.listdir(d))[:-10]:
+            os.remove(os.path.join(d, n))
+    except OSError:
+        pass
+
+
+def _combinar_modulos(local_txt, remoto_txt, base, motivo):
+    """Escribe en disco la fusion de la copia local con lo publicado.
+    Devuelve el informe ({traidos, choques})."""
+    local = fusion.partes(local_txt)
+    remota = fusion.partes(remoto_txt)
+    vacio = {"traidos": [], "choques": []}
+    if local is None or remota is None or fusion.iguales(local, remota):
+        return vacio
+    if base is not None and fusion.iguales(base, remota):
+        return vacio                        # nadie publico nada desde la base
+    fus, inf = fusion.fusionar(base, local, remota)
+    if fusion.iguales(fus, local):
+        return inf
+    # freno: lo publicado tiene modulos y la fusion dio cero -> algo se leyo mal
+    if remota["modulos"] and not fus["modulos"]:
+        raise ValueError("la combinacion dio una intranet sin modulos; no se toca nada")
+    _respaldar_modulos(motivo)
+    escribir_modulos(fus["modulos"], fus["ajustes"], fus["tutoriales"])
+    return inf
+
+
+def _anotar_en_manifiesto(rels_y_bytes):
+    """Archivos que ya estan publicados (se bajaron de lo publicado): se anotan
+    como tales para no volver a subirlos."""
+    if not PUBLISH_MANIFEST or not rels_y_bytes:
+        return
+    try:
+        man = json.load(open(PUBLISH_MANIFEST, encoding="utf-8")) if os.path.isfile(PUBLISH_MANIFEST) else {}
+    except (ValueError, OSError):
+        man = {}
+    for rel, b in rels_y_bytes:
+        man[rel] = hashlib.sha1(b).hexdigest()
+    try:
+        os.makedirs(STATE_DIR, exist_ok=True)
+        with open(PUBLISH_MANIFEST, "w", encoding="utf-8") as fh:
+            json.dump(man, fh)
+    except OSError:
+        pass
+
+
+def _ruta_intranet_segura(rel):
+    rel = unquote(rel).replace("\\", "/").lstrip("/")
+    if ".." in rel.split("/") or ":" in rel or not _es_gestionado_rel(rel):
+        return None
+    return rel
+
+
+def _imagenes_de_galerias_locales():
+    out = set()
+    for sec in SECCIONES:
+        d = os.path.join(ASSETS, sec)
+        if os.path.isdir(d):
+            for f in os.listdir(d):
+                if f.lower().endswith(EXTS) and os.path.isfile(os.path.join(d, f)):
+                    out.add("assets/%s/%s" % (sec, f))
+    return out
+
+
+def _sincronizar_imagenes(sha, base_gal_txt, remoto_gal_txt):
+    """Las imagenes de las galerias que otra computadora agrego o saco, y las
+    de los modulos que esta copia no tiene. galerias.js se REGENERA con lo que
+    hay en disco al publicar: sin esto, una imagen subida por otro no estaria
+    aca y la galeria publicada la perderia."""
+    bajadas, borradas = [], 0
+    base_set = fusion.galerias(base_gal_txt) if base_gal_txt else None
+    remoto_set = fusion.galerias(remoto_gal_txt) if remoto_gal_txt else None
+    if base_set is not None and remoto_set is not None:
+        locales = _imagenes_de_galerias_locales()
+        for rel in sorted((remoto_set - base_set) - locales):
+            seg = _ruta_intranet_segura(rel)
+            if not seg:
+                continue
+            try:
+                b = _bajar(_publicado_url(sha, seg), 60)
+            except Exception:  # noqa
+                continue
+            dest = os.path.join(INTRANET, *seg.split("/"))
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            with open(dest, "wb") as fh:
+                fh.write(b)
+            bajadas.append((seg, b))
+        for rel in sorted((base_set - remoto_set) & locales):
+            try:
+                os.remove(os.path.join(INTRANET, *rel.split("/")))
+                borradas += 1
+            except OSError:
+                pass
+    # imagenes que usan los modulos (las de la cartelera, por ejemplo) y aca faltan
+    try:
+        txt = open(MODULOS_JS, encoding="utf-8").read()
+    except OSError:
+        txt = ""
+    for rel in sorted(set(re.findall(r"assets/_modulos/[^\"'\s<>)\\]+", txt)))[:300]:
+        seg = _ruta_intranet_segura(rel)
+        if not seg or not seg.lower().endswith(EXTS):
+            continue
+        dest = os.path.join(INTRANET, *seg.split("/"))
+        if os.path.isfile(dest):
+            continue
+        try:
+            b = _bajar(_publicado_url(sha, seg), 60)
+        except Exception:  # noqa: si no esta publicada es de esta PC y todavia no subio
+            continue
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        with open(dest, "wb") as fh:
+            fh.write(b)
+        bajadas.append((seg, b))
+    _anotar_en_manifiesto(bajadas)
+    return len(bajadas), borradas
+
+
+def sincronizar_con_publicado():
+    """Combina la copia local con lo publicado HOY. Devuelve un informe:
+    traidos / choques (nombres para mostrar), imagenes bajadas, y los textos
+    publicados de modulos.js y galerias.js para no volver a subir lo identico.
+    Si no se puede ver lo publicado, `aviso` lo dice y no se toca nada."""
+    info = {"traidos": [], "choques": [], "imagenes": 0, "aviso": "",
+            "remoto": {}, "sha": ""}
+    if not MODULOS_JS or not os.path.isfile(MODULOS_JS):
+        return info
+    try:
+        local_txt = open(MODULOS_JS, encoding="utf-8").read()
+    except OSError as e:
+        info["aviso"] = "No pude leer los modulos de esta computadora: %s" % e
+        return info
+    local = fusion.partes(local_txt)
+    if local is None:
+        info["aviso"] = "Los modulos de esta computadora no se pudieron leer."
+        return info
+    try:
+        sha = _ultimo_commit()
+        remoto_txt = _publicado_texto(sha, "modulos.js")
+        remoto_gal = _publicado_texto(sha, "galerias.js", obligatorio=False)
+    except Exception as e:  # noqa
+        info["aviso"] = ("No pude ver lo que esta publicado (%s). Se publica sin "
+                         "combinar con los cambios de otras computadoras." % e)
+        return info
+    if fusion.partes(remoto_txt) is None:
+        info["aviso"] = "Lo publicado no se pudo leer; se publica sin combinar."
+        return info
+    info["sha"] = sha
+    info["remoto"] = {"modulos.js": remoto_txt, "galerias.js": remoto_gal}
+    base, base_gal = _base_para(local)
+    inf = _combinar_modulos(local_txt, remoto_txt, base, "publicar")
+    info["traidos"], info["choques"] = inf["traidos"], inf["choques"]
+    info["imagenes"], _borradas = _sincronizar_imagenes(sha, base_gal, remoto_gal)
+    return info
+
+
+# =====================================================================
 #  Publicacion DIRECTA via el cerebro Cloudflare (central Y colaboradores)
 # =====================================================================
 def guardar_publish_token(token):
@@ -1087,10 +1382,26 @@ def publicar_cerebro(mensaje=""):
         return {"ok": False, "falta_token": True,
                 "log": "Falta tu clave de publicacion. Cargala una vez y volve a publicar."}
     log = []
+    # 0) combinar con lo publicado HOY, asi no se pisa lo que subieron otros
+    try:
+        sinc = sincronizar_con_publicado()
+    except Exception as e:  # noqa
+        return {"ok": False, "log": "No pude combinar con lo publicado, asi que no "
+                                    "publique nada (para no pisar a nadie): %s" % e}
+    if sinc["aviso"]:
+        log.append(sinc["aviso"])
+    if sinc["traidos"]:
+        log.append("Se sumo lo que publicaron otras computadoras: " + ", ".join(sinc["traidos"]))
+    if sinc["choques"]:
+        log.append("En estos se publico la version de esta computadora, que reemplaza "
+                   "la de otra: " + ", ".join(sinc["choques"]))
+    fusion_info = {"traidos": sinc["traidos"], "choques": sinc["choques"],
+                   "imagenes": sinc["imagenes"], "aviso": sinc["aviso"]}
+
     rc, out, err = regenerar_galerias()
     log.append(out or err)
     if rc != 0:
-        return {"ok": False, "log": "\n".join(log)}
+        return {"ok": False, "log": "\n".join(log), "fusion": fusion_info}
 
     rels = rel_gestionados(INTRANET)
     if os.path.isfile(GALERIAS_JS):
@@ -1114,9 +1425,33 @@ def publicar_cerebro(mensaje=""):
         actual[rel] = hashlib.sha1(b).hexdigest()
         contenidos[rel] = b
 
+    # lo que quedo IDENTICO a lo publicado no se sube: sin esto, una copia que
+    # solo se puso al dia mandaba un commit vacio (y un deploy de Vercel)
+    # Se compara el CONTENIDO y no el texto: el panel escribe modulos.js con
+    # sus comentarios y su sangria, y lo publicado puede venir con otra forma.
+    remoto = sinc.get("remoto") or {}
+    if "modulos.js" in contenidos and remoto.get("modulos.js") and fusion.iguales(
+            fusion.partes(contenidos["modulos.js"].decode("utf-8", "replace")),
+            fusion.partes(remoto["modulos.js"])):
+        manifest["modulos.js"] = actual["modulos.js"]
+    if "galerias.js" in contenidos and remoto.get("galerias.js") is not None:
+        g_loc = fusion.galerias(contenidos["galerias.js"].decode("utf-8", "replace"))
+        if g_loc is not None and g_loc == fusion.galerias(remoto["galerias.js"]):
+            manifest["galerias.js"] = actual["galerias.js"]
+
     cambiados = [rel for rel in actual if manifest.get(rel) != actual[rel]]
     if not cambiados:
-        return {"ok": True, "nada": True, "log": "No hay cambios para publicar."}
+        # al dia con lo publicado: esa es la base de ahora en mas
+        if remoto.get("modulos.js"):
+            _guardar_base(remoto["modulos.js"], remoto.get("galerias.js"))
+            try:
+                os.makedirs(STATE_DIR, exist_ok=True)
+                with open(PUBLISH_MANIFEST, "w", encoding="utf-8") as fh:
+                    json.dump(manifest, fh)
+            except OSError:
+                pass
+        return {"ok": True, "nada": True, "fusion": fusion_info,
+                "log": "\n".join(log + ["No hay cambios para publicar."])}
 
     archivos = []
     for rel in cambiados:
@@ -1197,9 +1532,15 @@ def publicar_cerebro(mensaje=""):
                 json.dump(actual, fh)
     except OSError:
         pass
+    # lo que se acaba de publicar es la base de la proxima combinacion
+    if "modulos.js" in contenidos:
+        _guardar_base(contenidos["modulos.js"].decode("utf-8", "replace"),
+                      contenidos["galerias.js"].decode("utf-8", "replace")
+                      if "galerias.js" in contenidos else None)
     log.append("Publicado: %d archivo(s) en %d commit(s). Vercel actualiza en ~30s." %
                (len(archivos), len(commits)))
-    return {"ok": True, "log": "\n".join(log), "commit": commits[-1] if commits else None}
+    return {"ok": True, "log": "\n".join(log), "fusion": fusion_info,
+            "commit": commits[-1] if commits else None}
 
 
 # =====================================================================
@@ -1371,6 +1712,105 @@ def _volcar_zip_en_intranet(data, mapear=None):
         return len(pares)
 
 
+def _traer_conservando_lo_local(data, mapear):
+    """"Traer ultima version" SIN perder lo que esta computadora no publico.
+
+    Antes el volcado era un espejo a secas: la copia local quedaba igual a lo
+    publicado y se perdia todo cambio sin publicar (modulos editados,
+    publicaciones de la cartelera, imagenes subidas). Ahora:
+      1) antes de volcar se guardan el modulos.js local y los archivos
+         gestionados que lo publicado NO tiene (son de esta PC y no subieron)
+      2) se vuelca el paquete como siempre
+      3) se combina el modulos.js guardado con el que llego (fusion.py) y se
+         reponen esos archivos
+      4) la base pasa a ser lo que llego: lo local sigue pendiente de publicar
+    Tambien se sacan de las galerias las imagenes que lo publicado ya no lista
+    (el cerebro no borra archivos del repo; sin esto volvian a aparecer).
+    """
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        nombres = set()
+        for n in z.namelist():
+            rel = mapear(n.replace("\\", "/")) if mapear else n.replace("\\", "/")
+            if rel:
+                nombres.add(rel.casefold())
+    try:
+        local_txt = open(MODULOS_JS, encoding="utf-8").read() if os.path.isfile(MODULOS_JS) else None
+    except OSError:
+        local_txt = None
+    guarda = os.path.join(STATE_DIR or INTRANET, "traer_locales")
+    shutil.rmtree(guarda, ignore_errors=True)
+    propios = []
+    for rel in rel_gestionados(INTRANET):
+        if rel != "modulos.js" and rel.casefold() not in nombres:
+            dest = os.path.join(guarda, *rel.split("/"))
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copy2(os.path.join(INTRANET, *rel.split("/")), dest)
+            propios.append(rel)
+
+    def reponer_propios():
+        for rel in propios:
+            dest = os.path.join(INTRANET, *rel.split("/"))
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copy2(os.path.join(guarda, *rel.split("/")), dest)
+
+    try:
+        _volcar_zip_en_intranet(data, mapear)
+    except Exception:
+        # un volcado a medias no se lleva lo que no estaba publicado
+        if local_txt is not None:
+            with open(MODULOS_JS, "w", encoding="utf-8") as fh:
+                fh.write(local_txt)
+        reponer_propios()
+        raise
+
+    info = {"traidos": [], "choques": [], "conservados": len(propios)}
+    try:
+        llego_txt = open(MODULOS_JS, encoding="utf-8").read()
+    except OSError:
+        llego_txt = None
+    try:
+        llego_gal = open(GALERIAS_JS, encoding="utf-8").read()
+    except OSError:
+        llego_gal = None
+    # imagenes huerfanas: estan en el repo pero la galeria publicada no las lista
+    listadas = fusion.galerias(llego_gal) if llego_gal else None
+    if listadas is not None:
+        propios_set = set(propios)
+        for rel in _imagenes_de_galerias_locales() - listadas - propios_set:
+            try:
+                os.remove(os.path.join(INTRANET, *rel.split("/")))
+            except OSError:
+                pass
+    reponer_propios()
+    shutil.rmtree(guarda, ignore_errors=True)
+
+    if llego_txt:
+        local = fusion.partes(local_txt) if local_txt else None
+        if local is not None:
+            base, _bg = _base_para(local)
+            # ⚠️ _combinar_modulos razona sobre el disco = copia local ("si nadie
+            # publico nada, no toco nada"). Pero el volcado ya puso lo que llego:
+            # hay que volver a poner la copia local ANTES, o ese "no toco nada"
+            # dejaba lo publicado y se perdian los cambios sin publicar.
+            with open(MODULOS_JS, "w", encoding="utf-8") as fh:
+                fh.write(local_txt)
+            inf = _combinar_modulos(local_txt, llego_txt, base, "traer")
+            info["traidos"], info["choques"] = inf["traidos"], inf["choques"]
+        _guardar_base(llego_txt, llego_gal)
+    # lo que llego ya esta publicado: no hay que volver a subirlo
+    try:
+        man = {}
+        for rel in rel_gestionados(INTRANET):
+            if rel == "modulos.js" or rel in propios:
+                continue
+            with open(os.path.join(INTRANET, *rel.split("/")), "rb") as fh:
+                man[rel] = fh.read()
+        _anotar_en_manifiesto(list(man.items()))
+    except OSError:
+        pass
+    return info
+
+
 def _mapear_repo(rel):
     """En el zip del repo todo cuelga de '<carpeta>/' y la intranet es la
     subcarpeta intranet/. Devuelve la ruta relativa a intranet/ o None."""
@@ -1395,9 +1835,9 @@ def traer_de_central(jid=None):
             data = _bajar_con_progreso(REPO_ZIP, 120, jid)
             if jid:
                 _job_set(jid, pct=92, msg="Instalando la nueva versión…")
-            _volcar_zip_en_intranet(data, _mapear_repo)
+            info = _traer_conservando_lo_local(data, _mapear_repo)
             _guardar_sello(_sello_publicado())   # quedamos al dia
-            return {"ok": True, "fuente": "internet"}
+            return {"ok": True, "fuente": "internet", "fusion": info}
         except Exception as e:  # noqa
             fallas.append("internet: %s" % e)
     if not CENTRAL_URL:

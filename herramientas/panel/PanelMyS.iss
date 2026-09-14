@@ -1,10 +1,13 @@
 ﻿; Instalador del Panel de administracion - Muebles y Sillones
-; Compilar:  "%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe" PanelMyS.iss
+; Compilar:  python armar_instalador.py   (arma los DOS instaladores al dia)
 ; Genera:    instalador\Instalar Panel MyS.exe  (un solo archivo, sin admin)
 
 #define AppName    "Panel Muebles y Sillones"
 #define AppShort   "PanelMyS"
-#define AppVer     "1.25.1"
+; Version: la pone armar_instalador.py con /DAppVer=<VERSION_PUBLICA del panel>.
+#ifndef AppVer
+  #define AppVer   "0.0.0"
+#endif
 ; Clave de publicacion del equipo. VIVE EN UN ARCHIVO APARTE (clave-equipo.iss)
 ; que esta gitignoreado: NO viaja al repositorio. Si el archivo no esta, el
 ; instalador compila igual pero SIN la clave baked (habria que pegarla a mano).
@@ -60,6 +63,8 @@ Type: files; Name: "{app}\PanelMyS.exe"
 Type: filesandordirs; Name: "{localappdata}\PanelMyS_update"
 Type: filesandordirs; Name: "{localappdata}\PanelMyS_old"
 Type: filesandordirs; Name: "{localappdata}\PanelMyS_failed"
+; los PanelMyS_old_<numero> que deja el updater (v38+) cuando el anterior quedo tomado
+Type: filesandordirs; Name: "{localappdata}\PanelMyS_old_*"
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{sys}\wscript.exe"; Parameters: """{localappdata}\PanelMyS_run\PanelMyS_run.vbs"""; IconFilename: "{localappdata}\PanelMyS_run\panel.ico"; WorkingDir: "{localappdata}\PanelMyS_run"
