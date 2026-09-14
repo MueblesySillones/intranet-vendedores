@@ -1,8 +1,8 @@
 {
-  "version": 60,
-  "label": "1.18.0 - reporte por sucursal, podio y vinculo con metricas",
-  "notes": "Tres cosas nuevas en los reportes. UNO: el asistente pregunta DE QUE SUCURSAL es el reporte. Si elegis una, el embudo dice cuantas derivaciones recibio ESE local, cuantas fueron a otro y cuantas vendio. Ojo con esto: las derivaciones y las ventas son de la sucursal, pero las consultas son las del periodo entero, porque una consulta que todavia no atendio nadie no es de ningun local; la lamina lo aclara. DOS: una lamina de PODIO con los cuatro que mas cerraron, para felicitar. Ordena por VENTAS y no por conversion -la conversion sobre pocos casos se mueve sola- y avisa como se lee. TRES, la grande: el boton PUBLICAR EN REPORTE DE METRICAS. Genera el documento del modulo que el equipo ya venia haciendo a mano -los KPIs con el porcentaje contra el periodo anterior, las barras por sucursal, el ranking de ventas y la tabla de vendedores- y lo deja arriba de todo en ese modulo. Y lo importante: se arma con los MISMOS BLOQUES que el editor, no con HTML escrito aparte, asi que se puede abrir y editar bloque por bloque como si se hubiera hecho a mano.",
-  "sha256": "9c9e29b68d710fdb42ae797a4350c0ccb12bd0ae24346245b6145cb80c6bff8f",
-  "size": 20159376,
-  "url": "panel/PanelMyS-v60.zip"
+  "version": 61,
+  "label": "1.19.0 - publicar ya no pisa lo que subieron otras computadoras",
+  "notes": "Publicar ya no borra lo que subieron las otras computadoras. UNO: antes de subir, el panel baja lo que esta publicado HOY y lo combina con lo tuyo. Lo hace modulo por modulo y, en la Cartelera y en el Reporte de metricas, publicacion por publicacion: si dos sucursales publican el mismo dia, quedan las dos. Si las dos cambiaron el mismo modulo, queda la version de quien publica y el panel lo avisa. Hasta ahora una computadora con la copia vieja subia su archivo entero y se llevaba puesto lo de los demas. DOS: el boton TRAER ULTIMA VERSION aparece en todas las sucursales -antes se escondia si no habia central, y las instaladas sin Tailscale no tenian forma de ponerse al dia- y ya no borra lo que cambiaste y todavia no publicaste. TRES: volver a una version vieja desde el historial no andaba, toda version salia como danada. Arreglado.",
+  "sha256": "158e0c71398215cc6ba514f9630c96015cae94b62a0e72db37e1ed3725041fdb",
+  "size": 20192738,
+  "url": "panel/PanelMyS-v61.zip"
 }
