@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmu1o6arfy95m",
+          "titulo": "PRUEBA",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-14",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "HOLA 123 PROBANDO"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">HOLA 123 PROBANDO</p></div>"
+        },
+        {
           "id": "dmtt0sl6nl2y7",
           "titulo": "📊 Reporte de métricas -  Agosto",
           "autor": "Marketing",
@@ -4089,3 +4109,7 @@ window.MODULES = [
     "hidden": true
   }
 ];
+/* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */
+window.AJUSTES = {"novedad_horas": 24};
+/* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
+window.TUTORIALES = [];
