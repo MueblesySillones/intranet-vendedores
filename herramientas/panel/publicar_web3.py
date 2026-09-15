@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.19.0"
-NUEVO_LABEL = "1.19.0 - publicar ya no pisa lo que subieron otras computadoras"
-NUEVAS_NOTAS = ("Publicar ya no borra lo que subieron las otras computadoras. UNO: antes de subir, el panel baja lo que esta publicado HOY y lo combina con lo tuyo. Lo hace modulo por modulo y, en la Cartelera y en el Reporte de metricas, publicacion por publicacion: si dos sucursales publican el mismo dia, quedan las dos. Si las dos cambiaron el mismo modulo, queda la version de quien publica y el panel lo avisa. Hasta ahora una computadora con la copia vieja subia su archivo entero y se llevaba puesto lo de los demas. DOS: el boton TRAER ULTIMA VERSION aparece en todas las sucursales -antes se escondia si no habia central, y las instaladas sin Tailscale no tenian forma de ponerse al dia- y ya no borra lo que cambiaste y todavia no publicaste. TRES: volver a una version vieja desde el historial no andaba, toda version salia como danada. Arreglado.")
+NUEVA_PUBLICA = "1.20.0"
+NUEVO_LABEL = "1.20.0 - eliminar desde el editor y la clave siempre cargada"
+NUEVAS_NOTAS = ("Dos cosas. UNO: al EDITAR una publicacion aparece abajo el boton ELIMINAR PUBLICACION. Pregunta antes, la manda a la papelera -se puede recuperar durante unos dias- y lo sube al sitio en el momento, asi los vendedores dejan de verla sin tener que apretar otro boton. DOS: la clave de publicacion queda guardada tambien fuera de la carpeta del programa, asi una actualizacion no puede dejar a una computadora pidiendo codigo. Y el instalador de sucursal ahora carga la clave del equipo aunque la computadora ya tuviera una instalacion vieja sin clave, que era lo que hacia aparecer el pedido de codigo.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

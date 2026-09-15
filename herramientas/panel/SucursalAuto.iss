@@ -141,6 +141,62 @@ end;
   ese tipo exacto (con String da "Type mismatch" al compilar). }
 var CfgViejo, ProyViejo: AnsiString;
 
+{ La clave del equipo SIEMPRE queda cargada, tambien al reinstalar encima.
+  ⚠️ El bug que motivo esto (15-sep-2026): reinstalar conserva la config vieja
+  de la computadora (nombre de sucursal, ruta), y con ella la clave. Las
+  sucursales instaladas antes del 5-sep tienen "publish_token": "" porque
+  aquel instalador todavia no traia la clave; al reinstalar con el nuevo, la
+  clave vacia se conservaba y el panel seguia pidiendo "codigo de publicacion".
+  Regla del dueno: quien tiene el instalador publica sin cargar nada. Por eso
+  la clave del equipo pisa la que haya (vacia, ausente, null u otra); el resto
+  de la config se respeta tal cual. armar_instalador.py verifica antes de
+  compilar que esta clave la acepte el cerebro. }
+function ConClaveDelEquipo(cfg: String): String;
+var clave, t: String; p, i, j, n: Integer;
+begin
+  clave := '{#PubKey}';
+  Result := cfg;
+  if clave = '' then exit;
+  t := cfg;
+  n := Length(t);
+  p := Pos('"publish_token"', t);
+  if p = 0 then
+  begin
+    { no estaba: se agrega apenas abre el objeto }
+    i := Pos('{', t);
+    if i = 0 then exit;
+    j := i + 1;
+    while (j <= n) and ((t[j] = ' ') or (t[j] = #9) or (t[j] = #13) or (t[j] = #10)) do j := j + 1;
+    if (j <= n) and (t[j] = '}') then
+      Insert(#13#10 + '  "publish_token": "' + clave + '"' + #13#10, t, i + 1)
+    else
+      Insert(#13#10 + '  "publish_token": "' + clave + '",', t, i + 1);
+    Result := t;
+    exit;
+  end;
+  { estaba: se reemplaza el valor, sea "texto", "" o null }
+  i := p + Length('"publish_token"');
+  while (i <= n) and (t[i] <> ':') do i := i + 1;
+  i := i + 1;
+  while (i <= n) and ((t[i] = ' ') or (t[i] = #9)) do i := i + 1;
+  if i > n then exit;
+  if t[i] = '"' then
+  begin
+    j := i + 1;
+    while (j <= n) and (t[j] <> '"') do j := j + 1;
+    if j > n then exit;
+    Delete(t, i, j - i + 1);
+  end
+  else
+  begin
+    j := i;
+    while (j <= n) and (t[j] <> ',') and (t[j] <> '}') and (t[j] <> #13) and (t[j] <> #10) do j := j + 1;
+    Delete(t, i, j - i);
+  end;
+  Insert('"' + clave + '"', t, i);
+  Result := t;
+end;
+
 procedure BorrarSiEsta(carpeta: String);
 begin
   if DirExists(carpeta) then DelTree(carpeta, True, True, True);
@@ -215,7 +271,8 @@ begin
       cargado a mano. Reinstalar para actualizar no tiene por que borrarla. }
     if CfgViejo <> '' then
     begin
-      SaveStringToFile(ExpandConstant('{app}\panel_config.json'), CfgViejo, False);
+      SaveStringToFile(ExpandConstant('{app}\panel_config.json'),
+                       ConClaveDelEquipo(String(CfgViejo)), False);
       exit;
     end;
 

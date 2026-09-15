@@ -166,6 +166,15 @@ def _guardar_identidad(cfg):
         os.makedirs(STATE_DIR, exist_ok=True)
         datos = {k: cfg.get(k) for k in ("rol", "usuario", "central_url", "receptor_port")
                  if cfg.get(k) is not None}
+        # la clave tambien (15-sep): si una actualizacion pierde panel_config.json,
+        # la computadora no puede quedar pidiendo "codigo de publicacion". Una
+        # config SIN clave no borra la que ya estaba guardada aca.
+        clave = (cfg.get("publish_token") or "").strip()
+        if not clave:
+            viejo, _ok = _leer_json_file(IDENTITY_FILE)
+            clave = ((viejo or {}).get("publish_token") or "").strip()
+        if clave:
+            datos["publish_token"] = clave
         with open(IDENTITY_FILE, "w", encoding="utf-8") as f:
             json.dump(datos, f)
     except OSError:
@@ -259,6 +268,10 @@ def _sanear_clave(t):
 
 
 PUBLISH_TOKEN = _sanear_clave(CONFIG.get("publish_token"))   # la clave de esta persona (Bearer)
+if not PUBLISH_TOKEN:
+    # config sin clave (se perdio o vino vacia): la de la identidad durable
+    _ident_clave, _ok = _leer_json_file(IDENTITY_FILE) if IDENTITY_FILE else (None, True)
+    PUBLISH_TOKEN = _sanear_clave((_ident_clave or {}).get("publish_token"))
 PUBLISH_MANIFEST = os.path.join(STATE_DIR, "publish_manifest.json") if STATE_DIR else ""
 # Sello del contenido del sitio que esta PC ya tiene aplicado (ETag de modulos.js).
 # Sirve para saber si en la web hay contenido mas nuevo SIN bajarlo.
@@ -276,7 +289,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 61
+VERSION = 62
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -284,23 +297,19 @@ VERSION = 61
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.19.0"
-VERSION_LABEL = "1.19.0 - publicar ya no pisa lo que subieron otras computadoras"
+VERSION_PUBLICA = "1.20.0"
+VERSION_LABEL = "1.20.0 - eliminar desde el editor y la clave siempre cargada"
 VERSION_NOTES = (
-                 "Publicar ya no borra lo que subieron las otras computadoras. UNO: "
-                 "antes de subir, el panel baja lo que esta publicado HOY y lo "
-                 "combina con lo tuyo. Lo hace modulo por modulo y, en la Cartelera "
-                 "y en el Reporte de metricas, publicacion por publicacion: si dos "
-                 "sucursales publican el mismo dia, quedan las dos. Si las dos "
-                 "cambiaron el mismo modulo, queda la version de quien publica y el "
-                 "panel lo avisa. Hasta ahora una computadora con la copia vieja "
-                 "subia su archivo entero y se llevaba puesto lo de los demas. DOS: "
-                 "el boton TRAER ULTIMA VERSION aparece en todas las sucursales "
-                 "-antes se escondia si no habia central, y las instaladas sin "
-                 "Tailscale no tenian forma de ponerse al dia- y ya no borra lo que "
-                 "cambiaste y todavia no publicaste. TRES: volver a una version "
-                 "vieja desde el historial no andaba, toda version salia como "
-                 "danada. Arreglado.")
+                 "Dos cosas. UNO: al EDITAR una publicacion aparece abajo el boton "
+                 "ELIMINAR PUBLICACION. Pregunta antes, la manda a la papelera -se "
+                 "puede recuperar durante unos dias- y lo sube al sitio en el "
+                 "momento, asi los vendedores dejan de verla sin tener que apretar "
+                 "otro boton. DOS: la clave de publicacion queda guardada tambien "
+                 "fuera de la carpeta del programa, asi una actualizacion no puede "
+                 "dejar a una computadora pidiendo codigo. Y el instalador de "
+                 "sucursal ahora carga la clave del equipo aunque la computadora ya "
+                 "tuviera una instalacion vieja sin clave, que era lo que hacia "
+                 "aparecer el pedido de codigo.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
