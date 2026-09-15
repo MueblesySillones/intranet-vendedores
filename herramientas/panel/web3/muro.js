@@ -224,6 +224,13 @@
     if (!enPapelera().length) FILTRO = 'todas';   /* vacía: no dejar la pantalla en blanco */
     refrescarVista();
     pintarContadores();
+    if (typeof window.publicarCambios === 'function') {
+      var subio = await window.publicarCambios(false, true);
+      if (subio === false) {
+        toast('Volvió en esta computadora, pero no se pudo subir. Probá con "Publicar cambios".', 'err');
+        return;
+      }
+    }
     toast('Volvió a la cartelera. Fijate la fecha, porque entró arriba de todo.', 'ok');
   }
 
@@ -966,6 +973,10 @@
     await persistModulos(false);
     refrescarVista();
     pintarContadores();
+    if (a === 'borrar') {
+      await subirAlSitio('Se eliminó en esta computadora, pero no se pudo subir. ');
+      return true;
+    }
     toast(a === 'borrar' ? 'Fue a la papelera. Tenés ' + DIAS_PAPELERA + ' días para recuperarla.' :
           a === 'duplicar' ? 'Copia creada. Editala y publicá.' :
           a === 'fijar' ? (d.fijado ? 'Fijada arriba de todo.' : 'Ya no está fijada.') :
@@ -981,14 +992,21 @@
   async function eliminarDesdeEditor() {
     var i = COMP.editando;
     if (i === null || i === undefined) return;
-    var hecho = await accionPost('borrar', i);   // confirma, papelera y cierra el editor
-    if (!hecho) return;
-    if (typeof window.publicarCambios === 'function') {
-      var subio = await window.publicarCambios(false, true);
-      if (subio === false) {
-        toast('Se eliminó en esta computadora, pero no se pudo subir. ' +
-              'Probá con "Publicar cambios".', 'err');
-      }
+    // confirma, manda a la papelera, cierra el editor y lo sube al sitio
+    await accionPost('borrar', i);
+  }
+
+  /* Eliminar y restaurar llegan al sitio en el momento, como el editor.
+     ⚠️ El menú ⋯ decía «deja de verse ya mismo» y no subía nada: la publicación
+     seguía a la vista de los vendedores hasta que alguien apretara Publicar. */
+  async function subirAlSitio(siFalla) {
+    if (typeof window.publicarCambios !== 'function') return;
+    var subio = await window.publicarCambios(false, true);
+    if (subio === false) {
+      toast(siFalla + 'Probá con "Publicar cambios".', 'err');
+    } else {
+      toast('Fue a la papelera y dejó de verse en la intranet. Tenés ' + DIAS_PAPELERA +
+            ' días para recuperarla.', 'ok');
     }
   }
 

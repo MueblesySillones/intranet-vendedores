@@ -43,7 +43,8 @@ SUITES = [("w1 panel", "w1_web3_panel.py"),
           ("w8 pendientes y avisos", "w8_web3_pendientes_avisos.py"),
           ("w9 tutoriales", "w9_web3_tutoriales.py"),
           ("w10 sucursal al dia", "w10_web3_sucursal_al_dia.py"),
-          ("w11 eliminar desde el editor", "w11_web3_eliminar_publicacion.py")]
+          ("w11 eliminar desde el editor", "w11_web3_eliminar_publicacion.py"),
+          ("w12 borrar seguidas sin que vuelvan", "w12_web3_borrar_seguidas.py")]
 
 
 def armar_sandbox():

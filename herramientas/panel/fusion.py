@@ -323,6 +323,14 @@ def fusionar(base, local, remota):
     return {"modulos": mods, "ajustes": aj, "tutoriales": tut}, inf.a_dict()
 
 
+def huella(p):
+    """Identificador del CONTENIDO de un modulos.js (no del texto: la sangria o
+    los comentarios no cuentan). Sirve para reconocer una version ya vista."""
+    import hashlib
+    return hashlib.sha1(json.dumps(p, sort_keys=True, ensure_ascii=False)
+                        .encode("utf-8")).hexdigest()
+
+
 def iguales(a, b):
     return a is not None and b is not None and _igual(a, b)
 
