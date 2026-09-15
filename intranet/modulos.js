@@ -34,26 +34,6 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">📍 POLO HUDSON<br>▫️ Calle 47 Nº6750, Berazategui<br>🕑 Lun-Sáb 9:00-19:30 | Dom 11:00-20:00 | Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/4vXnKWUBLrgZ5REM6<br><br>📍 CABA<br>▫️ Av. Belgrano 2419, Balvanera<br>🕑 Lun-Sáb 9:30-19:30 | Dom/Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/ijMcfriTbrV83wiz8<br><br>📍 CANNING<br>▫️ Mariano Castex 2775, Canning<br>🕑 Lun-Sáb 10:00-19:00 | Dom 10:00-17:00 | Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/JF1oEiaHBqc5Abrx9<br><br>📍 NORCENTER<br>▫️ Esteban Echeverría 3750, Munro<br>🕑 Lun-Dom y feriados 12:00-20:00<br>🅿️ Estacionamiento gratuito (shopping)<br>🗺️ https://maps.app.goo.gl/eiDKH29T8ry6hX3G9<br><br>📍 PILAR<br>▫️ Colectora Panamericana Av. 12 de Octubre 1466, Manuel Alberti, partido de Pilar. Prov. Bs. As.<br>🕑 Lun-Sáb 10:00-19:00<br>🅿️ Estacionamiento gratuito<br>🗺️  https://maps.app.goo.gl/zPktNgfDMJp9jucc8</p></div>"
         },
         {
-          "id": "dmu1o6arfy95m",
-          "titulo": "PRUEBA",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-14",
-          "etiqueta": "",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "HOLA 123 PROBANDO"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">HOLA 123 PROBANDO</p></div>"
-        },
-        {
           "id": "dmtt0sl6nl2y7",
           "titulo": "📊 Reporte de métricas -  Agosto",
           "autor": "Marketing",
@@ -239,7 +219,29 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>"
         }
       ],
-      "papelera": []
+      "papelera": [
+        {
+          "id": "dmu1o6arfy95m",
+          "titulo": "PRUEBA",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-14",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "HOLA 123 PROBANDO"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">HOLA 123 PROBANDO</p></div>",
+          "borradoEl": "2026-09-15"
+        }
+      ]
     }
   },
   {
