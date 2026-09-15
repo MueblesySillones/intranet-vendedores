@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmu2of7mekqyr",
+          "titulo": "INFO SUCURSALES! Importante para enviar a clientes y tener la info a mano. Pueden copiar y pegar",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-15",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "comunicacion_importante",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "📍 POLO HUDSON\n▫️ Calle 47 Nº6750, Berazategui\n🕑 Lun-Sáb 9:00-19:30 | Dom 11:00-20:00 | Feriados 14:00-19:00\n🅿️ Estacionamiento exclusivo y gratuito\n🗺️ https://maps.app.goo.gl/4vXnKWUBLrgZ5REM6\n\n📍 CABA\n▫️ Av. Belgrano 2419, Balvanera\n🕑 Lun-Sáb 9:30-19:30 | Dom/Feriados 14:00-19:00\n🅿️ Estacionamiento exclusivo y gratuito\n🗺️ https://maps.app.goo.gl/ijMcfriTbrV83wiz8\n\n📍 CANNING\n▫️ Mariano Castex 2775, Canning\n🕑 Lun-Sáb 10:00-19:00 | Dom 10:00-17:00 | Feriados 14:00-19:00\n🅿️ Estacionamiento exclusivo y gratuito\n🗺️ https://maps.app.goo.gl/JF1oEiaHBqc5Abrx9\n\n📍 NORCENTER\n▫️ Esteban Echeverría 3750, Munro\n🕑 Lun-Dom y feriados 12:00-20:00\n🅿️ Estacionamiento gratuito (shopping)\n🗺️ https://maps.app.goo.gl/eiDKH29T8ry6hX3G9\n\n📍 PILAR\n▫️ Colectora Panamericana Av. 12 de Octubre 1466, Manuel Alberti, partido de Pilar. Prov. Bs. As.\n🕑 Lun-Sáb 10:00-19:00\n🅿️ Estacionamiento gratuito\n🗺️  https://maps.app.goo.gl/zPktNgfDMJp9jucc8"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">📍 POLO HUDSON<br>▫️ Calle 47 Nº6750, Berazategui<br>🕑 Lun-Sáb 9:00-19:30 | Dom 11:00-20:00 | Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/4vXnKWUBLrgZ5REM6<br><br>📍 CABA<br>▫️ Av. Belgrano 2419, Balvanera<br>🕑 Lun-Sáb 9:30-19:30 | Dom/Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/ijMcfriTbrV83wiz8<br><br>📍 CANNING<br>▫️ Mariano Castex 2775, Canning<br>🕑 Lun-Sáb 10:00-19:00 | Dom 10:00-17:00 | Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/JF1oEiaHBqc5Abrx9<br><br>📍 NORCENTER<br>▫️ Esteban Echeverría 3750, Munro<br>🕑 Lun-Dom y feriados 12:00-20:00<br>🅿️ Estacionamiento gratuito (shopping)<br>🗺️ https://maps.app.goo.gl/eiDKH29T8ry6hX3G9<br><br>📍 PILAR<br>▫️ Colectora Panamericana Av. 12 de Octubre 1466, Manuel Alberti, partido de Pilar. Prov. Bs. As.<br>🕑 Lun-Sáb 10:00-19:00<br>🅿️ Estacionamiento gratuito<br>🗺️  https://maps.app.goo.gl/zPktNgfDMJp9jucc8</p></div>"
+        },
+        {
           "id": "dmu1oe8faeo5z",
           "titulo": "KK",
           "autor": "Marketing",
@@ -4145,6 +4165,25 @@ window.MODULES = [
     "ready": false,
     "builtin": true,
     "hidden": true
+  },
+  {
+    "key": "info_para_enviar_a_clientes",
+    "title": "INFO PARA ENVIAR A CLIENTES",
+    "desc": "",
+    "icon": "award",
+    "color": "--c-danger",
+    "ready": true,
+    "builtin": false,
+    "content": {
+      "tipo": "bloques",
+      "bloques": [
+        {
+          "t": "parrafo",
+          "html": "Pueden utilizar todo el material cargado en el módulo para copiar y enviárselo a sus clientes de forma prolija y ordenada.&nbsp;"
+        }
+      ],
+      "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Pueden utilizar todo el material cargado en el módulo para copiar y enviárselo a sus clientes de forma prolija y ordenada.&nbsp;</p></div>"
+    }
   }
 ];
 /* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */
