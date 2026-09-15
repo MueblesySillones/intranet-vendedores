@@ -19,6 +19,10 @@ Los casos son los que pasan de verdad:
   5) otra computadora sube una imagen a una galeria -> la galeria publicada
      la sigue teniendo
   6) GitHub no responde -> se publica igual y se avisa
+  7) borrar dos publicaciones seguidas con la API de GitHub ATRASADA (el caso
+     real del 15-sep: la API cachea 60 s y la primera borrada volvia a
+     aparecer al borrar la segunda)
+  8) traer la ultima version con el zip de GitHub atrasado
 """
 import copy
 import io
@@ -64,6 +68,8 @@ class RepoFalso(object):
     def __init__(self):
         self.commits = []            # [(sha, {rel: bytes})], el ultimo es la cabeza
         self.caido = False
+        self.atrasada = False        # la API (y el zip por rama) contesta la cabeza ANTERIOR
+        self.git_caido = False       # el protocolo de git no responde (queda la API)
         self.publicaciones = 0
         self.lock = threading.Lock()
 
@@ -103,7 +109,17 @@ class Manejador(BaseHTTPRequestHandler):
         if REPO_F.caido and partes[:1] in (["api"], ["raw"]):
             return self._enviar(500, "caido")
         if partes[:3] == ["api", "commits", "main"]:
+            if REPO_F.atrasada and len(REPO_F.commits) > 1:
+                return self._enviar(200, REPO_F.commits[-2][0], "text/plain")
             return self._enviar(200, REPO_F.cabeza()[0], "text/plain")
+        if partes[:2] == ["git", "info"] and REPO_F.git_caido:
+            return self._enviar(500, "no")
+        if partes[:2] == ["git", "info"]:
+            # el protocolo de git: siempre al dia (no tiene cache)
+            sha = REPO_F.cabeza()[0]
+            linea = "%s refs/heads/main\n" % sha
+            cuerpo = ("001e# service=git-upload-pack\n0000" + "%04x" % (len(linea) + 4) + linea + "0000")
+            return self._enviar(200, cuerpo, "application/x-git-upload-pack-advertisement")
         if partes[:2] == ["api", "commits"]:
             lista = []
             previo = None
@@ -124,7 +140,12 @@ class Manejador(BaseHTTPRequestHandler):
                 todos = {}
                 for _sha, arch in REPO_F.commits:      # como el repo: los huerfanos quedan
                     todos.update(arch)
-                todos.update(REPO_F.cabeza()[1])
+                cab = REPO_F.cabeza()
+                if partes[1:2] and partes[1] != "main":            # zip por commit
+                    cab = (partes[1], dict(REPO_F.commits)[partes[1]])
+                elif REPO_F.atrasada and len(REPO_F.commits) > 1:   # zip por rama, atrasado
+                    cab = REPO_F.commits[-2]
+                todos.update(cab[1])
                 for rel, b in todos.items():
                     z.writestr("repo-main/intranet/" + rel, b)
             return self._enviar(200, buf.getvalue(), "application/zip")
@@ -210,7 +231,8 @@ def main():
         falso = "http://127.0.0.1:%d" % pf
         json.dump({"rol": "colaborador", "usuario": "Sucursal prueba", "publish_token": "x",
                    "cerebro_url": falso + "/cerebro", "repo_api": falso + "/api",
-                   "repo_raw": falso + "/raw", "repo_zip": falso + "/zip",
+                   "repo_raw": falso + "/raw", "repo_zip": falso + "/zip/main",
+                   "repo_git": falso + "/git",
                    "web_publica": falso + "/web", "central_url": ""},
                   open(os.path.join(estado, "identity.json"), "w", encoding="utf-8"))
 
@@ -343,6 +365,63 @@ def main():
         REPO_F.caido = False
         check("publica igual", r.get("ok") and not r.get("nada"), r.get("log"))
         check("y lo avisa", bool((r.get("fusion") or {}).get("aviso")), r.get("fusion"))
+
+        print("7) borrar dos publicaciones seguidas con GitHub atrasado")
+        def borrar_doc(doc_id):
+            d = api(base, "/api/modulos")
+            mods = d["modulos"]
+            c = next(m for m in mods if m["key"] == "cartelera")["content"]
+            doc = next(x for x in c["docs"] if x["id"] == doc_id)
+            c["docs"] = [x for x in c["docs"] if x["id"] != doc_id]
+            c.setdefault("papelera", []).insert(0, dict(doc, borradoEl="2026-09-15"))
+            api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+            return api(base, "/api/publicar", {})
+        REPO_F.atrasada = True
+        r1 = borrar_doc("zzotra3")
+        r2 = borrar_doc("zzotra4")
+        pub = modulos_de(REPO_F.texto("modulos.js"))
+        ids = ids_cartelera(pub)
+        pap = [x["id"] for x in cartelera(pub)["content"].get("papelera") or []]
+        check("la primera borrada NO vuelve a aparecer", "zzotra3" not in ids, (ids, r2.get("fusion")))
+        check("la segunda tampoco", "zzotra4" not in ids, ids)
+        check("las dos quedan en la papelera", "zzotra3" in pap and "zzotra4" in pap, pap)
+        local = modulos_de(open(os.path.join(intr, "modulos.js"), encoding="utf-8").read())
+        check("y la copia local igual", "zzotra3" not in ids_cartelera(local), ids_cartelera(local))
+        check("sin avisar cosas traidas que no existen", not (r2.get("fusion") or {}).get("traidos"),
+              r2.get("fusion"))
+
+        print("8) traer la ultima version con GitHub atrasado")
+        j = api(base, "/api/traer", {})
+        for _ in range(120):
+            e = api(base, "/api/job?id=" + j["job"])
+            if e.get("estado") in ("listo", "error"):
+                break
+            time.sleep(0.3)
+        local = modulos_de(open(os.path.join(intr, "modulos.js"), encoding="utf-8").read())
+        check("traer no resucita lo borrado", "zzotra4" not in ids_cartelera(local), ids_cartelera(local))
+
+        print("9) lo mismo pero SIN el protocolo de git: solo la API atrasada")
+        REPO_F.git_caido = True
+        # dos publicaciones nuevas para borrar
+        d = api(base, "/api/modulos")
+        mods = d["modulos"]
+        cc = next(m for m in mods if m["key"] == "cartelera")["content"]
+        cc["docs"].insert(0, dict(nueva, id="zzborrar9a", titulo="Borrar 9a"))
+        cc["docs"].insert(0, dict(nueva, id="zzborrar9b", titulo="Borrar 9b"))
+        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        REPO_F.atrasada = False
+        api(base, "/api/publicar", {})
+        # un commit de otra cosa (no toca modulos.js): asi la API atrasada, que
+        # contesta el ANTERIOR, muestra justo la version con las dos publicaciones
+        REPO_F.commit(dict(REPO_F.cabeza()[1], **{"index.html": b"<!-- otro commit -->"}))
+        REPO_F.atrasada = True
+        r9a = borrar_doc("zzborrar9a")          # ve la version con 9a y 9b = su base: bien
+        r9 = borrar_doc("zzborrar9b")           # ve la version ANTERIOR, donde 9a vivia
+        ids = ids_cartelera(modulos_de(REPO_F.texto("modulos.js")))
+        check("sin git tampoco resucita lo borrado",
+              "zzborrar9a" not in ids and "zzborrar9b" not in ids, (ids, r9.get("fusion")))
+        REPO_F.git_caido = False
+        REPO_F.atrasada = False
 
         print("restaurar una version vieja")
         r = api(base, "/api/restaurar", {"sha": REPO_F.commits[1][0]})

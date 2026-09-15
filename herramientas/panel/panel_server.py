@@ -331,7 +331,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 63
+VERSION = 64
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -339,20 +339,22 @@ VERSION = 63
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.20.1"
-VERSION_LABEL = "1.20.1 - la clave viene en el programa y certificados propios"
+VERSION_PUBLICA = "1.20.2"
+VERSION_LABEL = "1.20.2 - eliminar publicaciones seguidas sin que vuelvan"
 VERSION_NOTES = (
-                 "Dos arreglos para que publicar no falle en ninguna computadora. "
-                 "UNO: en algunas sucursales aparecia No pude ver lo que esta "
-                 "publicado, CERTIFICATE_VERIFY_FAILED. Windows no trae todas las "
-                 "autoridades de certificados, y GitHub usa una que esas "
-                 "computadoras no tenian, asi que el panel no podia verificar la "
-                 "conexion. Ahora el panel trae su propia lista de certificados y ya "
-                 "no depende de lo que tenga cada Windows. DOS: la clave de "
-                 "publicacion del equipo viene adentro del programa. Una computadora "
-                 "que no tenia clave, o tenia una vieja que no andaba, ahora publica "
-                 "igual: usa la del equipo sola y la guarda, sin pedir ningun codigo "
-                 "y sin reinstalar.")
+                 "Arreglado: al eliminar una publicacion y enseguida otra, la "
+                 "primera volvia a aparecer en la cartelera. La causa: despues de "
+                 "publicar, GitHub tarda hasta un minuto en mostrar lo ultimo, y la "
+                 "segunda publicacion se combinaba contra la version de antes, donde "
+                 "la primera todavia existia; el panel creia que la habia publicado "
+                 "otra computadora y la traia de vuelta. Tambien podia deshacer "
+                 "cualquier cambio publicado menos de un minuto antes. Ahora el "
+                 "panel lee lo ultimo publicado directo de git, que no tiene esa "
+                 "demora, y ademas reconoce las versiones que el mismo ya dejo "
+                 "atras. De paso: Eliminar desde el menu de tres puntos y Restaurar "
+                 "desde la papelera ahora llegan al sitio en el momento, igual que "
+                 "desde el editor, y publicar, traer y guardar ya no pueden pisarse "
+                 "si se aprietan muy seguido.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1117,6 +1119,13 @@ def regenerar_galerias():
 #  en mostrar lo nuevo, y en esa ventana otra publicacion se veria vieja.
 BASE_PUBLICADA = os.path.join(STATE_DIR, "base_publicada") if STATE_DIR else ""
 
+# De a uno: publicar, traer y guardar los modulos tocan los mismos archivos.
+# El servidor atiende cada pedido en su hilo; borrar dos publicaciones rapido
+# lanzaba dos publicaciones A LA VEZ, y una combinaba mientras la otra
+# escribia modulos.js. RLock: publicar se llama a si mismo al reintentar con
+# la clave del equipo.
+_LOCK_CONTENIDO = threading.RLock()
+
 
 def _repo_urls():
     r = _repo_del_cerebro()
@@ -1135,9 +1144,37 @@ def _bajar(url, timeout=40, accept=None):
         return r.read()
 
 
+_COMMIT_FRESCO = {"v": False}   # si el ultimo _ultimo_commit salio del protocolo de git
+
+
 def _ultimo_commit():
-    api, _raw, rama = _repo_urls()
-    sha = _bajar(api + "/commits/" + quote(rama), 20,
+    """El commit de la rama AHORA.
+
+    ⚠️ 15-sep-2026, reportado por el dueno: «borro una publicacion, borro otra
+    y la primera vuelve a aparecer». La API de GitHub responde con
+    `Cache-Control: max-age=60`: durante un minuto despues de publicar sigue
+    diciendo que el ultimo commit es el ANTERIOR. La segunda publicacion
+    combinaba contra esa version vieja, donde la primera borrada todavia
+    existia, y la trataba como algo que otra computadora habia publicado: la
+    resucitaba (y cualquier edicion de hacia menos de un minuto se deshacia).
+    El protocolo de git (/info/refs, lo que usa `git ls-remote`) no tiene
+    cache: se lee de ahi. La API queda de respaldo, con un parametro que
+    esquiva la cache compartida."""
+    _api, _raw, rama = _repo_urls()
+    r = _repo_del_cerebro()
+    git_url = (CONFIG.get("repo_git") or
+               "https://github.com/%s/%s.git" % (r["owner"], r["repo"])).rstrip("/")
+    try:
+        crudo = _bajar(git_url + "/info/refs?service=git-upload-pack", 20)
+        m = re.search(r"([0-9a-f]{40}) refs/heads/%s(?:\x00|\n|\s|$)" % re.escape(rama),
+                      crudo.decode("latin-1"))
+        if m:
+            _COMMIT_FRESCO["v"] = True
+            return m.group(1)
+    except Exception:  # noqa: sin el protocolo de git, la API
+        pass
+    _COMMIT_FRESCO["v"] = False
+    sha = _bajar(_api + "/commits/" + quote(rama) + "?nc=%d" % int(time.time() * 1000), 20,
                  "application/vnd.github.sha").decode("ascii", "replace").strip()
     if not re.match(r"^[0-9a-f]{40}$", sha):
         raise ValueError("GitHub no devolvio un commit valido")
@@ -1175,10 +1212,46 @@ def _leer_base():
     return out[0], out[1]
 
 
+def _conocidas():
+    try:
+        with open(os.path.join(BASE_PUBLICADA, "conocidas.json"), encoding="utf-8") as fh:
+            d = json.load(fh)
+        return d if isinstance(d, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def _es_version_vieja(remota, base):
+    """¿Lo que dice estar publicado es una version que ESTA computadora ya dejo
+    atras? Pasa cuando GitHub todavia no muestra lo ultimo (cache, CDN). Si es
+    asi no hay nada de otros para combinar: combinar contra eso deshace lo
+    propio."""
+    # Con el commit leido de git (sin cache) lo publicado es lo de AHORA:
+    # no se adivina. Adivinar tiene un caso raro en contra (que otro publique
+    # algo identico a una version vieja nuestra), asi que solo se usa cuando
+    # hubo que caer a la API o al zip de la rama, que si pueden venir atrasados.
+    if _COMMIT_FRESCO["v"]:
+        return False
+    if remota is None or base is None or fusion.iguales(remota, base):
+        return False
+    return fusion.huella(remota) in _conocidas()
+
+
 def _guardar_base(mod_txt, gal_txt):
     """Anota lo publicado de lo que parte esta copia. Solo si se lee bien:
-    una base rota es peor que ninguna (sin base se hace union y no se pierde)."""
-    if not BASE_PUBLICADA or fusion.partes(mod_txt) is None:
+    una base rota es peor que ninguna (sin base se hace union y no se pierde).
+    Tambien se anota en la lista de versiones conocidas (ver _es_version_vieja)."""
+    p = fusion.partes(mod_txt) if BASE_PUBLICADA else None
+    if p is None:
+        return
+    try:
+        os.makedirs(BASE_PUBLICADA, exist_ok=True)
+        lista = [h for h in _conocidas() if h != fusion.huella(p)] + [fusion.huella(p)]
+        with open(os.path.join(BASE_PUBLICADA, "conocidas.json"), "w", encoding="utf-8") as fh:
+            json.dump(lista[-60:], fh)
+    except OSError:
+        pass
+    if not BASE_PUBLICADA:
         return
     try:
         os.makedirs(BASE_PUBLICADA, exist_ok=True)
@@ -1389,9 +1462,13 @@ def sincronizar_con_publicado():
     if fusion.partes(remoto_txt) is None:
         info["aviso"] = "Lo publicado no se pudo leer; se publica sin combinar."
         return info
+    base, base_gal = _base_para(local)
+    if _es_version_vieja(fusion.partes(remoto_txt), base):
+        # GitHub todavia muestra algo que esta computadora ya publico encima:
+        # nadie mas publico nada nuevo. Ni modulos ni imagenes se tocan.
+        return info
     info["sha"] = sha
     info["remoto"] = {"modulos.js": remoto_txt, "galerias.js": remoto_gal}
-    base, base_gal = _base_para(local)
     inf = _combinar_modulos(local_txt, remoto_txt, base, "publicar")
     info["traidos"], info["choques"] = inf["traidos"], inf["choques"]
     info["imagenes"], _borradas = _sincronizar_imagenes(sha, base_gal, remoto_gal)
@@ -1425,6 +1502,11 @@ def guardar_publish_token(token):
 
 
 def publicar_cerebro(mensaje="", _reintento=False):
+    with _LOCK_CONTENIDO:
+        return _publicar_cerebro(mensaje, _reintento)
+
+
+def _publicar_cerebro(mensaje="", _reintento=False):
     """Publica DIRECTO al sitio via el cerebro: regenera galerias, arma los archivos
     gestionados que CAMBIARON (manifiesto de hashes) y hace POST /publish. Los que se
     borraron quedan huerfanos en el repo (no afectan el sitio)."""
@@ -1770,6 +1852,21 @@ def _volcar_zip_en_intranet(data, mapear=None):
         return len(pares)
 
 
+def _zip_del_ultimo_commit():
+    """El zip del commit EXACTO de ahora, no el de la rama: el de la rama lo
+    sirve una cache y puede ser el de antes de la ultima publicacion."""
+    _api, _raw, rama = _repo_urls()
+    try:
+        sha = _ultimo_commit()
+    except Exception:  # noqa
+        _COMMIT_FRESCO["v"] = False
+        return REPO_ZIP
+    for cola in ("refs/heads/" + rama, rama):
+        if REPO_ZIP.endswith("/" + cola):
+            return REPO_ZIP[:-len(cola)] + sha
+    return REPO_ZIP
+
+
 def _traer_conservando_lo_local(data, mapear):
     """"Traer ultima version" SIN perder lo que esta computadora no publico.
 
@@ -1844,6 +1941,13 @@ def _traer_conservando_lo_local(data, mapear):
 
     if llego_txt:
         local = fusion.partes(local_txt) if local_txt else None
+        base_ahora = fusion.partes(_leer_base()[0] or "")
+        if local is not None and _es_version_vieja(fusion.partes(llego_txt), base_ahora):
+            # llego una version que esta computadora ya dejo atras: se vuelve
+            # a poner lo propio y la base no cambia
+            with open(MODULOS_JS, "w", encoding="utf-8") as fh:
+                fh.write(local_txt)
+            return info
         if local is not None:
             base, _bg = _base_para(local)
             # ⚠️ _combinar_modulos razona sobre el disco = copia local ("si nadie
@@ -1879,6 +1983,11 @@ def _mapear_repo(rel):
 
 
 def traer_de_central(jid=None):
+    with _LOCK_CONTENIDO:
+        return _traer_de_central(jid)
+
+
+def _traer_de_central(jid=None):
     """Reemplaza la copia local de intranet/ con la ultima version publicada.
     Primero por INTERNET (el repo publico: la misma fuente que ve la web);
     si eso falla, con la central por Tailscale como siempre. Si le pasan un
@@ -1890,7 +1999,7 @@ def traer_de_central(jid=None):
         try:
             if jid:
                 _job_set(jid, pct=1, msg="Conectando con el cerebro…")
-            data = _bajar_con_progreso(REPO_ZIP, 120, jid)
+            data = _bajar_con_progreso(_zip_del_ultimo_commit(), 120, jid)
             if jid:
                 _job_set(jid, pct=92, msg="Instalando la nueva versión…")
             info = _traer_conservando_lo_local(data, _mapear_repo)
@@ -3529,7 +3638,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"error": err}, 400)
                 aj = (validar_ajustes(d["ajustes"])
                       if isinstance(d.get("ajustes"), dict) else None)
-                escribir_modulos(lista, aj)
+                with _LOCK_CONTENIDO:
+                    escribir_modulos(lista, aj)
                 return self._json({"ok": True, "modulos": lista,
                                    "ajustes": leer_ajustes()})
             if path == "/api/regenerar":

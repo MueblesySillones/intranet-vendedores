@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.20.1"
-NUEVO_LABEL = "1.20.1 - la clave viene en el programa y certificados propios"
-NUEVAS_NOTAS = ("Dos arreglos para que publicar no falle en ninguna computadora. UNO: en algunas sucursales aparecia No pude ver lo que esta publicado, CERTIFICATE_VERIFY_FAILED. Windows no trae todas las autoridades de certificados, y GitHub usa una que esas computadoras no tenian, asi que el panel no podia verificar la conexion. Ahora el panel trae su propia lista de certificados y ya no depende de lo que tenga cada Windows. DOS: la clave de publicacion del equipo viene adentro del programa. Una computadora que no tenia clave, o tenia una vieja que no andaba, ahora publica igual: usa la del equipo sola y la guarda, sin pedir ningun codigo y sin reinstalar.")
+NUEVA_PUBLICA = "1.20.2"
+NUEVO_LABEL = "1.20.2 - eliminar publicaciones seguidas sin que vuelvan"
+NUEVAS_NOTAS = ("Arreglado: al eliminar una publicacion y enseguida otra, la primera volvia a aparecer en la cartelera. La causa: despues de publicar, GitHub tarda hasta un minuto en mostrar lo ultimo, y la segunda publicacion se combinaba contra la version de antes, donde la primera todavia existia; el panel creia que la habia publicado otra computadora y la traia de vuelta. Tambien podia deshacer cualquier cambio publicado menos de un minuto antes. Ahora el panel lee lo ultimo publicado directo de git, que no tiene esa demora, y ademas reconoce las versiones que el mismo ya dejo atras. De paso: Eliminar desde el menu de tres puntos y Restaurar desde la papelera ahora llegan al sitio en el momento, igual que desde el editor, y publicar, traer y guardar ya no pueden pisarse si se aprietan muy seguido.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
