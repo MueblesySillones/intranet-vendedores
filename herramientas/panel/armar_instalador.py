@@ -26,6 +26,9 @@ Lo que hace, y frena si algo no cierra:
 """
 import ast
 import hashlib
+import re
+import urllib.error
+import urllib.request
 import io
 import os
 import shutil
@@ -137,11 +140,37 @@ def rehacer_paquete():
     print("  paquete de contenido rehecho: %d archivos de intranet/" % len(archivos))
 
 
+CEREBRO = "https://mys-cerebro.mueblesysillones.workers.dev"
+
+
+def verificar_clave():
+    """Regla del dueno: quien instala, publica sin cargar nada. Entonces la
+    clave que viaja en el instalador tiene que ANDAR: se le pregunta al cerebro
+    con una lectura (/audit) antes de compilar. Un 401 frena todo."""
+    ruta = os.path.join(AQUI, "clave-equipo.iss")
+    if not os.path.isfile(ruta):
+        frenar("falta clave-equipo.iss: los instaladores saldrian sin la clave de publicacion.")
+    m = re.search(r'#define\s+PubKey\s+"([^"]+)"', io.open(ruta, encoding="utf-8-sig").read())
+    if not m or not m.group(1).strip():
+        frenar("clave-equipo.iss no tiene la clave (#define PubKey \"...\").")
+    req = urllib.request.Request(CEREBRO + "/audit", headers={
+        "Authorization": "Bearer " + m.group(1).strip(), "User-Agent": "PanelMyS/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            codigo = r.status
+    except urllib.error.HTTPError as e:
+        codigo = e.code
+    except Exception as e:  # noqa
+        frenar("no pude verificar la clave con el cerebro (%s). Sin internet no se arma." % e)
+    if codigo != 200:
+        frenar("el cerebro RECHAZA la clave de clave-equipo.iss (HTTP %s): las sucursales "
+               "no podrian publicar. Actualizar la clave antes de armar." % codigo)
+    print("  la clave del equipo la acepta el cerebro")
+
+
 def compilar(version_publica):
     if not os.path.isfile(ISCC):
         frenar("no encuentro Inno Setup en %s" % ISCC)
-    if not os.path.isfile(os.path.join(AQUI, "clave-equipo.iss")):
-        frenar("falta clave-equipo.iss: los instaladores saldrian sin la clave de publicacion.")
     hechos = []
     for iss, exe in INSTALADORES:
         salida = os.path.join(SALIDA, exe)
@@ -163,6 +192,7 @@ def main():
     print("Armando los instaladores del panel v%d (%s)" % (version, publica))
     verificar_dist(version)
     verificar_repo()
+    verificar_clave()
     rehacer_paquete()
     hechos = compilar(publica)
     if al_escritorio:

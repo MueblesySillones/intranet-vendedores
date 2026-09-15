@@ -952,7 +952,7 @@
       const ok = await confirmar('“' + (d.titulo || 'sin título') + '” deja de verse ya mismo. ' +
         'Queda ' + DIAS_PAPELERA + ' días en la papelera por si fue sin querer.',
         'Eliminar', 'Eliminar publicación');
-      if (!ok) return;
+      if (!ok) return false;
       const alTacho = JSON.parse(JSON.stringify(d));
       alTacho.borradoEl = hoyISO();
       mod.content.papelera = mod.content.papelera || [];
@@ -970,6 +970,26 @@
           a === 'duplicar' ? 'Copia creada. Editala y publicá.' :
           a === 'fijar' ? (d.fijado ? 'Fijada arriba de todo.' : 'Ya no está fijada.') :
           (d.archivado ? 'Los vendedores dejan de verla.' : 'Vuelve a verse.'), 'ok');
+    return true;
+  }
+
+  /* Eliminar DESDE el editor. Es el mismo 'borrar' del menú ⋯ (a la papelera,
+     con los días para recuperarla) y además se sube al sitio en el momento:
+     adentro del editor todo lo que se aprieta llega al vendedor, y un
+     «Eliminar» que dejara la publicación visible hasta otro Publicar sería el
+     mismo engaño que tenía «Guardar» antes. */
+  async function eliminarDesdeEditor() {
+    var i = COMP.editando;
+    if (i === null || i === undefined) return;
+    var hecho = await accionPost('borrar', i);   // confirma, papelera y cierra el editor
+    if (!hecho) return;
+    if (typeof window.publicarCambios === 'function') {
+      var subio = await window.publicarCambios(false, true);
+      if (subio === false) {
+        toast('Se eliminó en esta computadora, pero no se pudo subir. ' +
+              'Probá con "Publicar cambios".', 'err');
+      }
+    }
   }
 
   /* ---------------- abrir el editor ---------------- */
@@ -1003,6 +1023,8 @@
     if (tit) tit.textContent = editando ? 'Editar publicación' : 'Crear publicación';
     elCo('coCuando').textContent = editando ? 'editando una publicación' : 'Hoy';
     document.getElementById('composer').classList.toggle('editando', editando);
+    var del = document.getElementById('coEliminar');
+    if (del) del.hidden = !editando;
   }
 
   /* ------- el modal del compositor (armazón de la maqueta) -------
@@ -2143,6 +2165,11 @@
   elCo('coArchivarMod').onchange = function () { COMP.archTocado = true; };
 
   elCo('coCerrar').onclick = cerrarCompPidiendo;
+  if (document.getElementById('coEliminar')) {
+    document.getElementById('coEliminar').onclick = function () {
+      return window.conBoton('#coEliminar', 'Eliminando…', eliminarDesdeEditor, { quieto: true });
+    };
+  }
   elCo('coCancelar').onclick = cerrarCompPidiendo;
   /* El botón se apaga y avisa mientras trabaja, y no acepta un segundo
      click: sin esto, un doble click creaba dos publicaciones iguales. */

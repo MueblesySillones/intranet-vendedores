@@ -658,6 +658,17 @@ main.lienzo{padding:0; max-width:none; margin:0}
    igual. Toca tambien a #avisarModal, que arrastraba lo mismo. */
 .fondo > .modal.medio{height:auto}
 
+/* ---------- EDITAR PUBLICACION: el boton de eliminarla ----------
+   Discreto a proposito, abajo de todo y sin fondo: es la accion que no se
+   quiere apretar sin querer. Se ve solo al editar una que ya existe. */
+.modal-pie .co-eliminar{display:flex; align-items:center; justify-content:center; gap:6px;
+  margin:10px auto 0; padding:6px 12px; border:0; border-radius:8px; background:none;
+  color:var(--danger); font:inherit; font-size:var(--t-sm); cursor:pointer}
+.modal-pie .co-eliminar[hidden]{display:none}
+.modal-pie .co-eliminar svg{width:14px; height:14px; stroke-width:1.8}
+.modal-pie .co-eliminar:hover:not(:disabled){background:rgba(181,80,63,.09)}
+.modal-pie .co-eliminar:disabled{opacity:.6; cursor:default}
+
 /* ---------- ASISTENTE: crear un reporte paso a paso ----------
    Las siete preguntas de a una, en una ventana flotante. Antes caian todas
    juntas en una tira larga adentro de la pantalla de Datos. */
