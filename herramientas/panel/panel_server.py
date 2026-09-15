@@ -34,10 +34,38 @@ import zipfile
 import datetime
 import urllib.request
 import urllib.error
+import ssl
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote, quote
 
 from PIL import Image, ImageOps
+
+# ---------------------------------------------------------------- certificados
+# ⚠️ 15-sep-2026, en una sucursal: "No pude ver lo que esta publicado
+# (CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate)".
+# Python verifica HTTPS contra el almacen de certificados de WINDOWS, y Windows
+# no trae todas las autoridades: las baja recien cuando un navegador las
+# necesita. GitHub firma con Sectigo (raiz USERTrust ECC); una computadora que
+# nunca la bajo no puede verificarlo, aunque Vercel y Cloudflare (Let's
+# Encrypt / Google) anden. Por eso el panel trae su propia lista (certifi, la
+# de Mozilla) y la SUMA a la de Windows: la de Windows sigue sirviendo para un
+# antivirus o un proxy de la empresa que inspecciona las conexiones.
+# Se instala como opener global: todo urlopen del panel (y de Datos) la usa.
+def _contexto_tls():
+    ctx = ssl.create_default_context()
+    origen = "windows"
+    try:
+        import certifi
+        ctx.load_verify_locations(certifi.where())
+        origen = "windows+certifi"
+    except Exception:  # noqa: sin certifi queda como antes
+        pass
+    return ctx, origen
+
+
+TLS_CONTEXTO, TLS_ORIGEN = _contexto_tls()
+urllib.request.install_opener(
+    urllib.request.build_opener(urllib.request.HTTPSHandler(context=TLS_CONTEXTO)))
 
 # La fusion vive aparte para poder probarla sola (test_fusion.py). Sin ella el
 # panel no puede publicar sin riesgo de pisar a otros: no va en un try.
@@ -267,11 +295,25 @@ def _sanear_clave(t):
     return t
 
 
+# La clave del EQUIPO viaja adentro del programa (15-sep-2026, decision del
+# dueno: «no me importa si la clave viaja publicamente»). Asi una computadora
+# que quedo sin clave se arregla con el boton Actualizar, sin reinstalar.
+# ⚠️ No esta en el codigo fuente (el repo es publico en GitHub): el modulo
+# clave_equipo.py lo genera publicar_web3.py desde clave-equipo.iss justo antes
+# de compilar, y esta en el .gitignore.
+try:
+    from clave_equipo import CLAVE as _CLAVE_EQUIPO
+except Exception:  # noqa: corriendo del fuente sin generarlo
+    _CLAVE_EQUIPO = ""
+_CLAVE_EQUIPO = _sanear_clave(_CLAVE_EQUIPO)
+
 PUBLISH_TOKEN = _sanear_clave(CONFIG.get("publish_token"))   # la clave de esta persona (Bearer)
 if not PUBLISH_TOKEN:
     # config sin clave (se perdio o vino vacia): la de la identidad durable
     _ident_clave, _ok = _leer_json_file(IDENTITY_FILE) if IDENTITY_FILE else (None, True)
     PUBLISH_TOKEN = _sanear_clave((_ident_clave or {}).get("publish_token"))
+if not PUBLISH_TOKEN:
+    PUBLISH_TOKEN = _CLAVE_EQUIPO
 PUBLISH_MANIFEST = os.path.join(STATE_DIR, "publish_manifest.json") if STATE_DIR else ""
 # Sello del contenido del sitio que esta PC ya tiene aplicado (ETag de modulos.js).
 # Sirve para saber si en la web hay contenido mas nuevo SIN bajarlo.
@@ -289,7 +331,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 62
+VERSION = 63
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -297,19 +339,20 @@ VERSION = 62
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.20.0"
-VERSION_LABEL = "1.20.0 - eliminar desde el editor y la clave siempre cargada"
+VERSION_PUBLICA = "1.20.1"
+VERSION_LABEL = "1.20.1 - la clave viene en el programa y certificados propios"
 VERSION_NOTES = (
-                 "Dos cosas. UNO: al EDITAR una publicacion aparece abajo el boton "
-                 "ELIMINAR PUBLICACION. Pregunta antes, la manda a la papelera -se "
-                 "puede recuperar durante unos dias- y lo sube al sitio en el "
-                 "momento, asi los vendedores dejan de verla sin tener que apretar "
-                 "otro boton. DOS: la clave de publicacion queda guardada tambien "
-                 "fuera de la carpeta del programa, asi una actualizacion no puede "
-                 "dejar a una computadora pidiendo codigo. Y el instalador de "
-                 "sucursal ahora carga la clave del equipo aunque la computadora ya "
-                 "tuviera una instalacion vieja sin clave, que era lo que hacia "
-                 "aparecer el pedido de codigo.")
+                 "Dos arreglos para que publicar no falle en ninguna computadora. "
+                 "UNO: en algunas sucursales aparecia No pude ver lo que esta "
+                 "publicado, CERTIFICATE_VERIFY_FAILED. Windows no trae todas las "
+                 "autoridades de certificados, y GitHub usa una que esas "
+                 "computadoras no tenian, asi que el panel no podia verificar la "
+                 "conexion. Ahora el panel trae su propia lista de certificados y ya "
+                 "no depende de lo que tenga cada Windows. DOS: la clave de "
+                 "publicacion del equipo viene adentro del programa. Una computadora "
+                 "que no tenia clave, o tenia una vieja que no andaba, ahora publica "
+                 "igual: usa la del equipo sola y la guarda, sin pedir ningun codigo "
+                 "y sin reinstalar.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1381,7 +1424,7 @@ def guardar_publish_token(token):
     return {"ok": True}
 
 
-def publicar_cerebro(mensaje=""):
+def publicar_cerebro(mensaje="", _reintento=False):
     """Publica DIRECTO al sitio via el cerebro: regenera galerias, arma los archivos
     gestionados que CAMBIARON (manifiesto de hashes) y hace POST /publish. Los que se
     borraron quedan huerfanos en el repo (no afectan el sitio)."""
@@ -1520,6 +1563,12 @@ def publicar_cerebro(mensaje=""):
             # a la persona presa de un toast eterno, sin ninguna pantalla
             # donde corregirla.
             if e.code == 401:
+                # la clave de esta computadora no anda (vieja, mal pegada): si
+                # el programa trae la del equipo, se usa esa y se reintenta. La
+                # persona no tiene que enterarse ni cargar nada.
+                if _CLAVE_EQUIPO and PUBLISH_TOKEN != _CLAVE_EQUIPO and not _reintento:
+                    guardar_publish_token(_CLAVE_EQUIPO)
+                    return publicar_cerebro(mensaje, _reintento=True)
                 msj = ("La clave cargada no es valida. Pegala de nuevo "
                        "(solo el valor, sin el nombre de adelante).")
                 return {"ok": False, "falta_token": True,
@@ -3331,6 +3380,7 @@ class Handler(BaseHTTPRequestHandler):
                 "version_publica": VERSION_PUBLICA,
                 "pendientes": (len(aprobaciones_pendientes()) if ES_CENTRAL else 0),
                 "cerebro": bool(CEREBRO_URL), "tiene_token": bool(PUBLISH_TOKEN),
+                "clave_equipo": bool(_CLAVE_EQUIPO), "certificados": TLS_ORIGEN,
                 "web_publica": WEB_PUBLICA,
             })
         if path == "/api/aprobaciones":

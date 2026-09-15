@@ -24,6 +24,8 @@ a = Analysis(
     hiddenimports=[
         'receptor_server',
         'fusion',
+        'certifi',        # certificados propios: GitHub no verificaba en algunas PCs
+        'clave_equipo',   # la genera publicar_web3.py; no esta en git
         'datos_api',
         'datos', 'datos.analizador', 'datos.fuentes', 'datos.lecturas',
         'datos.reporte', 'datos.revisor',

@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.20.0"
-NUEVO_LABEL = "1.20.0 - eliminar desde el editor y la clave siempre cargada"
-NUEVAS_NOTAS = ("Dos cosas. UNO: al EDITAR una publicacion aparece abajo el boton ELIMINAR PUBLICACION. Pregunta antes, la manda a la papelera -se puede recuperar durante unos dias- y lo sube al sitio en el momento, asi los vendedores dejan de verla sin tener que apretar otro boton. DOS: la clave de publicacion queda guardada tambien fuera de la carpeta del programa, asi una actualizacion no puede dejar a una computadora pidiendo codigo. Y el instalador de sucursal ahora carga la clave del equipo aunque la computadora ya tuviera una instalacion vieja sin clave, que era lo que hacia aparecer el pedido de codigo.")
+NUEVA_PUBLICA = "1.20.1"
+NUEVO_LABEL = "1.20.1 - la clave viene en el programa y certificados propios"
+NUEVAS_NOTAS = ("Dos arreglos para que publicar no falle en ninguna computadora. UNO: en algunas sucursales aparecia No pude ver lo que esta publicado, CERTIFICATE_VERIFY_FAILED. Windows no trae todas las autoridades de certificados, y GitHub usa una que esas computadoras no tenian, asi que el panel no podia verificar la conexion. Ahora el panel trae su propia lista de certificados y ya no depende de lo que tenga cada Windows. DOS: la clave de publicacion del equipo viene adentro del programa. Una computadora que no tenia clave, o tenia una vieja que no andaba, ahora publica igual: usa la del equipo sola y la guarda, sin pedir ningun codigo y sin reinstalar.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -144,6 +144,37 @@ src = src[:i] + "\n".join(troz) + src[j:]
 io.open(ps, "w", encoding="utf-8", newline="").write(src)
 print("    -> VERSION = %d, publica %s" % (NUEVA_VERSION, NUEVA_PUBLICA))
 
+# ------------------------------------------------ 3b. la clave del equipo, adentro
+# Decision del dueno (15-sep-2026): la clave viaja en el programa, asi una PC
+# sin clave se arregla con Actualizar. NO va al codigo fuente (repo publico):
+# se genera clave_equipo.py (gitignoreado) desde clave-equipo.iss y se verifica
+# contra el cerebro antes de compilar.
+paso(3, "Poniendo la clave del equipo adentro del programa")
+_iss = os.path.join(aqui, "clave-equipo.iss")
+if not os.path.isfile(_iss):
+    morir("falta clave-equipo.iss: el programa saldria sin la clave del equipo")
+_m = re.search(r'#define\s+PubKey\s+"([^"]+)"', io.open(_iss, encoding="utf-8-sig").read())
+if not _m:
+    morir("clave-equipo.iss no tiene #define PubKey")
+CLAVE = _m.group(1).strip()
+import urllib.request as _ur, urllib.error as _ue
+try:
+    with _ur.urlopen(_ur.Request("https://mys-cerebro.mueblesysillones.workers.dev/audit",
+                                 headers={"Authorization": "Bearer " + CLAVE,
+                                          "User-Agent": "PanelMyS/1.0"}), timeout=20) as _r:
+        _cod = _r.status
+except _ue.HTTPError as _e:
+    _cod = _e.code
+if _cod != 200:
+    morir("el cerebro rechaza la clave de clave-equipo.iss (HTTP %s)" % _cod)
+io.open(os.path.join(aqui, "clave_equipo.py"), "w", encoding="utf-8").write(
+    "# Generado por publicar_web3.py desde clave-equipo.iss. NO SUBIR A GIT.\n"
+    "CLAVE = %r\n" % CLAVE)
+_gi = io.open(os.path.join(aqui, "..", ".gitignore"), encoding="utf-8").read()
+if not subprocess.run(["git", "check-ignore", "-q", os.path.join(aqui, "clave_equipo.py")], cwd=repo_raiz).returncode == 0:
+    morir("clave_equipo.py no esta en herramientas/.gitignore: se subiria al repo")
+print("    ok: la clave la acepta el cerebro y va adentro (clave_equipo.py, fuera de git)")
+
 # ---------------------------------------------------------------- 4. compilar
 paso(4, "Compilando (tarda ~60s)")
 r = subprocess.run([sys.executable, "-m", "PyInstaller", "PanelMyS.spec", "--noconfirm"],
@@ -178,7 +209,8 @@ with zipfile.ZipFile(zp) as z:
         morir("el index de web3 adentro del zip no enlaza maqueta.css/puente.css")
     print("    ok: el index enlaza la maqueta y el puente")
     malos = [n for n in nombres if any(x in n.lower() for x in
-             ("panel_config.json", "identity.json", "proyecto.txt", "aprobaciones/"))]
+             ("panel_config.json", "identity.json", "proyecto.txt", "aprobaciones/",
+              "clave-equipo.iss"))]
     if malos:
         morir("se colaron archivos per-maquina en el zip: %s" % malos)
     print("    ok: sin archivos per-maquina")
@@ -206,6 +238,9 @@ try:
     for f in ("index.html", "modulos.js", "galerias.js"):
         shutil.copy2(os.path.join(repo_raiz, "intranet", f), os.path.join(prueba, "p", "intranet", f))
     so = socket.socket(); so.bind(("127.0.0.1", 0)); puerto = so.getsockname()[1]; so.close()
+    # como una SUCURSAL SIN CLAVE: tiene que arrancar con la del equipo
+    json.dump({"rol": "colaborador", "usuario": "prueba release", "publish_token": ""},
+              io.open(os.path.join(prueba, "e", "identity.json"), "w", encoding="utf-8"))
     env = dict(os.environ, MYS_PROYECTO=os.path.join(prueba, "p"), MYS_PANEL_STATE=os.path.join(prueba, "e"),
                MYS_PANEL_PORT=str(puerto), BROWSER="cmd.exe /c echo")
     exe = subprocess.Popen([os.path.join(aqui, "dist", "PanelMyS", "PanelMyS.exe")], env=env,
@@ -225,6 +260,12 @@ try:
     if not cfg or int(cfg.get("version") or 0) != NUEVA_VERSION:
         morir("el exe compilado no arranco o no contesta con la v%d (%s)" % (NUEVA_VERSION, cfg))
     print("    ok: el exe abre y contesta v%d" % NUEVA_VERSION)
+    if not (cfg.get("clave_equipo") and cfg.get("tiene_token")):
+        morir("el exe compilado NO trae la clave del equipo (%s)" % cfg)
+    print("    ok: una sucursal sin clave arranca con la del equipo")
+    if cfg.get("certificados") != "windows+certifi":
+        morir("el exe compilado no trae sus certificados (certifi): %s" % cfg.get("certificados"))
+    print("    ok: trae sus propios certificados")
 finally:
     time.sleep(0.5)
     shutil.rmtree(prueba, ignore_errors=True)
@@ -256,6 +297,7 @@ subprocess.run(["git", "add", "--",
                 "herramientas/panel/PanelMyS.spec",
                 "herramientas/panel/web3",
                 "herramientas/panel/publicar_web3.py",
+                "herramientas/.gitignore",
                 "herramientas/qa"], cwd=repo_raiz, check=True)
 subprocess.run(["git", "commit", "-m",
                 "Fuente al dia con lo publicado: VERSION %d + web3 como panel principal"
