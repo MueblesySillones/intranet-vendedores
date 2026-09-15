@@ -1,8 +1,8 @@
 {
-  "version": 61,
-  "label": "1.19.0 - publicar ya no pisa lo que subieron otras computadoras",
-  "notes": "Publicar ya no borra lo que subieron las otras computadoras. UNO: antes de subir, el panel baja lo que esta publicado HOY y lo combina con lo tuyo. Lo hace modulo por modulo y, en la Cartelera y en el Reporte de metricas, publicacion por publicacion: si dos sucursales publican el mismo dia, quedan las dos. Si las dos cambiaron el mismo modulo, queda la version de quien publica y el panel lo avisa. Hasta ahora una computadora con la copia vieja subia su archivo entero y se llevaba puesto lo de los demas. DOS: el boton TRAER ULTIMA VERSION aparece en todas las sucursales -antes se escondia si no habia central, y las instaladas sin Tailscale no tenian forma de ponerse al dia- y ya no borra lo que cambiaste y todavia no publicaste. TRES: volver a una version vieja desde el historial no andaba, toda version salia como danada. Arreglado.",
-  "sha256": "158e0c71398215cc6ba514f9630c96015cae94b62a0e72db37e1ed3725041fdb",
-  "size": 20192738,
-  "url": "panel/PanelMyS-v61.zip"
+  "version": 62,
+  "label": "1.20.0 - eliminar desde el editor y la clave siempre cargada",
+  "notes": "Dos cosas. UNO: al EDITAR una publicacion aparece abajo el boton ELIMINAR PUBLICACION. Pregunta antes, la manda a la papelera -se puede recuperar durante unos dias- y lo sube al sitio en el momento, asi los vendedores dejan de verla sin tener que apretar otro boton. DOS: la clave de publicacion queda guardada tambien fuera de la carpeta del programa, asi una actualizacion no puede dejar a una computadora pidiendo codigo. Y el instalador de sucursal ahora carga la clave del equipo aunque la computadora ya tuviera una instalacion vieja sin clave, que era lo que hacia aparecer el pedido de codigo.",
+  "sha256": "eba33126e38d2a1f851b1964d93c37e1e972eac060b852cff6009c388b8b5708",
+  "size": 20192714,
+  "url": "panel/PanelMyS-v62.zip"
 }
