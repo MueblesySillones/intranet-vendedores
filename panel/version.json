@@ -1,8 +1,8 @@
 {
-  "version": 62,
-  "label": "1.20.0 - eliminar desde el editor y la clave siempre cargada",
-  "notes": "Dos cosas. UNO: al EDITAR una publicacion aparece abajo el boton ELIMINAR PUBLICACION. Pregunta antes, la manda a la papelera -se puede recuperar durante unos dias- y lo sube al sitio en el momento, asi los vendedores dejan de verla sin tener que apretar otro boton. DOS: la clave de publicacion queda guardada tambien fuera de la carpeta del programa, asi una actualizacion no puede dejar a una computadora pidiendo codigo. Y el instalador de sucursal ahora carga la clave del equipo aunque la computadora ya tuviera una instalacion vieja sin clave, que era lo que hacia aparecer el pedido de codigo.",
-  "sha256": "eba33126e38d2a1f851b1964d93c37e1e972eac060b852cff6009c388b8b5708",
-  "size": 20192714,
-  "url": "panel/PanelMyS-v62.zip"
+  "version": 63,
+  "label": "1.20.1 - la clave viene en el programa y certificados propios",
+  "notes": "Dos arreglos para que publicar no falle en ninguna computadora. UNO: en algunas sucursales aparecia No pude ver lo que esta publicado, CERTIFICATE_VERIFY_FAILED. Windows no trae todas las autoridades de certificados, y GitHub usa una que esas computadoras no tenian, asi que el panel no podia verificar la conexion. Ahora el panel trae su propia lista de certificados y ya no depende de lo que tenga cada Windows. DOS: la clave de publicacion del equipo viene adentro del programa. Una computadora que no tenia clave, o tenia una vieja que no andaba, ahora publica igual: usa la del equipo sola y la guarda, sin pedir ningun codigo y sin reinstalar.",
+  "sha256": "f0ddb1bf463b5d30db30a949e77cc067adbcab9666b4e0436ca77cd88afda77d",
+  "size": 20327847,
+  "url": "panel/PanelMyS-v63.zip"
 }
