@@ -14,6 +14,32 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmu5j0ni6cman",
+          "titulo": "MESA OKLAHOMA. 1.20x0.80x0.78mts",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-17",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "descargables",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Madera maciza acacia / abedul."
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1789649349701.png",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Madera maciza acacia / abedul.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1789649349701.png\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmu2of7mekqyr",
           "titulo": "INFO SUCURSALES! Importante para enviar a clientes y tener la info a mano. Pueden copiar y pegar",
           "autor": "Marketing",
@@ -32,6 +58,64 @@ window.MODULES = [
             }
           ],
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">📍 POLO HUDSON<br>▫️ Calle 47 Nº6750, Berazategui<br>🕑 Lun-Sáb 9:00-19:30 | Dom 11:00-20:00 | Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/4vXnKWUBLrgZ5REM6<br><br>📍 CABA<br>▫️ Av. Belgrano 2419, Balvanera<br>🕑 Lun-Sáb 9:30-19:30 | Dom/Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/ijMcfriTbrV83wiz8<br><br>📍 CANNING<br>▫️ Mariano Castex 2775, Canning<br>🕑 Lun-Sáb 10:00-19:00 | Dom 10:00-17:00 | Feriados 14:00-19:00<br>🅿️ Estacionamiento exclusivo y gratuito<br>🗺️ https://maps.app.goo.gl/JF1oEiaHBqc5Abrx9<br><br>📍 NORCENTER<br>▫️ Esteban Echeverría 3750, Munro<br>🕑 Lun-Dom y feriados 12:00-20:00<br>🅿️ Estacionamiento gratuito (shopping)<br>🗺️ https://maps.app.goo.gl/eiDKH29T8ry6hX3G9<br><br>📍 PILAR<br>▫️ Colectora Panamericana Av. 12 de Octubre 1466, Manuel Alberti, partido de Pilar. Prov. Bs. As.<br>🕑 Lun-Sáb 10:00-19:00<br>🅿️ Estacionamiento gratuito<br>🗺️  https://maps.app.goo.gl/zPktNgfDMJp9jucc8</p></div>"
+        },
+        {
+          "id": "dmu1oe8faeo5z",
+          "titulo": "KK",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-14",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "JK"
+            },
+            {
+              "t": "ref",
+              "key": "descargables",
+              "mod": "Material descargable",
+              "sub": "Promociones vigentes",
+              "bi": 4,
+              "clase": "galería",
+              "detalle": "1 imagen",
+              "prev": {
+                "t": "fotos",
+                "srcs": [
+                  "assets/_modulos/descargables_gal_1788552589400_0.png"
+                ],
+                "total": 1
+              },
+              "icon": "download",
+              "color": "--c-caba"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">JK</p></div><div class=\"db\" data-bi=\"1\"><a class=\"m-ref con-previa con-fotos\" href=\"#descargables/b4\"><span class=\"mr-pv mr-tira\"><img src=\"assets/_modulos/descargables_gal_1788552589400_0.png\" alt=\"\" loading=\"lazy\"></span><span class=\"mr-fila\"><span class=\"mr-ic\" style=\"background:var(--c-caba)\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span></span><span class=\"mr-tx\"><span class=\"mr-t\">Material descargable<span class=\"mr-sub\">Promociones vigentes</span></span><span class=\"mr-d\">galería · 1 imagen</span></span><span class=\"mr-go\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/><polyline points=\"15 3 21 3 21 9\"/><line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/></svg></span></span></span></a></div>"
+        },
+        {
+          "id": "dmu1o6arfy95m",
+          "titulo": "PRUEBA",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-14",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "HOLA 123 PROBANDO"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">HOLA 123 PROBANDO</p></div>"
         },
         {
           "id": "dmtt0sl6nl2y7",
