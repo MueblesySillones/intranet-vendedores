@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.21.0"
-NUEVO_LABEL = "1.21.0 - Para desarrolladores: el archivo de traspaso"
-NUEVAS_NOTAS = ("El boton Recuperacion ahora se llama Para desarrolladores, y genera el archivo que se le entrega a quien vaya a trabajar sobre el sistema. Novedades: se abre con doble clic, sin contrasena (antes iba cifrado, y una contrasena perdida dejaba el archivo inservible justo cuando mas hacia falta); trae el paso a paso de que hay que hacer, en orden, para darle acceso a un desarrollador, y una lista de que puede tocar con cada acceso; suma la configuracion MCP para que pueda trabajar con inteligencia artificial sobre el codigo, el sitio y la base de datos; y el inventario de cuentas ahora incluye Supabase y Google, que faltaban. Las secciones son desplegables, asi el archivo se abre mostrando lo que se usa y no un muro de texto. Importante: el archivo lleva la clave de publicacion escrita adentro, asi que se manda por un canal privado y no se deja en carpetas compartidas.")
+NUEVA_PUBLICA = "1.22.0"
+NUEVO_LABEL = "1.22.0 - Configuracion, y el panel con menos ruido"
+NUEVAS_NOTAS = ("La barra de la izquierda quedo mas limpia. El buscador que decia 'Buscar en el panel' se saco: nunca tuvo nada detras, era de adorno, y ocupaba lugar. El cartel que dice como se llama esta computadora ya no parece un boton: antes tenia una flechita y cambiaba al pasarle el mouse, pero al tocarlo no pasaba nada. Abajo, los cuatro botones apretados pasaron a ser dos: Configuracion y Cerrar panel. Adentro de Configuracion estan Historial, Avisar novedad y Para desarrolladores, cada uno con una linea que explica para que sirve. Y algo nuevo: ahora se le puede poner nombre a la computadora. En vez de que todas digan 'Central', cada una puede llamarse Marketing, Canning, o lo que sirva para saber cual es cual cuando hay varias publicando. Se cambia desde Configuracion y se guarda en esa maquina. Ademas, el archivo Para desarrolladores ahora se imprime completo: si se manda a imprimir o se guarda como PDF, las secciones plegadas se abren solas en vez de quedar afuera del papel.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

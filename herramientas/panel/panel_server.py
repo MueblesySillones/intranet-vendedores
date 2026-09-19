@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 66
+VERSION = 67
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,23 +343,25 @@ VERSION = 66
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.21.0"
-VERSION_LABEL = "1.21.0 - Para desarrolladores: el archivo de traspaso"
+VERSION_PUBLICA = "1.22.0"
+VERSION_LABEL = "1.22.0 - Configuracion, y el panel con menos ruido"
 VERSION_NOTES = (
-                 "El boton Recuperacion ahora se llama Para desarrolladores, y "
-                 "genera el archivo que se le entrega a quien vaya a trabajar sobre "
-                 "el sistema. Novedades: se abre con doble clic, sin contrasena "
-                 "(antes iba cifrado, y una contrasena perdida dejaba el archivo "
-                 "inservible justo cuando mas hacia falta); trae el paso a paso de "
-                 "que hay que hacer, en orden, para darle acceso a un desarrollador, "
-                 "y una lista de que puede tocar con cada acceso; suma la "
-                 "configuracion MCP para que pueda trabajar con inteligencia "
-                 "artificial sobre el codigo, el sitio y la base de datos; y el "
-                 "inventario de cuentas ahora incluye Supabase y Google, que "
-                 "faltaban. Las secciones son desplegables, asi el archivo se abre "
-                 "mostrando lo que se usa y no un muro de texto. Importante: el "
-                 "archivo lleva la clave de publicacion escrita adentro, asi que se "
-                 "manda por un canal privado y no se deja en carpetas compartidas.")
+                 "La barra de la izquierda quedo mas limpia. El buscador que decia "
+                 "'Buscar en el panel' se saco: nunca tuvo nada detras, era de "
+                 "adorno, y ocupaba lugar. El cartel que dice como se llama esta "
+                 "computadora ya no parece un boton: antes tenia una flechita y "
+                 "cambiaba al pasarle el mouse, pero al tocarlo no pasaba nada. "
+                 "Abajo, los cuatro botones apretados pasaron a ser dos: "
+                 "Configuracion y Cerrar panel. Adentro de Configuracion estan "
+                 "Historial, Avisar novedad y Para desarrolladores, cada uno con una "
+                 "linea que explica para que sirve. Y algo nuevo: ahora se le puede "
+                 "poner nombre a la computadora. En vez de que todas digan "
+                 "'Central', cada una puede llamarse Marketing, Canning, o lo que "
+                 "sirva para saber cual es cual cuando hay varias publicando. Se "
+                 "cambia desde Configuracion y se guarda en esa maquina. Ademas, el "
+                 "archivo Para desarrolladores ahora se imprime completo: si se "
+                 "manda a imprimir o se guarda como PDF, las secciones plegadas se "
+                 "abren solas en vez de quedar afuera del papel.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
