@@ -430,15 +430,27 @@ function aplicarRol(cfg) {
   const gs = $('#gitState');
   if (gs) gs.hidden = true;
   // el selector de sucursal del sidebar muestra quién es esta computadora
-  const nombre = central ? 'Central' : ((cfg && cfg.usuario) || 'Sucursal');
-  const sn = $('#sucNombre'), sa = $('#sucAv'), sb2 = $('#sucBtn');
-  if (sn) sn.textContent = nombre;
-  if (sa) sa.textContent = (nombre.trim().charAt(0) || 'C').toUpperCase();
+  NOMBRE_DEFECTO = central ? 'Central' : ((cfg && cfg.usuario) || 'Sucursal');
+  pintarNombreEquipo(cfg && cfg.nombre_equipo);
+  const sb2 = $('#sucBtn');
   if (sb2) sb2.title = central ? 'Esta computadora publica al sitio.' : 'Publicás directo al sitio online.';
   // botón de publicar dentro del editor. Va por rotularBoton y no por
   // textContent: el botón lleva un <svg> al lado del texto y un textContent
   // pelado se lo comía (quedaba "Publicar" sin el ícono del avión).
   rotularBoton('#detPublicar', 'Publicar');
+}
+
+/* Cómo se llama esta computadora si la persona no eligió nada: 'Central' o el
+   usuario de la sucursal. Lo fija cargarConfig() al arrancar. */
+let NOMBRE_DEFECTO = 'Central';
+
+/* El cartel del sidebar. Se llama al arrancar y cada vez que se guarda un
+   nombre nuevo desde Configuración. Vacío = vuelve al de siempre. */
+function pintarNombreEquipo(nombre) {
+  const n = (nombre || '').trim() || NOMBRE_DEFECTO;
+  const sn = $('#sucNombre'), sa = $('#sucAv');
+  if (sn) sn.textContent = n;
+  if (sa) sa.textContent = (n.charAt(0) || 'C').toUpperCase();
 }
 
 function accionPublicarEditor() { return publicarCambios(); }
@@ -2070,7 +2082,8 @@ function ahoraLocal() {
     });
   };
 
-  $('#btnAvisar').onclick = () => {
+  $('#cfgAvisar').onclick = () => {
+    cerrarConfig();
     pintarVigencia();
     pintarLista();
     abrirModal(modal);
@@ -2118,7 +2131,8 @@ function ahoraLocal() {
       hour: '2-digit', minute: '2-digit' });
   };
 
-  $('#btnHistorial').onclick = async () => {
+  $('#cfgHistorial').onclick = async () => {
+    cerrarConfig();
     abrirModal(modal);
     const caja = $('#histLista');
     caja.innerHTML = '<div class="muted">Buscando las últimas publicaciones…</div>';
@@ -4296,10 +4310,10 @@ document.addEventListener('keydown', e => {
   // los modales informativos cierran con Escape como todo lo demás. El de
   // confirmar NO entra acá a propósito: su Escape lo maneja confirmar() y una
   // pregunta destructiva no se descarta por accidente.
-  for (const id of ['histModal', 'avisarModal', 'kitModal']) {
+  for (const id of ['histModal', 'avisarModal', 'kitModal', 'configModal']) {
     const m = document.getElementById(id);
     /* con el armazón de la maqueta, "abierto" es la clase .on (no [hidden]) */
-    if (m && m.classList.contains('on')) { const x = m.querySelector('[data-cerrar-hist], [data-cerrar-avisar], [data-cerrar-kit]'); if (x) x.click(); return; }
+    if (m && m.classList.contains('on')) { const x = m.querySelector('[data-cerrar-hist], [data-cerrar-avisar], [data-cerrar-kit], [data-cerrar-config]'); if (x) x.click(); return; }
   }
 });
 
@@ -4310,7 +4324,7 @@ document.addEventListener('click', e => {
   const f = e.target;
   if (!(f instanceof HTMLElement) || !f.classList.contains('fondo')) return;
   if (['fondo', 'confirmModal', 'bandeja', 'mActualizando'].includes(f.id)) return;
-  const x = f.querySelector('[data-cerrar-hist], [data-cerrar-avisar], [data-cerrar-kit], .comp-cerrar');
+  const x = f.querySelector('[data-cerrar-hist], [data-cerrar-avisar], [data-cerrar-kit], [data-cerrar-config], .comp-cerrar');
   if (x) x.click();
 });
 
@@ -4951,6 +4965,8 @@ function kitVisorHTML(kit, fecha) {
     'summary::after{content:"▾";margin-left:auto;color:#8C857A;font-size:13px}',
     'details[open] summary::after{content:"▴"}',
     'summary:hover{background:#F7F5F1;border-radius:12px}',
+    '@media print{body{padding:0}.caja{border:0;max-width:none}',
+    'summary::after{display:none}details{break-inside:avoid}}',
     'details>*:not(summary){margin-left:16px;margin-right:16px}',
     'details>*:last-child{margin-bottom:15px}',
     '.clave-caja{border:2px solid #B5503F;background:#FBF0EC;border-radius:11px;padding:13px 15px;margin-bottom:10px}',
@@ -5029,15 +5045,59 @@ function kitVisorHTML(kit, fecha) {
     ' av.appendChild(ul);c.appendChild(av);',
     '}',
     'pintar(K);',
+    '/* al imprimir o guardar como PDF se abren todas las secciones: si no, lo',
+    '   que quedo plegado no sale en el papel y el documento sale incompleto */',
+    'window.addEventListener("beforeprint",function(){',
+    ' document.querySelectorAll("details").forEach(function(d){d.open=true;});});',
     cierreScript, '</body></html>',
   ].join('');
 }
 
+/* Cierra Configuración para abrir lo que se eligió adentro. Está suelta porque
+   la usan los tres bloques de abajo (historial, avisar, kit), que viven cada
+   uno en su propia función. */
+function cerrarConfig() {
+  const m = $('#configModal');
+  if (m && m.classList.contains('on')) esconderModal(m);
+}
+
+/* ===================================================================
+   CONFIGURACIÓN
+   Un solo botón en el pie del sidebar en vez de cuatro apretados. Adentro:
+   cómo se llama esta computadora, y las tres cosas que antes estaban sueltas.
+   =================================================================== */
+(function initConfig() {
+  const modal = $('#configModal'); if (!modal) return;
+  const abrir = () => {
+    /* el nombre se relee de la config cada vez: si lo cambiaron en otra
+       ventana del panel, no queremos mostrar el viejo */
+    api('/api/config').then(c => { $('#cfgNombre').value = (c && c.nombre_equipo) || ''; })
+      .catch(() => { $('#cfgNombre').value = ''; });
+    $('#cfgAviso').textContent = '';
+    abrirModal(modal);
+  };
+  const btn = $('#btnConfig'); if (btn) btn.onclick = abrir;
+  modal.querySelectorAll('[data-cerrar-config]').forEach(b => { b.onclick = () => esconderModal(modal); });
+
+  $('#cfgGuardar').onclick = () => conBoton('#cfgGuardar', 'Guardando…', async () => {
+    const nombre = $('#cfgNombre').value.trim();
+    const r = await api('/api/set-nombre-equipo', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre }),
+    });
+    if (!r.ok) { $('#cfgAviso').style.color = 'var(--danger)'; $('#cfgAviso').textContent = r.error || 'No se pudo guardar.'; return; }
+    pintarNombreEquipo(r.nombre_equipo);
+    $('#cfgAviso').style.color = 'var(--ok)';
+    $('#cfgAviso').textContent = r.nombre_equipo ? 'Nombre guardado ✓' : 'Volvió al nombre de siempre ✓';
+    toast('Nombre guardado ✓', 'ok');
+  });
+})();
+
 (function initKit() {
   const modal = $('#kitModal'); if (!modal) return;
-  const abrir = () => { $('#kitAviso').textContent = ''; abrirModal(modal); };
+  const abrir = () => { cerrarConfig(); $('#kitAviso').textContent = ''; abrirModal(modal); };
   const cerrar = () => { esconderModal(modal); };
-  const btn = $('#btnKit'); if (btn) btn.onclick = abrir;
+  const btn = $('#cfgKit'); if (btn) btn.onclick = abrir;
   modal.querySelectorAll('[data-cerrar-kit]').forEach(b => { b.onclick = cerrar; });
 
   /* conBoton se encarga de desactivar el botón mientras trabaja (así el doble

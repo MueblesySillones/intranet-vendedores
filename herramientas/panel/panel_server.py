@@ -272,6 +272,10 @@ CONFIG, ROL = cargar_config()
 ROL = ROL.strip().lower()                                        # 'central' | 'colaborador'
 ES_CENTRAL = ROL != "colaborador"
 USUARIO = (CONFIG.get("usuario") or ("Central" if ES_CENTRAL else "Colaborador")).strip()
+# Como quiere llamarse ESTA computadora en el panel. Vacio = se usa el rol
+# ("Central" / el usuario). Lo elige la persona desde Configuracion: con varias
+# maquinas publicando, "Central" no alcanza para saber cual es cual.
+NOMBRE_EQUIPO = (CONFIG.get("nombre_equipo") or "").strip()
 CENTRAL_URL = (CONFIG.get("central_url") or "").strip().rstrip("/")   # solo colaborador
 # Fuentes por INTERNET (sin Tailscale ni central prendida): la web publica sirve
 # el paquete de actualizacion (panel/version.json + panel/PanelMyS-vNN.zip) y el
@@ -1594,6 +1598,28 @@ def guardar_publish_token(token):
     PUBLISH_TOKEN = token
     _guardar_identidad(cfg)
     return {"ok": True}
+
+
+def guardar_nombre_equipo(nombre):
+    """Guarda como se llama esta computadora en panel_config.json. Vacio =
+    vuelve al nombre por defecto (el rol)."""
+    global NOMBRE_EQUIPO
+    nombre = re.sub(r"\s+", " ", (nombre or "")).strip()[:40]
+    p = os.path.join(EXE_DIR, "panel_config.json")
+    cfg = {}
+    if os.path.isfile(p):
+        try:
+            cfg = json.load(open(p, encoding="utf-8-sig"))
+        except (ValueError, OSError):
+            cfg = {}
+    cfg["nombre_equipo"] = nombre
+    try:
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, ensure_ascii=False, indent=2)
+    except OSError as e:  # noqa
+        return {"ok": False, "error": "no pude guardar el nombre: %s" % e}
+    NOMBRE_EQUIPO = nombre
+    return {"ok": True, "nombre_equipo": nombre}
 
 
 def publicar_cerebro(mensaje="", _reintento=False):
@@ -3579,6 +3605,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/config":
             return self._json({
                 "rol": ROL, "es_central": ES_CENTRAL, "usuario": USUARIO,
+                "nombre_equipo": NOMBRE_EQUIPO,
                 "central_url": CENTRAL_URL, "pc": _pc(),
                 "version": VERSION, "version_label": VERSION_LABEL,
                 "version_publica": VERSION_PUBLICA,
@@ -3757,6 +3784,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/set-publish-token":
                 d = self._leer_json()
                 return self._json(guardar_publish_token(d.get("token", "")))
+            if path == "/api/set-nombre-equipo":
+                d = self._leer_json()
+                return self._json(guardar_nombre_equipo(d.get("nombre", "")))
             if path == "/api/shutdown":
                 # cerrar el panel (no hay consola para cerrar): respondemos y salimos
                 self._json({"ok": True})

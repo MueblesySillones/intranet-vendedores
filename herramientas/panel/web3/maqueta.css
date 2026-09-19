@@ -40,7 +40,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .marca .ver{display:block;font-size:var(--t-nano);color:var(--ink3);letter-spacing:.04em}
 .suc{display:flex;align-items:center;gap:9px;width:100%;height:44px;padding:0 9px;border:1px solid var(--line);
      border-radius:var(--r-sm);background:var(--surface);text-align:left;transition:border-color .18s var(--mov)}
-.suc:hover{border-color:var(--line3)}
+/* es un cartel, no un boton: sin hover ni cursor de mano. El nombre se cambia
+   desde Configuracion. */
 .suc .av{width:26px;height:26px;border-radius:6px;background:var(--accent);color:#fff;display:inline-flex;
      align-items:center;justify-content:center;font-size:var(--t-micro);font-weight:700;flex:0 0 26px}
 .suc .txt{flex:1;min-width:0}
@@ -48,13 +49,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .suc .txt span{display:block;font-size:var(--t-nano);color:var(--ink3);line-height:1.25;
      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .suc>svg{width:14px;height:14px;color:var(--ink3);stroke-width:1.8}
-.buscar{display:flex;align-items:center;gap:8px;width:100%;height:34px;margin-top:8px;padding:0 9px;
-     border-radius:var(--r-sm);color:var(--ink3);font-size:var(--t-mini);transition:background .16s var(--mov)}
-.buscar:hover{background:var(--accent-soft);color:var(--ink2)}
-.buscar svg{width:14px;height:14px;stroke-width:1.8}
-.buscar{white-space:nowrap}
-.buscar kbd{margin-left:auto;flex-shrink:0;font-family:"JetBrains Mono",monospace;font-size:var(--t-nano);padding:2px 5px;
-     border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink3)}
+/* El buscador del sidebar se saco: nunca tuvo codigo detras, era decorativo,
+   y el espacio se lo lleva la lista de secciones. Buscar de verdad se hace
+   dentro de cada seccion (Cartelera, Modulos, Papelera tienen su campo). */
 .nav-body{flex:1;overflow-y:auto;padding:6px 12px}
 .grupo{margin-top:16px}
 .grupo:first-child{margin-top:4px}
@@ -704,6 +701,17 @@ body.trabado{overflow:hidden}
      background:var(--panel);border:1px solid var(--line)}
 .clave code{flex:1;font-family:"JetBrains Mono",monospace;font-size:15px;letter-spacing:.06em;
      color:var(--ink);word-break:break-all}
+/* Configuracion: las opciones que antes vivian sueltas en el pie del sidebar */
+.cfg-acc{display:flex;flex-direction:column;gap:7px;margin-top:14px;
+     padding-top:14px;border-top:1px solid var(--line)}
+.cfg-op{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;
+     padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-md);
+     background:var(--surface);transition:border-color .16s var(--mov),background .16s var(--mov)}
+.cfg-op:hover{border-color:var(--line3);background:var(--accent-soft)}
+.cfg-op svg{width:17px;height:17px;color:var(--ink3);stroke-width:1.8;margin-top:1px;flex:0 0 17px}
+.cfg-op b{display:block;font-size:var(--t-mini);font-weight:600;color:var(--ink)}
+.cfg-op>span>span{display:block;font-size:var(--t-nano);color:var(--ink3);line-height:1.5;margin-top:2px}
+
 .peligro{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:var(--r-md);
      background:rgba(181,80,63,.07);border:1px solid rgba(181,80,63,.22)}
 .peligro svg{width:16px;height:16px;color:var(--danger);stroke-width:1.9;margin-top:1px;flex:0 0 16px}

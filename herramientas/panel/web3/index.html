@@ -32,15 +32,13 @@
         <img src="/static/logo-marca.png" alt="">
         <span><b>Intranet MyS</b><span class="ver" id="navVersion">Versión</span></span>
       </div>
-      <button class="suc" id="sucBtn" type="button">
+      <!-- Cartel, no boton: dice que computadora es esta y nada mas. Antes era
+           un <button> con flechita que no hacia nada al tocarlo. El nombre se
+           cambia desde Configuracion. -->
+      <div class="suc" id="sucBtn">
         <span class="av" id="sucAv">C</span>
         <span class="txt"><b id="sucNombre">Central</b><span id="sucSub">Muebles y Sillones</span></span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>
-      </button>
-      <button class="buscar" id="navBuscar" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        Buscar en el panel
-      </button>
+      </div>
     </div>
 
     <div class="nav-body" id="navSecs">
@@ -91,9 +89,9 @@
         <span><b id="estadoTit">Cargando…</b><span id="estadoSub">Conectando con el panel</span></span>
       </div>
       <div class="pie-links">
-        <button type="button" id="btnHistorial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Historial</button>
-        <button type="button" id="btnKit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>Para desarrolladores</button>
-        <button type="button" id="btnAvisar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Avisar novedad</button>
+        <!-- Historial, Para desarrolladores y Avisar novedad se mudaron adentro
+             de Configuracion: eran cuatro botones apretados en el pie. -->
+        <button type="button" id="btnConfig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configuración</button>
         <button type="button" id="btnCerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Cerrar panel</button>
         <button type="button" id="btnTraer" class="ancho" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>Traer última versión</button>
       </div>
@@ -646,6 +644,42 @@
 </div>
 
 <!-- ============ MODAL: kit de recuperación ============ -->
+<!-- ============ MODAL: configuración ============ -->
+<div class="fondo" id="configModal">
+  <div class="modal chico" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Configuración<span class="sub">Ajustes de esta computadora</span></h2>
+      <button class="comp-cerrar" type="button" data-cerrar-config aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-cuerpo p16">
+      <label class="fld"><span>Cómo se llama esta computadora</span>
+        <input type="text" id="cfgNombre" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Ej: Marketing, Canning, La compu de Ana"></label>
+      <p class="fld-note" style="margin:0 0 4px">Es el nombre que se ve arriba a la izquierda. Sirve para
+        saber de qué máquina salió cada publicación cuando hay varias. Dejalo vacío para volver al de siempre.</p>
+      <div id="cfgAviso" class="fld-note" style="min-height:16px"></div>
+
+      <div class="cfg-acc">
+        <button type="button" class="cfg-op" id="cfgHistorial">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          <span><b>Historial de publicaciones</b><span>Cada vez que publicás queda una versión guardada</span></span>
+        </button>
+        <button type="button" class="cfg-op" id="cfgAvisar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span><b>Avisar novedad</b><span>Marcar publicaciones con la chapita «NUEVO»</span></span>
+        </button>
+        <button type="button" class="cfg-op" id="cfgKit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>
+          <span><b>Para desarrolladores</b><span>El archivo que se le entrega a quien trabaje sobre el sistema</span></span>
+        </button>
+      </div>
+    </div>
+    <div class="modal-pie" style="display:flex;gap:8px">
+      <button class="btn btn-2" type="button" data-cerrar-config style="flex:1">Cerrar</button>
+      <button class="btn btn-1" id="cfgGuardar" type="button" style="flex:1">Guardar el nombre</button>
+    </div>
+  </div>
+</div>
+
 <div class="fondo" id="kitModal">
   <div class="modal chico" role="dialog" aria-modal="true">
     <div class="modal-cab izq">
