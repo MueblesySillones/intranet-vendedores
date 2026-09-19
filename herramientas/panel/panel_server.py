@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 68
+VERSION = 69
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,33 +343,21 @@ VERSION = 68
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.22.1"
-VERSION_LABEL = "1.22.1 - el panel avisa solo cuando hay version nueva"
+VERSION_PUBLICA = "1.23.0"
+VERSION_LABEL = "1.23.0 - todo lo de abajo, adentro de Configuracion"
 VERSION_NOTES = (
-                 "Arreglado: el panel buscaba versiones nuevas UNA sola vez, cuando "
-                 "se abria. Quien dejaba el panel abierto toda la semana no se "
-                 "enteraba nunca de que habia una actualizacion, y no hay forma de "
-                 "que se le ocurra reiniciarlo para averiguarlo. Ahora vuelve a "
-                 "mirar cada media hora, asi el cartel de 'Hay una version nueva' "
-                 "aparece solo sin tener que cerrar nada. Ojo: esta mejora recien "
-                 "sirve a partir de esta version; para llegar hasta aca hay que "
-                 "cerrar y volver a abrir el panel una ultima vez. Ademas, en esta "
-                 "version: la barra de la izquierda quedo mas limpia. El buscador "
-                 "que decia 'Buscar en el panel' se saco: nunca tuvo nada detras, "
-                 "era de adorno, y ocupaba lugar. El cartel que dice como se llama "
-                 "esta computadora ya no parece un boton: antes tenia una flechita y "
-                 "cambiaba al pasarle el mouse, pero al tocarlo no pasaba nada. "
-                 "Abajo, los cuatro botones apretados pasaron a ser dos: "
-                 "Configuracion y Cerrar panel. Adentro de Configuracion estan "
-                 "Historial, Avisar novedad y Para desarrolladores, cada uno con una "
-                 "linea que explica para que sirve. Y algo nuevo: ahora se le puede "
-                 "poner nombre a la computadora. En vez de que todas digan "
-                 "'Central', cada una puede llamarse Marketing, Canning, o lo que "
-                 "sirva para saber cual es cual cuando hay varias publicando. Se "
-                 "cambia desde Configuracion y se guarda en esa maquina. Ademas, el "
-                 "archivo Para desarrolladores ahora se imprime completo: si se "
-                 "manda a imprimir o se guarda como PDF, las secciones plegadas se "
-                 "abren solas en vez de quedar afuera del papel.")
+                 "El pie de la barra de la izquierda queda con un solo boton: "
+                 "Configuracion. Adentro esta todo lo que antes andaba suelto ahi "
+                 "abajo. Traer ultima version sigue estando (solo en las sucursales, "
+                 "la central no la necesita), pero mas discreta: sin recuadro y en "
+                 "letra chica, porque se usa de vez en cuando y no tiene por que "
+                 "competir con lo de todos los dias. Y Cerrar panel ahora se llama "
+                 "Apagar el panel, tambien adentro de Configuracion. No se saco a "
+                 "proposito: el panel se abre como una pestaña del navegador, pero "
+                 "el programa corre aparte, asi que cerrar la pestaña NO lo apaga y "
+                 "queda prendido en la maquina. Ahora el boton lo aclara. Si solo "
+                 "querias dejar de usarlo, cerrar la pestaña alcanza igual que "
+                 "siempre.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
