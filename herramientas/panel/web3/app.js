@@ -4903,18 +4903,21 @@ cargarConfig().finally(() => {
    Antes iba cifrado con contraseña. Se sacó a propósito: este archivo lo va
    a abrir alguien que no estuvo cuando se generó, quizás un año después, y
    una contraseña perdida lo volvía inservible — el peor final posible para
-   un documento de traspaso. Para poder sacarla, el archivo dejó de guardar
-   la clave de publicación: ahora dice DÓNDE está y cómo regenerarla, así no
-   hay ningún secreto adentro que proteger.
+   un documento de traspaso.
+
+   El archivo SÍ lleva la clave de publicación escrita (decisión del dueño
+   del sistema: que el traspaso venga completo, sin mandar a buscar cosas a
+   otra computadora). O sea: sin contraseña y con un secreto adentro. Por eso
+   el visor lo muestra en un recuadro rojo y los avisos del final arrancan
+   diciendo qué es. Quien lo tenga puede publicar en la intranet — no llega
+   al servidor, ni al código, ni a la base de datos.
    =================================================================== */
 
 /* El visor que se descarga. Se arma como lista de líneas (sin backticks
    adentro) para que el JavaScript del visor no se mezcle con el de acá. */
-/* Se abre con DOBLE CLIC, sin contraseña. Antes iba cifrado, pero esto es un
-   documento de traspaso: lo va a abrir alguien que no estuvo cuando se generó,
-   quizás un año después, y una contraseña perdida lo volvía basura. Para poder
-   sacarla, el archivo dejó de guardar la clave de publicación: ahora dice dónde
-   está y cómo regenerarla, así no hay ningún secreto adentro. */
+/* Se abre con DOBLE CLIC, sin contraseña, y lleva la clave de publicación
+   escrita adentro. Ver la nota larga arriba: es una decisión tomada a
+   sabiendas, no un descuido. */
 function kitVisorHTML(kit, fecha) {
   const datos = JSON.stringify(kit).replace(/</g, '\\u003c');
   const cierreScript = '<' + '/script>';
@@ -4940,6 +4943,11 @@ function kitVisorHTML(kit, fecha) {
     'overflow-x:auto;font-family:ui-monospace,Consolas,monospace;line-height:1.45}',
     'ul{padding-left:20px;font-size:14px}ul li{margin:5px 0}',
     '.ruta{font-family:ui-monospace,Consolas,monospace;font-size:13px;color:#5A5348;margin:2px 0 8px}',
+    '.clave-caja{border:2px solid #B5503F;background:#FBF0EC;border-radius:11px;padding:13px 15px;margin-bottom:10px}',
+    '.clave-tit{font-size:13px;color:#8C3A2C;font-weight:600;margin-bottom:9px}',
+    '.clave-val{font-family:ui-monospace,Consolas,monospace;font-size:15px;color:#2C2A26;',
+    'background:#fff;border:1px solid #E6C9C3;border-radius:8px;padding:10px 12px;word-break:break-all;',
+    'user-select:all}',
     '</style></head><body><div class="caja">',
     '<h1>Para desarrolladores</h1>',
     '<p class="sub">Intranet de vendedores &middot; Muebles y Sillones &middot; generado el ', fecha, '</p>',
@@ -4957,9 +4965,18 @@ function kitVisorHTML(kit, fecha) {
     '  ["Versión del panel",String(K.version_panel)]].forEach(function(f){c.appendChild(fila(f[0],f[1]));});',
     ' if(K.clave_publicacion){var CP=K.clave_publicacion;',
     '  c.appendChild(h2("La clave de publicación"));',
+    '  if(CP.valor){var kb=document.createElement("div");kb.className="clave-caja";',
+    '   var kt=document.createElement("div");kt.className="clave-tit";',
+    '   kt.textContent="⚠️ Esto es una contraseña. Quien la tenga puede publicar en la intranet.";',
+    '   kb.appendChild(kt);',
+    '   var kv=document.createElement("div");kv.className="clave-val";kv.textContent=CP.valor;',
+    '   kb.appendChild(kv);c.appendChild(kb);}',
     '  var cp=document.createElement("div");cp.className="serv";',
-    '  [["Estado",CP.cargada?"Cargada en esta computadora":"No hay clave cargada acá"],',
-    '   ["Dónde está",CP.donde],["Si no la tenés",CP.si_no_la_tenes]].forEach(function(p){',
+    '  var filas=CP.valor?[["Qué permite",CP.que_permite],["Dónde más está",CP.donde],',
+    '   ["Si no la tenés",CP.si_no_la_tenes]]',
+    '   :[["Estado","No hay clave cargada en esta computadora"],["Dónde está",CP.donde],',
+    '   ["Si no la tenés",CP.si_no_la_tenes]];',
+    '  filas.forEach(function(p){',
     '   var e=document.createElement("p");var b=document.createElement("b");b.textContent=p[0]+": ";',
     '   e.appendChild(b);e.appendChild(document.createTextNode(p[1]));cp.appendChild(e);});',
     '  c.appendChild(cp);}',
