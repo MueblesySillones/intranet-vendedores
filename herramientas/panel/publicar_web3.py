@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.23.1"
-NUEVO_LABEL = "1.23.1 - arreglo: el panel que no podia actualizarse"
-NUEVAS_NOTAS = ("Arreglado un problema que dejaba una computadora sin poder actualizarse nunca mas, y sin avisar. Cuando una actualizacion se corta por la mitad -se apago la maquina, el antivirus corto el proceso- quedaba un archivo de control que a partir de ahi bloqueaba TODOS los intentos siguientes: el panel se cerraba, no pasaba nada, y no aparecia ningun mensaje. Ahora ese archivo, si tiene mas de media hora, se reconoce como basura de un intento muerto y la actualizacion sigue de largo; y si hay otra actualizacion corriendo de verdad, el panel se vuelve a abrir en vez de dejar la pantalla vacia. Aviso importante: una computadora que YA quedo trabada no se arregla sola con esta version, porque el que hace el trabajo es el programa que ya tiene instalado. A esa hay que destrabarla una vez a mano; pedile al area que te pase el paso, son dos clics.")
+NUEVA_PUBLICA = "1.23.2"
+NUEVO_LABEL = "1.23.2 - el actualizador ya no se rinde en silencio"
+NUEVAS_NOTAS = ("Segundo arreglo del mismo tipo: cosas que hacian que una computadora dejara de actualizarse para siempre, sin avisar. Antes, si el panel viejo no terminaba de cerrarse en un minuto, el actualizador se rendia; como el panel seguia ahi, el intento siguiente terminaba igual, y el otro tambien. Ahora lo cierra a la fuerza y sigue: lo que estabas editando ya quedo guardado antes de empezar. Se suma al arreglo de la version anterior, donde un archivo de control que quedaba de un intento cortado bloqueaba todo. Recordatorio: una computadora que YA esta trabada no se arregla sola con esto, porque el trabajo lo hace el programa que ya tiene instalado. Para esas hay dos herramientas: Revisar actualizacion del panel, que dice que esta pasando, y Destrabar actualizacion del panel. Pediselas a Marketing.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

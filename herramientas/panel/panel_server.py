@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 70
+VERSION = 71
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,23 +343,22 @@ VERSION = 70
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.23.1"
-VERSION_LABEL = "1.23.1 - arreglo: el panel que no podia actualizarse"
+VERSION_PUBLICA = "1.23.2"
+VERSION_LABEL = "1.23.2 - el actualizador ya no se rinde en silencio"
 VERSION_NOTES = (
-                 "Arreglado un problema que dejaba una computadora sin poder "
-                 "actualizarse nunca mas, y sin avisar. Cuando una actualizacion se "
-                 "corta por la mitad -se apago la maquina, el antivirus corto el "
-                 "proceso- quedaba un archivo de control que a partir de ahi "
-                 "bloqueaba TODOS los intentos siguientes: el panel se cerraba, no "
-                 "pasaba nada, y no aparecia ningun mensaje. Ahora ese archivo, si "
-                 "tiene mas de media hora, se reconoce como basura de un intento "
-                 "muerto y la actualizacion sigue de largo; y si hay otra "
-                 "actualizacion corriendo de verdad, el panel se vuelve a abrir en "
-                 "vez de dejar la pantalla vacia. Aviso importante: una computadora "
-                 "que YA quedo trabada no se arregla sola con esta version, porque "
-                 "el que hace el trabajo es el programa que ya tiene instalado. A "
-                 "esa hay que destrabarla una vez a mano; pedile al area que te pase "
-                 "el paso, son dos clics.")
+                 "Segundo arreglo del mismo tipo: cosas que hacian que una "
+                 "computadora dejara de actualizarse para siempre, sin avisar. "
+                 "Antes, si el panel viejo no terminaba de cerrarse en un minuto, el "
+                 "actualizador se rendia; como el panel seguia ahi, el intento "
+                 "siguiente terminaba igual, y el otro tambien. Ahora lo cierra a la "
+                 "fuerza y sigue: lo que estabas editando ya quedo guardado antes de "
+                 "empezar. Se suma al arreglo de la version anterior, donde un "
+                 "archivo de control que quedaba de un intento cortado bloqueaba "
+                 "todo. Recordatorio: una computadora que YA esta trabada no se "
+                 "arregla sola con esto, porque el trabajo lo hace el programa que "
+                 "ya tiene instalado. Para esas hay dos herramientas: Revisar "
+                 "actualizacion del panel, que dice que esta pasando, y Destrabar "
+                 "actualizacion del panel. Pediselas a Marketing.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
