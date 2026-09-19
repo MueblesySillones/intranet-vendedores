@@ -595,11 +595,28 @@ def _mcp_para_desarrollador():
     trabajar. La configuracion en si es inofensiva."""
     return {
         "que_es": "Configuracion para que un desarrollador con IA pueda trabajar sobre el sistema.",
-        "antes_de_empezar": [
-            "Invitar la cuenta del desarrollador a la organizacion de GitHub (MueblesySillones).",
-            "Invitarla al equipo de Vercel.",
-            "Invitarla a la organizacion de Supabase.",
-            "Sin esas tres invitaciones los servidores conectan pero no ven nada.",
+        "pasos": [
+            "Pedile sus correos de GitHub, Vercel y Supabase.",
+            "Invitalo a la organizacion de GitHub 'MueblesySillones' (People -> Invite).",
+            "Invitalo al equipo de Vercel (Settings -> Members).",
+            "Invitalo a la organizacion de Supabase (Team -> Invite).",
+            "Sumalo a Cloudflare: el Panel y el Worker no van por MCP.",
+            "Mandale este archivo por un canal privado.",
+            "El crea el .mcp.json de abajo en la raiz del proyecto y entra con sus cuentas.",
+            "Probalo: pedile que muestre los ultimos despliegues de Vercel. Si los ve, funciona.",
+            "Cuando termine: sacalo de las 4 cuentas y rota la clave. Este archivo queda viejo.",
+        ],
+        "alcance": [
+            {"pieza": "Codigo y contenido", "por_donde": "MCP de GitHub",
+             "permite": "Ver y cambiar todo el codigo."},
+            {"pieza": "Sitio publicado", "por_donde": "MCP de Vercel",
+             "permite": "Despliegues, errores, volver atras."},
+            {"pieza": "Base de vendedores", "por_donde": "MCP de Supabase",
+             "permite": "Leer. Escribir solo si se saca el modo solo-lectura."},
+            {"pieza": "Panel de escritorio", "por_donde": "Fuera del MCP",
+             "permite": "Hay que recompilarlo para que llegue a las sucursales."},
+            {"pieza": "Worker que publica", "por_donde": "Fuera del MCP",
+             "permite": "Se maneja con wrangler y la cuenta de Cloudflare."},
         ],
         "archivo": ".mcp.json (va en la raiz de la carpeta del proyecto, en la PC del desarrollador)",
         "contenido": json.dumps({
@@ -612,12 +629,10 @@ def _mcp_para_desarrollador():
             }
         }, indent=2, ensure_ascii=False),
         "notas": [
-            "Supabase arranca en SOLO LECTURA. Para habilitar escritura hay que sacar "
-            "'&read_only=true' de la direccion. Hacerlo solo cuando haga falta: esas tablas "
-            "guardan datos personales de empleados.",
-            "El MCP no llega al Panel (es un programa de escritorio en Python: el codigo esta "
-            "en GitHub pero hay que compilarlo) ni al Worker de Cloudflare (se maneja con "
-            "wrangler y la cuenta de Cloudflare).",
+            "Supabase arranca en SOLO LECTURA. Para escribir, sacar '&read_only=true' de la "
+            "direccion. Son datos personales de empleados: hacerlo solo si hace falta.",
+            "Aca no hay ninguna credencial. Un servidor MCP es una direccion, no una llave: "
+            "quien lo conecta entra con su propia cuenta.",
             "La guia tecnica del sistema esta en CLAUDE.md, en la raiz del repositorio.",
         ],
     }
@@ -647,14 +662,13 @@ def kit_recuperacion():
         "clave_publicacion": {
             "cargada": bool(PUBLISH_TOKEN),
             "valor": PUBLISH_TOKEN or "",
-            "que_permite": "Publicar contenido en la intranet que ven los vendedores. No da acceso "
-                           "al servidor, ni al codigo, ni a la base de datos.",
-            "donde": "Ademas de aca, esta en panel_config.json de cualquier PC con el panel "
-                     "instalado como Central, e incrustada en 'Instalar Sucursal.exe'.",
-            "si_no_la_tenes": "No hace falta recuperarla: se genera una nueva. Entra a Cloudflare, "
-                              "cambia el secreto del Worker mys-cerebro, y despues recompila el "
-                              "panel con la clave nueva (publicar_web3.py). Conviene hacer esto "
-                              "igual cada vez que alguien del equipo se va.",
+            "que_permite": "Publicar contenido en la intranet. NO da acceso al servidor, al codigo "
+                           "ni a la base de datos.",
+            "donde": "Ademas de aca: en panel_config.json de cualquier PC Central, y dentro de "
+                     "'Instalar Sucursal.exe'.",
+            "si_no_la_tenes": "Se genera una nueva: cambia el secreto del Worker en Cloudflare y "
+                              "recompila el panel (publicar_web3.py). Hay que hacerlo igual cada "
+                              "vez que alguien se va.",
         },
         "central_url": CENTRAL_URL,
         "receptor_port": RECEPTOR_PORT,
@@ -683,9 +697,8 @@ def kit_recuperacion():
             {"nombre": "Supabase", "que_es": "La base de datos de la plataforma de reporte de vendedores.",
              "desbloquea": "Los legajos de los vendedores y las capturas que se suben como prueba.",
              "donde": "supabase.com. Proyecto 'emma-agency', referencia " + SUPABASE_PROJECT_REF + ".",
-             "si_lo_perdes": "Sin esta cuenta no se recuperan los datos de los vendedores: no hay copia "
-                             "en ningun otro lado. PENDIENTE: el proyecto comparte organizacion con "
-                             "proyectos ajenos a la muebleria, hay que migrarlo a una organizacion propia."},
+             "si_lo_perdes": "No hay copia en ningun otro lado. PENDIENTE: el proyecto comparte "
+                             "organizacion con proyectos ajenos; hay que migrarlo a una propia."},
             {"nombre": "Google", "que_es": "La planilla en vivo que alimenta la seccion Datos.",
              "desbloquea": "Que la seccion Datos se siga actualizando sola.",
              "donde": "La cuenta de Google del negocio, con el Apps Script conectado a la planilla.",
@@ -702,16 +715,10 @@ def kit_recuperacion():
             "7. Desde ahi ya podes publicar y actualizar como antes.",
         ],
         "avisos": [
-            "ESTE ARCHIVO CONTIENE LA CLAVE DE PUBLICACION ESCRITA. Cualquiera que lo abra puede "
-            "publicar en la intranet. Tratalo como si fuera una contrasena.",
-            "Se abre con doble clic, sin contrasena, para que se pueda leer dentro de un ano cuando "
-            "ya nadie se acuerde de nada. Esa comodidad tiene este costo: cuidalo.",
-            "Mandalo por un canal privado. No lo subas al sitio, ni a GitHub, ni a un Drive compartido "
-            "con gente de afuera.",
-            "Guardalo en dos lugares distintos (por ejemplo un pendrive y el correo de la empresa).",
-            "Cada vez que alguien del equipo se va hay que rotar las claves. El paso a paso esta mas "
-            "arriba, y desde ese momento este archivo queda viejo: hay que generar uno nuevo.",
-            "Si alguna vez pegaste el token de GitHub o la clave de Tailscale en un chat, rotalos ya.",
+            "ESTE ARCHIVO LLEVA LA CLAVE DE PUBLICACION ESCRITA. Tratalo como una contrasena.",
+            "Mandalo por un canal privado. No lo subas al sitio ni a carpetas compartidas.",
+            "Guardalo en dos lugares distintos (un pendrive y el correo de la empresa).",
+            "Cuando alguien se va hay que rotar las claves, y este archivo queda viejo: genera otro.",
         ],
     }
 
