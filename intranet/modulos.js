@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmu8tb1amnmv9",
+          "titulo": "RTA cliente: \"SE ME VA DE PRESUPUESTO\"",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-19",
+          "etiqueta": "capacitacion",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "comunicacion_importante",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "MAURICIO OFRECE LA SIGUIENTE SUGERENCIA: \n\n💡Estuve viendo mucho que generalmente el cliente les responde “ se me va de presupuesto , es muy caro , etc “ \n\nMe parece súper conveniente en ese momento sugerirle además la siguiente herramienta con la que contamos : \n\n(18 y 24 cuotas) pero Ojo !⚠️ es muy importante de qué forma la ofrecen . \n\nNO DIGAN tengo 24 cuotas con un 25% de interés “ \n\nMejor digan : “puedo ayudarte con 24 cuotas para que no te sean tan pesada la inversión con un pequeño costo de financiación de casi un 1% mensual” \n\nSuena menos agresivo y doloroso para el cliente. \n\nEs una herramienta tremenda !!! Q nadie la tiene y además su financiación no existe es muy baja ! Aprovechennnnnn q no se les escape nadie , ofrézcanla siempre ✨✨ excelentes ventas ! Vamos q se va septiembreeeeee"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">MAURICIO OFRECE LA SIGUIENTE SUGERENCIA: <br><br>💡Estuve viendo mucho que generalmente el cliente les responde “ se me va de presupuesto , es muy caro , etc “ <br><br>Me parece súper conveniente en ese momento sugerirle además la siguiente herramienta con la que contamos : <br><br>(18 y 24 cuotas) pero Ojo !⚠️ es muy importante de qué forma la ofrecen . <br><br>NO DIGAN tengo 24 cuotas con un 25% de interés “ <br><br>Mejor digan : “puedo ayudarte con 24 cuotas para que no te sean tan pesada la inversión con un pequeño costo de financiación de casi un 1% mensual” <br><br>Suena menos agresivo y doloroso para el cliente. <br><br>Es una herramienta tremenda !!! Q nadie la tiene y además su financiación no existe es muy baja ! Aprovechennnnnn q no se les escape nadie , ofrézcanla siempre ✨✨ excelentes ventas ! Vamos q se va septiembreeeeee</p></div>"
+        },
+        {
           "id": "dmu5j0ni6cman",
           "titulo": "MESA OKLAHOMA. 1.20x0.80x0.78mts",
           "autor": "Marketing",
