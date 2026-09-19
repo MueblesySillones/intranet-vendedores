@@ -5,3 +5,5 @@ memoria-diseno/
 .claude/
 *.bat
 LEEME.md
+# Documentacion para desarrolladores: va en el repo, no en el sitio publicado
+CLAUDE.md

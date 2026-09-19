@@ -575,6 +575,54 @@ def _repo_del_cerebro():
     return datos
 
 
+# Referencia del proyecto de Supabase donde viven los datos del reporte de
+# vendedores. NO es un secreto (viaja en cada pedido que hace la web), pero se
+# deja aca para que el kit pueda armar la configuracion sin adivinarla.
+SUPABASE_PROJECT_REF = "agsniiuybebhmnbjfqix"
+
+
+def _mcp_para_desarrollador():
+    """La configuracion que necesita un desarrollador para que su herramienta de
+    IA (Claude Code y similares) pueda trabajar sobre este sistema.
+
+    Importante: aca NO hay ninguna credencial, y no puede haberla. Un servidor
+    MCP es una direccion, no una llave: quien lo conecta se autentica con SU
+    propia cuenta. Por eso lo unico que hace falta entregar de verdad es el
+    acceso a las cuentas (ver 'servicios'), no este archivo.
+
+    Va adentro del kit cifrado y no en el repositorio porque el repositorio es
+    publico y el dueno del sistema prefirio no publicar como se entra a
+    trabajar. La configuracion en si es inofensiva."""
+    return {
+        "que_es": "Configuracion para que un desarrollador con IA pueda trabajar sobre el sistema.",
+        "antes_de_empezar": [
+            "Invitar la cuenta del desarrollador a la organizacion de GitHub (MueblesySillones).",
+            "Invitarla al equipo de Vercel.",
+            "Invitarla a la organizacion de Supabase.",
+            "Sin esas tres invitaciones los servidores conectan pero no ven nada.",
+        ],
+        "archivo": ".mcp.json (va en la raiz de la carpeta del proyecto, en la PC del desarrollador)",
+        "contenido": json.dumps({
+            "mcpServers": {
+                "github": {"type": "http", "url": "https://api.githubcopilot.com/mcp/"},
+                "vercel": {"type": "http", "url": "https://mcp.vercel.com"},
+                "supabase": {"type": "http",
+                             "url": "https://mcp.supabase.com/mcp?project_ref=%s&read_only=true"
+                                    % SUPABASE_PROJECT_REF},
+            }
+        }, indent=2, ensure_ascii=False),
+        "notas": [
+            "Supabase arranca en SOLO LECTURA. Para habilitar escritura hay que sacar "
+            "'&read_only=true' de la direccion. Hacerlo solo cuando haga falta: esas tablas "
+            "guardan datos personales de empleados.",
+            "El MCP no llega al Panel (es un programa de escritorio en Python: el codigo esta "
+            "en GitHub pero hay que compilarlo) ni al Worker de Cloudflare (se maneja con "
+            "wrangler y la cuenta de Cloudflare).",
+            "La guia tecnica del sistema esta en CLAUDE.md, en la raiz del repositorio.",
+        ],
+    }
+
+
 def kit_recuperacion():
     """Junta TODO lo necesario para recuperar el control del sistema si esta
     computadora se pierde. El panel no puede fabricar credenciales de GitHub ni
@@ -614,7 +662,18 @@ def kit_recuperacion():
              "desbloquea": "Que una PC nueva se sume a la red.",
              "donde": "login.tailscale.com. La clave de invitacion va incrustada en el instalador de sucursal.",
              "si_lo_perdes": "Genera otra clave reusable en Settings -> Keys y recompila el instalador."},
+            {"nombre": "Supabase", "que_es": "La base de datos de la plataforma de reporte de vendedores.",
+             "desbloquea": "Los legajos de los vendedores y las capturas que se suben como prueba.",
+             "donde": "supabase.com. Proyecto 'emma-agency', referencia " + SUPABASE_PROJECT_REF + ".",
+             "si_lo_perdes": "Sin esta cuenta no se recuperan los datos de los vendedores: no hay copia "
+                             "en ningun otro lado. PENDIENTE: el proyecto comparte organizacion con "
+                             "proyectos ajenos a la muebleria, hay que migrarlo a una organizacion propia."},
+            {"nombre": "Google", "que_es": "La planilla en vivo que alimenta la seccion Datos.",
+             "desbloquea": "Que la seccion Datos se siga actualizando sola.",
+             "donde": "La cuenta de Google del negocio, con el Apps Script conectado a la planilla.",
+             "si_lo_perdes": "La seccion Datos deja de actualizarse. El resto del sistema sigue andando."},
         ],
+        "mcp": _mcp_para_desarrollador(),
         "pasos": [
             "1. Consegui acceso a la cuenta de Cloudflare: es la que manda sobre como se publica.",
             "2. Verifica que el cerebro responda: abri <CEREBRO>/health en el navegador.",
