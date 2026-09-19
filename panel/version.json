@@ -1,8 +1,8 @@
 {
-  "version": 69,
-  "label": "1.23.0 - todo lo de abajo, adentro de Configuracion",
-  "notes": "El pie de la barra de la izquierda queda con un solo boton: Configuracion. Adentro esta todo lo que antes andaba suelto ahi abajo. Traer ultima version sigue estando (solo en las sucursales, la central no la necesita), pero mas discreta: sin recuadro y en letra chica, porque se usa de vez en cuando y no tiene por que competir con lo de todos los dias. Y Cerrar panel ahora se llama Apagar el panel, tambien adentro de Configuracion. No se saco a proposito: el panel se abre como una pestaña del navegador, pero el programa corre aparte, asi que cerrar la pestaña NO lo apaga y queda prendido en la maquina. Ahora el boton lo aclara. Si solo querias dejar de usarlo, cerrar la pestaña alcanza igual que siempre.",
-  "sha256": "a2af2d1959e8593023ece2939c0265ccdb84241fffddc2eb057b370b26591503",
-  "size": 20342041,
-  "url": "panel/PanelMyS-v69.zip"
+  "version": 70,
+  "label": "1.23.1 - arreglo: el panel que no podia actualizarse",
+  "notes": "Arreglado un problema que dejaba una computadora sin poder actualizarse nunca mas, y sin avisar. Cuando una actualizacion se corta por la mitad -se apago la maquina, el antivirus corto el proceso- quedaba un archivo de control que a partir de ahi bloqueaba TODOS los intentos siguientes: el panel se cerraba, no pasaba nada, y no aparecia ningun mensaje. Ahora ese archivo, si tiene mas de media hora, se reconoce como basura de un intento muerto y la actualizacion sigue de largo; y si hay otra actualizacion corriendo de verdad, el panel se vuelve a abrir en vez de dejar la pantalla vacia. Aviso importante: una computadora que YA quedo trabada no se arregla sola con esta version, porque el que hace el trabajo es el programa que ya tiene instalado. A esa hay que destrabarla una vez a mano; pedile al area que te pase el paso, son dos clics.",
+  "sha256": "809f35af676e543ff8855d2ee91d5417241c3f83090b5a7279e43330d4ea1d07",
+  "size": 20342796,
+  "url": "panel/PanelMyS-v70.zip"
 }
