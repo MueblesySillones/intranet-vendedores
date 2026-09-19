@@ -92,7 +92,7 @@
       </div>
       <div class="pie-links">
         <button type="button" id="btnHistorial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Historial</button>
-        <button type="button" id="btnKit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>Recuperación</button>
+        <button type="button" id="btnKit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>Para desarrolladores</button>
         <button type="button" id="btnAvisar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Avisar novedad</button>
         <button type="button" id="btnCerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Cerrar panel</button>
         <button type="button" id="btnTraer" class="ancho" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>Traer última versión</button>
@@ -649,28 +649,25 @@
 <div class="fondo" id="kitModal">
   <div class="modal chico" role="dialog" aria-modal="true">
     <div class="modal-cab izq">
-      <h2>Kit de recuperación<span class="sub">Para retomar el control del sitio si esta computadora se pierde</span></h2>
+      <h2>Para desarrolladores<span class="sub">El archivo que se le entrega a quien vaya a trabajar sobre el sistema</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-kit aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-cuerpo p16">
+      <p style="margin:0 0 10px;font-size:var(--t-sm);color:var(--ink);line-height:1.6">
+        Acá se encuentran los <b>accesos MCP</b> para darle a un desarrollador la posibilidad de
+        <b>gestionar, solucionar y mejorar</b> el panel, la intranet y la vista de vendedores.</p>
       <p style="margin:0 0 4px;font-size:var(--t-mini);color:var(--ink2);line-height:1.6">
-        Genera <b>un solo archivo</b> con las cuentas, tu clave de publicación y el paso a paso.
-        Se guarda cifrado: para abrirlo alcanza con doble clic y esta clave.</p>
-      <div class="clave">
-        <input type="text" id="kitPass" autocomplete="off" spellcheck="false" aria-label="Clave del archivo">
-        <button class="btn btn-2" id="kitCopiar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4a2 2 0 0 1 2-2h10"/></svg> Copiar</button>
-      </div>
-      <div class="peligro">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-        <span><b>Si perdés esta clave no hay forma de abrir el archivo</b>
-        <span>Anotala junto con el kit y guardalo en dos lugares distintos.</span></span>
-      </div>
+        Genera <b>un solo archivo</b> con las cuentas del sistema, los accesos para trabajar con IA
+        y el paso a paso para retomar el control. <b>Se abre con doble clic</b>, sin contraseña:
+        está pensado para que se pueda leer dentro de un año, cuando ya nadie se acuerde de nada.</p>
+      <p style="margin:0;font-size:var(--t-mini);color:var(--ink2);line-height:1.6">
+        El archivo <b>no guarda ninguna clave</b>: dice dónde está cada una. Aun así es información
+        interna — mandalo por un canal privado, no lo subas al sitio.</p>
       <div id="kitAviso" class="fld-note" style="min-height:16px"></div>
     </div>
     <div class="modal-pie" style="display:flex;gap:8px">
       <button class="btn btn-2" type="button" data-cerrar-kit style="flex:1">Cancelar</button>
-      <button class="btn btn-2" id="kitOtra" type="button" style="flex:1">Generar otra clave</button>
-      <button class="btn btn-1" id="kitGenerar" type="button" style="flex:1">Generar el kit</button>
+      <button class="btn btn-1" id="kitGenerar" type="button" style="flex:1">Generar el archivo</button>
     </div>
   </div>
 </div>

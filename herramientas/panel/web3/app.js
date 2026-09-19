@@ -4895,37 +4895,28 @@ cargarConfig().finally(() => {
 
 /* ===================================================================
    KIT DE RECUPERACIÓN
-   Genera UN archivo .html autocontenido y cifrado con la info necesaria
-   para retomar el control del sistema si esta computadora se pierde.
-   Se abre con doble clic en cualquier navegador: no necesita el panel,
-   ni internet, ni instalar nada.
-   El cifrado lo hace el navegador (WebCrypto: PBKDF2-SHA256 + AES-GCM),
-   así la contraseña nunca sale de acá ni queda guardada en ningún lado.
+   Genera UN archivo .html autocontenido con lo necesario para que alguien
+   tome el control del sistema: las cuentas, los accesos MCP para trabajar
+   con IA, y el paso a paso. Se abre con doble clic en cualquier navegador:
+   no necesita el panel, ni internet, ni instalar nada.
+
+   Antes iba cifrado con contraseña. Se sacó a propósito: este archivo lo va
+   a abrir alguien que no estuvo cuando se generó, quizás un año después, y
+   una contraseña perdida lo volvía inservible — el peor final posible para
+   un documento de traspaso. Para poder sacarla, el archivo dejó de guardar
+   la clave de publicación: ahora dice DÓNDE está y cómo regenerarla, así no
+   hay ningún secreto adentro que proteger.
    =================================================================== */
-const KIT_ITERACIONES = 250000;
-
-function kitB64(buf) {
-  let s = '';
-  new Uint8Array(buf).forEach(b => { s += String.fromCharCode(b); });
-  return btoa(s);
-}
-
-async function kitCifrar(texto, clave) {
-  const cod = new TextEncoder();
-  const sal = crypto.getRandomValues(new Uint8Array(16));
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const base = await crypto.subtle.importKey('raw', cod.encode(clave), 'PBKDF2', false, ['deriveKey']);
-  const k = await crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt: sal, iterations: KIT_ITERACIONES, hash: 'SHA-256' },
-    base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
-  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, cod.encode(texto));
-  return { sal: kitB64(sal), iv: kitB64(iv), ct: kitB64(ct), iter: KIT_ITERACIONES };
-}
 
 /* El visor que se descarga. Se arma como lista de líneas (sin backticks
    adentro) para que el JavaScript del visor no se mezcle con el de acá. */
-function kitVisorHTML(paquete, fecha) {
-  const datos = JSON.stringify(paquete).replace(/</g, '\\u003c');
+/* Se abre con DOBLE CLIC, sin contraseña. Antes iba cifrado, pero esto es un
+   documento de traspaso: lo va a abrir alguien que no estuvo cuando se generó,
+   quizás un año después, y una contraseña perdida lo volvía basura. Para poder
+   sacarla, el archivo dejó de guardar la clave de publicación: ahora dice dónde
+   está y cómo regenerarla, así no hay ningún secreto adentro. */
+function kitVisorHTML(kit, fecha) {
+  const datos = JSON.stringify(kit).replace(/</g, '\\u003c');
   const cierreScript = '<' + '/script>';
   return [
     '<!doctype html><html lang="es"><head><meta charset="utf-8">',
@@ -4936,9 +4927,6 @@ function kitVisorHTML(paquete, fecha) {
     '.caja{max-width:820px;margin:0 auto;background:#fff;border:1px solid #E4DFD6;border-radius:16px;padding:26px 28px}',
     'h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:26px 0 8px;color:#5A5348}',
     '.sub{color:#6E6E6E;font-size:13px;margin:0 0 20px}',
-    'input{font:inherit;padding:10px 12px;border:1px solid #E4DFD6;border-radius:9px;width:240px}',
-    'button{font:inherit;padding:10px 18px;border:0;border-radius:9px;background:#2C2A26;color:#fff;cursor:pointer}',
-    '.err{color:#B5503F;font-size:13px;margin-top:10px;min-height:18px}',
     '.dato{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #F0EDE7;font-size:14px;flex-wrap:wrap}',
     '.dato b{min-width:170px;color:#5A5348;font-weight:600}',
     '.dato span{font-family:ui-monospace,Consolas,monospace;word-break:break-all}',
@@ -4947,39 +4935,34 @@ function kitVisorHTML(paquete, fecha) {
     '.serv p b{color:#2C2A26}',
     'ol{padding-left:20px;font-size:14px}ol li{margin:6px 0}',
     '.aviso{background:#FBF0EC;border:1px solid #E6C9C3;border-radius:11px;padding:13px 15px;margin-top:18px;font-size:13.5px}',
-    '.aviso li{margin:5px 0}.oculto{display:none}',
+    '.aviso li{margin:5px 0}',
+    'pre{background:#2C2A26;color:#F7F5F1;border-radius:11px;padding:14px 16px;font-size:12.5px;',
+    'overflow-x:auto;font-family:ui-monospace,Consolas,monospace;line-height:1.45}',
+    'ul{padding-left:20px;font-size:14px}ul li{margin:5px 0}',
+    '.ruta{font-family:ui-monospace,Consolas,monospace;font-size:13px;color:#5A5348;margin:2px 0 8px}',
     '</style></head><body><div class="caja">',
-    '<h1>Kit de recuperación</h1>',
+    '<h1>Para desarrolladores</h1>',
     '<p class="sub">Intranet de vendedores &middot; Muebles y Sillones &middot; generado el ', fecha, '</p>',
-    '<div id="login"><p>Escribí la contraseña con la que se generó este archivo.</p>',
-    '<input type="password" id="p" autofocus> <button id="b">Abrir</button>',
-    '<div class="err" id="e"></div></div>',
-    '<div id="cont" class="oculto"></div></div>',
-    '<script>var PAQ=', datos, ';',
-    'function d(b){var s=atob(b),a=new Uint8Array(s.length);for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a;}',
+    '<div id="cont"></div></div>',
+    '<script>var K=', datos, ';',
     'function fila(k,v){var x=document.createElement("div");x.className="dato";',
     'var b=document.createElement("b");b.textContent=k;var s=document.createElement("span");s.textContent=v;',
     'x.appendChild(b);x.appendChild(s);return x;}',
     'function h2(t){var e=document.createElement("h2");e.textContent=t;return e;}',
-    'async function abrir(){',
-    ' var e=document.getElementById("e");e.textContent="Descifrando...";',
-    ' try{',
-    '  var cod=new TextEncoder();',
-    '  var base=await crypto.subtle.importKey("raw",cod.encode(document.getElementById("p").value),"PBKDF2",false,["deriveKey"]);',
-    '  var k=await crypto.subtle.deriveKey({name:"PBKDF2",salt:d(PAQ.sal),iterations:PAQ.iter,hash:"SHA-256"},',
-    '    base,{name:"AES-GCM",length:256},false,["decrypt"]);',
-    '  var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:d(PAQ.iv)},k,d(PAQ.ct));',
-    '  pintar(JSON.parse(new TextDecoder().decode(pt)));',
-    ' }catch(x){e.textContent="Esa contraseña no es la correcta.";}',
-    '}',
     'function pintar(K){',
-    ' document.getElementById("login").className="oculto";',
-    ' var c=document.getElementById("cont");c.className="";',
+    ' var c=document.getElementById("cont");',
     ' c.appendChild(h2("Datos del sistema"));',
     ' [["Repositorio",K.sitio],["Rama",K.repo.rama],["Cerebro (publicador)",K.cerebro_url],',
-    '  ["Clave de publicación",K.publish_token||"(sin clave cargada)"],',
     '  ["Carpeta del proyecto",K.proyecto],["Computadora",K.pc+" ("+K.rol+")"],',
     '  ["Versión del panel",String(K.version_panel)]].forEach(function(f){c.appendChild(fila(f[0],f[1]));});',
+    ' if(K.clave_publicacion){var CP=K.clave_publicacion;',
+    '  c.appendChild(h2("La clave de publicación"));',
+    '  var cp=document.createElement("div");cp.className="serv";',
+    '  [["Estado",CP.cargada?"Cargada en esta computadora":"No hay clave cargada acá"],',
+    '   ["Dónde está",CP.donde],["Si no la tenés",CP.si_no_la_tenes]].forEach(function(p){',
+    '   var e=document.createElement("p");var b=document.createElement("b");b.textContent=p[0]+": ";',
+    '   e.appendChild(b);e.appendChild(document.createTextNode(p[1]));cp.appendChild(e);});',
+    '  c.appendChild(cp);}',
     ' c.appendChild(h2("Cuentas: qué desbloquea cada una"));',
     ' K.servicios.forEach(function(s){var x=document.createElement("div");x.className="serv";',
     '  var t=document.createElement("h3");t.textContent=s.nombre;x.appendChild(t);',
@@ -4993,81 +4976,53 @@ function kitVisorHTML(paquete, fecha) {
     ' K.pasos.forEach(function(p){var li=document.createElement("li");',
     '  li.textContent=p.replace(/^\\d+\\.\\s*/,"").replace("<CEREBRO>",K.cerebro_url);ol.appendChild(li);});',
     ' c.appendChild(ol);',
+    ' if(K.mcp){var M=K.mcp;',
+    '  c.appendChild(h2("Accesos MCP: trabajar sobre el sistema con IA"));',
+    '  var q=document.createElement("p");q.style.fontSize="14px";q.textContent=M.que_es;c.appendChild(q);',
+    '  var a1=document.createElement("p");a1.style.fontSize="14px";a1.style.margin="14px 0 4px";',
+    '  a1.innerHTML="<b>Antes de empezar</b>";c.appendChild(a1);',
+    '  var u1=document.createElement("ul");',
+    '  M.antes_de_empezar.forEach(function(t){var li=document.createElement("li");li.textContent=t;u1.appendChild(li);});',
+    '  c.appendChild(u1);',
+    '  var a2=document.createElement("p");a2.style.fontSize="14px";a2.style.margin="14px 0 4px";',
+    '  a2.innerHTML="<b>Archivo a crear</b>";c.appendChild(a2);',
+    '  var rt=document.createElement("div");rt.className="ruta";rt.textContent=M.archivo;c.appendChild(rt);',
+    '  var pre=document.createElement("pre");pre.textContent=M.contenido;c.appendChild(pre);',
+    '  var u2=document.createElement("ul");u2.style.marginTop="12px";',
+    '  M.notas.forEach(function(t){var li=document.createElement("li");li.textContent=t;u2.appendChild(li);});',
+    '  c.appendChild(u2);}',
     ' var av=document.createElement("div");av.className="aviso";',
     ' var t=document.createElement("b");t.textContent="Importante";av.appendChild(t);',
     ' var ul=document.createElement("ul");',
     ' K.avisos.forEach(function(a){var li=document.createElement("li");li.textContent=a;ul.appendChild(li);});',
     ' av.appendChild(ul);c.appendChild(av);',
     '}',
-    'document.getElementById("b").onclick=abrir;',
-    'document.getElementById("p").addEventListener("keydown",function(ev){if(ev.key==="Enter")abrir();});',
+    'pintar(K);',
     cierreScript, '</body></html>',
   ].join('');
 }
 
-/* Una clave ARMADA por el panel: cuatro palabras y un número. Es tan fuerte como
-   una de caracteres sueltos pero se puede dictar por teléfono o pasar por chat
-   sin equivocarse, que es lo que hace falta para mandársela a un desarrollador. */
-const KIT_PALABRAS = ('sillon,roble,lino,puerta,lampara,mesa,cuero,nogal,tela,marco,vidrio,piedra,' +
-  'cobre,arena,hilo,pino,bronce,cedro,algodon,mimbre,laton,junco,fresno,yute,olmo,caoba,rafia,' +
-  'terciopelo,pana,lana,seda,tierra,brisa,rio,monte,valle,costa,sierra,pampa,delta').split(',');
-
-function kitClaveNueva() {
-  const al = n => crypto.getRandomValues(new Uint32Array(1))[0] % n;
-  const p = [];
-  while (p.length < 4) {
-    const w = KIT_PALABRAS[al(KIT_PALABRAS.length)];
-    if (!p.includes(w)) p.push(w);
-  }
-  return p.join('-') + '-' + (10 + al(90));
-}
-
 (function initKit() {
   const modal = $('#kitModal'); if (!modal) return;
-  const abrir = () => {
-    $('#kitPass').value = kitClaveNueva();
-    $('#kitAviso').textContent = '';
-    abrirModal(modal);
-    $('#kitPass').select();
-  };
-  $('#kitOtra').onclick = () => { $('#kitPass').value = kitClaveNueva(); $('#kitPass').select(); };
-  $('#kitCopiar').onclick = async () => {
-    const av = $('#kitAviso');
-    try {
-      await navigator.clipboard.writeText($('#kitPass').value);
-      av.style.color = 'var(--ok)'; av.textContent = 'Clave copiada. Guardala junto con el archivo.';
-    } catch (e) {
-      $('#kitPass').select();
-      av.style.color = 'var(--ink3)'; av.textContent = 'Copiala a mano (Ctrl+C): ya te la dejé seleccionada.';
-    }
-  };
+  const abrir = () => { $('#kitAviso').textContent = ''; abrirModal(modal); };
   const cerrar = () => { esconderModal(modal); };
   const btn = $('#btnKit'); if (btn) btn.onclick = abrir;
   modal.querySelectorAll('[data-cerrar-kit]').forEach(b => { b.onclick = cerrar; });
 
-  $('#kitGenerar').onclick = async () => {
-    const av = $('#kitAviso');
-    const p1 = $('#kitPass').value.trim();
-    av.style.color = 'var(--danger)';
-    if (p1.length < 8) { av.textContent = 'La clave tiene que tener al menos 8 caracteres.'; return; }
-    av.style.color = 'var(--ink3)'; av.textContent = 'Generando…';
-    try {
-      const kit = await api('/api/kit-recuperacion', { method: 'POST' });
-      const paquete = await kitCifrar(JSON.stringify(kit), p1);
-      const html = kitVisorHTML(paquete, kit.generado);
-      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Kit de recuperacion MyS - ' + kit.generado.slice(0, 10).replace(/\//g, '-') + '.html';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      cerrar();
-      toast('Kit generado. Guardalo en dos lugares distintos.', 'ok');
-    } catch (e) {
-      av.style.color = 'var(--danger)';
-      av.textContent = e.message || 'No se pudo generar el kit.';
-    }
-  };
+  /* conBoton se encarga de desactivar el botón mientras trabaja (así el doble
+     clic no genera dos archivos) y de avisar si algo falla. */
+  $('#kitGenerar').onclick = () => conBoton('#kitGenerar', 'Generando…', async () => {
+    const kit = await api('/api/kit-recuperacion', { method: 'POST' });
+    const html = kitVisorHTML(kit, kit.generado);
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Para desarrolladores - MyS - ' + kit.generado.slice(0, 10).replace(/\//g, '-') + '.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    cerrar();
+    toast('Archivo generado. Se abre con doble clic, sin contraseña.', 'ok');
+  });
 })();
 
 /* ===================================================================

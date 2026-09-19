@@ -637,7 +637,21 @@ def kit_recuperacion():
         "version_panel": VERSION,
         "proyecto": PROYECTO,
         "cerebro_url": CEREBRO_URL,
-        "publish_token": PUBLISH_TOKEN,
+        # La clave de publicacion NO viaja en el kit. Antes iba en texto, y por
+        # eso el archivo tenia que ir cifrado con contrasena; una contrasena que
+        # se pierde deja el kit inservible, que es el peor final posible para un
+        # documento de traspaso. Ahora el kit explica DONDE esta la clave y como
+        # regenerarla: asi no guarda ningun secreto y se abre con doble clic.
+        "clave_publicacion": {
+            "cargada": bool(PUBLISH_TOKEN),
+            "donde": "En cualquier PC que tenga el panel instalado como Central, dentro de "
+                     "panel_config.json (campo publish_token). Tambien viaja incrustada en "
+                     "'Instalar Sucursal.exe'.",
+            "si_no_la_tenes": "No hace falta recuperarla: se genera una nueva. Entra a Cloudflare, "
+                              "cambia el secreto del Worker mys-cerebro, y despues recompila el "
+                              "panel con la clave nueva (publicar_web3.py). Conviene hacer esto "
+                              "igual cada vez que alguien del equipo se va.",
+        },
         "central_url": CENTRAL_URL,
         "receptor_port": RECEPTOR_PORT,
         "repo": r,
@@ -684,10 +698,13 @@ def kit_recuperacion():
             "7. Desde ahi ya podes publicar y actualizar como antes.",
         ],
         "avisos": [
-            "La contrasena de este archivo NO se puede recuperar. Si la perdes, el kit no sirve.",
-            "Guardalo en dos lugares distintos (por ejemplo un pendrive y tu correo).",
-            "La clave de publicacion que figura aca permite publicar en el sitio: tratala como una contrasena.",
-            "Si alguna vez pegaste el token de GitHub o la clave de Tailscale en un chat, rotalos.",
+            "Este archivo se abre con doble clic, sin contrasena: esta hecho para que se pueda leer "
+            "dentro de un ano, cuando ya nadie se acuerde de nada.",
+            "No guarda ninguna clave. Dice donde esta cada una, que es lo que hace falta para retomar "
+            "el control sin dejar un secreto dando vueltas en un archivo.",
+            "Guardalo en dos lugares distintos (por ejemplo un pendrive y el correo de la empresa).",
+            "Cada vez que alguien del equipo se va hay que rotar las claves. El paso a paso esta mas arriba.",
+            "Si alguna vez pegaste el token de GitHub o la clave de Tailscale en un chat, rotalos ya.",
         ],
     }
 
