@@ -659,6 +659,10 @@ def kit_recuperacion():
         # asi que este es el unico secreto que contiene y por eso el visor lo
         # muestra con una advertencia bien visible: quien lo tenga puede publicar
         # en la intranet.
+        # Los frontends de red (web, web2) todavia arman el kit a la vieja y leen
+        # esta clave suelta. Se deja para que, si alguna vez arrancan porque web3
+        # no viajo en el paquete, el kit salga completo y no a medias.
+        "publish_token": PUBLISH_TOKEN,
         "clave_publicacion": {
             "cargada": bool(PUBLISH_TOKEN),
             "valor": PUBLISH_TOKEN or "",
