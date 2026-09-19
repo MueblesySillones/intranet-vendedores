@@ -317,6 +317,7 @@ window.MODULES = [
     "color": "--c-caba",
     "ready": true,
     "builtin": true,
+    "actualizado": "2026-09-19T16:12",
     "content": {
       "tipo": "bloques",
       "bloques": [
