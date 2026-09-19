@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 67
+VERSION = 68
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,13 +343,21 @@ VERSION = 67
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.22.0"
-VERSION_LABEL = "1.22.0 - Configuracion, y el panel con menos ruido"
+VERSION_PUBLICA = "1.22.1"
+VERSION_LABEL = "1.22.1 - el panel avisa solo cuando hay version nueva"
 VERSION_NOTES = (
-                 "La barra de la izquierda quedo mas limpia. El buscador que decia "
-                 "'Buscar en el panel' se saco: nunca tuvo nada detras, era de "
-                 "adorno, y ocupaba lugar. El cartel que dice como se llama esta "
-                 "computadora ya no parece un boton: antes tenia una flechita y "
+                 "Arreglado: el panel buscaba versiones nuevas UNA sola vez, cuando "
+                 "se abria. Quien dejaba el panel abierto toda la semana no se "
+                 "enteraba nunca de que habia una actualizacion, y no hay forma de "
+                 "que se le ocurra reiniciarlo para averiguarlo. Ahora vuelve a "
+                 "mirar cada media hora, asi el cartel de 'Hay una version nueva' "
+                 "aparece solo sin tener que cerrar nada. Ojo: esta mejora recien "
+                 "sirve a partir de esta version; para llegar hasta aca hay que "
+                 "cerrar y volver a abrir el panel una ultima vez. Ademas, en esta "
+                 "version: la barra de la izquierda quedo mas limpia. El buscador "
+                 "que decia 'Buscar en el panel' se saco: nunca tuvo nada detras, "
+                 "era de adorno, y ocupaba lugar. El cartel que dice como se llama "
+                 "esta computadora ya no parece un boton: antes tenia una flechita y "
                  "cambiaba al pasarle el mouse, pero al tocarlo no pasaba nada. "
                  "Abajo, los cuatro botones apretados pasaron a ser dos: "
                  "Configuracion y Cerrar panel. Adentro de Configuracion estan "
