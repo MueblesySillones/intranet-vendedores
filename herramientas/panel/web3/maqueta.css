@@ -711,6 +711,18 @@ body.trabado{overflow:hidden}
 .cfg-op svg{width:17px;height:17px;color:var(--ink3);stroke-width:1.8;margin-top:1px;flex:0 0 17px}
 .cfg-op b{display:block;font-size:var(--t-mini);font-weight:600;color:var(--ink)}
 .cfg-op>span>span{display:block;font-size:var(--t-nano);color:var(--ink3);line-height:1.5;margin-top:2px}
+/* discreto: no lleva recuadro ni explicacion, pesa menos que las opciones
+   de arriba porque se usa de vez en cuando, no todos los dias */
+.cfg-mini{border-color:transparent;background:transparent;padding:8px 12px;align-items:center}
+.cfg-mini svg{width:14px;height:14px;margin-top:0;flex:0 0 14px}
+.cfg-mini b{font-size:var(--t-nano);font-weight:500;color:var(--ink3)}
+.cfg-mini:hover{border-color:var(--line);background:var(--accent-soft)}
+.cfg-mini:hover b,.cfg-mini:hover svg{color:var(--ink2)}
+
+/* apagar el panel: separado del resto, es la accion de irse */
+.cfg-salir{margin-top:5px;border-top:1px solid var(--line)}
+.cfg-salir:hover{border-color:rgba(181,80,63,.3);background:rgba(181,80,63,.05)}
+.cfg-salir:hover svg,.cfg-salir:hover b{color:var(--danger)}
 
 .peligro{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:var(--r-md);
      background:rgba(181,80,63,.07);border:1px solid rgba(181,80,63,.22)}

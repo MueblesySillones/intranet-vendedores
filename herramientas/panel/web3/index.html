@@ -92,8 +92,6 @@
         <!-- Historial, Para desarrolladores y Avisar novedad se mudaron adentro
              de Configuracion: eran cuatro botones apretados en el pie. -->
         <button type="button" id="btnConfig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configuración</button>
-        <button type="button" id="btnCerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Cerrar panel</button>
-        <button type="button" id="btnTraer" class="ancho" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>Traer última versión</button>
       </div>
       <!-- puentes: app.js los engancha sin preguntar si existen -->
       <button id="btnBandeja" hidden>Aprobaciones <span id="pendBadge" hidden>0</span></button>
@@ -670,6 +668,19 @@
         <button type="button" class="cfg-op" id="cfgKit">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>
           <span><b>Para desarrolladores</b><span>El archivo que se le entrega a quien trabaje sobre el sistema</span></span>
+        </button>
+        <!-- Discreto y solo para sucursales: se usa de vez en cuando, no todos
+             los días, así que no compite con las opciones de arriba. -->
+        <button type="button" class="cfg-op cfg-mini" id="cfgTraer" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+          <span><b>Traer última versión publicada</b></span>
+        </button>
+        <!-- Cerrar de verdad: la pestaña del navegador se puede cerrar sin más,
+             pero el programa sigue corriendo en la máquina hasta que se apague
+             desde acá. Por eso sigue existiendo el botón. -->
+        <button type="button" class="cfg-op cfg-salir" id="cfgCerrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>
+          <span><b>Apagar el panel</b><span>Cerrar la pestaña no lo apaga: el programa sigue prendido</span></span>
         </button>
       </div>
     </div>

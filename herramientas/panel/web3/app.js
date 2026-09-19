@@ -425,7 +425,7 @@ function aplicarRol(cfg) {
      primero por INTERNET. Resultado: las sucursales instaladas sin Tailscale
      no tenían ninguna forma de ponerse al día, y al publicar su copia vieja
      pisaba lo que habían subido los demás. */
-  $('#btnTraer').hidden    = central;
+  $('#cfgTraer').hidden    = central;
   // con el cerebro, el estado de git local no aplica
   const gs = $('#gitState');
   if (gs) gs.hidden = true;
@@ -460,10 +460,11 @@ function accionPublicarEditor() { return publicarCambios(); }
 // la confirmación: durante mucho tiempo publicar desde la home no preguntó nada.
 $('#btnPublicar').onclick = () => publicarCambios();
 $('#btnEnviar').onclick = () => enviarPropuesta();
-$('#btnTraer').onclick = () => traerUltima();
+$('#cfgTraer').onclick = () => { cerrarConfig(); traerUltima(); };
 $('#detPublicar').onclick = accionPublicarEditor;
-$('#btnCerrar').onclick = async () => {
-  if (!await confirmar('¿Cerrar el panel? Lo que no publicaste queda guardado en esta computadora.', 'Cerrar', 'Cerrar el panel')) return;
+$('#cfgCerrar').onclick = async () => {
+  cerrarConfig();
+  if (!await confirmar('¿Apagar el panel? Lo que no publicaste queda guardado en esta computadora.\n\nCerrar la pestaña sola no lo apaga: el programa sigue prendido.', 'Apagar', 'Apagar el panel')) return;
   try { await api('/api/shutdown', { method: 'POST' }); } catch (e) {}
   document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Montserrat,sans-serif;color:#5B574F;font-size:16px;text-align:center;padding:24px">El panel se cerró. Ya podés cerrar esta pestaña. 👋</div>';
 };
@@ -487,7 +488,7 @@ async function enviarPropuesta() {
 }
 
 async function traerUltima() {
-  const btn = $('#btnTraer');
+  const btn = $('#cfgTraer');
   const sigue = await confirmar(
     'Se baja la última versión publicada. Lo que cambiaste en esta computadora y todavía no publicaste se conserva.',
     'Traer última versión', 'Traer última versión');
