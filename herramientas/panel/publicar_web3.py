@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.20.2"
-NUEVO_LABEL = "1.20.2 - eliminar publicaciones seguidas sin que vuelvan"
-NUEVAS_NOTAS = ("Arreglado: al eliminar una publicacion y enseguida otra, la primera volvia a aparecer en la cartelera. La causa: despues de publicar, GitHub tarda hasta un minuto en mostrar lo ultimo, y la segunda publicacion se combinaba contra la version de antes, donde la primera todavia existia; el panel creia que la habia publicado otra computadora y la traia de vuelta. Tambien podia deshacer cualquier cambio publicado menos de un minuto antes. Ahora el panel lee lo ultimo publicado directo de git, que no tiene esa demora, y ademas reconoce las versiones que el mismo ya dejo atras. De paso: Eliminar desde el menu de tres puntos y Restaurar desde la papelera ahora llegan al sitio en el momento, igual que desde el editor, y publicar, traer y guardar ya no pueden pisarse si se aprietan muy seguido.")
+NUEVA_PUBLICA = "1.21.0"
+NUEVO_LABEL = "1.21.0 - Para desarrolladores: el archivo de traspaso"
+NUEVAS_NOTAS = ("El boton Recuperacion ahora se llama Para desarrolladores, y genera el archivo que se le entrega a quien vaya a trabajar sobre el sistema. Novedades: se abre con doble clic, sin contrasena (antes iba cifrado, y una contrasena perdida dejaba el archivo inservible justo cuando mas hacia falta); trae el paso a paso de que hay que hacer, en orden, para darle acceso a un desarrollador, y una lista de que puede tocar con cada acceso; suma la configuracion MCP para que pueda trabajar con inteligencia artificial sobre el codigo, el sitio y la base de datos; y el inventario de cuentas ahora incluye Supabase y Google, que faltaban. Las secciones son desplegables, asi el archivo se abre mostrando lo que se usa y no un muro de texto. Importante: el archivo lleva la clave de publicacion escrita adentro, asi que se manda por un canal privado y no se deja en carpetas compartidas.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

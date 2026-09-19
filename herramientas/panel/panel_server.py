@@ -331,7 +331,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 65
+VERSION = 66
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -339,22 +339,23 @@ VERSION = 65
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.20.2"
-VERSION_LABEL = "1.20.2 - eliminar publicaciones seguidas sin que vuelvan"
+VERSION_PUBLICA = "1.21.0"
+VERSION_LABEL = "1.21.0 - Para desarrolladores: el archivo de traspaso"
 VERSION_NOTES = (
-                 "Arreglado: al eliminar una publicacion y enseguida otra, la "
-                 "primera volvia a aparecer en la cartelera. La causa: despues de "
-                 "publicar, GitHub tarda hasta un minuto en mostrar lo ultimo, y la "
-                 "segunda publicacion se combinaba contra la version de antes, donde "
-                 "la primera todavia existia; el panel creia que la habia publicado "
-                 "otra computadora y la traia de vuelta. Tambien podia deshacer "
-                 "cualquier cambio publicado menos de un minuto antes. Ahora el "
-                 "panel lee lo ultimo publicado directo de git, que no tiene esa "
-                 "demora, y ademas reconoce las versiones que el mismo ya dejo "
-                 "atras. De paso: Eliminar desde el menu de tres puntos y Restaurar "
-                 "desde la papelera ahora llegan al sitio en el momento, igual que "
-                 "desde el editor, y publicar, traer y guardar ya no pueden pisarse "
-                 "si se aprietan muy seguido.")
+                 "El boton Recuperacion ahora se llama Para desarrolladores, y "
+                 "genera el archivo que se le entrega a quien vaya a trabajar sobre "
+                 "el sistema. Novedades: se abre con doble clic, sin contrasena "
+                 "(antes iba cifrado, y una contrasena perdida dejaba el archivo "
+                 "inservible justo cuando mas hacia falta); trae el paso a paso de "
+                 "que hay que hacer, en orden, para darle acceso a un desarrollador, "
+                 "y una lista de que puede tocar con cada acceso; suma la "
+                 "configuracion MCP para que pueda trabajar con inteligencia "
+                 "artificial sobre el codigo, el sitio y la base de datos; y el "
+                 "inventario de cuentas ahora incluye Supabase y Google, que "
+                 "faltaban. Las secciones son desplegables, asi el archivo se abre "
+                 "mostrando lo que se usa y no un muro de texto. Importante: el "
+                 "archivo lleva la clave de publicacion escrita adentro, asi que se "
+                 "manda por un canal privado y no se deja en carpetas compartidas.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
