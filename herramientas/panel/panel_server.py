@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 69
+VERSION = 70
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,21 +343,23 @@ VERSION = 69
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.23.0"
-VERSION_LABEL = "1.23.0 - todo lo de abajo, adentro de Configuracion"
+VERSION_PUBLICA = "1.23.1"
+VERSION_LABEL = "1.23.1 - arreglo: el panel que no podia actualizarse"
 VERSION_NOTES = (
-                 "El pie de la barra de la izquierda queda con un solo boton: "
-                 "Configuracion. Adentro esta todo lo que antes andaba suelto ahi "
-                 "abajo. Traer ultima version sigue estando (solo en las sucursales, "
-                 "la central no la necesita), pero mas discreta: sin recuadro y en "
-                 "letra chica, porque se usa de vez en cuando y no tiene por que "
-                 "competir con lo de todos los dias. Y Cerrar panel ahora se llama "
-                 "Apagar el panel, tambien adentro de Configuracion. No se saco a "
-                 "proposito: el panel se abre como una pestaña del navegador, pero "
-                 "el programa corre aparte, asi que cerrar la pestaña NO lo apaga y "
-                 "queda prendido en la maquina. Ahora el boton lo aclara. Si solo "
-                 "querias dejar de usarlo, cerrar la pestaña alcanza igual que "
-                 "siempre.")
+                 "Arreglado un problema que dejaba una computadora sin poder "
+                 "actualizarse nunca mas, y sin avisar. Cuando una actualizacion se "
+                 "corta por la mitad -se apago la maquina, el antivirus corto el "
+                 "proceso- quedaba un archivo de control que a partir de ahi "
+                 "bloqueaba TODOS los intentos siguientes: el panel se cerraba, no "
+                 "pasaba nada, y no aparecia ningun mensaje. Ahora ese archivo, si "
+                 "tiene mas de media hora, se reconoce como basura de un intento "
+                 "muerto y la actualizacion sigue de largo; y si hay otra "
+                 "actualizacion corriendo de verdad, el panel se vuelve a abrir en "
+                 "vez de dejar la pantalla vacia. Aviso importante: una computadora "
+                 "que YA quedo trabada no se arregla sola con esta version, porque "
+                 "el que hace el trabajo es el programa que ya tiene instalado. A "
+                 "esa hay que destrabarla una vez a mano; pedile al area que te pase "
+                 "el paso, son dos clics.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

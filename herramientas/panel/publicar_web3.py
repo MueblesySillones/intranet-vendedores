@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.23.0"
-NUEVO_LABEL = "1.23.0 - todo lo de abajo, adentro de Configuracion"
-NUEVAS_NOTAS = ("El pie de la barra de la izquierda queda con un solo boton: Configuracion. Adentro esta todo lo que antes andaba suelto ahi abajo. Traer ultima version sigue estando (solo en las sucursales, la central no la necesita), pero mas discreta: sin recuadro y en letra chica, porque se usa de vez en cuando y no tiene por que competir con lo de todos los dias. Y Cerrar panel ahora se llama Apagar el panel, tambien adentro de Configuracion. No se saco a proposito: el panel se abre como una pestaña del navegador, pero el programa corre aparte, asi que cerrar la pestaña NO lo apaga y queda prendido en la maquina. Ahora el boton lo aclara. Si solo querias dejar de usarlo, cerrar la pestaña alcanza igual que siempre.")
+NUEVA_PUBLICA = "1.23.1"
+NUEVO_LABEL = "1.23.1 - arreglo: el panel que no podia actualizarse"
+NUEVAS_NOTAS = ("Arreglado un problema que dejaba una computadora sin poder actualizarse nunca mas, y sin avisar. Cuando una actualizacion se corta por la mitad -se apago la maquina, el antivirus corto el proceso- quedaba un archivo de control que a partir de ahi bloqueaba TODOS los intentos siguientes: el panel se cerraba, no pasaba nada, y no aparecia ningun mensaje. Ahora ese archivo, si tiene mas de media hora, se reconoce como basura de un intento muerto y la actualizacion sigue de largo; y si hay otra actualizacion corriendo de verdad, el panel se vuelve a abrir en vez de dejar la pantalla vacia. Aviso importante: una computadora que YA quedo trabada no se arregla sola con esta version, porque el que hace el trabajo es el programa que ya tiene instalado. A esa hay que destrabarla una vez a mano; pedile al area que te pase el paso, son dos clics.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
