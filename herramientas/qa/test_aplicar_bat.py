@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 BAT_ORIG = os.path.join(os.path.dirname(AQUI), "panel", "updater", "aplicar.bat")
@@ -178,6 +179,59 @@ def caso_sin_marker():
 
 
 check("descarga incompleta: no toca la instalación", caso_sin_marker)
+
+
+# ------------------------------------------------- 5. lock huerfano (v70)
+def caso_lock_viejo():
+    """Un update que se corto por la mitad (apagon, antivirus) deja el archivo
+    `lock`. Con el bat viejo, a partir de ahi CADA intento salia sin hacer nada
+    y sin avisar: el panel ya se habia matado solo, asi que la persona se
+    quedaba sin panel, sin update y sin mensaje. Para siempre."""
+    root = armar_root()
+    lock = os.path.join(root, "PanelMyS_update", "lock")
+    escribir(lock, "")
+    # lo envejecemos 2 horas: es basura de un intento muerto
+    viejo = time.time() - 2 * 3600
+    os.utime(lock, (viejo, viejo))
+    try:
+        log = correr(root)
+        est = instalado(root)
+        if est is None:
+            raise AssertionError("quedo SIN programa. log:" + log)
+        if est["exe"] != "exe NUEVO":
+            raise AssertionError("el lock huerfano siguio bloqueando el update. log:" + log)
+        if not est["config"] or not est["proyecto"]:
+            raise AssertionError("se perdieron los archivos per-maquina")
+        return "un lock muerto ya no bloquea para siempre"
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+check("lock huerfano de un intento cortado: actualiza igual", caso_lock_viejo)
+
+
+# ------------------------------------------------- 6. lock fresco (v70)
+def caso_lock_fresco():
+    """Si hay OTRO update corriendo de verdad, no se pisan. Pero el panel se
+    relanza igual: la persona no puede quedarse con la pantalla en blanco."""
+    root = armar_root()
+    escribir(os.path.join(root, "PanelMyS_update", "lock"), "")
+    try:
+        log = correr(root)
+        est = instalado(root)
+        if est is None:
+            raise AssertionError("quedo SIN programa. log:" + log)
+        if est["exe"] != "exe viejo":
+            raise AssertionError("piso un update que estaba corriendo")
+        if "lock fresco" not in log:
+            raise AssertionError("no dejo rastro de por que no hizo nada; log:" + log)
+        return "respeta el update en curso y deja el panel usable"
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+check("lock fresco: no pisa el update en curso", caso_lock_fresco)
+
 
 ok = sum(1 for r in RES if r[0] == "PASS")
 print("\n%d/%d PASS" % (ok, len(RES)))

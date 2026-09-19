@@ -19,7 +19,28 @@ set "LOG=%UPD%\aplicar.log"
 cd /d "%SystemRoot%"
 
 if not exist "%UPD%" mkdir "%UPD%"
-if exist "%UPD%\lock" exit /b 1
+REM El lock evita dos updates a la vez. Pero si la maquina se apago en medio de
+REM uno (o el antivirus mato el cmd), el archivo queda para siempre y a partir
+REM de ahi CADA intento salia por aca: el panel ya se habia matado solo para
+REM dejar reemplazar los archivos, asi que la persona se quedaba sin panel
+REM abierto, sin update y sin ningun mensaje. En silencio, para siempre.
+REM Ahora un lock de mas de 30 minutos se considera basura de un intento
+REM muerto: se borra y se sigue. Y si el lock es reciente (hay otro update de
+REM verdad corriendo) igual se relanza el panel, que es lo que la persona
+REM necesita ver.
+if exist "%UPD%\lock" (
+  set "LOCKVIEJO="
+  for /f "usebackq delims=" %%A in (`powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "try{if(((Get-Date)-(Get-Item '%UPD%\lock').LastWriteTime).TotalMinutes -gt 30){'si'}}catch{'si'}" 2^>nul`) do set "LOCKVIEJO=%%A"
+  if defined LOCKVIEJO (
+    echo lock viejo de un intento muerto: lo borro y sigo >> "%LOG%"
+    del /q "%UPD%\lock" 2>nul
+  ) else (
+    echo lock fresco: ya hay un update corriendo, relanzo el panel y salgo >> "%LOG%"
+    if not defined PMYS_NORUN if exist "%INSTALL%\PanelMyS.exe" start "" /d "%INSTALL%" "%INSTALL%\PanelMyS.exe"
+    exit /b 1
+  )
+)
 type nul > "%UPD%\lock"
 echo [%date% %time%] start pid=%PID% >> "%LOG%"
 
