@@ -24,7 +24,7 @@ window.MODULES = [
           "confirmar": false,
           "vence": "",
           "archivado": false,
-          "archivar": "descargables",
+          "archivar": "",
           "bloques": [
             {
               "t": "parrafo",
