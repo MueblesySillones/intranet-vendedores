@@ -14,26 +14,6 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
-          "id": "dmu8saptra355",
-          "titulo": "prueba",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-19",
-          "etiqueta": "",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "1212"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">1212</p></div>"
-        },
-        {
           "id": "dmu5j0ni6cman",
           "titulo": "MESA OKLAHOMA. 1.20x0.80x0.78mts",
           "autor": "Marketing",
@@ -266,6 +246,27 @@ window.MODULES = [
         }
       ],
       "papelera": [
+        {
+          "id": "dmu8saptra355",
+          "titulo": "prueba",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-19",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "1212"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">1212</p></div>",
+          "borradoEl": "2026-09-19"
+        },
         {
           "id": "dmu1oe8faeo5z",
           "titulo": "KK",
