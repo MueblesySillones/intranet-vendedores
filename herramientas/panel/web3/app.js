@@ -4778,6 +4778,10 @@ function updProgreso(pct) {
   const t = $('#updProgPct'); if (t) t.textContent = pct + '%';
 }
 async function chequearActualizacion() {
+  /* si el cartel ya esta a la vista, o hay una actualizacion corriendo, no se
+     vuelve a consultar: repintar el cartel mientras se aplica lo pisaria */
+  const yaEsta = $('#updateBar');
+  if (yaEsta && !yaEsta.hidden) return;
   let st;
   try { st = await api('/api/update-status'); } catch (e) { return; }
   if (!st || !st.disponible) return;
@@ -4903,6 +4907,11 @@ cargarConfig().finally(() => {
   cargarModulos().catch(e => toast('No se pudo conectar con el panel: ' + e.message, 'err'));
   refrescarGit();
   chequearActualizacion();
+  /* y cada 30 minutos de nuevo. Antes se consultaba SOLO al arrancar: una
+     sucursal que deja el panel abierto toda la semana no se enteraba nunca de
+     una version nueva, y nadie va a reiniciarlo para averiguar si la hay.
+     chequearActualizacion() se corta sola si el cartel ya esta puesto. */
+  setInterval(chequearActualizacion, 30 * 60 * 1000);
   // la central revisa cada 20 s si llegaron propuestas nuevas
   setInterval(refrescarPendientes, 20000);
 });
