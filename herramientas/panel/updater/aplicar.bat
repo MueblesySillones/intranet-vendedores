@@ -45,15 +45,29 @@ type nul > "%UPD%\lock"
 echo [%date% %time%] start pid=%PID% >> "%LOG%"
 
 REM 1) esperar el cierre TOTAL del panel viejo (por PID, no por nombre) ~60s
+REM    Si no se cierra solo, se lo cierra a la fuerza. Antes se hacia `goto
+REM    fail` y listo: esa maquina no se actualizaba NUNCA MAS, en silencio,
+REM    porque el panel viejo seguia ahi y cada intento terminaba igual. Un
+REM    panel colgado no puede ser una condena permanente: ya guardo todo lo
+REM    suyo antes de pedir la actualizacion.
 set /a n=0
 :wait
 tasklist /FI "PID eq %PID%" 2>nul | find "%PID%" >nul
 if not errorlevel 1 (
   set /a n+=1
-  if !n! gtr 60 ( echo timeout esperando PID >> "%LOG%" & goto fail )
+  if !n! gtr 60 (
+    echo no se cerro solo en 60s: lo cierro a la fuerza >> "%LOG%"
+    taskkill /F /PID %PID% >> "%LOG%" 2>&1
+    ping -n 4 127.0.0.1 >nul
+    tasklist /FI "PID eq %PID%" 2>nul | find "%PID%" >nul
+    if not errorlevel 1 ( echo no pude cerrar el panel viejo >> "%LOG%" & goto fail )
+    echo cerrado a la fuerza, sigo >> "%LOG%"
+    goto listo
+  )
   ping -n 2 127.0.0.1 >nul
   goto wait
 )
+:listo
 
 REM 2) precondiciones: new completo (exe + marker de extraccion terminada)
 if not exist "%NEW%\PanelMyS.exe" ( echo new sin exe >> "%LOG%" & goto fail )
