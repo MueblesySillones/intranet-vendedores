@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.24.0"
-NUEVO_LABEL = "1.24.0 - arreglado: decia que actualizaba y volvia igual"
-NUEVAS_NOTAS = ("Encontrado y arreglado el motivo por el que algunas computadoras decian que actualizaban, se reabria la pestaña, y volvia la misma version de siempre. El panel arrancaba parado adentro de su propia carpeta, y el navegador que abre despues heredaba esa ubicacion. Como el navegador sigue abierto cuando el panel se cierra, Windows consideraba que la carpeta estaba en uso y la actualizacion no podia reemplazarla: se cancelaba sola y volvia a arrancar la version vieja. Por eso parecia al azar: si el navegador ya estaba abierto de antes, funcionaba bien; si estaba cerrado, fallaba siempre. Ahora el panel arranca apartado de su carpeta y el problema no puede volver a pasar. IMPORTANTE para las computadoras que hoy estan trabadas: esta version no las arregla sola, porque el trabajo lo hace el programa que ya tienen instalado. En esas hay que cerrar TODAS las ventanas del navegador (el navegador entero, no solo la pestaña del panel), volver a abrir el panel y recien ahi apretar Actualizar. Una sola vez.")
+NUEVA_PUBLICA = "1.25.0"
+NUEVO_LABEL = "1.25.0 - descargas por telefono, y ordenar las placas"
+NUEVAS_NOTAS = ("Tres cosas. DESCARGAS: la intranet ahora se da cuenta de si el vendedor esta en un iPhone, en un Android o en una computadora, y hace lo que corresponde en cada uno. En iPhone se abre el menu del telefono, que es la unica forma de que una placa llegue a Fotos o salga por WhatsApp. En Android y en la computadora baja el archivo directo, sin menu del medio: antes los tres terminaban en el menu de compartir y en Android la foto quedaba en Archivos en vez de la galeria. Funciona con iPhone en cualquier navegador. ORDENAR LAS PLACAS: en el panel, cada placa de una galeria tiene una agarradera para arrastrar y flechas para subirla o bajarla. Una linea marca donde va a caer, entre dos placas, asi que nunca se suelta encima de otra ni la reemplaza. GALERIA PLEGADA: casilla nueva al armar una galeria. Con muchas placas la seccion se come la pantalla del celular; si se marca, el vendedor ve el titulo y la abre tocandolo.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

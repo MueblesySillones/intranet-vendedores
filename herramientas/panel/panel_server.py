@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 72
+VERSION = 73
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,25 +343,24 @@ VERSION = 72
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.24.0"
-VERSION_LABEL = "1.24.0 - arreglado: decia que actualizaba y volvia igual"
+VERSION_PUBLICA = "1.25.0"
+VERSION_LABEL = "1.25.0 - descargas por telefono, y ordenar las placas"
 VERSION_NOTES = (
-                 "Encontrado y arreglado el motivo por el que algunas computadoras "
-                 "decian que actualizaban, se reabria la pestaña, y volvia la misma "
-                 "version de siempre. El panel arrancaba parado adentro de su propia "
-                 "carpeta, y el navegador que abre despues heredaba esa ubicacion. "
-                 "Como el navegador sigue abierto cuando el panel se cierra, Windows "
-                 "consideraba que la carpeta estaba en uso y la actualizacion no "
-                 "podia reemplazarla: se cancelaba sola y volvia a arrancar la "
-                 "version vieja. Por eso parecia al azar: si el navegador ya estaba "
-                 "abierto de antes, funcionaba bien; si estaba cerrado, fallaba "
-                 "siempre. Ahora el panel arranca apartado de su carpeta y el "
-                 "problema no puede volver a pasar. IMPORTANTE para las computadoras "
-                 "que hoy estan trabadas: esta version no las arregla sola, porque "
-                 "el trabajo lo hace el programa que ya tienen instalado. En esas "
-                 "hay que cerrar TODAS las ventanas del navegador (el navegador "
-                 "entero, no solo la pestaña del panel), volver a abrir el panel y "
-                 "recien ahi apretar Actualizar. Una sola vez.")
+                 "Tres cosas. DESCARGAS: la intranet ahora se da cuenta de si el "
+                 "vendedor esta en un iPhone, en un Android o en una computadora, y "
+                 "hace lo que corresponde en cada uno. En iPhone se abre el menu del "
+                 "telefono, que es la unica forma de que una placa llegue a Fotos o "
+                 "salga por WhatsApp. En Android y en la computadora baja el archivo "
+                 "directo, sin menu del medio: antes los tres terminaban en el menu "
+                 "de compartir y en Android la foto quedaba en Archivos en vez de la "
+                 "galeria. Funciona con iPhone en cualquier navegador. ORDENAR LAS "
+                 "PLACAS: en el panel, cada placa de una galeria tiene una "
+                 "agarradera para arrastrar y flechas para subirla o bajarla. Una "
+                 "linea marca donde va a caer, entre dos placas, asi que nunca se "
+                 "suelta encima de otra ni la reemplaza. GALERIA PLEGADA: casilla "
+                 "nueva al armar una galeria. Con muchas placas la seccion se come "
+                 "la pantalla del celular; si se marca, el vendedor ve el titulo y "
+                 "la abre tocandolo.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
