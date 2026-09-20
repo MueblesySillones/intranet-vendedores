@@ -156,7 +156,12 @@ echo FAIL_NOCHANGE (install intacto) >> "%LOG%"
 goto relaunch
 
 :relaunch
-if not defined PMYS_NORUN if exist "%INSTALL%\PanelMyS.exe" start "" /d "%INSTALL%" "%INSTALL%\PanelMyS.exe"
+REM Se relanza con el directorio de trabajo FUERA de la instalacion. Con
+REM /d "%INSTALL%" el panel quedaba parado adentro de su propia carpeta y el
+REM navegador que abre despues heredaba ese directorio; como el navegador
+REM sobrevive al panel, la carpeta quedaba tomada y el update siguiente no
+REM podia reemplazarla (FAIL_NOCHANGE, "utilizado por otro proceso").
+if not defined PMYS_NORUN if exist "%INSTALL%\PanelMyS.exe" start "" /d "%SystemRoot%" "%INSTALL%\PanelMyS.exe"
 del "%UPD%\lock" 2>nul
 del /q "%UPD%\bundle.zip" 2>nul
 if exist "%NEW%" rmdir /s /q "%NEW%" 2>nul

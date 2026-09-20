@@ -4300,6 +4300,21 @@ def _abrir_panel(url):
 
 
 def main():
+    # ⚠️ Salir de la carpeta de instalacion ANTES de abrir nada.
+    # El panel se lanza con `start /d "%INSTALL%"`, asi que su directorio de
+    # trabajo es su propia carpeta. Despues abre el navegador, que nace como
+    # proceso hijo y HEREDA ese directorio. El navegador sobrevive al panel,
+    # asi que la carpeta queda tomada por Windows y el actualizador no la puede
+    # reemplazar: el log dice "El proceso no tiene acceso al archivo porque
+    # esta siendo utilizado por otro proceso" y termina en FAIL_NOCHANGE.
+    # Pasaba solo en las maquinas donde el navegador NO estaba abierto de antes
+    # (si ya estaba, no se crea proceso nuevo y no hereda nada), y por eso
+    # parecia que la actualizacion fallaba al azar.
+    # El panel no usa rutas relativas: EXE_DIR y RES_DIR son absolutos.
+    try:
+        os.chdir(os.environ.get("SystemRoot") or os.environ.get("TEMP") or "C:\\")
+    except OSError:
+        pass
     if not PROYECTO:
         _msgbox("No encontre la carpeta del proyecto de la intranet.\n\n"
                 "Solucion: crea un archivo 'proyecto.txt' junto a este programa\n"
