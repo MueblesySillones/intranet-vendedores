@@ -759,3 +759,22 @@ body.trabado{overflow:hidden}
 .mod.con-nuevo{border-color:var(--ink)}
 .mod .chip-nuevo{height:18px;padding:0 7px;border-radius:var(--r-full);background:var(--ink);color:#fff;
      font-size:var(--t-nano);font-weight:800;letter-spacing:.06em;display:inline-flex;align-items:center}
+
+/* ---- reordenar placas de una galeria (inspector) ----------------------
+   La linea marca el HUECO donde va a caer, entre dos filas. Nunca se
+   suelta "encima" de otra placa. */
+.gal-row{position:relative}
+.gal-mano{cursor:grab;color:var(--ink3);padding:2px 1px;flex:0 0 auto;border-radius:4px}
+.gal-mano:hover{color:var(--ink2);background:var(--accent-soft)}
+.gal-mano:active{cursor:grabbing}
+.gal-flechas{display:flex;flex-direction:column;gap:1px;flex:0 0 auto}
+.gal-mov{color:var(--ink3);line-height:0;padding:1px 2px;border-radius:3px}
+.gal-mov:hover:not(:disabled){color:var(--ink);background:var(--accent-soft)}
+.gal-mov:disabled{opacity:.25;cursor:default}
+.gal-moviendo{opacity:.4}
+.gal-row.gal-linea-arriba::before,
+.insp-lista.gal-linea-final .gal-row:last-child::after{
+  content:"";position:absolute;left:0;right:0;height:2px;
+  background:var(--accent);border-radius:2px}
+.gal-row.gal-linea-arriba::before{top:-3px}
+.insp-lista.gal-linea-final .gal-row:last-child::after{bottom:-3px}

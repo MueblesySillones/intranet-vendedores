@@ -2675,6 +2675,45 @@ function imagenInspector(bk) {
   return wrap;
 }
 // sección de descargas: lista compacta de placas (miniatura + nombre) con buscador y subida múltiple
+/* --- reordenar placas de una galeria ------------------------------------
+   El orden de la lista es el orden en que el vendedor ve las placas. Se
+   mueve arrastrando la agarradera o con las flechas.
+   La posicion de destino es un HUECO entre filas (0..n), no una fila: asi
+   una placa nunca cae "encima" de otra ni la reemplaza. */
+let GAL_ARRASTRE = null;
+
+function moverGal(items_o_bk, desde, hasta) {
+  const items = items_o_bk.items || items_o_bk;
+  if (!Array.isArray(items)) return false;
+  if (desde === hasta || hasta < 0 || hasta >= items.length || desde < 0 || desde >= items.length) return false;
+  const [it] = items.splice(desde, 1);
+  items.splice(hasta, 0, it);
+  return true;
+}
+
+/* en que hueco cae el cursor: 0 = antes de la primera, n = despues de la ultima */
+function huecoGal(lista, y) {
+  const filas = [...lista.querySelectorAll('.gal-row')].filter(r => r.style.display !== 'none');
+  for (let k = 0; k < filas.length; k++) {
+    const c = filas[k].getBoundingClientRect();
+    if (y < c.top + c.height / 2) return Number(filas[k].dataset.i);
+  }
+  return filas.length ? Number(filas[filas.length - 1].dataset.i) + 1 : 0;
+}
+
+function marcarLineaGal(lista, y) {
+  const hueco = huecoGal(lista, y);
+  lista.querySelectorAll('.gal-row').forEach(r => {
+    r.classList.toggle('gal-linea-arriba', Number(r.dataset.i) === hueco);
+  });
+  lista.classList.toggle('gal-linea-final', hueco >= lista.querySelectorAll('.gal-row').length);
+}
+
+function limpiarLineaGal(lista) {
+  lista.querySelectorAll('.gal-linea-arriba').forEach(r => r.classList.remove('gal-linea-arriba'));
+  lista.classList.remove('gal-linea-final');
+}
+
 function galeriaInspector(bk) {
   const wrap = document.createElement('div'); wrap.className = 'insp-col';
   wrap.appendChild(lbl('Título de la sección'));
@@ -2690,6 +2729,35 @@ function galeriaInspector(bk) {
   }
   (bk.items || []).forEach((it, i) => {
     const row = document.createElement('div'); row.className = 'gal-row'; row.dataset.nombre = (it.nombre || '').toLowerCase();
+    row.dataset.i = i;
+
+    /* Agarradera para reordenar. El orden de esta lista es el orden en que el
+       vendedor ve las placas, asi que tiene que poder cambiarse sin borrar y
+       volver a subir. Ademas de arrastrar hay flechas: arrastrar no funciona
+       con el dedo (HTML5 drag no existe en touch) y a veces se escapa. */
+    const mano = document.createElement('button');
+    mano.type = 'button'; mano.className = 'gal-mano'; mano.title = 'Arrastrar para cambiar el orden';
+    mano.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01"/></svg>';
+    mano.draggable = true;
+    mano.ondragstart = e => {
+      GAL_ARRASTRE = { bk, desde: i };
+      row.classList.add('gal-moviendo');
+      try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); } catch (x) {}
+    };
+    mano.ondragend = () => { row.classList.remove('gal-moviendo'); limpiarLineaGal(lista); GAL_ARRASTRE = null; };
+
+    const subir = document.createElement('button');
+    subir.type = 'button'; subir.className = 'gal-mov'; subir.title = 'Subir un lugar';
+    subir.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>';
+    subir.disabled = i === 0;
+    subir.onclick = () => { if (moverGal(bk, i, i - 1)) { renderCanvas(); renderInspector(); } };
+
+    const bajar = document.createElement('button');
+    bajar.type = 'button'; bajar.className = 'gal-mov'; bajar.title = 'Bajar un lugar';
+    bajar.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    bajar.disabled = i === (bk.items || []).length - 1;
+    bajar.onclick = () => { if (moverGal(bk, i, i + 1)) { renderCanvas(); renderInspector(); } };
+
     const thumb = document.createElement('button'); thumb.type = 'button'; thumb.className = 'gal-thumb'; thumb.title = it.src ? 'Cambiar imagen' : 'Subir imagen';
     if (it.src) thumb.style.backgroundImage = `url(/intranet/${it.src}?t=${Date.now()})`; else thumb.textContent = '+';
     const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
@@ -2699,8 +2767,29 @@ function galeriaInspector(bk) {
     nm.oninput = () => { it.nombre = nm.value; row.dataset.nombre = nm.value.toLowerCase(); renderCanvas(); $('#gbDoc').querySelector(`.gb-block[data-i="${SEL}"]`)?.classList.add('is-selected'); };
     const del = document.createElement('button'); del.type = 'button'; del.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>'; del.title = 'Quitar'; del.className = 'gal-del';
     del.onclick = () => { bk.items.splice(i, 1); if (!bk.items.length) bk.items.push({ src: '', nombre: '' }); renderCanvas(); renderInspector(); };
-    row.append(thumb, inp, nm, del); lista.appendChild(row);
+    const flechas = document.createElement('div'); flechas.className = 'gal-flechas';
+    flechas.append(subir, bajar);
+    row.append(mano, flechas, thumb, inp, nm, del); lista.appendChild(row);
   });
+
+  /* La linea marca DONDE va a caer, entre dos filas. Nunca se suelta "encima"
+     de otra placa: la posicion es un hueco, no una fila, asi que no hay forma
+     de que dos queden pisadas ni de que una reemplace a otra. */
+  lista.ondragover = e => {
+    if (!GAL_ARRASTRE || GAL_ARRASTRE.bk !== bk) return;
+    e.preventDefault();
+    try { e.dataTransfer.dropEffect = 'move'; } catch (x) {}
+    marcarLineaGal(lista, e.clientY);
+  };
+  lista.ondragleave = e => { if (!lista.contains(e.relatedTarget)) limpiarLineaGal(lista); };
+  lista.ondrop = e => {
+    if (!GAL_ARRASTRE || GAL_ARRASTRE.bk !== bk) return;
+    e.preventDefault();
+    const hueco = huecoGal(lista, e.clientY);
+    const desde = GAL_ARRASTRE.desde;
+    limpiarLineaGal(lista); GAL_ARRASTRE = null;
+    if (moverGal(bk, desde, hueco > desde ? hueco - 1 : hueco)) { renderCanvas(); renderInspector(); }
+  };
   wrap.appendChild(lista);
   // subir varias de una
   const addMulti = document.createElement('button'); addMulti.type = 'button'; addMulti.textContent = '+ Subir imágenes (varias)';
@@ -2709,6 +2798,9 @@ function galeriaInspector(bk) {
   addMulti.onclick = () => multiInp.click();
   multiInp.onchange = () => { const fs = [...multiInp.files]; multiInp.value = ''; if (fs.length) subirImgsGaleria(bk, fs); };
   wrap.append(addMulti, multiInp);
+  /* Con muchas placas la sección se come la pantalla del celular. Plegada, el
+     vendedor ve el título y la abre si la necesita. Lo decide quien publica. */
+  wrap.appendChild(insCheck(bk, 'plegada', 'Arranca plegada (el vendedor la abre tocando el título)'));
   return wrap;
 }
 async function subirImgGaleria(bk, i, file) {
@@ -3823,7 +3915,11 @@ function bloqueHTML(bk) {
     case 'separador': return `<div class="m-sep" style="height:${bk.grosor || 4}px"></div>`;
     case 'espacio': return `<div style="height:${({ sm: 14, md: 30, lg: 54 })[bk.alto] || 24}px"></div>`;
     case 'imagen': return bk.src ? `<figure class="m-img tam-${bk.tam || 'md'}"><img src="${esc(bk.src)}" alt="${esc(bk.alt || '')}" loading="lazy">${bk.caption ? `<figcaption>${esc(bk.caption)}</figcaption>` : ''}${bk.descargable ? `<a class="dl-btn" href="${esc(bk.src)}" download="${esc((bk.dlNombre || bk.caption || bk.alt || 'imagen').slice(0, 60))}.${extDe(bk.src)}">${ICO('download')} Descargar</a>` : ''}</figure>` : '';
-    case 'galeria': { const its = (bk.items || []).filter(it => it.src); if (!its.length) return ''; return `<div class="dl-section">${bk.titulo ? `<div class="m-kicker"><span>${esc(bk.titulo)}</span></div>` : ''}<div class="gallery">${its.map(it => { const nm = (it.nombre || 'placa').slice(0, 60); return `<div class="gcard"><img class="gimg" src="${esc(it.src)}" alt="${esc(it.nombre || '')}" loading="lazy" onclick="openLightbox('${esc(it.src)}','${esc(nm)}')"><div class="gmeta"><div class="gtitle">${esc(it.nombre || '')}</div><a class="dl-btn" href="${esc(it.src)}" download="${esc(nm)}.${extDe(it.src)}">${ICO('download')} Descargar</a></div></div>`; }).join('')}</div></div>`; }
+    case 'galeria': { const its = (bk.items || []).filter(it => it.src); if (!its.length) return '';
+      /* Plegada = <details> nativo: no necesita JS y funciona en cualquier
+         navegador, incluso si el script de la intranet no llego a cargar. */
+      if (bk.plegada) return `<details class="dl-section dl-plegable">${bk.titulo ? `<summary class="m-kicker"><span>${esc(bk.titulo)}</span></summary>` : '<summary class="m-kicker"><span>Ver descargas</span></summary>'}<div class="gallery">${its.map(it => { const nm = (it.nombre || 'placa').slice(0, 60); return `<div class="gcard"><img class="gimg" src="${esc(it.src)}" alt="${esc(it.nombre || '')}" loading="lazy" onclick="openLightbox('${esc(it.src)}','${esc(nm)}')"><div class="gmeta"><div class="gtitle">${esc(it.nombre || '')}</div><a class="dl-btn" href="${esc(it.src)}" download="${esc(nm)}.${extDe(it.src)}">${ICO('download')} Descargar</a></div></div>`; }).join('')}</div></details>`;
+      return `<div class="dl-section">${bk.titulo ? `<div class="m-kicker"><span>${esc(bk.titulo)}</span></div>` : ''}<div class="gallery">${its.map(it => { const nm = (it.nombre || 'placa').slice(0, 60); return `<div class="gcard"><img class="gimg" src="${esc(it.src)}" alt="${esc(it.nombre || '')}" loading="lazy" onclick="openLightbox('${esc(it.src)}','${esc(nm)}')"><div class="gmeta"><div class="gtitle">${esc(it.nombre || '')}</div><a class="dl-btn" href="${esc(it.src)}" download="${esc(nm)}.${extDe(it.src)}">${ICO('download')} Descargar</a></div></div>`; }).join('')}</div></div>`; }
     case 'video': {
       const ar = arDe(bk);
       const clase = `m-video ${bk.orient === 'vert' ? 'vert' : 'horiz'} tam-${bk.tam || 'md'}`;
