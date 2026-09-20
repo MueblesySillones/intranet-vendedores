@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.23.2"
-NUEVO_LABEL = "1.23.2 - el actualizador ya no se rinde en silencio"
-NUEVAS_NOTAS = ("Segundo arreglo del mismo tipo: cosas que hacian que una computadora dejara de actualizarse para siempre, sin avisar. Antes, si el panel viejo no terminaba de cerrarse en un minuto, el actualizador se rendia; como el panel seguia ahi, el intento siguiente terminaba igual, y el otro tambien. Ahora lo cierra a la fuerza y sigue: lo que estabas editando ya quedo guardado antes de empezar. Se suma al arreglo de la version anterior, donde un archivo de control que quedaba de un intento cortado bloqueaba todo. Recordatorio: una computadora que YA esta trabada no se arregla sola con esto, porque el trabajo lo hace el programa que ya tiene instalado. Para esas hay dos herramientas: Revisar actualizacion del panel, que dice que esta pasando, y Destrabar actualizacion del panel. Pediselas a Marketing.")
+NUEVA_PUBLICA = "1.24.0"
+NUEVO_LABEL = "1.24.0 - arreglado: decia que actualizaba y volvia igual"
+NUEVAS_NOTAS = ("Encontrado y arreglado el motivo por el que algunas computadoras decian que actualizaban, se reabria la pestaña, y volvia la misma version de siempre. El panel arrancaba parado adentro de su propia carpeta, y el navegador que abre despues heredaba esa ubicacion. Como el navegador sigue abierto cuando el panel se cierra, Windows consideraba que la carpeta estaba en uso y la actualizacion no podia reemplazarla: se cancelaba sola y volvia a arrancar la version vieja. Por eso parecia al azar: si el navegador ya estaba abierto de antes, funcionaba bien; si estaba cerrado, fallaba siempre. Ahora el panel arranca apartado de su carpeta y el problema no puede volver a pasar. IMPORTANTE para las computadoras que hoy estan trabadas: esta version no las arregla sola, porque el trabajo lo hace el programa que ya tienen instalado. En esas hay que cerrar TODAS las ventanas del navegador (el navegador entero, no solo la pestaña del panel), volver a abrir el panel y recien ahi apretar Actualizar. Una sola vez.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
