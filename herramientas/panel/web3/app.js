@@ -1129,9 +1129,9 @@ $('#docTitulo').oninput = () => { if (COLECCION && DOC_IDX != null) COLECCION[DO
 $('#docEtiqueta').oninput = () => { if (COLECCION && DOC_IDX != null) COLECCION[DOC_IDX].etiqueta = $('#docEtiqueta').value; };
 /* los datos de la publicación se escriben en el acto: si esperaran a "Guardar",
    ni el autoguardado ni el deshacer se enterarían de que cambió algo */
-['docAutor', 'docSucursal', 'docFecha', 'docTipo', 'docFijado', 'docConfirmar'].forEach(id => {
+['docAutor', 'docSucursal', 'docFecha', 'docTipo', 'docFijado'].forEach(id => {
   const el = $('#' + id); if (!el) return;
-  const prop = { docAutor: 'autor', docSucursal: 'sucursal', docFecha: 'fecha', docTipo: 'etiqueta', docFijado: 'fijado', docConfirmar: 'confirmar' }[id];
+  const prop = { docAutor: 'autor', docSucursal: 'sucursal', docFecha: 'fecha', docTipo: 'etiqueta', docFijado: 'fijado' }[id];
   const escribir = () => {
     if (!COLECCION || DOC_IDX == null || !ES_MURO) return;
     COLECCION[DOC_IDX][prop] = (el.type === 'checkbox') ? el.checked : el.value;
@@ -1179,7 +1179,6 @@ function volcarDatosPost() {
   $('#docFecha').value = d.fecha || '';
   $('#docTipo').value = ETIQUETAS_MURO.indexOf(d.etiqueta) >= 0 ? d.etiqueta : '';
   $('#docFijado').checked = !!d.fijado;
-  $('#docConfirmar').checked = !!d.confirmar;
   /* si ya tiene fecha de baja se muestra la FECHA, no el atajo con el que se
      eligió: lo que importa es qué día deja de verse */
   $('#docVence').value = d.vence ? 'fecha' : '';
@@ -1229,7 +1228,6 @@ function guardarDocEnColeccion() {
     d.fecha = $('#docFecha').value || d.fecha || hoyISO();
     d.etiqueta = $('#docTipo').value;
     d.fijado = $('#docFijado').checked;
-    d.confirmar = $('#docConfirmar').checked;
     d.vence = $('#docVence').value ? ($('#docVenceF').value || '') : '';
   } else {
     d.etiqueta = $('#docEtiqueta').value.trim();
@@ -1989,7 +1987,9 @@ function hoyLocal() {
    modulos.js) y lo elige la central acá. 24 horas de fábrica: como no hay
    manera de saber si el vendedor la vio, lo único honesto es que se venza
    sola. Antes eran 14 días fijos escritos a mano en cuatro lugares. */
-let AJUSTES = { novedad_horas: 24 };
+let AJUSTES = { novedad_horas: 24,
+                sectores: ['Marketing', 'Administración', 'Dirección',
+                           'Tapicería', 'Depósito y Entregas'] };
 let NOVEDAD_OPCIONES = [24, 48, 72, 168, 336];
 const NOVEDAD_TEXTO = {
   24: '24 horas', 48: '2 días', 72: '3 días', 168: '1 semana', 336: '2 semanas'

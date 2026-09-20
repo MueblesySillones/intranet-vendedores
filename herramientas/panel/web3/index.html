@@ -372,7 +372,6 @@
                   <option value="equipo">Equipo</option>
                 </select>
                 <label class="doc-muro-fij"><input type="checkbox" id="docFijado"> Fijar arriba</label>
-                <label class="doc-muro-fij"><input type="checkbox" id="docConfirmar"> Pedir confirmación</label>
                 <span class="doc-vence">
                   <select id="docVence" class="doc-bar-in doc-muro-v" title="Cuándo deja de verse">
                     <option value="">No vence</option>
@@ -523,7 +522,10 @@
       <div class="modal-autor" style="position:relative">
         <span class="av" id="coAv">M</span>
         <span class="quien">
-          <b id="coAutor">Marketing</b>
+          <button class="autor-sel" id="btnAutor" type="button" aria-haspopup="true" aria-expanded="false">
+            <b id="coAutor">Marketing</b>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
           <button class="selector" id="btnEtq" type="button">
             <i id="etqColor" hidden></i><span id="etqNombre">Sin etiqueta</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
@@ -531,6 +533,7 @@
           <span id="coCuando" hidden>Hoy</span>
         </span>
         <div class="pop" id="coTipos"></div>
+        <div class="pop pop-autor" id="coAutores"></div>
       </div>
 
       <input class="comp-tit" id="coTitulo" maxlength="120" placeholder="Título de la publicación" autocomplete="off">
@@ -540,12 +543,10 @@
 
       <div class="agregar">
         <b>Agregale algo</b>
-        <button class="adj-btn co-ad" type="button" data-ad="foto" title="Una foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></button>
-        <button class="adj-btn co-ad" type="button" data-ad="galeria" title="Varias fotos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
-        <button class="adj-btn co-ad" type="button" data-ad="video" title="Un video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></button>
-        <button class="adj-btn co-ad" type="button" data-ad="pdf" title="Un PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></button>
-        <button class="adj-btn co-ad" type="button" data-ad="lista" title="Una lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
-        <button class="adj-btn co-ad" type="button" data-ad="ref" title="Enlace a un módulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
+        <button class="adj-btn adj-txt co-ad" type="button" data-ad="medios"
+                title="Fotos o videos: elegí todo junto, el panel los acomoda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.4 11.1 12.3 20a5.5 5.5 0 0 1-7.8-7.8l9.2-9.1a3.7 3.7 0 0 1 5.2 5.2l-9.2 9.1a1.8 1.8 0 0 1-2.6-2.6l8.5-8.4"/></svg><span>Adjuntar</span></button>
+        <button class="adj-btn adj-txt co-ad" type="button" data-ad="pdf"
+                title="Un PDF u otro documento para descargar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>Documento</span></button>
       </div>
 
       <button class="fijar" id="coFijarBtn" type="button" aria-pressed="false">
@@ -553,22 +554,9 @@
         <span class="t"><b>Fijar arriba de todo</b><span>Queda primera hasta que la saques</span></span>
         <span class="sw"></span>
       </button>
-      <button class="fijar" id="coConfirmarBtn" type="button" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>
-        <span class="t"><b>Pedir confirmación</b><span>El vendedor tiene que tocar «Entendido»</span></span>
-        <span class="sw"></span>
-      </button>
-      <div class="fijar como-fila" id="coArchWrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
-        <span class="t"><b>Archivar en un módulo</b><span>Queda guardada ahí cuando salga de la cartelera</span></span>
-        <span class="ctrl-der">
-          <button type="button" class="sw-btn" id="coArchivarBtn" aria-pressed="false"><span class="sw"></span></button>
-          <select id="coArchivarMod" aria-label="Módulo donde queda archivada"></select>
-        </span>
-      </div>
-      <div class="fijar como-fila" id="coCargarWrap">
+            <div class="fijar como-fila" id="coCargarWrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/><path d="M4 4h16"/></svg>
-        <span class="t"><b>Cargar al módulo</b><span>Copia el título, el texto y las piezas como contenido del módulo</span></span>
+        <span class="t"><b>Enviar al módulo</b><span>El material queda guardado adentro del módulo, no sólo en la cartelera</span></span>
         <span class="ctrl-der">
           <button type="button" class="sw-btn" id="coCargarBtn" aria-pressed="false"><span class="sw"></span></button>
           <select id="coCargarMod" aria-label="Módulo donde se carga el contenido"></select>
@@ -590,8 +578,6 @@
         <button id="coClip" type="button"></button>
         <span id="coMenu" hidden></span>
         <input type="checkbox" id="coFijar">
-        <input type="checkbox" id="coConfirmar">
-        <input type="checkbox" id="coArchivar">
         <input type="checkbox" id="coCargar">
         <button id="coCancelar" type="button"></button>
       </span>
@@ -665,6 +651,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
           <span><b>Avisar novedad</b><span>Marcar publicaciones con la chapita «NUEVO»</span></span>
         </button>
+        <button type="button" class="cfg-op" id="cfgSectores">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>
+          <span><b>Quién comunica</b><span>Los sectores que pueden firmar una publicación</span></span>
+        </button>
         <button type="button" class="cfg-op" id="cfgKit">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M19.1 4.9l-4.2 4.2M9.1 14.9l-4.2 4.2"/></svg>
           <span><b>Para desarrolladores</b><span>El archivo que se le entrega a quien trabaje sobre el sistema</span></span>
@@ -687,6 +677,35 @@
     <div class="modal-pie" style="display:flex;gap:8px">
       <button class="btn btn-2" type="button" data-cerrar-config style="flex:1">Cerrar</button>
       <button class="btn btn-1" id="cfgGuardar" type="button" style="flex:1">Guardar el nombre</button>
+    </div>
+  </div>
+</div>
+
+<div class="fondo" id="sectoresModal">
+  <div class="modal chico" role="dialog" aria-modal="true">
+    <div class="modal-cab izq">
+      <h2>Quién comunica<span class="sub">Los sectores que pueden firmar una publicación</span></h2>
+      <button class="comp-cerrar" type="button" data-cerrar-sectores aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-cuerpo p16">
+      <!-- No es un ajuste "de esta computadora" aunque viva en Configuración:
+           se guarda junto con la cartelera, así que viaja a las 5 sucursales.
+           Si fuera local, la misma publicación saldría firmada distinto según
+           desde qué máquina se cargó. -->
+      <p class="fld-note" style="margin:0 0 12px">Esta lista la comparten todas las computadoras:
+        se publica junto con la cartelera, así que lo que cambies acá también lo ven las sucursales.
+        <b>Marketing</b> viene puesto por defecto y no se puede sacar.</p>
+      <div id="secLista" class="sec-lista"></div>
+      <div class="sec-alta">
+        <input type="text" id="secNuevo" maxlength="28" autocomplete="off" spellcheck="false"
+               placeholder="Ej: Posventa">
+        <button class="btn btn-2" id="secAgregar" type="button">Agregar</button>
+      </div>
+      <div id="secAviso" class="fld-note" style="min-height:16px"></div>
+    </div>
+    <div class="modal-pie" style="display:flex;gap:8px">
+      <button class="btn btn-2" type="button" data-cerrar-sectores style="flex:1">Cerrar</button>
+      <button class="btn btn-1" id="secGuardar" type="button" style="flex:1">Guardar</button>
     </div>
   </div>
 </div>

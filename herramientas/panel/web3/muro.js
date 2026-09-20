@@ -1068,15 +1068,13 @@
 
   /* los interruptores del modal reflejan las casillas reales del motor */
   function pintarSwitches() {
-    [['coFijarBtn', 'coFijar'], ['coConfirmarBtn', 'coConfirmar'],
-     ['coArchivarBtn', 'coArchivar'], ['coCargarBtn', 'coCargar']]
+    [['coFijarBtn', 'coFijar'], ['coCargarBtn', 'coCargar']]
       .forEach(function (p) {
         var b = document.getElementById(p[0]), c = elCo(p[1]);
         if (b && c) b.setAttribute('aria-pressed', c.checked ? 'true' : 'false');
       });
   }
-  [['coFijarBtn', 'coFijar'], ['coConfirmarBtn', 'coConfirmar'],
-     ['coArchivarBtn', 'coArchivar'], ['coCargarBtn', 'coCargar']]
+  [['coFijarBtn', 'coFijar'], ['coCargarBtn', 'coCargar']]
     .forEach(function (p) {
       var b = document.getElementById(p[0]);
       if (!b) return;
@@ -1141,19 +1139,10 @@
     elCo('coTitulo').value = d.titulo || '';
     elCo('coTexto').value = texto;
     elCo('coFijar').checked = !!d.fijado;
-    elCo('coConfirmar').checked = !!d.confirmar;
     elCo('coVence').value = d.vence || '';
-    /* corrigiendo, lo que ya eligió quien publicó manda: nada de que la
-       propuesta automática le cambie el módulo por abrir a arreglar una coma */
-    COMP.archTocado = true;
-    pintarArchivar();
+    COMP.autor = autorValido(d.autor);
+    pintarAutor();
     pintarCargar();
-    var puedeIr = !!d.archivar && (MODULOS || []).some(function (m) {
-      return m.key === d.archivar && puedeArchivar(m);
-    });
-    elCo('coArchivar').checked = puedeIr;
-    if (puedeIr) elCo('coArchivarMod').value = d.archivar;
-    pintarArchEstado();
     marcarModo();
     pintarVence();
     pintarTipos();
@@ -1217,24 +1206,55 @@
      El muro es un TABLERO DE AVISOS: lo simple se escribe acá; lo grande
      vive en un módulo y la publicación lo SEÑALA (bloque 'ref').
      =================================================================== */
-  /* archTocado: si quien publica toca la casilla o cambia de módulo, la
-     propuesta automática deja de meterse. */
-  const COMP = { abierto: false, tipo: '', bloques: [], editando: null, archTocado: false,
-                 parrafo0: null, texto0: '' };
+  const COMP = { abierto: false, tipo: '', bloques: [], editando: null,
+                 autor: '', parrafo0: null, texto0: '' };
+
+  /* QUIÉN COMUNICA
+     Antes el nombre era un rótulo fijo en el HTML que decía siempre
+     "Marketing" y no lo tocaba nadie: un aviso de Administración salía
+     firmado por Marketing igual. Ahora se elige, y la inicial del avatar
+     acompaña. */
+  var SECTOR_PRINCIPAL = 'Marketing';
+  var SECTORES_BASE = [SECTOR_PRINCIPAL, 'Administración', 'Dirección',
+                       'Tapicería', 'Depósito y Entregas'];
+
+  /* La lista vive en los AJUSTES globales, no en esta computadora ni en el
+     contenido de la cartelera.
+       · en localStorage, cada sucursal tendría la suya y la misma publicación
+         saldría firmada distinto según desde qué máquina se cargó;
+       · en content.sectores se perdía sola: panel_server.py sanea el contenido
+         de la cartelera y devuelve un dict cerrado (tipo, docs, papelera), así
+         que cualquier campo de más desaparece en el primer guardado.
+     `AJUSTES` ya viaja en cada persistModulos y el servidor lo valida. */
+  function sectoresDelMuro() {
+    var l = (typeof AJUSTES === 'object' && AJUSTES) ? AJUSTES.sectores : null;
+    if (!Array.isArray(l) || !l.length) return SECTORES_BASE.slice();
+    var out = [SECTOR_PRINCIPAL];   /* el principal siempre primero */
+    l.forEach(function (x) {
+      x = String(x == null ? '' : x).trim();
+      if (x && out.indexOf(x) < 0) out.push(x);
+    });
+    return out;
+  }
+
+  /* No se descarta un autor que no esté en la lista: si una publicación vieja
+     quedó firmada de otra forma, corregirle una coma no tiene por qué
+     cambiarle la firma. Se conserva y se ofrece junto a los demás. */
+  function autorValido(a) {
+    a = String(a == null ? '' : a).trim();
+    return a || SECTOR_PRINCIPAL;
+  }
+  function autoresOfrecidos() {
+    var l = sectoresDelMuro(), quien = autorValido(COMP.autor);
+    return l.indexOf(quien) >= 0 ? l : l.concat([quien]);
+  }
 
   function elCo(id) { return document.getElementById(id); }
 
-  /* ═══════════════ ARCHIVAR LA PUBLICACIÓN EN UN MÓDULO ═══════════════
-     Un aviso importante tiene dos vidas: hoy, arriba de la cartelera, y
-     después, cuando alguien lo va a buscar tres semanas más tarde. Antes eso
-     se resolvía escribiendo lo mismo dos veces. Ahora la publicación deja
-     anotado a qué módulo pertenece y el módulo la muestra.
-     NO se copia nada: la publicación sigue siendo una sola. Por eso
-     corregirla o borrarla se ve en los dos lados sin sincronizar nada.
-     ═══════════════════════════════════════════════════════════════════ */
-  /* Quedan afuera la cartelera (sería archivarse dentro de sí misma), los
-     informes embebidos y las presentaciones: meter un aviso suelto ahí rompe
-     la navegación con flechas. */
+  /* Qué módulos pueden recibir material. Quedan afuera la cartelera (sería
+     mandarse contenido a sí misma), los informes embebidos y las
+     presentaciones: meter un bloque suelto ahí rompe la navegación con
+     flechas. */
   function puedeArchivar(m) {
     if (!m || !m.key) return false;
     var c = m.content || {};
@@ -1245,69 +1265,18 @@
   }
   function modulosArchivables() { return (MODULOS || []).filter(puedeArchivar); }
 
-  function pintarArchivar() {
-    var wrap = elCo('coArchWrap'), sel = elCo('coArchivarMod');
-    if (!wrap || !sel) return;
-    var mods = modulosArchivables();
-    var antes = sel.value;
-    sel.innerHTML = mods.map(function (m) {
-      return '<option value="' + esc(m.key) + '">' + esc(m.title || m.key) + '</option>';
-    }).join('');
-    if (antes && mods.some(function (m) { return m.key === antes; })) sel.value = antes;
-    wrap.hidden = !mods.length;
-    pintarArchEstado();
-  }
-  function pintarArchEstado() {
-    var cb = elCo('coArchivar'), sel = elCo('coArchivarMod');
-    if (cb && sel) sel.disabled = !cb.checked;
-    if (typeof pintarSwitches === 'function') pintarSwitches();
-  }
-
-  /* el módulo de avisos, por clave y —si en otra instalación se llama
-     distinto— por nombre */
-  function claveAvisos() {
-    var mods = modulosArchivables();
-    var exacto = mods.filter(function (m) { return m.key === 'comunicacion_importante'; })[0];
-    if (exacto) return exacto.key;
-    var porNombre = mods.filter(function (m) {
-      return /important/i.test(String(m.title || ''));
-    })[0];
-    return porNombre ? porNombre.key : '';
-  }
-
-  /* Al marcar "Importante" se PROPONE archivar en el módulo de avisos, que es
-     donde ese aviso va a seguir existiendo cuando se caiga del feed. Es una
-     propuesta: si quien publica la toca, no se vuelve a meter. */
-  function sugerirArchivo() {
-    if (COMP.archTocado) return;
-    var cb = elCo('coArchivar'), sel = elCo('coArchivarMod');
-    if (!cb || !sel) return;
-    if (COMP.tipo !== 'importante') { cb.checked = false; pintarArchEstado(); return; }
-    var k = claveAvisos();
-    if (!k) return;
-    sel.value = k;
-    cb.checked = true;
-    pintarArchEstado();
-  }
-  function archivoElegido() {
-    var cb = elCo('coArchivar'), sel = elCo('coArchivarMod');
-    return (cb && cb.checked && sel && sel.value) || '';
-  }
-
   /* ===================================================================
-     CARGAR LA PUBLICACIÓN AL MÓDULO
+     ENVIAR LA PUBLICACIÓN AL MÓDULO
 
-     "Archivar en un módulo" (el interruptor de arriba) deja la publicación
-     ESPEJADA: el módulo la muestra en su sección «De la cartelera», pero
-     sigue siendo una sola cosa, la de la cartelera. Sirve para que un aviso
-     no se pierda cuando se cae del feed.
+     COPIA el contenido adentro del módulo como bloques de verdad: el título,
+     el cuerpo y las piezas adjuntas. A partir de ahí eso vive en el módulo,
+     se puede editar ahí, y sobrevive a que la publicación se borre.
 
-     Esto es otra cosa y por eso es otro interruptor: COPIA el contenido
-     adentro del módulo como bloques de verdad —el título, el cuerpo, y las
-     piezas que se hayan adjuntado—. A partir de ahí ese contenido vive en el
-     módulo: se puede editar, sobrevive a que la publicación se borre, y —lo
-     que pidió el usuario— el selector lo encuentra, así que otra publicación
-     puede SEÑALAR ese bloque en vez de volver a escribirlo.
+     Antes convivía con "Archivar en un módulo", que NO copiaba nada: dejaba
+     la publicación espejada en la sección «De la cartelera» del módulo. Eran
+     dos interruptores con nombres casi iguales y nadie sabía cuál era cuál,
+     así que quedó sólo éste. Las publicaciones ya archivadas se siguen
+     mostrando: lo que se sacó es la forma de archivar nuevas.
      =================================================================== */
   function cargaElegida() {
     var cb = elCo('coCargar'), sel = elCo('coCargarMod');
@@ -1339,8 +1308,14 @@
   /* Los bloques que se le agregan al módulo, en el orden en que se leen:
      el título arriba, después el texto, y abajo las piezas.
      Las referencias a otros módulos NO viajan: son punteros de la
-     publicación, y adentro del módulo destino no significan nada. */
-  function bloquesParaModulo(titulo, texto, piezas) {
+     publicación, y adentro del módulo destino no significan nada.
+
+     `huboFusion` dice que las fotos ya entraron a una grilla que el módulo
+     ya tenía. Si además no quedó texto ni ninguna otra pieza, no se agrega
+     nada: un título h2 solo, colgando abajo de todo y sin nada debajo, es
+     basura que después alguien tiene que ir a borrar a mano. */
+  function bloquesParaModulo(titulo, texto, piezas, huboFusion) {
+    if (huboFusion && !texto && !(piezas || []).length) return [];
     var out = [{ t: 'titulo', nivel: 'h2', html: esc(titulo), texto: titulo }];
     if (texto) out.push({ t: 'parrafo', html: esc(texto).replace(/\n+/g, '<br>'), texto: texto });
     (piezas || []).forEach(function (bk) {
@@ -1350,8 +1325,19 @@
     return out;
   }
 
-  /* Devuelve la posición donde quedó el título, que es a donde conviene
-     apuntar si después alguien enlaza a esto. */
+  /* La última grilla de imágenes del módulo, que es donde se venía sumando
+     material. -1 si no tiene ninguna. */
+  function ultimaGaleria(bloques) {
+    for (var i = (bloques || []).length - 1; i >= 0; i--) {
+      var b = bloques[i];
+      if (b && b.t === 'galeria' && Array.isArray(b.items)) return i;
+    }
+    return -1;
+  }
+
+  /* Devuelve qué pasó: dónde quedó parado el contenido y, si las fotos se
+     sumaron a una grilla que ya existía, cuántas y a cuál. `null` si el
+     módulo no apareció. */
   async function cargarEnModulo(key, titulo, texto, piezas) {
     var m = (MODULOS || []).filter(function (x) { return x.key === key; })[0];
     if (!m) return -1;
@@ -1368,11 +1354,41 @@
       } catch (e) { /* sin original: el módulo arranca con lo que se carga */ }
       c = m.content = { tipo: 'bloques', bloques: previos, html: '', presentacion: false };
     }
+    /* ¿El módulo ya tiene una grilla de imágenes? Entonces las fotos van
+       ADENTRO, que es lo que uno espera al mandar material a un módulo de
+       descargables. Antes caían como un bloque suelto al final y el módulo
+       se iba llenando de mini-galerías de una foto cada una.
+       Se elige la última: es la que se viene usando para sumar material. */
+    var gi = ultimaGaleria(c.bloques);
+    var sueltas = piezas || [], fusionadas = 0, grilla = '';
+    if (gi >= 0) {
+      var aporte = [];
+      sueltas = [];
+      (piezas || []).forEach(function (bk) {
+        if (!bk) return;
+        if (bk.t === 'imagen' && bk.src) {
+          aporte.push({ src: bk.src,
+                        nombre: String(bk.alt || titulo || '').slice(0, 60) });
+        } else if (bk.t === 'galeria' && Array.isArray(bk.items)) {
+          bk.items.forEach(function (it) {
+            if (it && it.src) aporte.push({ src: it.src, nombre: it.nombre || '' });
+          });
+        } else sueltas.push(bk);
+      });
+      if (aporte.length) {
+        c.bloques[gi].items = (c.bloques[gi].items || []).concat(aporte);
+        fusionadas = aporte.length;
+        grilla = c.bloques[gi].titulo || '';
+      }
+    }
+
     var pos = c.bloques.length;
-    bloquesParaModulo(titulo, texto, piezas).forEach(function (bk) { c.bloques.push(bk); });
+    bloquesParaModulo(titulo, texto, sueltas, fusionadas > 0)
+      .forEach(function (bk) { c.bloques.push(bk); });
     c.html = bloquesHTML(c.bloques, c.presentacion);
     if (typeof marcarEditado === 'function') marcarEditado(key);
-    return pos;
+    return { pos: fusionadas && pos === c.bloques.length ? gi : pos,
+             fusionadas: fusionadas, grilla: grilla };
   }
 
   function abrirComp(tipo) {
@@ -1385,16 +1401,13 @@
     elCo('coTitulo').value = '';
     elCo('coTexto').value = '';
     elCo('coFijar').checked = false;
-    elCo('coConfirmar').checked = false;
     elCo('coVence').value = '';
-    COMP.archTocado = false;
-    elCo('coArchivar').checked = false;
     elCo('coCargar').checked = false;
+    COMP.autor = SECTOR_PRINCIPAL;
+    pintarAutor();
     pintarVence();
     pintarTipos();
-    pintarArchivar();
     pintarCargar();
-    sugerirArchivo();
     pintarAdjuntos();
     pintarSwitches();
     setTimeout(function () { elCo('coTitulo').focus(); }, 260);
@@ -1463,7 +1476,6 @@
         COMP.tipo = (COMP.tipo === b.dataset.t) ? '' : b.dataset.t;
         pop.classList.remove('on');
         pintarTipos();
-        sugerirArchivo();      /* "Importante" propone el módulo de avisos */
         pintarSwitches();
       };
     });
@@ -1472,8 +1484,145 @@
     if (nom) nom.textContent = cara ? cara.t : 'Sin etiqueta';
     if (col) { col.hidden = !cara; if (cara) col.style.background = cara.c; }
   }
+  function pintarAutor() {
+    var quien = autorValido(COMP.autor);
+    var nom = elCo('coAutor'), av = elCo('coAv'), pop = elCo('coAutores');
+    if (nom) nom.textContent = quien;
+    if (av) av.textContent = quien.charAt(0).toUpperCase();
+    if (!pop) return;
+    pop.innerHTML = autoresOfrecidos().map(function (a) {
+      return '<button type="button" data-a="' + esc(a) + '">' + esc(a) +
+        (a === quien ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+                       '<path d="M20 6 9 17l-5-5"/></svg>' : '') + '</button>';
+    }).join('');
+    pop.querySelectorAll('button').forEach(function (b) {
+      b.onclick = function (e) {
+        e.stopPropagation();
+        COMP.autor = b.dataset.a;
+        pop.classList.remove('on');
+        var bt = document.getElementById('btnAutor');
+        if (bt) bt.setAttribute('aria-expanded', 'false');
+        pintarAutor();
+      };
+    });
+  }
+  var btnAutor = document.getElementById('btnAutor');
+  if (btnAutor) btnAutor.onclick = function (e) {
+    e.stopPropagation();
+    var pop = elCo('coAutores');
+    elCo('coTipos').classList.remove('on');   /* dos abiertos se pisan */
+    var abre = !pop.classList.contains('on');
+    pop.classList.toggle('on', abre);
+    btnAutor.setAttribute('aria-expanded', String(abre));
+  };
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('#coAutores') && !e.target.closest('#btnAutor')) {
+      var pop = elCo('coAutores');
+      if (pop) pop.classList.remove('on');
+      if (btnAutor) btnAutor.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  /* ═══════════════ QUIÉN COMUNICA (Configuración) ═══════════════ */
+  (function initSectores() {
+    var modal = document.getElementById('sectoresModal');
+    if (!modal) return;
+    var lista = [], aviso = document.getElementById('secAviso');
+
+    function decir(t) { if (aviso) aviso.textContent = t || ''; }
+
+    /* cuántas publicaciones firmó cada sector: sacar uno que está en uso no
+       rompe nada —la publicación conserva su firma— pero hay que decirlo. */
+    function enUso(nombre) {
+      var m = moduloMuro(), docs = (m && m.content && m.content.docs) || [];
+      return docs.filter(function (d) { return autorValido(d && d.autor) === nombre; }).length;
+    }
+
+    function pintar() {
+      var cont = document.getElementById('secLista');
+      if (!cont) return;
+      cont.innerHTML = lista.map(function (n, i) {
+        var fijo = n === SECTOR_PRINCIPAL;
+        return '<div class="sec-it"><b>' + esc(n) + '</b>' +
+          (fijo ? '<span class="sec-fijo">viene por defecto</span>'
+                : '<button type="button" class="sec-x" data-i="' + i + '" title="Sacar" ' +
+                  'aria-label="Sacar ' + esc(n) + '"><svg viewBox="0 0 24 24" fill="none" ' +
+                  'stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>') +
+          '</div>';
+      }).join('');
+      cont.querySelectorAll('.sec-x').forEach(function (b) {
+        b.onclick = async function () {
+          var i = +b.dataset.i, n = lista[i], usos = enUso(n);
+          if (usos) {
+            var ok = await confirmar(
+              '«' + n + '» firmó ' + usos + (usos === 1 ? ' publicación' : ' publicaciones') +
+              '. Sacarlo de la lista no se las cambia: siguen firmadas igual. ' +
+              'Lo que deja de poder hacerse es elegirlo para una publicación nueva.',
+              'Sacarlo igual', '¿Sacar «' + n + '»?');
+            if (!ok) return;
+          }
+          lista.splice(i, 1);
+          pintar();
+          decir('Acordate de Guardar.');
+        };
+      });
+    }
+
+    function agregar() {
+      var inp = document.getElementById('secNuevo');
+      var n = String(inp.value || '').trim().replace(/\s+/g, ' ');
+      if (!n) return;
+      if (lista.some(function (x) { return x.toLowerCase() === n.toLowerCase(); })) {
+        decir('«' + n + '» ya está en la lista.'); return;
+      }
+      lista.push(n);
+      inp.value = '';
+      pintar();
+      decir('Acordate de Guardar.');
+    }
+
+    function abrir() {
+      if (typeof cerrarConfig === 'function') cerrarConfig();
+      lista = sectoresDelMuro();
+      decir('');
+      document.getElementById('secNuevo').value = '';
+      pintar();
+      abrirModal(modal);
+    }
+    function cerrar() { esconderModal(modal); }
+
+    var btn = document.getElementById('cfgSectores');
+    if (btn) btn.onclick = abrir;
+    modal.querySelectorAll('[data-cerrar-sectores]').forEach(function (b) { b.onclick = cerrar; });
+    document.getElementById('secAgregar').onclick = agregar;
+    document.getElementById('secNuevo').onkeydown = function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); agregar(); }
+    };
+
+    document.getElementById('secGuardar').onclick = function () {
+      return window.conBoton('#secGuardar', 'Guardando…', async function () {
+        var antes = AJUSTES.sectores;
+        AJUSTES.sectores = lista.slice();
+        try {
+          await persistModulos(false);
+        } catch (e) {
+          AJUSTES.sectores = antes;        /* no quedó guardado: volver atrás */
+          toast(e && e.message ? e.message : 'No se pudo guardar', 'err');
+          return;
+        }
+        pintarAutor();                     /* el compositor ya refleja la lista */
+        cerrar();
+        toast('Listo ✓', 'ok');
+      });
+    };
+  })();
+
   var btnEtq = document.getElementById('btnEtq');
-  if (btnEtq) btnEtq.onclick = function (e) { e.stopPropagation(); elCo('coTipos').classList.toggle('on'); };
+  if (btnEtq) btnEtq.onclick = function (e) {
+    e.stopPropagation();
+    elCo('coAutores').classList.remove('on');
+    elCo('coTipos').classList.toggle('on');
+  };
   document.addEventListener('click', function (e) {
     if (!e.target.closest('#coTipos') && !e.target.closest('#btnEtq'))
       elCo('coTipos').classList.remove('on');
@@ -1704,41 +1853,17 @@
     });
   }
 
+  /* Antes esto eran SEIS botones: una foto, varias fotos, un video, un PDF,
+     una lista y un enlace. Los tres primeros eran el mismo selector de
+     archivos con distinto `accept`: le hacían elegir de antemano algo que el
+     panel puede deducir mirando lo que eligió. Ahora son dos —Adjuntar y
+     Documento— y el reparto lo hace `soltar()`, que es exactamente el mismo
+     que usa arrastrar y soltar. Una sola regla, un solo lugar donde se
+     arregla si algún día cambia. */
   async function agregarAdjunto(que) {
-    if (que === 'ref') return abrirPicker();
-
-    if (que === 'lista') {
-      COMP.bloques.push({ t: 'lista', items: [{ icono: 'check', html: 'Primer punto' }] });
-      pintarAdjuntos();
-      toast('Lista agregada: editá los puntos antes de publicar', 'ok');
-      return;
-    }
-
-    var acc = { foto: 'image/*', galeria: 'image/*', video: 'video/*',
-                pdf: 'application/pdf,.pdf' }[que];
-    var files = await pedirArchivo(acc, que === 'galeria');
-    if (!files.length) return;
-    toast('Subiendo…');
-    try {
-      if (que === 'galeria') {
-        var items = [];
-        for (var i = 0; i < files.length; i++) {
-          items.push({ src: await subir(files[i], 'gal'),
-                       nombre: files[i].name.replace(/\.[^.]+$/, '').slice(0, 60) });
-        }
-        COMP.bloques.push({ t: 'galeria', titulo: '', items: items });
-      } else if (que === 'foto') {
-        COMP.bloques.push({ t: 'imagen', src: await subir(files[0], 'img'), alt: '', tam: 'md' });
-      } else if (que === 'video') {
-        COMP.bloques.push(await bloqueVideo(files[0]));
-      } else if (que === 'pdf') {
-        COMP.bloques.push({ t: 'pdf', src: await subir(files[0], 'pdf'), modo: 'tarjeta',
-                            nombre: files[0].name.replace(/\.pdf$/i, '').slice(0, 60),
-                            descargable: true });
-      }
-      pintarAdjuntos();
-      toast('Listo', 'ok');
-    } catch (e) { toast(e.message || 'No se pudo subir', 'err'); }
+    var files = await pedirArchivo(
+      que === 'pdf' ? 'application/pdf,.pdf' : 'image/*,video/*', true);
+    if (files.length) await soltar(files);
   }
 
   /* ------------- señalar un módulo (o algo de adentro) ------------- */
@@ -2083,15 +2208,21 @@
          y si estaba oculta. Cambiar la fecha la haría saltar como nueva. */
       id: previa ? (previa.id || nuevoId()) : nuevoId(),
       titulo: titulo,
-      autor: previa ? (previa.autor || 'Marketing') : 'Marketing',
+      autor: autorValido(COMP.autor),
       sucursal: previa ? (previa.sucursal || '') : '',
       fecha: previa ? (previa.fecha || hoyISO()) : hoyISO(),
       etiqueta: COMP.tipo || '',
       fijado: elCo('coFijar').checked,
-      confirmar: elCo('coConfirmar').checked,
+      /* El interruptor se fue del compositor: no hacía nada. Toda la lógica
+         de «Entendido» en la intranet cuelga de FLAGS.lectura, que está
+         apagado. Se conserva lo que traiga una publicación vieja para no
+         perderle el dato al corregirla. */
+      confirmar: previa ? !!previa.confirmar : false,
       vence: elCo('coVence').value || '',
       archivado: previa ? !!previa.archivado : false,
-      archivar: archivoElegido(),
+      /* Ídem: «Archivar en un módulo» se sacó del compositor, pero las que
+         ya están archivadas siguen apareciendo en «De la cartelera». */
+      archivar: previa ? (previa.archivar || '') : '',
       bloques: bloques,
       html: bloquesHTML(bloques, false)
     };
@@ -2104,15 +2235,18 @@
        por separado, un corte en el medio dejaría una de las dos cosas sin la
        otra. `deshacerCarga` es la vuelta atrás si el guardado falla. */
     var cargarEn = editando ? '' : cargaElegida();
-    var deshacerCarga = null;
+    var deshacerCarga = null, detalleCarga = null;
     if (cargarEn) {
       var modDestino = (MODULOS || []).filter(function (m) { return m.key === cargarEn; })[0];
       if (modDestino) {
         var antesCont = modDestino.content
           ? JSON.parse(JSON.stringify(modDestino.content)) : null;
         var puesto = await cargarEnModulo(cargarEn, titulo, texto, COMP.bloques);
-        if (puesto < 0) cargarEn = '';
-        else deshacerCarga = function () { modDestino.content = antesCont; };
+        if (!puesto) cargarEn = '';
+        else {
+          detalleCarga = puesto;
+          deshacerCarga = function () { modDestino.content = antesCont; };
+        }
       } else cargarEn = '';
     }
 
@@ -2132,10 +2266,20 @@
         return false;
       });
     if (!guardado) return;
-    var avisoCarga = cargarEn
-      ? ' También quedó cargado en «' +
-        (((MODULOS || []).filter(function (m) { return m.key === cargarEn; })[0] || {}).title || cargarEn) + '».'
-      : '';
+    var avisoCarga = '';
+    if (cargarEn) {
+      var nomMod = ((MODULOS || []).filter(function (m) {
+        return m.key === cargarEn; })[0] || {}).title || cargarEn;
+      avisoCarga = ' También quedó cargado en «' + nomMod + '».';
+      /* Decir A QUÉ GRILLA fueron no es un detalle: si el panel eligió mal,
+         quien publica se entera acá y no tres semanas después. */
+      if (detalleCarga && detalleCarga.fusionadas) {
+        avisoCarga = ' ' + detalleCarga.fusionadas +
+          (detalleCarga.fusionadas === 1 ? ' foto se sumó' : ' fotos se sumaron') +
+          ' a la grilla' + (detalleCarga.grilla ? ' «' + detalleCarga.grilla + '»' : '') +
+          ' de «' + nomMod + '».';
+      }
+    }
     cerrarComp();
     renderMuro();
     if (window.pintarContadores) window.pintarContadores();
@@ -2177,10 +2321,8 @@
     pintarModoVista();
   })();
 
-  elCo('coArchivar').onchange = function () { COMP.archTocado = true; pintarArchEstado(); };
   elCo('coCargar').onchange = pintarCargarEstado;
   elCo('coCargarMod').onchange = function () {};
-  elCo('coArchivarMod').onchange = function () { COMP.archTocado = true; };
 
   elCo('coCerrar').onclick = cerrarCompPidiendo;
   if (document.getElementById('coEliminar')) {
@@ -2256,10 +2398,23 @@
     await soltar(files);
   });
 
+  /* Windows no siempre le pone `type` al archivo —un .MOV elegido a mano
+     suele llegar vacío— y sin esto el video se contaba como "otros" y se
+     descartaba en silencio. Por eso se mira también la extensión. */
+  function esImagen(f) {
+    return /^image\//.test(f.type) || /\.(jpe?g|png|gif|webp|avif|bmp|heic|heif)$/i.test(f.name);
+  }
+  function esVideo(f) {
+    return /^video\//.test(f.type) || /\.(mp4|mov|m4v|webm|avi|mkv|3gp)$/i.test(f.name);
+  }
+  function esPdf(f) {
+    return f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+  }
+
   async function soltar(files) {
-    var imgs = files.filter(function (f) { return /^image\//.test(f.type); });
-    var vids = files.filter(function (f) { return /^video\//.test(f.type); });
-    var pdfs = files.filter(function (f) { return f.type === 'application/pdf'; });
+    var imgs = files.filter(esImagen);
+    var vids = files.filter(function (f) { return !esImagen(f) && esVideo(f); });
+    var pdfs = files.filter(function (f) { return !esImagen(f) && !esVideo(f) && esPdf(f); });
     var otros = files.length - imgs.length - vids.length - pdfs.length;
     if (otros) toast('Solo entran imágenes, videos y PDF', 'err');
     if (!imgs.length && !vids.length && !pdfs.length) return;
