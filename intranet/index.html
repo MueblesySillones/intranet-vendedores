@@ -1999,11 +1999,41 @@ function muroCopiar(i, btn){
 const DL_ETIQUETA = { descargar:'Descargar', enviar:'Enviar' };
 let DL_PRE = null;                 /* {href, promesa} de lo que se precargó */
 
+/* ¿Dónde está parado el vendedor? Hace falta saberlo de verdad, no alcanza
+   con preguntar por capacidad: `canShare` da true en iPhone, en Android Y en
+   Chrome de Windows, así que los tres terminaban en la hoja de compartir. En
+   Android eso es un estorbo —el vendedor quiere la foto en la galería, no un
+   menú— y en la computadora directamente sobra.
+
+   ⚠️ iPadOS 13+ se reporta como "Macintosh" a propósito. Un `userAgent` pelado
+   lo clasifica como computadora. Se lo delata por el touch: una Mac de verdad
+   no tiene maxTouchPoints > 1. */
+const PLATAFORMA = (function(){
+  const ua = navigator.userAgent || '';
+  const tactil = (navigator.maxTouchPoints || 0) > 1;
+  if(/iPad|iPhone|iPod/.test(ua)) return 'ios';
+  if(/Macintosh/.test(ua) && tactil) return 'ios';      /* iPad moderno */
+  if(/Android/.test(ua)) return 'android';
+  return 'escritorio';
+})();
+
 function puedeEnviarArchivos(){
   try{
     return !!(navigator.canShare && navigator.share &&
               navigator.canShare({ files: [new File([new Blob([1])], 'x.txt', { type:'text/plain' })] }));
   }catch(e){ return false; }
+}
+
+/* La hoja de compartir se usa SOLO en iPhone/iPad, y ahí es obligatoria: es la
+   única puerta a la galería que tiene una página web en iOS. `<a download>` en
+   Safari manda el archivo a la app Archivos y NUNCA a Fotos, así que sin esto
+   el vendedor no puede guardar una placa ni mandarla por WhatsApp.
+
+   En Android y en la computadora se deja la descarga normal del navegador: en
+   Android el archivo cae en Descargas, que es la carpeta que las apps de
+   galería (Google Fotos y la mayoría) indexan. */
+function usaHojaDeCompartir(){
+  return PLATAFORMA === 'ios' && puedeEnviarArchivos();
 }
 
 function nombreDeDescarga(a){
@@ -2018,7 +2048,9 @@ function nombreDeDescarga(a){
    la pantalla se repinta muchas veces y perseguir cada punto de render es
    la forma seguridad de olvidarse de uno. */
 function pintarBotonesDescarga(){
-  if(!puedeEnviarArchivos()) return;
+  /* en Android y en la computadora el botón ya dice "Descargar" y hace
+     exactamente eso: no hay nada que corregir */
+  if(!usaHojaDeCompartir()) return;
   document.querySelectorAll('a.dl-btn:not([data-envio])').forEach(a => {
     a.dataset.envio = '1';
     for(const n of a.childNodes){
@@ -2027,7 +2059,7 @@ function pintarBotonesDescarga(){
         break;
       }
     }
-    a.title = 'Enviar por WhatsApp o guardar en el teléfono';
+    a.title = 'Se abre el menú del teléfono: elegí WhatsApp para mandarla, o Guardar imagen para que quede en tus fotos';
   });
 }
 
@@ -2040,7 +2072,7 @@ function bajarBlob(href){
 
 document.addEventListener('pointerdown', e => {
   const a = e.target.closest && e.target.closest('a.dl-btn');
-  if(!a || !puedeEnviarArchivos()) return;
+  if(!a || !usaHojaDeCompartir()) return;
   const href = a.getAttribute('href');
   if(!href || (DL_PRE && DL_PRE.href === href)) return;
   /* .catch vacío: si falla, el click lo vuelve a intentar y ahí sí se avisa */
@@ -2052,7 +2084,10 @@ document.addEventListener('click', async e => {
   if(!a) return;
   const href = a.getAttribute('href');
   if(!href) return;
-  if(!puedeEnviarArchivos()) return;    /* escritorio: el <a download> de siempre */
+  /* Android y computadora: se deja pasar el <a download> nativo. En Android
+     cae en Descargas, que es lo que indexa la galeria; en la compu, donde el
+     usuario elija. Solo iPhone/iPad se intercepta. */
+  if(!usaHojaDeCompartir()) return;
   e.preventDefault();
   e.stopPropagation();
   if(a.dataset.ocupado === '1') return;
