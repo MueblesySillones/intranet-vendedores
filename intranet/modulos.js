@@ -4192,10 +4192,6 @@ window.TUTORIALES = [
         "texto": "¿Como cambiar?"
       },
       {
-        "t": 3,
-        "texto": "Prueba 3"
-      },
-      {
         "t": 5,
         "texto": "prueba pureb"
       }
