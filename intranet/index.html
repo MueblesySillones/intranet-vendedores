@@ -2076,7 +2076,7 @@ document.addEventListener('pointerdown', e => {
   const href = a.getAttribute('href');
   if(!href || (DL_PRE && DL_PRE.href === href)) return;
   /* .catch vacío: si falla, el click lo vuelve a intentar y ahí sí se avisa */
-  DL_PRE = { href, promesa: bajarBlob(href).catch(()=>null) };
+  DL_PRE = { href, promesa: bajarBlob(href).then(b => archivoParaEnviar(b, nombreDeDescarga(a))).catch(()=>null) };
 }, true);
 
 document.addEventListener('click', async e => {
@@ -2098,13 +2098,15 @@ document.addEventListener('click', async e => {
   a.classList.add('trabajando');
   a.innerHTML = svg(I.download) + ' Preparando…';
   try{
-    const blob = (DL_PRE && DL_PRE.href === href ? await DL_PRE.promesa : null)
-                 || await bajarBlob(href);
-    const file = new File([blob], nombre, { type: blob.type || 'application/octet-stream' });
+    const file = (DL_PRE && DL_PRE.href === href ? await DL_PRE.promesa : null)
+                 || await archivoParaEnviar(await bajarBlob(href), nombre);
     if(navigator.canShare({ files:[file] })){
-      await navigator.share({ files:[file] });
+      /* title:'' a propósito: sin él, Safari le suma a la hoja el título de
+         la página como texto, y WhatsApp —al recibir texto + archivo— manda
+         el archivo como DOCUMENTO en vez de como foto/video */
+      await navigator.share({ files:[file], title:'' });
     }else{
-      guardarBlob(blob, nombre);
+      guardarBlob(file, file.name);
     }
   }catch(err){
     /* cancelar la hoja de compartir NO es un error: el vendedor se arrepintió */
@@ -2126,6 +2128,51 @@ document.addEventListener('click', async e => {
   a.classList.remove('trabajando');
   delete a.dataset.ocupado;
 }, true);
+
+/* WhatsApp en iPhone decide "foto o documento" mirando el archivo que le
+   llega. Queja del 21-sep: las placas llegaban como DOCUMENTO (ícono de
+   archivo, sin vista previa). Se le entrega algo que no deje dudas:
+   - las placas en PNG se pasan a JPG: la extensión de compartir de WhatsApp
+     trata un PNG que viene de una página como documento, y un JPG como foto
+     (la galería de Fotos, que es de donde WhatsApp espera fotos, es JPG/HEIC)
+   - el nombre sin "/" ni caracteres raros ("Bancos 25/8.png" rompía el
+     nombre en iOS) y con la extensión que corresponde al tipo REAL
+   Videos (mp4/mov) y PDF pasan tal cual: esos WhatsApp ya los reconoce. */
+const EXT_DE_TIPO = { 'image/jpeg':'jpg', 'image/png':'png', 'video/mp4':'mp4',
+                      'video/quicktime':'mov', 'application/pdf':'pdf' };
+function nombreLimpio(nombre, tipo){
+  let base = String(nombre || 'archivo').replace(/[\/\\:*?"<>|]+/g, '-')
+               .replace(/\s+/g, ' ').trim();
+  base = base.replace(/\.[a-z0-9]{2,4}$/i, '').trim() || 'archivo';
+  const ext = EXT_DE_TIPO[tipo] || (String(nombre).match(/\.([a-z0-9]{2,4})$/i) || [,''])[1].toLowerCase();
+  return ext ? base + '.' + ext : base;
+}
+function pasarAJpg(blob){
+  return new Promise((ok, mal) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      const g = c.getContext('2d');
+      g.fillStyle = '#fff';                /* lo transparente del PNG, blanco y no negro */
+      g.fillRect(0, 0, c.width, c.height);
+      g.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? ok(b) : mal(new Error('no se pudo convertir')), 'image/jpeg', 0.95);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); mal(new Error('imagen ilegible')); };
+    img.src = url;
+  });
+}
+async function archivoParaEnviar(blob, nombre){
+  let tipo = blob.type || '';
+  if(/^image\//.test(tipo) && tipo !== 'image/jpeg'){
+    try{ blob = await pasarAJpg(blob); tipo = 'image/jpeg'; }
+    catch(e){ /* si no se puede convertir, va el original: mejor que nada */ }
+  }
+  return new File([blob], nombreLimpio(nombre, tipo), { type: tipo || 'application/octet-stream' });
+}
 
 function guardarBlob(blob, nombre){
   const url = URL.createObjectURL(blob);
