@@ -3316,7 +3316,13 @@ window.__mysArrancar();
   /* ---- 1. deslizar para actualizar ---- */
   const UMBRAL = 80;                       /* px de arrastre para que cuente */
   const ptr = document.createElement('div');
-  ptr.className = 'ptr'; ptr.innerHTML = ICONO; ptr.setAttribute('aria-hidden','true');
+  ptr.className = 'ptr'; ptr.setAttribute('aria-hidden','true');
+  /* el arco se DIBUJA a medida que se tira (pathLength=100 → dasharray en %)
+     y la flecha gira con el dedo; al soltar, todo gira hasta que recarga */
+  ptr.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
+    + '<g class="ptr-rueda"><path class="ptr-arco" pathLength="100" d="M12 4a8 8 0 1 1-7.4 5"/>'
+    + '<polyline class="ptr-punta" points="1.9 9.4 5.2 7.4 6.3 11.2"/></g></svg>';
+  const RUEDA = ptr.querySelector('.ptr-rueda'), ARCO = ptr.querySelector('.ptr-arco'), PUNTA = ptr.querySelector('.ptr-punta');
   document.body.appendChild(ptr);
   let y0 = null, tirando = false, dist = 0;
 
@@ -3329,8 +3335,11 @@ window.__mysArrancar();
   }
   function pintar(d){
     const p = Math.min(d / UMBRAL, 1);
-    ptr.style.opacity = p;
-    ptr.style.transform = 'translateY(' + (Math.min(d, UMBRAL * 1.4) * .7 - 60) + 'px)';
+    ptr.style.opacity = Math.min(p * 1.5, 1);
+    ptr.style.transform = 'translateY(' + (Math.min(d, UMBRAL * 1.4) * .7 - 60) + 'px) scale(' + (.6 + p * .4) + ')';
+    ARCO.style.strokeDasharray = (p * 80) + ' 100';      /* se completa al llegar */
+    RUEDA.style.transform = 'rotate(' + (d * 2.2) + 'deg)';  /* gira con el dedo */
+    PUNTA.style.opacity = p > .85 ? 1 : 0;                 /* la punta, recién con el arco casi entero */
     ptr.classList.toggle('listo', d >= UMBRAL);
   }
   function soltar(){
@@ -3367,8 +3376,12 @@ window.__mysArrancar();
     y0 = null;
     if(tirando && dist * .6 >= UMBRAL){
       ptr.classList.remove('listo'); ptr.classList.add('cargando');
-      ptr.style.opacity = 1; ptr.style.transform = 'translateY(' + (UMBRAL * .7 - 60 + 20) + 'px)';
-      setTimeout(recargar, 150);
+      RUEDA.style.transform = ''; ARCO.style.strokeDasharray = '80 100'; PUNTA.style.opacity = 1;
+      ptr.style.transition = 'transform .2s ease';
+      ptr.style.opacity = 1; ptr.style.transform = 'translateY(' + (UMBRAL * .7 - 60 + 20) + 'px) scale(1)';
+      /* que se VEA girar antes de que la página se vaya: sin esto la recarga
+         arrancaba a los 150 ms y el vendedor no llegaba a ver nada */
+      setTimeout(recargar, 700);
     }else if(tirando){ soltar(); }
     tirando = false;
   }, { passive:true });
