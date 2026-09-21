@@ -14,6 +14,35 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmubgpwfjlpua",
+          "titulo": "INFO. COMPLETA ENTREGAS INTERIOR",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-21",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "En este video explicativo cele nos cuenta las posibilidades de entrega al interior tanto con flota propia, como a través de un expreso con nuestro embalaje especial. Pueden utilizarlo para enviarlo a sus clientes del interior y dar confianza."
+            },
+            {
+              "t": "video",
+              "src": "assets/_modulos/cartelera_vid_1790008239491.mp4",
+              "tam": "md",
+              "poster": "assets/_modulos/muro_poster_1790008239571.jpg",
+              "orient": "vert",
+              "ar": "576/1024",
+              "medido": true
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">En este video explicativo cele nos cuenta las posibilidades de entrega al interior tanto con flota propia, como a través de un expreso con nuestro embalaje especial. Pueden utilizarlo para enviarlo a sus clientes del interior y dar confianza.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-video vert tam-md\" data-med=\"1\" style=\"--arw:576;--arh:1024\"><div class=\"v-box\"><video src=\"assets/_modulos/cartelera_vid_1790008239491.mp4\" controls preload=\"metadata\" playsinline poster=\"assets/_modulos/muro_poster_1790008239571.jpg\"></video></div></figure></div>"
+        },
+        {
           "id": "dmu8tb1amnmv9",
           "titulo": "RTA cliente: \"SE ME VA DE PRESUPUESTO\"",
           "autor": "Marketing",
@@ -4177,7 +4206,7 @@ window.MODULES = [
   }
 ];
 /* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */
-window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administración", "Dirección", "Tapicería", "Depósito y Entregas"]};
+window.AJUSTES = {"novedad_horas": 24};
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
 window.TUTORIALES = [
   {
