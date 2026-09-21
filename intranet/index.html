@@ -3386,6 +3386,25 @@ window.__mysArrancar();
     tirando = false;
   }, { passive:true });
 
+  /* ---- 3. un video que no carga lo DICE (21-sep) ----
+     Los videos vienen del HTML guardado en modulos.js; si el archivo no está
+     (una publicación a medio subir, un corte), el navegador dejaba un
+     recuadro gris y mudo. El evento `error` de un <video> no burbujea: se
+     escucha en captura, así sirve para todos, los de ahora y los que se
+     dibujen después. */
+  document.addEventListener('error', e => {
+    const v = e.target;
+    if(!v || v.tagName !== 'VIDEO' || v.dataset.falla) return;
+    v.dataset.falla = '1';
+    const caja = v.closest('.v-box') || v.parentElement;
+    if(!caja) return;
+    const m = document.createElement('div');
+    m.className = 'video-falla';
+    m.innerHTML = '<b>Este video no se pudo cargar</b><span>Tocá acá para intentar de nuevo.</span>';
+    m.onclick = () => { m.remove(); delete v.dataset.falla; v.load(); };
+    caja.appendChild(m);
+  }, true);
+
   /* ---- 2. aviso de novedades ---- */
   const aviso = document.createElement('button');
   aviso.type = 'button'; aviso.className = 'aviso-nuevo';
