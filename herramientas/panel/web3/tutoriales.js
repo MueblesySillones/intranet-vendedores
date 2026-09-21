@@ -296,6 +296,19 @@
     v.addEventListener('play', pintarPlay);
     v.addEventListener('pause', pintarPlay);
     v.addEventListener('ended', pintarPlay);
+    /* Si el video no carga (no está en esta computadora y tampoco hay
+       internet para pedírselo al sitio), se DICE. Antes quedaba el cuadro
+       negro y parecía que el tutorial andaba mal. */
+    v.addEventListener('error', function () {
+      var caja = document.getElementById('tutCaja');
+      if (!caja || caja.querySelector('.tut-falla')) return;
+      var m = document.createElement('div');
+      m.className = 'tut-falla';
+      m.innerHTML = '<b>No se pudo abrir el video</b>' +
+        '<span>Revisá que esta computadora tenga internet y volvé a intentar. ' +
+        'Si sigue igual, tocá Actualizar para bajar la última versión.</span>';
+      caja.appendChild(m);
+    });
     /* tocar el video lo arranca y lo para, como en cualquier reproductor */
     v.addEventListener('click', alternar);
     pintarPlay();

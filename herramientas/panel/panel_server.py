@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 75
+VERSION = 76
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,19 +343,18 @@ VERSION = 75
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.27.0"
-VERSION_LABEL = "1.27.0 - publicando vuelve a girar, y encabezados mas bajos"
+VERSION_PUBLICA = "1.27.1"
+VERSION_LABEL = "1.27.1 - los tutoriales se ven en todas las computadoras"
 VERSION_NOTES = (
-                 "Dos cosas de la pantalla. PUBLICANDO: la tarjeta de publicar "
-                 "volvio a tener el circulito que gira y la barrita que avanza. En "
-                 "las computadoras que tienen apagados los Efectos de animacion de "
-                 "Windows el panel apagaba todas las animaciones, y la tarjeta "
-                 "quedaba quieta como si se hubiera colgado. Ahora esa animacion se "
-                 "ve siempre, un poco mas lenta en esas computadoras. ENCABEZADOS: "
-                 "la barra de arriba de cada pantalla es mas baja, con el titulo y "
-                 "la descripcion en una sola linea, y deja mas lugar para el "
-                 "contenido. En Tutoriales ya no se repite el titulo dos veces y el "
-                 "boton Subir un tutorial paso arriba a la derecha.")
+                 "TUTORIALES EN LAS SUCURSALES: el video de un tutorial se veia "
+                 "negro en las otras computadoras. El tutorial aparecia en la lista "
+                 "pero el archivo del video no habia llegado a esa computadora: "
+                 "cuando un panel combina lo publicado solo baja las imagenes, no "
+                 "los videos. Ahora, si a una computadora le falta un video o un "
+                 "archivo del material, el panel lo busca directo en el sitio "
+                 "publicado y se reproduce igual. Y si aun asi no se puede abrir, "
+                 "por ejemplo sin internet, el reproductor lo dice en vez de quedar "
+                 "en negro.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -3616,6 +3615,19 @@ class Handler(BaseHTTPRequestHandler):
             return self._servir_estatico(WEB, rel)
         if path.startswith("/intranet/"):
             rel = path[len("/intranet/"):]
+            # Material que esta computadora NO tiene (21-sep): el video de un
+            # tutorial llegaba negro a las sucursales. La ficha del tutorial
+            # viaja adentro de modulos.js —y llega al combinar con lo publicado—
+            # pero el archivo no: esa combinacion solo baja imagenes. En vez de
+            # un 404 mudo, se lo pide al sitio publicado, que si lo tiene.
+            if (rel.startswith("assets/") and ".." not in rel.split("/")
+                    and not os.path.isfile(os.path.join(INTRANET, *rel.split("/")))):
+                self.send_response(302)
+                self.send_header("Location", WEB_PUBLICA + "/intranet/" + quote(rel))
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return
             return self._servir_estatico(INTRANET, rel)
 
         if path == "/api/config":

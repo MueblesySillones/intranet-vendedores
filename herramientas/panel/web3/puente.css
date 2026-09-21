@@ -853,3 +853,11 @@ main.lienzo{padding:0; max-width:none; margin:0}
   font-size:var(--t-mini); color:var(--ink2)}
 #tutModal .dt-chico{margin:0 0 10px}
 #tutModal .rep-mal{margin:0 0 8px}
+
+/* el aviso cuando el video del tutorial no se puede abrir (21-sep) */
+#tutRaiz .tut-caja{position:relative}
+#tutRaiz .tut-falla{position:absolute; inset:0 0 auto 0; height:min(50vh, 100%); display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:24px;
+  text-align:center; color:#F4F1EC; background:#0E0E0E}
+#tutRaiz .tut-falla b{font-size:var(--t-base)}
+#tutRaiz .tut-falla span{font-size:var(--t-mini); color:#BDB6AC; max-width:420px; line-height:1.45}

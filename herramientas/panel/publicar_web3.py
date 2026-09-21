@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.27.0"
-NUEVO_LABEL = "1.27.0 - publicando vuelve a girar, y encabezados mas bajos"
-NUEVAS_NOTAS = ("Dos cosas de la pantalla. PUBLICANDO: la tarjeta de publicar volvio a tener el circulito que gira y la barrita que avanza. En las computadoras que tienen apagados los Efectos de animacion de Windows el panel apagaba todas las animaciones, y la tarjeta quedaba quieta como si se hubiera colgado. Ahora esa animacion se ve siempre, un poco mas lenta en esas computadoras. ENCABEZADOS: la barra de arriba de cada pantalla es mas baja, con el titulo y la descripcion en una sola linea, y deja mas lugar para el contenido. En Tutoriales ya no se repite el titulo dos veces y el boton Subir un tutorial paso arriba a la derecha.")
+NUEVA_PUBLICA = "1.27.1"
+NUEVO_LABEL = "1.27.1 - los tutoriales se ven en todas las computadoras"
+NUEVAS_NOTAS = ("TUTORIALES EN LAS SUCURSALES: el video de un tutorial se veia negro en las otras computadoras. El tutorial aparecia en la lista pero el archivo del video no habia llegado a esa computadora: cuando un panel combina lo publicado solo baja las imagenes, no los videos. Ahora, si a una computadora le falta un video o un archivo del material, el panel lo busca directo en el sitio publicado y se reproduce igual. Y si aun asi no se puede abrir, por ejemplo sin internet, el reproductor lo dice en vez de quedar en negro.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
