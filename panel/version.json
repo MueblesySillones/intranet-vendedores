@@ -1,8 +1,8 @@
 {
-  "version": 75,
-  "label": "1.27.0 - publicando vuelve a girar, y encabezados mas bajos",
-  "notes": "Dos cosas de la pantalla. PUBLICANDO: la tarjeta de publicar volvio a tener el circulito que gira y la barrita que avanza. En las computadoras que tienen apagados los Efectos de animacion de Windows el panel apagaba todas las animaciones, y la tarjeta quedaba quieta como si se hubiera colgado. Ahora esa animacion se ve siempre, un poco mas lenta en esas computadoras. ENCABEZADOS: la barra de arriba de cada pantalla es mas baja, con el titulo y la descripcion en una sola linea, y deja mas lugar para el contenido. En Tutoriales ya no se repite el titulo dos veces y el boton Subir un tutorial paso arriba a la derecha.",
-  "sha256": "5a1ce8846fe25487964a64b8658ecee53cfddb7e28bbcb75acd09a6f848c2f2f",
-  "size": 20349445,
-  "url": "panel/PanelMyS-v75.zip"
+  "version": 76,
+  "label": "1.27.1 - los tutoriales se ven en todas las computadoras",
+  "notes": "TUTORIALES EN LAS SUCURSALES: el video de un tutorial se veia negro en las otras computadoras. El tutorial aparecia en la lista pero el archivo del video no habia llegado a esa computadora: cuando un panel combina lo publicado solo baja las imagenes, no los videos. Ahora, si a una computadora le falta un video o un archivo del material, el panel lo busca directo en el sitio publicado y se reproduce igual. Y si aun asi no se puede abrir, por ejemplo sin internet, el reproductor lo dice en vez de quedar en negro.",
+  "sha256": "c9f578a0166686bf593f3d4a9b8afd5cf3c6dc884a9c219b4ea9dcd9f4e46158",
+  "size": 20351738,
+  "url": "panel/PanelMyS-v76.zip"
 }
