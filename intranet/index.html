@@ -3292,6 +3292,117 @@ window.__mysArrancar = function(){
   applyModules(); renderHub(); route();
 };
 window.__mysArrancar();
+
+/* ===================================================================
+   QUE LOS VENDEDORES VEAN LO ÚLTIMO (21-sep)
+   Queja: "tarda a los vendedores en caer los ajustes". El servidor no tenía
+   la culpa (modulos.js va con max-age=0 + ETag: cada carga pregunta). El
+   problema es que la intranet está INSTALADA como app (manifest standalone):
+   el teléfono la deja viva en memoria y la retoma tal cual, sin recargar, y
+   en modo app no existe el "deslizar para recargar" del navegador.
+   Dos arreglos:
+   1. Deslizar para abajo desde arriba de todo → recarga (conserva la sección,
+      que vive en el #hash).
+   2. Al volver a la app (y cada 5 min con la app abierta) se le pregunta al
+      servidor si modulos.js cambió —un HEAD, sin bajar nada— y si cambió
+      aparece "Hay novedades · Actualizar". No recarga solo: podría cortarle
+      al vendedor algo que está leyendo o mandando.
+   =================================================================== */
+(function(){
+  const ICONO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>';
+
+  function recargar(){ location.reload(); }
+
+  /* ---- 1. deslizar para actualizar ---- */
+  const UMBRAL = 80;                       /* px de arrastre para que cuente */
+  const ptr = document.createElement('div');
+  ptr.className = 'ptr'; ptr.innerHTML = ICONO; ptr.setAttribute('aria-hidden','true');
+  document.body.appendChild(ptr);
+  let y0 = null, tirando = false, dist = 0;
+
+  function hayAlgoEncima(){
+    /* menú, buscador, visor de fotos o de PDF abiertos: ahí el gesto no es nuestro */
+    if(document.body.classList.contains('menu-open')) return true;
+    const lb = document.getElementById('lightbox'); if(lb && !lb.hidden) return true;
+    const pv = document.getElementById('pdfview');  if(pv && pv.offsetParent) return true;
+    return false;
+  }
+  function pintar(d){
+    const p = Math.min(d / UMBRAL, 1);
+    ptr.style.opacity = p;
+    ptr.style.transform = 'translateY(' + (Math.min(d, UMBRAL * 1.4) * .7 - 60) + 'px)';
+    ptr.classList.toggle('listo', d >= UMBRAL);
+  }
+  function soltar(){
+    ptr.style.transition = 'transform .2s ease, opacity .2s ease';
+    ptr.style.opacity = 0; ptr.style.transform = 'translateY(-60px)';
+    setTimeout(()=>{ ptr.style.transition = ''; }, 220);
+  }
+
+  /* SOLO instalada como app: en el navegador común Chrome y Safari ya traen su
+     propio deslizar-para-recargar y se recargaría dos veces */
+  const COMO_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches)
+                   || navigator.standalone === true;
+
+  document.addEventListener('touchstart', e => {
+    if(!COMO_APP){ y0 = null; return; }
+    if(e.touches.length !== 1 || window.scrollY > 0 || hayAlgoEncima()){ y0 = null; return; }
+    /* dentro de algo que scrollea por su cuenta (tablas, carruseles) no */
+    for(let n = e.target; n && n !== document.body; n = n.parentElement){
+      if(n.scrollTop > 0) { y0 = null; return; }
+    }
+    y0 = e.touches[0].clientY; tirando = false; dist = 0;
+  }, { passive:true });
+
+  document.addEventListener('touchmove', e => {
+    if(y0 === null) return;
+    dist = e.touches[0].clientY - y0;
+    if(dist <= 0 || window.scrollY > 0){ if(tirando) soltar(); tirando = false; return; }
+    tirando = true;
+    pintar(dist * .6);
+  }, { passive:true });
+
+  document.addEventListener('touchend', () => {
+    if(y0 === null) return;
+    y0 = null;
+    if(tirando && dist * .6 >= UMBRAL){
+      ptr.classList.remove('listo'); ptr.classList.add('cargando');
+      ptr.style.opacity = 1; ptr.style.transform = 'translateY(' + (UMBRAL * .7 - 60 + 20) + 'px)';
+      setTimeout(recargar, 150);
+    }else if(tirando){ soltar(); }
+    tirando = false;
+  }, { passive:true });
+
+  /* ---- 2. aviso de novedades ---- */
+  const aviso = document.createElement('button');
+  aviso.type = 'button'; aviso.className = 'aviso-nuevo';
+  aviso.innerHTML = ICONO + '<span>Hay novedades · Actualizar</span>';
+  aviso.onclick = recargar;
+  document.body.appendChild(aviso);
+
+  function firma(){
+    return fetch('modulos.js', { method:'HEAD', cache:'no-store' }).then(r => {
+      if(!r.ok) return null;
+      return r.headers.get('etag') || r.headers.get('last-modified') || r.headers.get('content-length');
+    }).catch(() => null);
+  }
+  let FIRMA = null;
+  firma().then(f => { FIRMA = f; });
+
+  let revisando = false;
+  function revisar(){
+    if(revisando || document.hidden || aviso.classList.contains('visible')) return;
+    revisando = true;
+    firma().then(f => {
+      if(f && FIRMA && f !== FIRMA) aviso.classList.add('visible');
+      else if(f && !FIRMA) FIRMA = f;
+    }).finally(() => { revisando = false; });
+  }
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) revisar(); });
+  window.addEventListener('pageshow', e => { if(e.persisted) revisar(); });
+  window.addEventListener('focus', revisar);
+  setInterval(revisar, 5 * 60 * 1000);
+})();
 </script>
 </body>
 </html>
