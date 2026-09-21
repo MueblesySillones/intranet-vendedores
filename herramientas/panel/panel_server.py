@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 76
+VERSION = 77
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,18 +343,23 @@ VERSION = 76
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.27.1"
-VERSION_LABEL = "1.27.1 - los tutoriales se ven en todas las computadoras"
+VERSION_PUBLICA = "1.27.2"
+VERSION_LABEL = "1.27.2 - videos que no se pierden en ningun lado"
 VERSION_NOTES = (
-                 "TUTORIALES EN LAS SUCURSALES: el video de un tutorial se veia "
-                 "negro en las otras computadoras. El tutorial aparecia en la lista "
-                 "pero el archivo del video no habia llegado a esa computadora: "
-                 "cuando un panel combina lo publicado solo baja las imagenes, no "
-                 "los videos. Ahora, si a una computadora le falta un video o un "
-                 "archivo del material, el panel lo busca directo en el sitio "
-                 "publicado y se reproduce igual. Y si aun asi no se puede abrir, "
-                 "por ejemplo sin internet, el reproductor lo dice en vez de quedar "
-                 "en negro.")
+                 "VIDEOS EN TODAS PARTES: se reviso todo el camino de un video, "
+                 "desde que se sube hasta que lo ve el vendedor. Tres arreglos. UNO: "
+                 "cuando a una computadora le falta un video, un PDF o una imagen "
+                 "que ya esta publicada, el panel ahora lo baja del sitio en el "
+                 "momento, lo guarda y lo muestra; antes lo pedia afuera y el video "
+                 "no se podia adelantar ni sacarle la portada. La proxima vez ya "
+                 "esta en la computadora y no se vuelve a subir. DOS: al publicar "
+                 "varios videos juntos la subida va en varias partes, y la lista de "
+                 "publicaciones salia PRIMERO: los vendedores podian ver la "
+                 "publicacion con el video roto mientras terminaba de subir, o para "
+                 "siempre si una parte fallaba. Ahora la lista sale ultima, cuando "
+                 "todos los archivos ya estan. TRES: en la intranet, si un video no "
+                 "carga aparece un aviso y se puede tocar para reintentar, en vez "
+                 "del recuadro gris.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1456,6 +1461,48 @@ def _anotar_en_manifiesto(rels_y_bytes):
         pass
 
 
+_LOCKS_FALTANTES = {}
+_LOCK_FALTANTES = threading.Lock()
+
+
+def _traer_material_faltante(rel):
+    """Baja del sitio publicado UN archivo de material que esta computadora no
+    tiene (un video, un PDF, una imagen) y lo deja en su lugar. True si quedo.
+
+    Por que asi y no redirigiendo al sitio: servido desde aca el video se puede
+    adelantar (Range), el panel le puede sacar el poster (una imagen de OTRO
+    sitio "ensucia" el canvas y el navegador no deja leerla) y la proxima vez ya
+    esta en la computadora. Se anota en el manifiesto como ya publicado: no se
+    vuelve a subir al publicar.
+    ⚠️ Un lock por archivo: el navegador pide un video en varios pedidos a la
+    vez (Range) y sin esto se bajaba varias veces y se pisaba a medio escribir."""
+    seg = _ruta_intranet_segura(rel)
+    if not seg or not WEB_PUBLICA:
+        return False
+    dest = os.path.join(INTRANET, *seg.split("/"))
+    with _LOCK_FALTANTES:
+        lk = _LOCKS_FALTANTES.setdefault(seg, threading.Lock())
+    with lk:
+        if os.path.isfile(dest):
+            return True
+        try:
+            b = _bajar(WEB_PUBLICA + "/intranet/" + quote(seg), 120)
+        except Exception:  # noqa: sin internet o todavia no publicado
+            return False
+        if not b:
+            return False
+        try:
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            tmp = dest + ".bajando"
+            with open(tmp, "wb") as fh:
+                fh.write(b)
+            os.replace(tmp, dest)       # nunca queda un archivo a medias con el nombre real
+        except OSError:
+            return False
+        _anotar_en_manifiesto([(seg, b)])
+        return True
+
+
 def _ruta_intranet_segura(rel):
     rel = unquote(rel).replace("\\", "/").lstrip("/")
     if ".." in rel.split("/") or ":" in rel or not _es_gestionado_rel(rel):
@@ -1690,6 +1737,13 @@ def _publicar_cerebro(mensaje="", _reintento=False):
             manifest["galerias.js"] = actual["galerias.js"]
 
     cambiados = [rel for rel in actual if manifest.get(rel) != actual[rel]]
+    # ⚠️ modulos.js y galerias.js van AL FINAL (21-sep). Son los que le dicen a
+    # la intranet "hay un video en tal lugar". Con varios videos la subida se
+    # parte en lotes y cada lote es un deploy de Vercel: si modulos.js salia
+    # primero, los vendedores veian la publicacion con el video roto hasta que
+    # llegara el resto, y si un lote de video fallaba quedaba roto para siempre.
+    # Asi, cuando la intranet se entera de un archivo, el archivo ya esta.
+    cambiados.sort(key=lambda r: r in ("modulos.js", "galerias.js"))
     if not cambiados:
         # al dia con lo publicado: esa es la base de ahora en mas
         if remoto.get("modulos.js"):
@@ -3616,18 +3670,23 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/intranet/"):
             rel = path[len("/intranet/"):]
             # Material que esta computadora NO tiene (21-sep): el video de un
-            # tutorial llegaba negro a las sucursales. La ficha del tutorial
-            # viaja adentro de modulos.js —y llega al combinar con lo publicado—
-            # pero el archivo no: esa combinacion solo baja imagenes. En vez de
-            # un 404 mudo, se lo pide al sitio publicado, que si lo tiene.
-            if (rel.startswith("assets/") and ".." not in rel.split("/")
-                    and not os.path.isfile(os.path.join(INTRANET, *rel.split("/")))):
-                self.send_response(302)
-                self.send_header("Location", WEB_PUBLICA + "/intranet/" + quote(rel))
-                self.send_header("Cache-Control", "no-store")
-                self.send_header("Content-Length", "0")
-                self.end_headers()
-                return
+            # tutorial llegaba negro a las sucursales. La ficha viaja adentro de
+            # modulos.js —y llega al combinar con lo publicado— pero el archivo
+            # no: esa combinacion solo baja imagenes. Se lo trae del sitio
+            # publicado en el momento, se guarda y se sirve desde aca.
+            if rel.startswith("assets/") and not os.path.isfile(
+                    os.path.join(INTRANET, *rel.split("/"))):
+                if not _traer_material_faltante(rel):
+                    # no se pudo bajar (sin internet, o no esta publicado):
+                    # que el navegador lo intente directo contra el sitio
+                    seg = _ruta_intranet_segura(rel)
+                    if seg:
+                        self.send_response(302)
+                        self.send_header("Location", WEB_PUBLICA + "/intranet/" + quote(seg))
+                        self.send_header("Cache-Control", "no-store")
+                        self.send_header("Content-Length", "0")
+                        self.end_headers()
+                        return
             return self._servir_estatico(INTRANET, rel)
 
         if path == "/api/config":

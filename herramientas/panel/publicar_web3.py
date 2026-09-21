@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.27.1"
-NUEVO_LABEL = "1.27.1 - los tutoriales se ven en todas las computadoras"
-NUEVAS_NOTAS = ("TUTORIALES EN LAS SUCURSALES: el video de un tutorial se veia negro en las otras computadoras. El tutorial aparecia en la lista pero el archivo del video no habia llegado a esa computadora: cuando un panel combina lo publicado solo baja las imagenes, no los videos. Ahora, si a una computadora le falta un video o un archivo del material, el panel lo busca directo en el sitio publicado y se reproduce igual. Y si aun asi no se puede abrir, por ejemplo sin internet, el reproductor lo dice en vez de quedar en negro.")
+NUEVA_PUBLICA = "1.27.2"
+NUEVO_LABEL = "1.27.2 - videos que no se pierden en ningun lado"
+NUEVAS_NOTAS = ("VIDEOS EN TODAS PARTES: se reviso todo el camino de un video, desde que se sube hasta que lo ve el vendedor. Tres arreglos. UNO: cuando a una computadora le falta un video, un PDF o una imagen que ya esta publicada, el panel ahora lo baja del sitio en el momento, lo guarda y lo muestra; antes lo pedia afuera y el video no se podia adelantar ni sacarle la portada. La proxima vez ya esta en la computadora y no se vuelve a subir. DOS: al publicar varios videos juntos la subida va en varias partes, y la lista de publicaciones salia PRIMERO: los vendedores podian ver la publicacion con el video roto mientras terminaba de subir, o para siempre si una parte fallaba. Ahora la lista sale ultima, cuando todos los archivos ya estan. TRES: en la intranet, si un video no carga aparece un aviso y se puede tocar para reintentar, en vez del recuadro gris.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
