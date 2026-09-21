@@ -4177,6 +4177,29 @@ window.MODULES = [
   }
 ];
 /* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */
-window.AJUSTES = {"novedad_horas": 24};
+window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administración", "Dirección", "Tapicería", "Depósito y Entregas"]};
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
-window.TUTORIALES = [];
+window.TUTORIALES = [
+  {
+    "id": "tut_mubdbusm",
+    "titulo": "Prueba de video - ¿como editar modulos?",
+    "nota": "Grilla de imagenes",
+    "src": "assets/_tutoriales/tut_mubdbusm.mp4",
+    "duracion": 7,
+    "capitulos": [
+      {
+        "t": 1,
+        "texto": "¿Como cambiar?"
+      },
+      {
+        "t": 3,
+        "texto": "Prueba 3"
+      },
+      {
+        "t": 5,
+        "texto": "prueba pureb"
+      }
+    ],
+    "creado": "2026-09-21"
+  }
+];
