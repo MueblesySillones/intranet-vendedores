@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 74
+VERSION = 75
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,36 +343,19 @@ VERSION = 74
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.26.0"
-VERSION_LABEL = "1.26.0 - un solo boton para adjuntar, y quien comunica"
+VERSION_PUBLICA = "1.27.0"
+VERSION_LABEL = "1.27.0 - publicando vuelve a girar, y encabezados mas bajos"
 VERSION_NOTES = (
-                 "Cuatro cosas, todas en la pantalla de crear una publicacion. "
-                 "ADJUNTAR: antes habia seis botones (una foto, varias fotos, un "
-                 "video, un PDF, una lista y un enlace) y los tres primeros eran el "
-                 "mismo buscador de archivos: te hacian elegir de antemano algo que "
-                 "el panel puede darse cuenta solo. Ahora son dos: Adjuntar, para "
-                 "fotos y videos, que se eligen todos juntos y el panel los acomoda "
-                 "(una foto sola queda como foto, varias arman una galeria, los "
-                 "videos van aparte); y Documento, para los PDF. De paso se arreglo "
-                 "que un video .MOV elegido a mano se descartaba en silencio, porque "
-                 "Windows no siempre le avisa al panel de que tipo es el archivo. "
-                 "QUIEN COMUNICA: arriba decia siempre Marketing y no se podia "
-                 "cambiar, asi que un aviso de Administracion salia firmado por "
-                 "Marketing igual. Ahora el nombre tiene una flechita al lado y se "
-                 "elige el sector: Marketing, Administracion, Direccion, Tapiceria y "
-                 "Deposito y Entregas. Marketing es el que viene puesto. La lista se "
-                 "edita desde Configuracion, en Quien comunica, y la comparten todas "
-                 "las computadoras. ENVIAR AL MODULO: antes habia dos interruptores "
-                 "con nombres casi iguales, Archivar en un modulo y Cargar al "
-                 "modulo, y no se entendia cual era cual. Quedo uno solo, Enviar al "
-                 "modulo, que es el que guarda el material adentro del modulo. Lo "
-                 "que ya estaba archivado se sigue viendo igual. LA GRILLA: si el "
-                 "modulo al que se manda ya tiene una grilla de fotos, las fotos "
-                 "ahora entran ADENTRO de esa grilla. Antes caian abajo de todo como "
-                 "un bloque suelto y el modulo se iba llenando de mini galerias de "
-                 "una foto cada una. El panel avisa a que grilla fueron a parar. "
-                 "Ademas se saco Pedir confirmacion, que no hacia nada: la intranet "
-                 "nunca le pidio al vendedor que tocara Entendido.")
+                 "Dos cosas de la pantalla. PUBLICANDO: la tarjeta de publicar "
+                 "volvio a tener el circulito que gira y la barrita que avanza. En "
+                 "las computadoras que tienen apagados los Efectos de animacion de "
+                 "Windows el panel apagaba todas las animaciones, y la tarjeta "
+                 "quedaba quieta como si se hubiera colgado. Ahora esa animacion se "
+                 "ve siempre, un poco mas lenta en esas computadoras. ENCABEZADOS: "
+                 "la barra de arriba de cada pantalla es mas baja, con el titulo y "
+                 "la descripcion en una sola linea, y deja mas lugar para el "
+                 "contenido. En Tutoriales ya no se repite el titulo dos veces y el "
+                 "boton Subir un tutorial paso arriba a la derecha.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

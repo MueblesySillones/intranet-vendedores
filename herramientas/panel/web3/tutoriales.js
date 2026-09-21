@@ -136,10 +136,13 @@
   function pintarLista() {
     var r = raiz();
     var puede = central();
+    /* El botón vive en la barra de arriba, a la derecha, como "Publicar" en la
+       Cartelera. Antes había una segunda fila con otro título "Tutoriales" que
+       repetía el de la barra, sólo para sostener este botón. */
+    var der = document.getElementById('tutDer');
+    if (der) der.innerHTML = puede
+      ? '<button type="button" class="btn active" id="tutNuevo">Subir un tutorial</button>' : '';
     r.innerHTML =
-      '<div class="tut-h"><h3>Tutoriales</h3>' +
-      (puede ? '<button type="button" class="btn active" id="tutNuevo">Subir un tutorial</button>' : '') +
-      '</div>' +
       (LISTA.length
         ? '<div class="tut-l">' + LISTA.map(tarjeta).join('') + '</div>'
         : '<p class="dt-chico" id="tutVacio">' +
