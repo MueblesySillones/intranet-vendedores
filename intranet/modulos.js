@@ -14,28 +14,6 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
-          "id": "dmud40skd6tpa",
-          "titulo": "imagen",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-22",
-          "etiqueta": "",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "imagen",
-              "src": "assets/_modulos/muro_img_1790107872073.png",
-              "alt": "",
-              "tam": "md"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790107872073.png\" alt=\"\" loading=\"lazy\"></figure></div>"
-        },
-        {
           "id": "dmucviejubsyw",
           "titulo": "SILLÓN TORINO NUEVO",
           "autor": "Marketing",
@@ -365,6 +343,29 @@ window.MODULES = [
         }
       ],
       "papelera": [
+        {
+          "id": "dmud40skd6tpa",
+          "titulo": "imagen",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-22",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1790107872073.png",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790107872073.png\" alt=\"\" loading=\"lazy\"></figure></div>",
+          "borradoEl": "2026-09-22"
+        },
         {
           "id": "dmud3xd2e1vyg",
           "titulo": "prueba",
