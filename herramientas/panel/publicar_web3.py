@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.28.2"
-NUEVO_LABEL = "1.28.2 - publicar rapido en las computadoras nuevas"
-NUEVAS_NOTAS = ("PUBLICAR DEJA DE TARDAR EN LAS COMPUTADORAS NUEVAS: una computadora recien instalada no tenia anotado que archivos ya estaban publicados, asi que su PRIMERA publicacion subia la intranet entera. Medido: 121 archivos, 108 MB y 7 subidas seguidas, cada una con su propia actualizacion del sitio encolada; por eso tardaba varios minutos aunque el cambio fuera una sola publicacion. Ahora, al ponerse al dia, el panel compara con el repositorio y anota todo lo que ya esta publicado, sin bajar ni un byte de contenido. Medido despues del arreglo: no queda nada para subir. La demora normal de unos 30 segundos hasta que los vendedores lo ven es de Vercel, que arma el sitio, y esa no cambia.")
+NUEVA_PUBLICA = "1.29.0"
+NUEVO_LABEL = "1.29.0 - tutoriales con buscador y temas al costado"
+NUEVAS_NOTAS = ("TUTORIALES CON BUSCADOR Y LOS TEMAS AL COSTADO: la pantalla de tutoriales se rehizo con la forma de las plataformas de cursos. El video queda grande a la izquierda y al lado, siempre a la vista, la lista de temas del video, con el que esta sonando resaltado; se toca un tema y el video salta ahi, sin perder el video de vista (antes los temas estaban debajo del video y habia que bajar la pantalla). Debajo de los temas aparecen los otros tutoriales, para pasar de uno a otro sin volver atras. Y arriba hay una lupa: se escribe por ejemplo modulo y aparecen los tutoriales que hablan de eso, incluso mostrando el minuto exacto donde se habla del tema, con un toque para entrar justo ahi. Busca en el titulo, en la descripcion y en el texto de cada tema. En pantallas angostas la lista de temas se acomoda abajo del video.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

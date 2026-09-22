@@ -35,6 +35,7 @@
   var LISTA = [];        // los tutoriales cargados
   var ABIERTO = null;    // el que se está mirando, o null si es la lista
   var EDIT = false;      // editando los capítulos del abierto
+  var BUSCA = '';        // lo que se escribió en la lupa (ya normalizado)
   var CAPS = [];         // los capítulos mientras se editan (el borrador)
   var CARGADO = false;
 
@@ -133,30 +134,83 @@
     pintarLista();
   }
 
+  /* ───────────── buscar ─────────────
+     Pedido del usuario (22-sep): "que haga una lupa para buscar la pregunta,
+     por ejemplo si busca modulo le aparezca los videos relacionados a los
+     modulos". Busca en el título, en la descripción y —lo que importa— en el
+     TEXTO DE LOS CAPÍTULOS: ahí es donde dice de qué habla cada tramo. Un
+     resultado puede ser "este video, en el minuto 3:25". */
+  function norm(x) {
+    return String(x || '').toLowerCase()
+      .replace(/[áàä]/g, 'a').replace(/[éèë]/g, 'e').replace(/[íìï]/g, 'i')
+      .replace(/[óòö]/g, 'o').replace(/[úùü]/g, 'u').replace(/ñ/g, 'n');
+  }
+
+  function capsQueCoinciden(t, q) {
+    if (!q) return [];
+    return (t.capitulos || []).filter(function (c) { return norm(c.texto).indexOf(q) >= 0; })
+      .slice().sort(function (a, b) { return a.t - b.t; });
+  }
+
+  function coincide(t, q) {
+    if (!q) return true;
+    return norm(t.titulo).indexOf(q) >= 0 || norm(t.nota).indexOf(q) >= 0 ||
+           capsQueCoinciden(t, q).length > 0;
+  }
+
+  /* La barra de arriba se dibuja UNA vez: si se repintara con cada tecla, el
+     campo perdería el foco en la primera letra. */
+  function pintarBarra() {
+    var der = document.getElementById('tutDer');
+    if (!der || der.dataset.listo) return;
+    der.dataset.listo = '1';
+    der.innerHTML =
+      '<span class="campo-wrap">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+        '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>' +
+        '<input class="campo" id="tutBuscar" type="search" autocomplete="off" ' +
+        'placeholder="Buscar un tema: módulos, publicar..."></span>' +
+      (central() ? '<button type="button" class="btn active" id="tutNuevo">Subir un tutorial</button>' : '');
+    var campo = document.getElementById('tutBuscar');
+    campo.oninput = function () {
+      BUSCA = norm(campo.value).trim();
+      ABIERTO = null;                  /* buscar siempre devuelve a la lista */
+      EDIT = false;
+      pintarLista();
+    };
+    if (central()) document.getElementById('tutNuevo').onclick = abrirSubir;
+  }
+
   function pintarLista() {
     var r = raiz();
     var puede = central();
-    /* El botón vive en la barra de arriba, a la derecha, como "Publicar" en la
-       Cartelera. Antes había una segunda fila con otro título "Tutoriales" que
-       repetía el de la barra, sólo para sostener este botón. */
-    var der = document.getElementById('tutDer');
-    if (der) der.innerHTML = puede
-      ? '<button type="button" class="btn active" id="tutNuevo">Subir un tutorial</button>' : '';
+    pintarBarra();
+    var hay = LISTA.filter(function (t) { return coincide(t, BUSCA); });
     r.innerHTML =
-      (LISTA.length
-        ? '<div class="tut-l">' + LISTA.map(tarjeta).join('') + '</div>'
-        : '<p class="dt-chico" id="tutVacio">' +
-          (puede
-            ? 'Todavía no hay ninguno. Un tutorial es un video —cómo editar un módulo, cómo subir una publicación— con una línea de tiempo adentro: marcás el minuto donde empieza cada tema y después se puede saltar directo a eso.'
-            : 'Todavía no hay tutoriales cargados. Los sube la central y aparecen acá cuando traés la última versión.') +
-          '</p>');
-    if (puede) {
-      document.getElementById('tutNuevo').onclick = abrirSubir;
-    }
+      (BUSCA
+        ? '<p class="tut-res">' + (hay.length
+            ? hay.length + (hay.length === 1 ? ' tutorial habla' : ' tutoriales hablan') + ' de “' + esc(BUSCA) + '”'
+            : 'Ningún tutorial habla de “' + esc(BUSCA) + '”') + '</p>'
+        : '') +
+      (hay.length
+        ? '<div class="tut-l">' + hay.map(tarjeta).join('') + '</div>'
+        : (LISTA.length
+            ? ''
+            : '<p class="dt-chico" id="tutVacio">' +
+              (puede
+                ? 'Todavía no hay ninguno. Un tutorial es un video —cómo editar un módulo, cómo subir una publicación— con una línea de tiempo adentro: marcás el minuto donde empieza cada tema y después se puede saltar directo a eso.'
+                : 'Todavía no hay tutoriales cargados. Los sube la central y aparecen acá cuando traés la última versión.') +
+              '</p>'));
   }
 
   function tarjeta(t) {
     var n = (t.capitulos || []).length;
+    /* los tramos que coinciden con lo buscado: se entra directo al minuto */
+    var hits = capsQueCoinciden(t, BUSCA).slice(0, 4).map(function (c) {
+      return '<button type="button" class="tut-hit" data-ver-tut="' + esc(t.id) +
+        '" data-t="' + c.t + '"><span>' + esc(reloj(c.t)) + '</span>' +
+        esc(c.texto) + '</button>';
+    }).join('');
     return '<article class="tut-c" data-tut="' + esc(t.id) + '">' +
       (central() ? '<button type="button" class="tut-x" data-borrar-tut="' + esc(t.id) +
         '" title="Quitar este tutorial">×</button>' : '') +
@@ -164,6 +218,7 @@
         (n ? ' · ' + n + (n === 1 ? ' capítulo' : ' capítulos') : '') + '</div>' +
       '<h4 class="tut-cn">' + esc(t.titulo) + '</h4>' +
       (t.nota ? '<p class="tut-cd">' + esc(t.nota) + '</p>' : '') +
+      (hits ? '<div class="tut-hits">' + hits + '</div>' : '') +
       '<div class="tut-cb"><button type="button" class="btn active" data-ver-tut="' +
         esc(t.id) + '">Ver el tutorial</button></div>' +
       '</article>';
@@ -214,12 +269,19 @@
     var r = raiz();
     var puede = central();
     CAPS = (t.capitulos || []).map(function (c) { return { t: c.t, texto: c.texto }; });
+    /* 22-sep, pedido del usuario: el video a un costado y al lado la línea de
+       temas, como en las plataformas de cursos. El reproductor y la línea de
+       capítulos son los MISMOS de antes (misma caja, mismos controles, misma
+       pantalla completa): lo que cambia es que la lista de capítulos pasa de
+       abajo del video a una columna al costado, siempre a la vista. */
     r.innerHTML =
       '<div class="tut-h">' +
         '<button type="button" class="btn" id="tutVolver">‹ Tutoriales</button>' +
         '<div class="tut-ht"><h3>' + esc(t.titulo) + '</h3>' +
           (t.nota ? '<p>' + esc(t.nota) + '</p>' : '') + '</div>' +
       '</div>' +
+      '<div class="tut-pro">' +
+      '<div class="tut-izq">' +
       '<div class="tut-caja" id="tutCaja">' +
         /* ⚠️ SIN `controls`: el navegador trae su propia barra de progreso y
            quedaba una arriba de la otra con la de capítulos. Acá la barra de
@@ -249,7 +311,14 @@
                  '<button type="button" class="btn" id="tutCancelar" hidden>Cancelar</button>' +
                  '<button type="button" class="btn" id="tutMarcar" hidden>+ Marcar acá</button>' : '') +
       '</div>' +
-      '<div class="tut-caps" id="tutCaps"></div>';
+      '</div>' +                                   /* fin de la columna del video */
+      '<aside class="tut-lado">' +
+        '<div class="tut-lado-t">Temas de este tutorial' +
+          '<span id="tutCuenta">' + CAPS.length + '</span></div>' +
+        '<div class="tut-caps" id="tutCaps"></div>' +
+        otrosTutoriales(t) +
+      '</aside>' +
+      '</div>';
 
     document.getElementById('tutVolver').onclick = function () {
       if (EDIT && !window.confirm('Estás editando los capítulos. ¿Salir sin guardar?')) return;
@@ -272,6 +341,22 @@
     engancharVideo(t);
     pintarCaps();
     dibujarLinea();
+  }
+
+  /* Para saltar a otro tutorial sin volver a la lista: lo mismo que ofrece
+     cualquier curso al costado del video. */
+  function otrosTutoriales(t) {
+    var otros = LISTA.filter(function (x) { return x.id !== t.id; });
+    if (!otros.length) return '';
+    return '<div class="tut-lado-t tut-lado-t2">Otros tutoriales</div>' +
+      '<div class="tut-otros">' + otros.map(function (x, i) {
+        var n = (x.capitulos || []).length;
+        return '<button type="button" class="tut-otro" data-ver-tut="' + esc(x.id) + '">' +
+          '<span class="tut-num">' + (i + 1) + '</span>' +
+          '<span class="tut-otro-tx"><b>' + esc(x.titulo) + '</b>' +
+          '<i>' + esc(reloj(x.duracion)) + (n ? ' · ' + n + (n === 1 ? ' tema' : ' temas') : '') +
+          '</i></span></button>';
+      }).join('') + '</div>';
   }
 
   function engancharVideo(t) {
@@ -431,6 +516,8 @@
         '<span class="tut-x2">' + esc(c.texto) + '</span></button>';
     }).join('');
     if (EDIT) engancharEdicion(caja);
+    var cuenta = document.getElementById('tutCuenta');
+    if (cuenta) cuenta.textContent = caps.length;   /* al marcar uno nuevo, el número sube */
     alCorrer();
   }
 
@@ -649,6 +736,16 @@
     var r = raiz();
     if (!r) return;
     var ver = ev.target.closest('[data-ver-tut]');
+    if (ver && ver.dataset.t) {          /* resultado de la lupa: entra al minuto */
+      ABIERTO = ver.getAttribute('data-ver-tut'); EDIT = false; pintar();
+      var seg = parseInt(ver.dataset.t, 10) || 0;
+      var vv = video();
+      if (vv) {
+        var ir = function () { vv.currentTime = seg; vv.play().catch(function () {}); };
+        if (vv.readyState >= 1) ir(); else vv.addEventListener('loadedmetadata', ir, { once: true });
+      }
+      return;
+    }
     if (ver && r.contains(ver)) {
       ABIERTO = ver.getAttribute('data-ver-tut'); EDIT = false; pintar(); return;
     }

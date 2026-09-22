@@ -871,3 +871,67 @@ main.lienzo{padding:0; max-width:none; margin:0}
   text-align:center; color:#F4F1EC; background:#0E0E0E}
 #tutRaiz .tut-falla b{font-size:var(--t-base)}
 #tutRaiz .tut-falla span{font-size:var(--t-mini); color:#BDB6AC; max-width:420px; line-height:1.45}
+
+/* ---------- TUTORIALES: el video a un costado y los temas al lado ----------
+   Pedido del usuario (22-sep) con capturas de plataformas de cursos: el video
+   grande a la izquierda y, al lado, la lista de temas siempre a la vista, con
+   el que está sonando marcado. Antes los capítulos vivían DEBAJO del video:
+   para saber qué venía después había que scrollear y perder el video de vista.
+   El reproductor es el mismo (misma caja, mismos controles, misma pantalla
+   completa): lo único que se mudó es dónde va la lista. */
+#tutRaiz .tut-pro{display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:18px; align-items:start}
+#tutRaiz .tut-izq{min-width:0}
+#tutRaiz .tut-lado{min-width:0; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-md); overflow:hidden; display:flex; flex-direction:column;
+  max-height:calc(100vh - 190px)}
+#tutRaiz .tut-lado-t{display:flex; align-items:center; gap:8px; padding:12px 14px;
+  font-size:var(--t-nano); font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink2); background:var(--panel); border-bottom:1px solid var(--line)}
+#tutRaiz .tut-lado-t span{margin-left:auto; padding:1px 8px; border-radius:var(--r-full);
+  background:var(--accent-soft); color:var(--ink2); letter-spacing:0}
+#tutRaiz .tut-lado-t2{border-top:1px solid var(--line)}
+/* la lista de temas, adentro del costado: se scrollea sola y el video no se mueve */
+#tutRaiz .tut-lado .tut-caps{gap:0; overflow-y:auto; padding:6px}
+#tutRaiz .tut-lado .tut-cap{border:0; border-radius:var(--r-sm); background:none;
+  align-items:flex-start; padding:10px 10px}
+#tutRaiz .tut-lado .tut-cap:hover{background:var(--panel)}
+#tutRaiz .tut-lado .tut-cap.on{background:var(--accent-soft); border:0}
+#tutRaiz .tut-lado .tut-cap.on .tut-x2{font-weight:700}
+#tutRaiz .tut-lado .tut-cap .tut-t{flex:0 0 46px}
+#tutRaiz .tut-lado .tut-cap.edit{background:var(--panel); margin-bottom:5px}
+#tutRaiz .tut-otros{display:flex; flex-direction:column; padding:6px; gap:2px;
+  overflow-y:auto; max-height:230px}
+#tutRaiz .tut-otro{display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px;
+  font:inherit; text-align:left; color:var(--ink); background:none; border:0;
+  border-radius:var(--r-sm); cursor:pointer}
+#tutRaiz .tut-otro:hover{background:var(--panel)}
+#tutRaiz .tut-num{flex:0 0 22px; height:22px; display:grid; place-items:center;
+  font-size:var(--t-nano); font-weight:800; color:var(--ink3);
+  background:var(--accent-soft); border-radius:50%}
+#tutRaiz .tut-otro-tx{min-width:0; display:block}
+#tutRaiz .tut-otro-tx b{display:block; font-size:var(--t-mini); font-weight:600; line-height:1.3;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#tutRaiz .tut-otro-tx i{display:block; margin-top:2px; font-style:normal;
+  font-size:var(--t-nano); color:var(--ink3)}
+/* en pantallas angostas la columna se va abajo, que es donde entra */
+@media(max-width:1080px){
+  #tutRaiz .tut-pro{grid-template-columns:minmax(0,1fr)}
+  #tutRaiz .tut-lado{max-height:none}
+  #tutRaiz .tut-otros{max-height:none}
+}
+/* los resultados de la lupa: el tramo exacto del video que habla del tema */
+#tutRaiz .tut-res{margin:0 0 14px; font-size:var(--t-mini); color:var(--ink2)}
+#tutRaiz .tut-hits{display:flex; flex-direction:column; gap:3px; margin-top:2px}
+#tutRaiz .tut-hit{display:flex; gap:8px; width:100%; padding:6px 8px; font:inherit;
+  font-size:var(--t-nano); text-align:left; color:var(--ink2); background:var(--panel);
+  border:1px solid var(--line); border-radius:var(--r-sm); cursor:pointer}
+#tutRaiz .tut-hit:hover{border-color:var(--accent); color:var(--ink)}
+#tutRaiz .tut-hit span{flex:0 0 auto; font-weight:800; color:var(--accent);
+  font-variant-numeric:tabular-nums}
+/* editar capítulos EN la columna del costado: 330 px no alcanzan para
+   minuto + texto + quitar en una sola línea (el texto quedaba de 4 letras),
+   así que el texto pasa a un renglón propio abajo del minuto */
+#tutRaiz .tut-lado .tut-cap.edit{flex-wrap:wrap; gap:6px 8px; padding:8px 10px 10px}
+#tutRaiz .tut-lado .tut-cap.edit .tut-t{flex:0 0 66px; order:1}
+#tutRaiz .tut-lado .tut-cap.edit .tut-quitar{order:2; margin-left:auto}
+#tutRaiz .tut-lado .tut-cap.edit .tut-x2{order:3; flex:1 1 100%; width:100%}

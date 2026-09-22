@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 80
+VERSION = 81
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,21 +343,22 @@ VERSION = 80
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.28.2"
-VERSION_LABEL = "1.28.2 - publicar rapido en las computadoras nuevas"
+VERSION_PUBLICA = "1.29.0"
+VERSION_LABEL = "1.29.0 - tutoriales con buscador y temas al costado"
 VERSION_NOTES = (
-                 "PUBLICAR DEJA DE TARDAR EN LAS COMPUTADORAS NUEVAS: una "
-                 "computadora recien instalada no tenia anotado que archivos ya "
-                 "estaban publicados, asi que su PRIMERA publicacion subia la "
-                 "intranet entera. Medido: 121 archivos, 108 MB y 7 subidas "
-                 "seguidas, cada una con su propia actualizacion del sitio encolada; "
-                 "por eso tardaba varios minutos aunque el cambio fuera una sola "
-                 "publicacion. Ahora, al ponerse al dia, el panel compara con el "
-                 "repositorio y anota todo lo que ya esta publicado, sin bajar ni un "
-                 "byte de contenido. Medido despues del arreglo: no queda nada para "
-                 "subir. La demora normal de unos 30 segundos hasta que los "
-                 "vendedores lo ven es de Vercel, que arma el sitio, y esa no "
-                 "cambia.")
+                 "TUTORIALES CON BUSCADOR Y LOS TEMAS AL COSTADO: la pantalla de "
+                 "tutoriales se rehizo con la forma de las plataformas de cursos. El "
+                 "video queda grande a la izquierda y al lado, siempre a la vista, "
+                 "la lista de temas del video, con el que esta sonando resaltado; se "
+                 "toca un tema y el video salta ahi, sin perder el video de vista "
+                 "(antes los temas estaban debajo del video y habia que bajar la "
+                 "pantalla). Debajo de los temas aparecen los otros tutoriales, para "
+                 "pasar de uno a otro sin volver atras. Y arriba hay una lupa: se "
+                 "escribe por ejemplo modulo y aparecen los tutoriales que hablan de "
+                 "eso, incluso mostrando el minuto exacto donde se habla del tema, "
+                 "con un toque para entrar justo ahi. Busca en el titulo, en la "
+                 "descripcion y en el texto de cada tema. En pantallas angostas la "
+                 "lista de temas se acomoda abajo del video.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
