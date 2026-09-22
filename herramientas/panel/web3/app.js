@@ -4999,11 +4999,32 @@ function esperarReinicio() {
   }, 2000);
 }
 
+/* ---------- que el CONTENIDO llegue solo (22-sep) ----------
+   El panel avisaba de versiones nuevas del programa pero nunca de contenido
+   nuevo: una sucursal solo se ponía al día si publicaba algo, o si alguien
+   entraba a Configuración y tocaba "Traer última versión". Una sucursal recién
+   instalada se quedaba con el contenido del día en que se armó el instalador
+   —sin las publicaciones nuevas y sin los videos— sin que nada lo dijera.
+   Ahora se combina con lo publicado al abrir el panel y cada media hora. Es
+   liviano (no baja el repo entero) y conserva lo que esta computadora todavía
+   no publicó. La central no lo necesita: ella es la fuente. */
+async function ponerseAlDia() {
+  if (ES_CENTRAL) return;
+  let r;
+  try { r = await api('/api/al-dia'); } catch (e) { return; }
+  if (!r || !r.ok || !r.cambios) return;
+  await cargarModulos().catch(() => {});
+  const n = (r.traidos || []).length;
+  toast('Se trajo lo nuevo publicado' + (n ? ': ' + r.traidos.join(', ') : ''), 'ok');
+}
+
 // ---------- arranque ----------
 cargarConfig().finally(() => {
   cargarModulos().catch(e => toast('No se pudo conectar con el panel: ' + e.message, 'err'));
   refrescarGit();
   chequearActualizacion();
+  ponerseAlDia();
+  setInterval(ponerseAlDia, 30 * 60 * 1000);
   /* y cada 30 minutos de nuevo. Antes se consultaba SOLO al arrancar: una
      sucursal que deja el panel abierto toda la semana no se enteraba nunca de
      una version nueva, y nadie va a reiniciarlo para averiguar si la hay.

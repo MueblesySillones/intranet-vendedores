@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.27.2"
-NUEVO_LABEL = "1.27.2 - videos que no se pierden en ningun lado"
-NUEVAS_NOTAS = ("VIDEOS EN TODAS PARTES: se reviso todo el camino de un video, desde que se sube hasta que lo ve el vendedor. Tres arreglos. UNO: cuando a una computadora le falta un video, un PDF o una imagen que ya esta publicada, el panel ahora lo baja del sitio en el momento, lo guarda y lo muestra; antes lo pedia afuera y el video no se podia adelantar ni sacarle la portada. La proxima vez ya esta en la computadora y no se vuelve a subir. DOS: al publicar varios videos juntos la subida va en varias partes, y la lista de publicaciones salia PRIMERO: los vendedores podian ver la publicacion con el video roto mientras terminaba de subir, o para siempre si una parte fallaba. Ahora la lista sale ultima, cuando todos los archivos ya estan. TRES: en la intranet, si un video no carga aparece un aviso y se puede tocar para reintentar, en vez del recuadro gris.")
+NUEVA_PUBLICA = "1.28.0"
+NUEVO_LABEL = "1.28.0 - las sucursales se ponen al dia solas"
+NUEVAS_NOTAS = ("SUCURSALES AL DIA SOLAS: se instalo una sucursal nueva y no le aparecian los videos ni las publicaciones nuevas. Eran tres cosas. UNA: el panel avisaba cuando habia una version nueva del programa, pero NUNCA cuando habia contenido nuevo; una sucursal que no publica se quedaba para siempre con el contenido que traia el instalador. Ahora, al abrir el panel y cada media hora, la sucursal se pone al dia sola con lo publicado, sin bajar todo (pesa unos cientos de KB) y sin pisar lo que todavia no publico. DOS: los instaladores del Escritorio quedaban viejos porque habia que acordarse de armarlos; ahora se arman solos con cada version nueva del panel. TRES: si a la computadora le falta un video, lo baja del sitio al abrirlo, que es lo que se arreglo ayer.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -307,6 +307,22 @@ r = subprocess.run(["git", "push", "origin", "main"], cwd=repo_raiz, capture_out
 if r.returncode != 0:
     print(r.stderr[-1200:])
     morir("el push fallo. Si dice 'fetch first', alguien publico algo: `git pull` y de vuelta.")
+
+# [8] Los instaladores, al dia con esta version.
+# 22-sep: se instalo una sucursal con el instalador del Escritorio y era de
+# tres dias antes: panel viejo y contenido viejo. Acordarse de armarlos a mano
+# despues de cada release no funciono nunca, asi que lo hace este guion. Si
+# falla (falta Inno Setup) el release NO se deshace: ya quedo publicado.
+print("\n[8] Armando los instaladores con esta version")
+r = subprocess.run([sys.executable, os.path.join(aqui, "armar_instalador.py")],
+                   cwd=aqui, capture_output=True, text=True)
+if r.returncode == 0:
+    print("    ok: instaladores al dia en Escritorio\\Proyecto Intranet\\Panel MyS")
+else:
+    print((r.stdout or "")[-1500:])
+    print((r.stderr or "")[-800:])
+    print("    NO se pudieron armar los instaladores. El panel SI quedo publicado.")
+    print("    Armalos con: python armar_instalador.py")
 
 print("\n" + "=" * 62)
 print("  PUBLICADO: v%d (%s)" % (NUEVA_VERSION, NUEVA_PUBLICA))

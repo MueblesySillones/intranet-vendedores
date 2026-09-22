@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 77
+VERSION = 78
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,23 +343,21 @@ VERSION = 77
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.27.2"
-VERSION_LABEL = "1.27.2 - videos que no se pierden en ningun lado"
+VERSION_PUBLICA = "1.28.0"
+VERSION_LABEL = "1.28.0 - las sucursales se ponen al dia solas"
 VERSION_NOTES = (
-                 "VIDEOS EN TODAS PARTES: se reviso todo el camino de un video, "
-                 "desde que se sube hasta que lo ve el vendedor. Tres arreglos. UNO: "
-                 "cuando a una computadora le falta un video, un PDF o una imagen "
-                 "que ya esta publicada, el panel ahora lo baja del sitio en el "
-                 "momento, lo guarda y lo muestra; antes lo pedia afuera y el video "
-                 "no se podia adelantar ni sacarle la portada. La proxima vez ya "
-                 "esta en la computadora y no se vuelve a subir. DOS: al publicar "
-                 "varios videos juntos la subida va en varias partes, y la lista de "
-                 "publicaciones salia PRIMERO: los vendedores podian ver la "
-                 "publicacion con el video roto mientras terminaba de subir, o para "
-                 "siempre si una parte fallaba. Ahora la lista sale ultima, cuando "
-                 "todos los archivos ya estan. TRES: en la intranet, si un video no "
-                 "carga aparece un aviso y se puede tocar para reintentar, en vez "
-                 "del recuadro gris.")
+                 "SUCURSALES AL DIA SOLAS: se instalo una sucursal nueva y no le "
+                 "aparecian los videos ni las publicaciones nuevas. Eran tres cosas. "
+                 "UNA: el panel avisaba cuando habia una version nueva del programa, "
+                 "pero NUNCA cuando habia contenido nuevo; una sucursal que no "
+                 "publica se quedaba para siempre con el contenido que traia el "
+                 "instalador. Ahora, al abrir el panel y cada media hora, la "
+                 "sucursal se pone al dia sola con lo publicado, sin bajar todo "
+                 "(pesa unos cientos de KB) y sin pisar lo que todavia no publico. "
+                 "DOS: los instaladores del Escritorio quedaban viejos porque habia "
+                 "que acordarse de armarlos; ahora se arman solos con cada version "
+                 "nueva del panel. TRES: si a la computadora le falta un video, lo "
+                 "baja del sitio al abrirlo, que es lo que se arreglo ayer.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1667,6 +1665,42 @@ def guardar_nombre_equipo(nombre):
 def publicar_cerebro(mensaje="", _reintento=False):
     with _LOCK_CONTENIDO:
         return _publicar_cerebro(mensaje, _reintento)
+
+
+def ponerse_al_dia():
+    """Trae lo que se publico desde otras computadoras SIN bajar todo el repo.
+
+    Por que existe (22-sep): una sucursal solo se enteraba de contenido nuevo si
+    publicaba algo, o si alguien entraba a Configuracion y tocaba "Traer ultima
+    version". Una sucursal recien instalada se quedaba para siempre con el
+    contenido del dia en que se armo el instalador: sin las publicaciones
+    nuevas y sin los videos. El panel avisaba de versiones nuevas del PROGRAMA,
+    nunca del CONTENIDO.
+
+    Es la misma combinacion que corre antes de publicar (no pisa lo que esta
+    computadora todavia no publico), mas las imagenes que falten. Pesa unos
+    cientos de KB contra los ~120 MB del zip del repo, asi que se puede correr
+    al abrir el panel. Los videos no se bajan aca: llegan solos cuando se miran
+    (_traer_material_faltante)."""
+    if ES_CENTRAL:
+        return {"ok": True, "cambios": False}
+    with _LOCK_CONTENIDO:
+        try:
+            info = sincronizar_con_publicado()
+        except Exception as e:  # noqa
+            return {"ok": False, "error": str(e)}
+        if info.get("aviso"):
+            return {"ok": False, "error": info["aviso"]}
+        remoto = info.get("remoto") or {}
+        if not remoto.get("modulos.js"):
+            return {"ok": True, "cambios": False}      # nada nuevo publicado
+        if info.get("imagenes"):
+            regenerar_galerias()
+        _guardar_base(remoto["modulos.js"], remoto.get("galerias.js"))
+        _guardar_sello(_sello_publicado())
+        return {"ok": True,
+                "cambios": bool(info.get("traidos") or info.get("imagenes")),
+                "traidos": info.get("traidos") or [], "imagenes": info.get("imagenes") or 0}
 
 
 def _publicar_cerebro(mensaje="", _reintento=False):
@@ -3714,6 +3748,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(ping_central())
         if path == "/api/novedades":
             return self._json(novedades())
+        if path == "/api/al-dia":
+            return self._json(ponerse_al_dia())
         if path == "/api/update-status":
             return self._json(chequear_update())
         if path == "/api/historial":
