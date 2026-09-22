@@ -14,6 +14,28 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmucv3gbsdik0",
+          "titulo": "MESA TOSCANA ABEDUL + SILLAS VIETNAM",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-22",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1790092887549.png",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790092887549.png\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmubgpwfjlpua",
           "titulo": "INFO. COMPLETA ENTREGAS INTERIOR",
           "autor": "Marketing",
