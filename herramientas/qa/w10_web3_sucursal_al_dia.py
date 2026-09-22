@@ -48,7 +48,24 @@ def puerto_libre():
     return p
 
 
-def levantar(tmp, rol):
+def copia_del_panel(tmp):
+    """El panel, copiado SIN el panel_config.json de la central.
+
+    ⚠️ Si se corre desde herramientas/panel, el panel lee ESE panel_config.json
+    y las dos instancias arrancan como CENTRAL: la "sucursal" de la prueba no
+    era una sucursal y los checks de sucursal median otra cosa."""
+    dest = os.path.join(tmp, "panel")
+    os.makedirs(dest)
+    for n_ in os.listdir(PANEL):
+        if n_ in ("panel_config.json", "dist", "build", "instalador", "paquete",
+                  "__pycache__", "datos", "investigacion"):
+            continue
+        o_ = os.path.join(PANEL, n_)
+        (shutil.copytree if os.path.isdir(o_) else shutil.copy2)(o_, os.path.join(dest, n_))
+    return dest
+
+
+def levantar(tmp, rol, panel_dir):
     proy = os.path.join(tmp, rol, "proyecto")
     intr = os.path.join(proy, "intranet")
     os.makedirs(os.path.join(proy, "herramientas"))
@@ -66,7 +83,7 @@ def levantar(tmp, rol):
     pp = puerto_libre()
     env = dict(os.environ, MYS_PROYECTO=proy, MYS_PANEL_STATE=estado, MYS_PANEL_PORT=str(pp),
                MYS_PANEL_WEB="web3", BROWSER="cmd.exe /c echo")
-    proc = subprocess.Popen([sys.executable, os.path.join(PANEL, "panel_server.py")], cwd=PANEL,
+    proc = subprocess.Popen([sys.executable, os.path.join(panel_dir, "panel_server.py")], cwd=panel_dir,
                             env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     base = "http://127.0.0.1:%d" % pp
     for _ in range(60):
@@ -83,9 +100,10 @@ def main():
     tmp = tempfile.mkdtemp(prefix="sandbox-w10-")
     procs = []
     try:
-        suc, base_s, intr_s = levantar(tmp, "sucursal")
+        panel_dir = copia_del_panel(tmp)
+        suc, base_s, intr_s = levantar(tmp, "sucursal", panel_dir)
         procs.append(suc)
-        cen, base_c, _ = levantar(tmp, "central")
+        cen, base_c, _ = levantar(tmp, "central", panel_dir)
         procs.append(cen)
         with sync_playwright() as p:
             br = p.chromium.launch()
@@ -97,7 +115,14 @@ def main():
             pg.on("pageerror", lambda e: errores.append(str(e)))
             pg.goto(base_s + "/")
             pg.wait_for_timeout(2500)
-            check("el boton Traer ultima version esta a la vista", pg.locator("#btnTraer").is_visible())
+            # ⚠️ Desde la v69 "Traer ultima version" vive DENTRO de Configuracion
+            # (antes era #btnTraer suelto en el pie). La suite lo seguia buscando
+            # afuera y fallaba desde el 19-sep sin que nada estuviera roto.
+            pg.click("#btnConfig")
+            pg.wait_for_timeout(500)
+            check("el boton Traer ultima version esta a la vista", pg.locator("#cfgTraer").is_visible())
+            pg.keyboard.press("Escape")
+            pg.wait_for_timeout(300)
             pg.evaluate("void traerUltima()")
             pg.wait_for_timeout(500)
             msg = pg.locator("#confirmMsg").inner_text()
@@ -140,7 +165,9 @@ def main():
             pg = ctx.new_page()
             pg.goto(base_c + "/")
             pg.wait_for_timeout(2500)
-            check("la central no ve el boton Traer", not pg.locator("#btnTraer").is_visible())
+            pg.click("#btnConfig")
+            pg.wait_for_timeout(500)
+            check("la central no ve el boton Traer", not pg.locator("#cfgTraer").is_visible())
             ctx.close()
             br.close()
     finally:

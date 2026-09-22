@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 78
+VERSION = 79
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,21 +343,16 @@ VERSION = 78
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.28.0"
-VERSION_LABEL = "1.28.0 - las sucursales se ponen al dia solas"
+VERSION_PUBLICA = "1.28.1"
+VERSION_LABEL = "1.28.1 - los avisos, arriba y en una linea"
 VERSION_NOTES = (
-                 "SUCURSALES AL DIA SOLAS: se instalo una sucursal nueva y no le "
-                 "aparecian los videos ni las publicaciones nuevas. Eran tres cosas. "
-                 "UNA: el panel avisaba cuando habia una version nueva del programa, "
-                 "pero NUNCA cuando habia contenido nuevo; una sucursal que no "
-                 "publica se quedaba para siempre con el contenido que traia el "
-                 "instalador. Ahora, al abrir el panel y cada media hora, la "
-                 "sucursal se pone al dia sola con lo publicado, sin bajar todo "
-                 "(pesa unos cientos de KB) y sin pisar lo que todavia no publico. "
-                 "DOS: los instaladores del Escritorio quedaban viejos porque habia "
-                 "que acordarse de armarlos; ahora se arman solos con cada version "
-                 "nueva del panel. TRES: si a la computadora le falta un video, lo "
-                 "baja del sitio al abrirlo, que es lo que se arreglo ayer.")
+                 "LOS AVISOS, ARRIBA Y CORTOS: los avisos que aparecian abajo (se "
+                 "guardo, se publico, no se pudo, se trajo lo nuevo) se veian como "
+                 "una mancha que tapaba media pantalla cuando el texto era largo. "
+                 "Ahora salen arriba, justo debajo de la barra del encabezado, en "
+                 "una sola linea y sin tapar el buscador ni los botones. El aviso de "
+                 "contenido nuevo tambien se acorto: dice cuantos cambios se "
+                 "trajeron en vez de listarlos todos.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

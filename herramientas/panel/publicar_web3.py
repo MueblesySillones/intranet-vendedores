@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.28.0"
-NUEVO_LABEL = "1.28.0 - las sucursales se ponen al dia solas"
-NUEVAS_NOTAS = ("SUCURSALES AL DIA SOLAS: se instalo una sucursal nueva y no le aparecian los videos ni las publicaciones nuevas. Eran tres cosas. UNA: el panel avisaba cuando habia una version nueva del programa, pero NUNCA cuando habia contenido nuevo; una sucursal que no publica se quedaba para siempre con el contenido que traia el instalador. Ahora, al abrir el panel y cada media hora, la sucursal se pone al dia sola con lo publicado, sin bajar todo (pesa unos cientos de KB) y sin pisar lo que todavia no publico. DOS: los instaladores del Escritorio quedaban viejos porque habia que acordarse de armarlos; ahora se arman solos con cada version nueva del panel. TRES: si a la computadora le falta un video, lo baja del sitio al abrirlo, que es lo que se arreglo ayer.")
+NUEVA_PUBLICA = "1.28.1"
+NUEVO_LABEL = "1.28.1 - los avisos, arriba y en una linea"
+NUEVAS_NOTAS = ("LOS AVISOS, ARRIBA Y CORTOS: los avisos que aparecian abajo (se guardo, se publico, no se pudo, se trajo lo nuevo) se veian como una mancha que tapaba media pantalla cuando el texto era largo. Ahora salen arriba, justo debajo de la barra del encabezado, en una sola linea y sin tapar el buscador ni los botones. El aviso de contenido nuevo tambien se acorto: dice cuantos cambios se trajeron en vez de listarlos todos.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

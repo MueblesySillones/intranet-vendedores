@@ -5014,8 +5014,11 @@ async function ponerseAlDia() {
   try { r = await api('/api/al-dia'); } catch (e) { return; }
   if (!r || !r.ok || !r.cambios) return;
   await cargarModulos().catch(() => {});
+  /* corto a propósito: el detalle de QUÉ cambió es un párrafo entero y no
+     entra en un aviso de 3 segundos. Lo que importa es que ya está al día. */
   const n = (r.traidos || []).length;
-  toast('Se trajo lo nuevo publicado' + (n ? ': ' + r.traidos.join(', ') : ''), 'ok');
+  toast(n ? ('Al día: se trajeron ' + n + (n === 1 ? ' cambio' : ' cambios') + ' publicados')
+          : 'Al día con lo publicado', 'ok');
 }
 
 // ---------- arranque ----------
