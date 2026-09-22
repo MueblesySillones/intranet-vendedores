@@ -4381,11 +4381,11 @@ window.TUTORIALES = [
         "texto": "¿Cómo crear una publicación?"
       },
       {
-        "t": 22,
+        "t": 24,
         "texto": "Fijar una publicación"
       },
       {
-        "t": 38,
+        "t": 40,
         "texto": "Enviar a un Módulo una publicación"
       },
       {
