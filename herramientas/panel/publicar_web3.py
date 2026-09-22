@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.29.0"
-NUEVO_LABEL = "1.29.0 - tutoriales con buscador y temas al costado"
-NUEVAS_NOTAS = ("TUTORIALES CON BUSCADOR Y LOS TEMAS AL COSTADO: la pantalla de tutoriales se rehizo con la forma de las plataformas de cursos. El video queda grande a la izquierda y al lado, siempre a la vista, la lista de temas del video, con el que esta sonando resaltado; se toca un tema y el video salta ahi, sin perder el video de vista (antes los temas estaban debajo del video y habia que bajar la pantalla). Debajo de los temas aparecen los otros tutoriales, para pasar de uno a otro sin volver atras. Y arriba hay una lupa: se escribe por ejemplo modulo y aparecen los tutoriales que hablan de eso, incluso mostrando el minuto exacto donde se habla del tema, con un toque para entrar justo ahi. Busca en el titulo, en la descripcion y en el texto de cada tema. En pantallas angostas la lista de temas se acomoda abajo del video.")
+NUEVA_PUBLICA = "1.30.0"
+NUEVO_LABEL = "1.30.0 - elegir la grilla, y sin el texto de la cartelera"
+NUEVAS_NOTAS = ("ELEGIR A QUE GRILLA VA LA FOTO, Y SIN EL TEXTO: al crear una publicacion y marcar Enviar al modulo, ahora hay un segundo selector al lado del modulo para elegir A QUE grilla va el material: Promociones bancarias, HORARIOS SUCURSALES, la que sea, o Al final como bloque nuevo. Antes el panel elegia solo la ultima grilla y no habia forma de decirle otra. Y lo mas importante: cuando la foto entra en una grilla, el titulo y el texto de la publicacion YA NO se copian adentro del modulo. Material descargable es una estanteria de archivos para el vendedor: el texto de la cartelera ahi sobraba y habia que entrar a borrarlo a mano. Si se elige Al final, como bloque nuevo, se sigue copiando todo como antes. Lo que no es foto, como un PDF, se agrega igual pero suelto y sin encabezado.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

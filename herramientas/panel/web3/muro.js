@@ -1283,6 +1283,54 @@
     return (cb && cb.checked && sel && sel.value) || '';
   }
 
+  /* A QUÉ parte del módulo va (22-sep, pedido del usuario): "me gustaría poder
+     seleccionar a qué bloque o grilla del módulo de material descargable
+     quiero dejar la imagen, y el título y cuerpo que le pongo a la publicación
+     que no aparezca en ese módulo, porque ahí sólo se cargan archivos para
+     descargar". Antes el panel elegía solo la ÚLTIMA grilla y encima copiaba
+     el título y el texto adentro del módulo.
+     Devuelve el índice del bloque-grilla, o '' = al final como bloque nuevo. */
+  function grillaElegida() {
+    var sel = elCo('coCargarGrilla');
+    var v = sel ? sel.value : '';
+    return v === '' ? '' : parseInt(v, 10);
+  }
+
+  /* las grillas de fotos que ya tiene un módulo, para poder elegir una */
+  function grillasDe(key) {
+    var m = (MODULOS || []).filter(function (x) { return x.key === key; })[0];
+    var c = m && m.content;
+    if (!c || !Array.isArray(c.bloques)) return [];
+    var out = [];
+    c.bloques.forEach(function (b, i) {
+      if (b && b.t === 'galeria' && Array.isArray(b.items)) {
+        out.push({ i: i, titulo: b.titulo || '', n: b.items.length });
+      }
+    });
+    return out;
+  }
+
+  function pintarGrillas() {
+    var sel = elCo('coCargarGrilla'), mod = elCo('coCargarMod');
+    if (!sel || !mod) return;
+    var gs = grillasDe(mod.value);
+    var antes = sel.value;
+    sel.innerHTML = gs.map(function (g, n) {
+      var rot = g.titulo || ('Grilla ' + (n + 1));
+      return '<option value="' + g.i + '">' + esc(rot) +
+             ' (' + g.n + (g.n === 1 ? ' foto' : ' fotos') + ')</option>';
+    }).join('') + '<option value="">Al final, como bloque nuevo</option>';
+    /* Por defecto, la última grilla: es como se venía comportando. Sólo se
+       respeta lo elegido si lo eligió una PERSONA (`tocado`): "al final" vale
+       cadena vacía, igual que "no hay nada elegido", y sin esta marca el
+       selector arrancaba siempre en "Al final, como bloque nuevo". */
+    sel.value = (sel.dataset.tocado && antes !== null && antes !== undefined &&
+                 Array.prototype.some.call(sel.options, function (o) { return o.value === antes; }))
+      ? antes : (gs.length ? String(gs[gs.length - 1].i) : '');
+    sel.hidden = !gs.length;                 /* sin grillas no hay nada que elegir */
+    sel.title = 'Dónde queda adentro del módulo';
+  }
+
   function pintarCargar() {
     var wrap = document.getElementById('coCargarWrap'), sel = elCo('coCargarMod');
     if (!wrap || !sel) return;
@@ -1297,11 +1345,13 @@
     }).join('');
     if (antes && mods.some(function (m) { return m.key === antes; })) sel.value = antes;
     wrap.hidden = !mods.length;
+    pintarGrillas();
     pintarCargarEstado();
   }
   function pintarCargarEstado() {
-    var cb = elCo('coCargar'), sel = elCo('coCargarMod');
+    var cb = elCo('coCargar'), sel = elCo('coCargarMod'), gr = elCo('coCargarGrilla');
     if (cb && sel) sel.disabled = !cb.checked;
+    if (cb && gr) gr.disabled = !cb.checked;
     if (typeof pintarSwitches === 'function') pintarSwitches();
   }
 
@@ -1338,7 +1388,7 @@
   /* Devuelve qué pasó: dónde quedó parado el contenido y, si las fotos se
      sumaron a una grilla que ya existía, cuántas y a cuál. `null` si el
      módulo no apareció. */
-  async function cargarEnModulo(key, titulo, texto, piezas) {
+  async function cargarEnModulo(key, titulo, texto, piezas, destino) {
     var m = (MODULOS || []).filter(function (x) { return x.key === key; })[0];
     if (!m) return -1;
     var c = m.content;
@@ -1359,7 +1409,14 @@
        descargables. Antes caían como un bloque suelto al final y el módulo
        se iba llenando de mini-galerías de una foto cada una.
        Se elige la última: es la que se viene usando para sumar material. */
-    var gi = ultimaGaleria(c.bloques);
+    /* `destino` es la grilla que se eligió arriba; '' = al final, bloque nuevo.
+       Si no vino nada (llamadas viejas) se mantiene lo de antes: la última. */
+    var gi;
+    if (destino === '' ) gi = -1;
+    else if (typeof destino === 'number' && destino >= 0) {
+      var b = c.bloques[destino];
+      gi = (b && b.t === 'galeria' && Array.isArray(b.items)) ? destino : ultimaGaleria(c.bloques);
+    } else gi = ultimaGaleria(c.bloques);
     var sueltas = piezas || [], fusionadas = 0, grilla = '';
     if (gi >= 0) {
       var aporte = [];
@@ -1382,9 +1439,17 @@
       }
     }
 
+    /* ⚠️ Si las fotos entraron a una grilla, el título y el cuerpo de la
+       publicación NO viajan. Un módulo de descargables es una estantería de
+       archivos: el texto de la cartelera ahí es ruido, y había que entrar a
+       borrarlo a mano. Lo que no es foto (un PDF, un enlace) sí se agrega,
+       pero suelto y sin encabezado. */
     var pos = c.bloques.length;
-    bloquesParaModulo(titulo, texto, sueltas, fusionadas > 0)
-      .forEach(function (bk) { c.bloques.push(bk); });
+    var aAgregar = fusionadas
+      ? (sueltas || []).map(function (bk) { return JSON.parse(JSON.stringify(bk)); })
+                       .filter(function (bk) { return bk && bk.t !== 'ref'; })
+      : bloquesParaModulo(titulo, texto, sueltas, false);
+    aAgregar.forEach(function (bk) { c.bloques.push(bk); });
     c.html = bloquesHTML(c.bloques, c.presentacion);
     if (typeof marcarEditado === 'function') marcarEditado(key);
     return { pos: fusionadas && pos === c.bloques.length ? gi : pos,
@@ -2235,13 +2300,14 @@
        por separado, un corte en el medio dejaría una de las dos cosas sin la
        otra. `deshacerCarga` es la vuelta atrás si el guardado falla. */
     var cargarEn = editando ? '' : cargaElegida();
+    var destinoEn = cargarEn ? grillaElegida() : '';
     var deshacerCarga = null, detalleCarga = null;
     if (cargarEn) {
       var modDestino = (MODULOS || []).filter(function (m) { return m.key === cargarEn; })[0];
       if (modDestino) {
         var antesCont = modDestino.content
           ? JSON.parse(JSON.stringify(modDestino.content)) : null;
-        var puesto = await cargarEnModulo(cargarEn, titulo, texto, COMP.bloques);
+        var puesto = await cargarEnModulo(cargarEn, titulo, texto, COMP.bloques, destinoEn);
         if (!puesto) cargarEn = '';
         else {
           detalleCarga = puesto;
@@ -2322,7 +2388,12 @@
   })();
 
   elCo('coCargar').onchange = pintarCargarEstado;
-  elCo('coCargarMod').onchange = function () {};
+  elCo('coCargarMod').onchange = function () {
+    var gr = elCo('coCargarGrilla');
+    if (gr) delete gr.dataset.tocado;             /* otro módulo, otras grillas */
+    pintarGrillas();
+  };
+  elCo('coCargarGrilla').onchange = function () { this.dataset.tocado = '1'; };
 
   elCo('coCerrar').onclick = cerrarCompPidiendo;
   if (document.getElementById('coEliminar')) {

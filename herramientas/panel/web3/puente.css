@@ -935,3 +935,11 @@ main.lienzo{padding:0; max-width:none; margin:0}
 #tutRaiz .tut-lado .tut-cap.edit .tut-t{flex:0 0 66px; order:1}
 #tutRaiz .tut-lado .tut-cap.edit .tut-quitar{order:2; margin-left:auto}
 #tutRaiz .tut-lado .tut-cap.edit .tut-x2{order:3; flex:1 1 100%; width:100%}
+
+/* los dos selectores de "Enviar al módulo" (módulo + dónde adentro): que no
+   le coman el renglón al texto de la izquierda en pantallas chicas */
+#coCargarWrap{flex-wrap:wrap}
+#coCargarWrap .ctrl-der{flex:1 1 100%; justify-content:flex-start; flex-wrap:wrap;
+  gap:8px; margin-top:4px; padding-left:34px}
+#coCargarWrap #coCargarMod, #coCargarWrap #coCargarGrilla{flex:1 1 240px; max-width:320px}
+#coCargarWrap .sw-btn{order:-1}
