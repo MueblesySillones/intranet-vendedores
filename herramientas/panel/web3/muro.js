@@ -1317,9 +1317,14 @@
     var antes = sel.value;
     sel.innerHTML = gs.map(function (g, n) {
       var rot = g.titulo || ('Grilla ' + (n + 1));
-      return '<option value="' + g.i + '">' + esc(rot) +
+      /* `data-sub` es el renglón chico de abajo en la lista linda; el texto de
+         la opción se deja completo para cuando se ve el desplegable del
+         sistema (celular, o si algo falla y queda el select de siempre). */
+      return '<option value="' + g.i + '" data-sub="' + g.n +
+             (g.n === 1 ? ' foto' : ' fotos') + '">' + esc(rot) +
              ' (' + g.n + (g.n === 1 ? ' foto' : ' fotos') + ')</option>';
-    }).join('') + '<option value="">Al final, como bloque nuevo</option>';
+    }).join('') +
+    '<option value="" data-sub="se agrega abajo de todo">Al final, como bloque nuevo</option>';
     /* Por defecto, la última grilla: es como se venía comportando. Sólo se
        respeta lo elegido si lo eligió una PERSONA (`tocado`): "al final" vale
        cadena vacía, igual que "no hay nada elegido", y sin esta marca el
@@ -1329,6 +1334,7 @@
       ? antes : (gs.length ? String(gs[gs.length - 1].i) : '');
     sel.hidden = !gs.length;                 /* sin grillas no hay nada que elegir */
     sel.title = 'Dónde queda adentro del módulo';
+    refrescarLindos();
   }
 
   function pintarCargar() {
@@ -1348,10 +1354,160 @@
     pintarGrillas();
     pintarCargarEstado();
   }
+  /* ===================================================================
+     LA LISTA DESPLEGABLE, CON LA CARA DEL PANEL
+     El <select> del sistema no se puede maquillar por dentro: el navegador
+     dibuja la lista a su manera —tipografía de Windows, filas apretadas, sin
+     lugar para decir cuántas fotos tiene cada grilla—. Acá el <select> sigue
+     existiendo (es el que guarda el valor y el que leen `cargaElegida` y
+     `grillaElegida`), pero se lo tapa con un botón y una lista propia, igual
+     que los menús del panel.
+     ⚠️ Al elegir se dispara `change` a mano: los onchange de siempre siguen
+     corriendo sin enterarse de que el clic vino de otro lado.
+     =================================================================== */
+  var ABIERTA = null;
+
+  function cerrarListas(menos) {
+    document.querySelectorAll('.sel2.abierta').forEach(function (w) {
+      if (w === menos) return;
+      w.classList.remove('abierta');
+      w.querySelector('.sel2-b').setAttribute('aria-expanded', 'false');
+    });
+    document.querySelectorAll('body > .sel2-pop').forEach(function (pop) {
+      if (menos && menos.contains(pop)) return;
+      pop.classList.remove('on');
+      if (pop._wrap && pop._wrap !== menos) pop._wrap.appendChild(pop);   /* vuelve a su lugar */
+    });
+    ABIERTA = menos || null;
+  }
+  /* si la pantalla se mueve debajo de una lista abierta, queda flotando en el
+     aire: se cierra, que es lo que hace cualquier menú del sistema */
+  window.addEventListener('scroll', function () { if (ABIERTA) cerrarListas(); }, true);
+  window.addEventListener('resize', function () { if (ABIERTA) cerrarListas(); });
+
+  function lindoSelect(sel) {
+    if (!sel || sel.dataset.lindo) return;
+    sel.dataset.lindo = '1';
+    var wrap = document.createElement('span');
+    wrap.className = 'sel2';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sel2-b';
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.setAttribute('aria-expanded', 'false');
+    var pop = document.createElement('div');
+    pop.className = 'sel2-pop';
+    pop.setAttribute('role', 'listbox');
+    pop._wrap = wrap;                       /* para devolverla al cerrarse */
+    wrap.appendChild(btn);
+    wrap.appendChild(pop);
+
+    function rotular() {
+      var op = sel.options[sel.selectedIndex];
+      /* el nombre en firme y el dato de al lado en gris, como en la lista */
+      var nombre = op ? op.textContent.replace(/\s*\([^)]*\)\s*$/, '') : '—';
+      btn.innerHTML = '<span class="sel2-tx">' + esc(nombre) +
+        (op && op.dataset.sub ? '<i>' + esc(op.dataset.sub) + '</i>' : '') + '</span>' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
+      btn.disabled = sel.disabled;
+      wrap.hidden = sel.hidden;
+    }
+
+    function abrir() {
+      if (sel.disabled) return;
+      pop.innerHTML = Array.prototype.map.call(sel.options, function (o, i) {
+        return '<button type="button" role="option" data-i="' + i + '"' +
+          (i === sel.selectedIndex ? ' class="on" aria-selected="true"' : '') + '>' +
+          '<span><b>' + esc(o.textContent.replace(/\s*\([^)]*\)\s*$/, '')) + '</b>' +
+          (o.dataset.sub ? '<i>' + esc(o.dataset.sub) + '</i>' : '') + '</span>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>' +
+          '</button>';
+      }).join('');
+      /* ⚠️ La lista se cuelga del BODY y va `fixed`. Adentro del compositor
+         —que scrollea y tiene sus propios bordes— una lista `absolute` se
+         cortaba contra el borde de la caja y las últimas opciones no se veían.
+         Y si no entra abajo, se abre para arriba. */
+      document.body.appendChild(pop);
+      var r = btn.getBoundingClientRect();
+      var alto = Math.min(300, sel.options.length * 46 + 10);
+      var paraArriba = (window.innerHeight - r.bottom < alto + 12) && (r.top > alto + 12);
+      pop.style.position = 'fixed';
+      pop.style.left = r.left + 'px';
+      pop.style.width = r.width + 'px';
+      /* ⚠️ 'auto' y no '': la regla de la hoja fija top y right, y con top Y
+         bottom puestos a la vez el alto sale negativo y la lista queda
+         aplastada en una rayita de 12 px. */
+      pop.style.right = 'auto';
+      pop.style.top = paraArriba ? 'auto' : (r.bottom + 5) + 'px';
+      pop.style.bottom = paraArriba ? (window.innerHeight - r.top + 5) + 'px' : 'auto';
+      wrap.classList.add('abierta');
+      pop.classList.add('on');
+      btn.setAttribute('aria-expanded', 'true');
+      ABIERTA = wrap;
+      var act = pop.querySelector('.on') || pop.querySelector('button');
+      if (act) act.focus();
+    }
+
+    btn.onclick = function (ev) {
+      ev.stopPropagation();
+      var estaba = wrap.classList.contains('abierta');
+      cerrarListas();
+      if (!estaba) abrir();
+    };
+    pop.onclick = function (ev) {
+      var b = ev.target.closest && ev.target.closest('button[data-i]');
+      if (!b) return;
+      sel.selectedIndex = parseInt(b.dataset.i, 10) || 0;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      rotular();
+      cerrarListas();
+      btn.focus();
+    };
+    pop.onkeydown = function (ev) {
+      var botones = Array.prototype.slice.call(pop.querySelectorAll('button'));
+      var i = botones.indexOf(document.activeElement);
+      if (ev.key === 'ArrowDown' && i < botones.length - 1) { botones[i + 1].focus(); ev.preventDefault(); }
+      else if (ev.key === 'ArrowUp' && i > 0) { botones[i - 1].focus(); ev.preventDefault(); }
+      else if (ev.key === 'Escape') { cerrarListas(); btn.focus(); }
+    };
+    btn.onkeydown = function (ev) {
+      if (ev.key === 'ArrowDown' || ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); abrir(); }
+    };
+    /* si el valor lo cambia el código (pintarGrillas, abrir el compositor), el
+       botón tiene que decir lo mismo que el select */
+    sel.addEventListener('change', rotular);
+    sel._rotular = rotular;
+    rotular();
+  }
+
+  function refrescarLindos() {
+    ['coCargarMod', 'coCargarGrilla'].forEach(function (id) {
+      var sel = elCo(id);
+      if (!sel) return;
+      lindoSelect(sel);
+      if (sel._rotular) sel._rotular();
+    });
+  }
+
+  document.addEventListener('click', function () { cerrarListas(); });
+  /* Escape cierra, esté el foco donde esté (en la lista o de vuelta en el
+     botón). Sin esto, la única salida era tocar afuera. */
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && ABIERTA) {
+      var b = ABIERTA.querySelector('.sel2-b');
+      cerrarListas();
+      if (b) b.focus();
+      ev.stopPropagation();                /* que no cierre además el compositor */
+    }
+  }, true);
+
   function pintarCargarEstado() {
     var cb = elCo('coCargar'), sel = elCo('coCargarMod'), gr = elCo('coCargarGrilla');
     if (cb && sel) sel.disabled = !cb.checked;
     if (cb && gr) gr.disabled = !cb.checked;
+    refrescarLindos();
     if (typeof pintarSwitches === 'function') pintarSwitches();
   }
 

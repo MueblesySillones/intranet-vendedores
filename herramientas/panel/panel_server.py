@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 82
+VERSION = 83
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,22 +343,18 @@ VERSION = 82
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.30.0"
-VERSION_LABEL = "1.30.0 - elegir la grilla, y sin el texto de la cartelera"
+VERSION_PUBLICA = "1.30.1"
+VERSION_LABEL = "1.30.1 - listas desplegables con la cara del panel"
 VERSION_NOTES = (
-                 "ELEGIR A QUE GRILLA VA LA FOTO, Y SIN EL TEXTO: al crear una "
-                 "publicacion y marcar Enviar al modulo, ahora hay un segundo "
-                 "selector al lado del modulo para elegir A QUE grilla va el "
-                 "material: Promociones bancarias, HORARIOS SUCURSALES, la que sea, "
-                 "o Al final como bloque nuevo. Antes el panel elegia solo la ultima "
-                 "grilla y no habia forma de decirle otra. Y lo mas importante: "
-                 "cuando la foto entra en una grilla, el titulo y el texto de la "
-                 "publicacion YA NO se copian adentro del modulo. Material "
-                 "descargable es una estanteria de archivos para el vendedor: el "
-                 "texto de la cartelera ahi sobraba y habia que entrar a borrarlo a "
-                 "mano. Si se elige Al final, como bloque nuevo, se sigue copiando "
-                 "todo como antes. Lo que no es foto, como un PDF, se agrega igual "
-                 "pero suelto y sin encabezado.")
+                 "LAS LISTAS DESPLEGABLES, CON LA CARA DEL PANEL: las de Enviar al "
+                 "modulo eran las listas grises del navegador, con la tipografia de "
+                 "Windows y las filas apretadas. Ahora son del panel: fondo claro, "
+                 "borde redondeado, la flechita que gira al abrir, un tilde en la "
+                 "opcion elegida y, en cada grilla, un segundo renglon en gris que "
+                 "dice cuantas fotos tiene. La lista se abre por encima del "
+                 "compositor y, si no entra para abajo, se abre para arriba: antes "
+                 "hubiera quedado cortada contra el borde de la caja. Se maneja con "
+                 "el mouse o con el teclado (flechas, Enter y Escape para cerrar).")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

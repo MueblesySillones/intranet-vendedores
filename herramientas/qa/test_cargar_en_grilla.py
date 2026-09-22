@@ -129,7 +129,13 @@ def main():
                 pg.select_option("#coCargarMod", "descargables")
                 pg.wait_for_timeout(400)
                 op = pg.eval_on_selector_all("#coCargarGrilla option", "e=>e.map(o=>o.value)")
-                pg.select_option("#coCargarGrilla", destino)
+                # se elige por la lista LINDA (la que ve la persona), no por el
+                # <select> tapado: asi la prueba pasa por el mismo camino
+                pg.query_selector_all(".sel2-b")[1].click()
+                pg.wait_for_timeout(400)
+                i = op.index(destino)
+                pg.click('.sel2-pop.on button[data-i="%d"]' % i)
+                pg.wait_for_timeout(300)
                 pg.click("#coPublicar")
                 pg.wait_for_timeout(9000)
                 return op
