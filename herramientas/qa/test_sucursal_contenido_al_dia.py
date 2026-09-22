@@ -29,7 +29,11 @@ import urllib.request
 AQUI = os.path.dirname(os.path.abspath(__file__))
 PANEL = os.path.abspath(os.path.join(AQUI, "..", "panel"))
 REPO = os.path.abspath(os.path.join(AQUI, "..", ".."))
-COMMIT_INSTALADOR = "0e080ad"      # 19-sep: lo que lleva el instalador del Escritorio
+# El contenido "viejo" con el que arranca una sucursal recien instalada. Se
+# busca POR MENSAJE y no por identificador: el 22-sep se limpio el historial
+# del repo (se sacaron 67 paquetes viejos del panel) y todos los
+# identificadores cambiaron, asi que uno escrito a mano queda muerto.
+MARCA_VIEJA = "VERSION 73"
 
 fallas = []
 
@@ -56,7 +60,13 @@ def main():
     # la intranet TAL CUAL la lleva el instalador (contenido viejo)
     tar = os.path.join(tmp, "intranet.tar")
     with open(tar, "wb") as fh:
-        subprocess.run(["git", "archive", COMMIT_INSTALADOR, "intranet"], cwd=REPO,
+        r = subprocess.run(["git", "log", "--all", "--format=%H", "--grep", MARCA_VIEJA],
+                           cwd=REPO, capture_output=True, text=True)
+        viejo = (r.stdout or "").split()
+        if not viejo:
+            print("no encuentro un commit con '%s' para la prueba: salteada" % MARCA_VIEJA)
+            return 0
+        subprocess.run(["git", "archive", viejo[0], "intranet"], cwd=REPO,
                        stdout=fh, check=True)
     shutil.unpack_archive(tar, proy, "tar")
     # el panel, copiado como en una sucursal: SIN el panel_config.json de la
