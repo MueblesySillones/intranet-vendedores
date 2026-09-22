@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 84
+VERSION = 85
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,22 +343,20 @@ VERSION = 84
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.31.0"
-VERSION_LABEL = "1.31.0 - sin metricas de mentira, y actualizar mas claro"
+VERSION_PUBLICA = "1.31.1"
+VERSION_LABEL = "1.31.1 - las fotos pesan 75% menos"
 VERSION_NOTES = (
-                 "FUERA LO QUE PEDIA LOGIN, Y EL AVISO DE ACTUALIZAR MAS CLARO. La "
-                 "pantalla de Metricas se saco: eran numeros de ejemplo detras de un "
-                 "candado que decia No disponible sin login. Para medir quien abre "
-                 "cada modulo haria falta que el vendedor se identifique, y la "
-                 "intranet no va a tener login: es publica para los vendedores. Lo "
-                 "mismo con la tarjeta tapada que aparecia al costado de la "
-                 "Cartelera. Los datos de verdad siguen en la seccion Datos. "
-                 "ACTUALIZAR: el panel ya saltaba directo a la ultima version en un "
-                 "solo paquete, aunque la computadora estuviera varias versiones "
-                 "atras; esta verificado. Lo que confundia era el aviso, que "
-                 "nombraba solo la ultima version y parecia una escalera cuando se "
-                 "publica varias veces en el dia. Ahora dice cuantas versiones se "
-                 "saltean de una sola vez.")
+                 "LAS FOTOS PESAN 75 POR CIENTO MENOS: las placas se guardaban en "
+                 "PNG. Medido: 90 placas ocupaban 70 de los 112 MB de TODO el "
+                 "material de la intranet. Ahora se guardan en JPG de calidad alta, "
+                 "sin el submuestreo de color que emborrona los textos de colores. "
+                 "Sobre las placas reales del sitio: de 1428 KB a 296 KB, con una "
+                 "diferencia por pixel de menos de 1 punto sobre 255, o sea que no "
+                 "se ve. Ademas bajan mucho mas rapido en el celular del vendedor. "
+                 "Lo unico que se sigue guardando en PNG es lo que tiene "
+                 "transparencia de verdad, como un logo recortado, porque el JPG no "
+                 "la soporta y quedaria con fondo blanco. Las fotos que ya estan "
+                 "subidas no se tocan: siguen viendose igual.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -986,6 +984,41 @@ PREFIJOS_PROHIBIDOS = ("datos/", "herramientas/", "memoria-diseno/", ".claude/")
 # =====================================================================
 #  Logica de imagenes (copia fiel de normalizar() + exif_transpose)
 # =====================================================================
+def tiene_transparencia(img):
+    """¿La imagen usa de verdad el canal alfa? Un PNG puede traerlo y estar
+    entero opaco: en ese caso pasarlo a JPG no pierde nada."""
+    if img.mode not in ("RGBA", "LA", "PA"):
+        return False
+    try:
+        alfa = img.getchannel("A")
+        return alfa.getextrema()[0] < 255
+    except (ValueError, OSError):
+        return True                      # ante la duda, se conserva el PNG
+
+
+def guardar_foto(img, carpeta, base):
+    """Guarda una foto del material y devuelve el nombre del archivo.
+
+    JPG por defecto (22-sep-2026). Las placas se guardaban en PNG: 90 placas
+    ocupaban 70 MB de los 112 MB de TODO el material. Medido sobre las placas
+    reales, en JPG calidad 90 sin submuestreo de color —el que emborrona los
+    textos de colores, y una placa es casi toda texto— pesan un 75 % menos y
+    la diferencia por pixel es de menos de 1 punto sobre 255: no se ve.
+    Ademas bajan mucho mas rapido en el celular del vendedor.
+    Lo unico que sigue en PNG es lo que tiene transparencia de verdad (un logo
+    recortado), porque el JPG no la soporta y quedaria con fondo blanco."""
+    if tiene_transparencia(img):
+        destino = nombre_unico(carpeta, base, ".png")
+        img.save(os.path.join(carpeta, destino), format="PNG", optimize=True)
+        return destino
+    if img.mode != "RGB":
+        img = img.convert("RGB")
+    destino = nombre_unico(carpeta, base, ".jpg")
+    img.save(os.path.join(carpeta, destino), format="JPEG", quality=90,
+             subsampling=0, optimize=True, progressive=True)
+    return destino
+
+
 def normalizar(img):
     """Lleva la imagen a RGB/RGBA y la achica a <=1568px (nunca agranda).
     Copia textual de herramientas/arreglar_imagen.py para mantener paridad."""
@@ -4103,9 +4136,7 @@ class Handler(BaseHTTPRequestHandler):
                 img = ImageOps.exif_transpose(img)  # foto de celular -> orientacion correcta
                 img, _ = normalizar(img)
                 base = sanear(os.path.splitext(os.path.basename(filename))[0])
-                destino = nombre_unico(carpeta, base, ".png")
-                img.save(os.path.join(carpeta, destino), format="PNG", optimize=True)
-                guardados.append(destino)
+                guardados.append(guardar_foto(img, carpeta, base))
             except Exception as e:  # noqa
                 errores.append("%s: %s" % (filename, e))
 
@@ -4148,6 +4179,7 @@ class Handler(BaseHTTPRequestHandler):
             # cuadro fotografico en PNG pesa mas que el propio video (medido).
             # Todo lo demas sigue yendo a PNG, que es lo que espera el resto.
             if fmt in ("jpg", "jpeg"):
+                # el poster de un video: mas comprimido, nadie lo mira de cerca
                 if img.mode == "RGBA":
                     fondo = Image.new("RGB", img.size, (255, 255, 255))
                     fondo.paste(img, mask=img.split()[-1])
@@ -4155,9 +4187,16 @@ class Handler(BaseHTTPRequestHandler):
                 img.save(os.path.join(MOD_ASSETS, key + ".jpg"),
                          format="JPEG", quality=78, optimize=True, progressive=True)
                 ext = "jpg"
-            else:
+            elif tiene_transparencia(img):
                 img.save(os.path.join(MOD_ASSETS, key + ".png"), format="PNG", optimize=True)
                 ext = "png"
+            else:
+                # el material del vendedor: JPG de calidad, 75 % mas liviano
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+                img.save(os.path.join(MOD_ASSETS, key + ".jpg"), format="JPEG",
+                         quality=90, subsampling=0, optimize=True, progressive=True)
+                ext = "jpg"
         except Exception as e:  # noqa
             return self._json({"error": "no se pudo procesar la imagen: %s" % e}, 400)
         return self._json({"ok": True, "src": "assets/_modulos/%s.%s" % (key, ext)})

@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.31.0"
-NUEVO_LABEL = "1.31.0 - sin metricas de mentira, y actualizar mas claro"
-NUEVAS_NOTAS = ("FUERA LO QUE PEDIA LOGIN, Y EL AVISO DE ACTUALIZAR MAS CLARO. La pantalla de Metricas se saco: eran numeros de ejemplo detras de un candado que decia No disponible sin login. Para medir quien abre cada modulo haria falta que el vendedor se identifique, y la intranet no va a tener login: es publica para los vendedores. Lo mismo con la tarjeta tapada que aparecia al costado de la Cartelera. Los datos de verdad siguen en la seccion Datos. ACTUALIZAR: el panel ya saltaba directo a la ultima version en un solo paquete, aunque la computadora estuviera varias versiones atras; esta verificado. Lo que confundia era el aviso, que nombraba solo la ultima version y parecia una escalera cuando se publica varias veces en el dia. Ahora dice cuantas versiones se saltean de una sola vez.")
+NUEVA_PUBLICA = "1.31.1"
+NUEVO_LABEL = "1.31.1 - las fotos pesan 75% menos"
+NUEVAS_NOTAS = ("LAS FOTOS PESAN 75 POR CIENTO MENOS: las placas se guardaban en PNG. Medido: 90 placas ocupaban 70 de los 112 MB de TODO el material de la intranet. Ahora se guardan en JPG de calidad alta, sin el submuestreo de color que emborrona los textos de colores. Sobre las placas reales del sitio: de 1428 KB a 296 KB, con una diferencia por pixel de menos de 1 punto sobre 255, o sea que no se ve. Ademas bajan mucho mas rapido en el celular del vendedor. Lo unico que se sigue guardando en PNG es lo que tiene transparencia de verdad, como un logo recortado, porque el JPG no la soporta y quedaria con fondo blanco. Las fotos que ya estan subidas no se tocan: siguen viendose igual.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
