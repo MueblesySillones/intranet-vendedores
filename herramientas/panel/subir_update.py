@@ -81,6 +81,22 @@ def main():
             os.remove(os.path.join(DESTINO, f))
     with open(os.path.join(DESTINO, nombre), "wb") as f:
         f.write(data)
+    # El HISTORIAL de versiones (22-sep). Una actualizacion salta DIRECTO a la
+    # ultima —esta verificado: de la v73 baja un solo paquete con la v83—, pero
+    # el aviso decia solo el nombre de la ultima y, publicando varias veces en
+    # un dia, parecia que el panel se actualizaba de a una. Con el historial el
+    # aviso puede decir "de la 1.28.0 a la 1.30.1, incluye 5 versiones".
+    previo = {}
+    try:
+        with open(os.path.join(DESTINO, "version.json"), encoding="utf-8") as f:
+            previo = json.load(f) or {}
+    except (OSError, ValueError):
+        previo = {}
+    historial = [h for h in (previo.get("historial") or [])
+                 if isinstance(h, dict) and h.get("version") != previo.get("version")]
+    if previo.get("version"):
+        historial.append({"version": previo["version"], "label": previo.get("label", "")})
+    historial = historial[-20:]
     meta = {
         "version": v["VERSION"],
         "label": v["VERSION_LABEL"],
@@ -88,6 +104,7 @@ def main():
         "sha256": sha,
         "size": len(data),
         "url": "panel/" + nombre,
+        "historial": historial,
     }
     with open(os.path.join(DESTINO, "version.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=2)
