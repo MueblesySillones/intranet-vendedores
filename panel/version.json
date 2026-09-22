@@ -1,8 +1,8 @@
 {
-  "version": 77,
-  "label": "1.27.2 - videos que no se pierden en ningun lado",
-  "notes": "VIDEOS EN TODAS PARTES: se reviso todo el camino de un video, desde que se sube hasta que lo ve el vendedor. Tres arreglos. UNO: cuando a una computadora le falta un video, un PDF o una imagen que ya esta publicada, el panel ahora lo baja del sitio en el momento, lo guarda y lo muestra; antes lo pedia afuera y el video no se podia adelantar ni sacarle la portada. La proxima vez ya esta en la computadora y no se vuelve a subir. DOS: al publicar varios videos juntos la subida va en varias partes, y la lista de publicaciones salia PRIMERO: los vendedores podian ver la publicacion con el video roto mientras terminaba de subir, o para siempre si una parte fallaba. Ahora la lista sale ultima, cuando todos los archivos ya estan. TRES: en la intranet, si un video no carga aparece un aviso y se puede tocar para reintentar, en vez del recuadro gris.",
-  "sha256": "5728c2637fab84abb53d96d398070045f857bef8d567821b6f362bc6f1a4c081",
-  "size": 20353625,
-  "url": "panel/PanelMyS-v77.zip"
+  "version": 78,
+  "label": "1.28.0 - las sucursales se ponen al dia solas",
+  "notes": "SUCURSALES AL DIA SOLAS: se instalo una sucursal nueva y no le aparecian los videos ni las publicaciones nuevas. Eran tres cosas. UNA: el panel avisaba cuando habia una version nueva del programa, pero NUNCA cuando habia contenido nuevo; una sucursal que no publica se quedaba para siempre con el contenido que traia el instalador. Ahora, al abrir el panel y cada media hora, la sucursal se pone al dia sola con lo publicado, sin bajar todo (pesa unos cientos de KB) y sin pisar lo que todavia no publico. DOS: los instaladores del Escritorio quedaban viejos porque habia que acordarse de armarlos; ahora se arman solos con cada version nueva del panel. TRES: si a la computadora le falta un video, lo baja del sitio al abrirlo, que es lo que se arreglo ayer.",
+  "sha256": "83a47e23d09bc0b7c42615fd82ca27d17abe1c84249942101366b4fb739d3dfd",
+  "size": 20356194,
+  "url": "panel/PanelMyS-v78.zip"
 }
