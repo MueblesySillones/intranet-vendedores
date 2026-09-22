@@ -342,7 +342,29 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>"
         }
       ],
-      "papelera": []
+      "papelera": [
+        {
+          "id": "dmu1o6arfy95m",
+          "titulo": "PRUEBA",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-14",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "HOLA 123 PROBANDO"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">HOLA 123 PROBANDO</p></div>",
+          "borradoEl": "2026-09-19"
+        }
+      ]
     }
   },
   {
