@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.28.1"
-NUEVO_LABEL = "1.28.1 - los avisos, arriba y en una linea"
-NUEVAS_NOTAS = ("LOS AVISOS, ARRIBA Y CORTOS: los avisos que aparecian abajo (se guardo, se publico, no se pudo, se trajo lo nuevo) se veian como una mancha que tapaba media pantalla cuando el texto era largo. Ahora salen arriba, justo debajo de la barra del encabezado, en una sola linea y sin tapar el buscador ni los botones. El aviso de contenido nuevo tambien se acorto: dice cuantos cambios se trajeron en vez de listarlos todos.")
+NUEVA_PUBLICA = "1.28.2"
+NUEVO_LABEL = "1.28.2 - publicar rapido en las computadoras nuevas"
+NUEVAS_NOTAS = ("PUBLICAR DEJA DE TARDAR EN LAS COMPUTADORAS NUEVAS: una computadora recien instalada no tenia anotado que archivos ya estaban publicados, asi que su PRIMERA publicacion subia la intranet entera. Medido: 121 archivos, 108 MB y 7 subidas seguidas, cada una con su propia actualizacion del sitio encolada; por eso tardaba varios minutos aunque el cambio fuera una sola publicacion. Ahora, al ponerse al dia, el panel compara con el repositorio y anota todo lo que ya esta publicado, sin bajar ni un byte de contenido. Medido despues del arreglo: no queda nada para subir. La demora normal de unos 30 segundos hasta que los vendedores lo ven es de Vercel, que arma el sitio, y esa no cambia.")
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

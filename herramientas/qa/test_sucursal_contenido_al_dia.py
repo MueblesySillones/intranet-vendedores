@@ -124,6 +124,15 @@ def main():
                 check("el archivo quedo guardado en la sucursal",
                       os.path.isfile(os.path.join(proy, "intranet", *src.split("/"))), src)
 
+            # ⚠️ 22-sep: sin manifiesto, la PRIMERA publicacion de una sucursal
+            # recien instalada subia la intranet ENTERA (121 archivos, 108 MB,
+            # 7 commits = 7 deploys encolados) aunque no hubiera cambiado nada.
+            man = os.path.join(estado, "publish_manifest.json")
+            anotados = 0
+            if os.path.isfile(man):
+                anotados = len(json.load(open(man, encoding="utf-8")))
+            check("quedo anotado lo que ya estaba publicado", anotados > 50, anotados)
+
             check("sin errores de javascript", not errs, errs[:3])
             br.close()
     finally:

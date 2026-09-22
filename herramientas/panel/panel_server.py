@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 79
+VERSION = 80
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,16 +343,21 @@ VERSION = 79
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.28.1"
-VERSION_LABEL = "1.28.1 - los avisos, arriba y en una linea"
+VERSION_PUBLICA = "1.28.2"
+VERSION_LABEL = "1.28.2 - publicar rapido en las computadoras nuevas"
 VERSION_NOTES = (
-                 "LOS AVISOS, ARRIBA Y CORTOS: los avisos que aparecian abajo (se "
-                 "guardo, se publico, no se pudo, se trajo lo nuevo) se veian como "
-                 "una mancha que tapaba media pantalla cuando el texto era largo. "
-                 "Ahora salen arriba, justo debajo de la barra del encabezado, en "
-                 "una sola linea y sin tapar el buscador ni los botones. El aviso de "
-                 "contenido nuevo tambien se acorto: dice cuantos cambios se "
-                 "trajeron en vez de listarlos todos.")
+                 "PUBLICAR DEJA DE TARDAR EN LAS COMPUTADORAS NUEVAS: una "
+                 "computadora recien instalada no tenia anotado que archivos ya "
+                 "estaban publicados, asi que su PRIMERA publicacion subia la "
+                 "intranet entera. Medido: 121 archivos, 108 MB y 7 subidas "
+                 "seguidas, cada una con su propia actualizacion del sitio encolada; "
+                 "por eso tardaba varios minutos aunque el cambio fuera una sola "
+                 "publicacion. Ahora, al ponerse al dia, el panel compara con el "
+                 "repositorio y anota todo lo que ya esta publicado, sin bajar ni un "
+                 "byte de contenido. Medido despues del arreglo: no queda nada para "
+                 "subir. La demora normal de unos 30 segundos hasta que los "
+                 "vendedores lo ven es de Vercel, que arma el sitio, y esa no "
+                 "cambia.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -1662,6 +1667,75 @@ def publicar_cerebro(mensaje="", _reintento=False):
         return _publicar_cerebro(mensaje, _reintento)
 
 
+def _manifiesto_vacio():
+    if not PUBLISH_MANIFEST or not os.path.isfile(PUBLISH_MANIFEST):
+        return True
+    try:
+        return not json.load(open(PUBLISH_MANIFEST, encoding="utf-8"))
+    except (ValueError, OSError):
+        return True
+
+
+def sembrar_manifiesto(sha=""):
+    """Anota como YA PUBLICADO todo archivo local identico al del repo.
+
+    Por que (22-sep): el manifiesto dice que archivos de esta computadora ya
+    estan publicados; lo que no figura, se sube. Una computadora RECIEN
+    INSTALADA no tiene manifiesto, asi que su primera publicacion subia la
+    intranet ENTERA —medido: 121 archivos, 108 MB, 7 commits, y cada commit es
+    un deploy de Vercel encolado— cuando en realidad no habia cambiado nada.
+    Tardaba varios minutos y no hacia falta.
+
+    Se compara con el arbol del repo usando el hash de git (sha1 de
+    "blob <largo>\0<contenido>"), que es exactamente lo que devuelve la API:
+    un solo pedido y ni un byte de contenido bajado."""
+    if not PUBLISH_MANIFEST:
+        return 0
+    try:
+        api, _raw, rama = _repo_urls()
+        sha = sha or _ultimo_commit()
+        d = json.loads(_bajar("%s/git/trees/%s?recursive=1" % (api, sha), 40,
+                              "application/vnd.github+json").decode("utf-8"))
+    except Exception:  # noqa: sin internet se deja como estaba
+        return 0
+    remotos = {}
+    for e in (d.get("tree") or []):
+        ruta = e.get("path") or ""
+        if e.get("type") == "blob" and ruta.startswith("intranet/"):
+            remotos[ruta[len("intranet/"):]] = e.get("sha") or ""
+    try:
+        man = json.load(open(PUBLISH_MANIFEST, encoding="utf-8")) if os.path.isfile(PUBLISH_MANIFEST) else {}
+    except (ValueError, OSError):
+        man = {}
+    rels = rel_gestionados(INTRANET)
+    if os.path.isfile(GALERIAS_JS):
+        rels.append("galerias.js")
+    puestos = 0
+    for rel in rels:
+        if rel not in remotos:
+            continue
+        try:
+            with open(os.path.join(INTRANET, *rel.split("/")), "rb") as fh:
+                b = fh.read()
+        except OSError:
+            continue
+        git_sha = hashlib.sha1(b"blob %d\0" % len(b) + b).hexdigest()
+        if git_sha != remotos[rel]:
+            continue                       # local distinto de lo publicado: se sube
+        nuevo = hashlib.sha1(b).hexdigest()
+        if man.get(rel) != nuevo:
+            man[rel] = nuevo
+            puestos += 1
+    if puestos:
+        try:
+            os.makedirs(STATE_DIR, exist_ok=True)
+            with open(PUBLISH_MANIFEST, "w", encoding="utf-8") as fh:
+                json.dump(man, fh)
+        except OSError:
+            return 0
+    return puestos
+
+
 def ponerse_al_dia():
     """Trae lo que se publico desde otras computadoras SIN bajar todo el repo.
 
@@ -1688,11 +1762,17 @@ def ponerse_al_dia():
             return {"ok": False, "error": info["aviso"]}
         remoto = info.get("remoto") or {}
         if not remoto.get("modulos.js"):
-            return {"ok": True, "cambios": False}      # nada nuevo publicado
+            # nada nuevo que traer, pero una instalacion nueva igual necesita
+            # saber QUE ya esta publicado (si no, su primera publicacion sube
+            # la intranet entera)
+            if _manifiesto_vacio():
+                sembrar_manifiesto()
+            return {"ok": True, "cambios": False}
         if info.get("imagenes"):
             regenerar_galerias()
         _guardar_base(remoto["modulos.js"], remoto.get("galerias.js"))
         _guardar_sello(_sello_publicado())
+        sembrar_manifiesto(info.get("sha") or "")
         return {"ok": True,
                 "cambios": bool(info.get("traidos") or info.get("imagenes")),
                 "traidos": info.get("traidos") or [], "imagenes": info.get("imagenes") or 0}
