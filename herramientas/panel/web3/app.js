@@ -4886,7 +4886,14 @@ async function chequearActualizacion() {
   const txt = bar.querySelector('.update-txt');
   const btn = $('#btnUpdate');
   const setTxt = html => { if (txt) txt.innerHTML = html; };
-  setTxt('<b>Hay una versión nueva del panel.</b> ' + esc(st.label || ('versión ' + st.version)));
+  /* 22-sep: decir de DÓNDE a dónde. Una actualización va siempre directo a la
+     última, pero el aviso nombraba sólo la última y —publicando varias veces
+     en el día— parecía que el panel se actualizaba de a una versión. */
+  var saltea = (st.historial || []).length;
+  setTxt('<b>Hay una versión nueva del panel.</b> ' +
+    esc(st.label || ('versión ' + st.version)) +
+    (saltea ? ' <span class="upd-salto">Vas de una sola vez desde la tuya: incluye ' +
+      saltea + (saltea === 1 ? ' versión' : ' versiones') + ' más.</span>' : ''));
   bar.hidden = false;
   let enCurso = false;
   btn.onclick = async () => {
@@ -5246,147 +5253,10 @@ function cerrarConfig() {
   });
 })();
 
-/* ===================================================================
-   MÉTRICAS — VISTA PREVIA
-   Cómo está funcionando la intranet: qué se lee, qué se descarga, qué se
-   busca y quién no confirmó lo obligatorio.
-   Los números son de EJEMPLO. Lo real necesita base de datos: hoy la
-   intranet es un sitio estático y no registra nada de lo que pasa.
-   Lo que sí sale del contenido de verdad son los títulos, las fechas y
-   los tipos de publicación.
-   =================================================================== */
-const MET_SUCURSALES = ['Hudson', 'CABA', 'Canning', 'Norcenter'];
-
-/* números estables: la misma publicación da siempre lo mismo, así la
-   pantalla no "baila" cada vez que se abre */
-function metSemilla(txt) {
-  let n = 0;
-  for (let i = 0; i < String(txt).length; i++) n = (n * 31 + String(txt).charCodeAt(i)) % 100000;
-  return n;
-}
-function metEntre(txt, min, max) {
-  return min + (metSemilla(txt) % (max - min + 1));
-}
-
-function publicacionesDelMuro() {
-  const mods = MODULOS || [];
-  const muro = mods.find(m => esCartelera(m.content) && !m.hidden);
-  if (!muro) return [];
-  return (muro.content.docs || []).filter(d => !d.archivado);
-}
-
-function abrirMetricas() {
-  document.querySelectorAll('.lienzo > .main').forEach(v => {
-    if (v.id !== 'viewMetricas') v.hidden = true;
-  });
-  $('#viewDetalle').hidden = true;
-  $('#viewMetricas').hidden = false;
-  window.scrollTo(0, 0);
-  renderMetricas();
-}
-function cerrarMetricas() {
-  $('#viewMetricas').hidden = true;
-  if (typeof irASeccion === 'function') irASeccion('modulos');
-  else $('#viewModulos').hidden = false;
-}
-
-function renderMetricas() {
-  const posts = publicacionesDelMuro();
-  const vendedores = 14;                       // ejemplo
-
-  $('#metAviso').innerHTML = `<span style="font-size:17px">⚠️</span>
-    <span><b>Esto es una vista previa: los números son de ejemplo.</b><br>
-    Los títulos, las fechas y los tipos SÍ son los de verdad. Para medir lo que pasa
-    (quién abre, quién confirma, qué se descarga) hace falta conectar la base de datos:
-    hoy la intranet es una página que no registra nada.</span>`;
-
-  if (!posts.length) {
-    $('#metBody').innerHTML = `<div class="met-sec"><div class="met-h">Todavía no hay un muro</div>
-      <p class="met-sub">Creá un módulo de tipo <b>Muro</b> y publicá algo; acá vas a ver cómo funciona.</p></div>`;
-    return;
-  }
-
-  /* --- KPIs --- */
-  const delMes = posts.filter(p => (p.fecha || '').slice(0, 7) === hoyISO().slice(0, 7)).length;
-  const obligatorias = posts.filter(p => p.confirmar);
-  const lecturaProm = Math.round(posts.reduce((s, p) => s + metEntre(p.id + 'l', 45, 96), 0) / posts.length);
-  const descargas = posts.reduce((s, p) => s + metEntre(p.id + 'd', 0, 40), 0);
-
-  const kpis = [
-    ['Publicaciones este mes', delMes, posts.length + ' en total'],
-    ['Leen las publicaciones', lecturaProm + '%', 'promedio del equipo', lecturaProm >= 70 ? 'sube' : 'baja'],
-    ['Placas descargadas', descargas, 'en los últimos 30 días'],
-    ['Vendedores activos', metEntre('act', 9, vendedores) + ' de ' + vendedores, 'entraron esta semana'],
-  ];
-
-  /* --- tabla de publicaciones --- */
-  const filas = posts.slice(0, 10).map(p => {
-    const vistas = metEntre(p.id + 'v', 5, vendedores);
-    const pct = Math.round(vistas / vendedores * 100);
-    const conf = p.confirmar ? metEntre(p.id + 'c', 3, vistas) : null;
-    return `<tr>
-      <td><div class="met-tit">${esc(p.titulo || 'Sin título')}</div>
-          <div class="met-meta">${esc(fechaCorta(p.fecha))}${NOMBRE_TIPO[p.etiqueta] ? ' · ' + NOMBRE_TIPO[p.etiqueta] : ''}${p.confirmar ? ' · pide confirmación' : ''}</div></td>
-      <td style="width:150px"><div class="met-barra${pct < 60 ? ' flojo' : ''}"><span style="width:${pct}%"></span></div></td>
-      <td class="met-pct" style="width:90px">${vistas}/${vendedores} la vieron</td>
-      <td style="width:150px">${conf === null ? '<span class="met-meta">—</span>'
-        : (conf >= vendedores ? '<span class="met-chip bien">todos confirmaron</span>'
-           : `<span class="met-chip mal">faltan ${vendedores - conf}</span>`)}</td>
-    </tr>`;
-  }).join('');
-
-  /* --- quién no confirmó --- */
-  const pendiente = obligatorias[0];
-  const faltantes = pendiente ? MET_SUCURSALES.map(s => ({
-    s, faltan: metEntre(pendiente.id + s, 0, 3)
-  })).filter(x => x.faltan) : [];
-
-  /* --- lo más buscado / descargado (del contenido real) --- */
-  const buscado = ['cuotas', 'plazo de entrega', 'garantía', 'promo bancaria', 'derivación', 'embalaje']
-    .map(t => ({ t, n: metEntre('b' + t, 8, 90) })).sort((a, b) => b.n - a.n);
-  const NOMBRE_SECCION = {
-    fechas_especiales: 'Fechas especiales', promos_bancarias: 'Promociones bancarias',
-    promos_mensuales: 'Promociones vigentes', entregas: 'Placas de envío', porque: '¿Por qué elegirnos?'
-  };
-  const placas = GRUPOS_DESCARGABLES.map(k => NOMBRE_SECCION[k] || k)
-    .map(t => ({ t, n: metEntre('p' + t, 5, 60) })).sort((a, b) => b.n - a.n);
-
-  $('#metBody').innerHTML = `
-    <div class="met-kpis">${kpis.map(k => `<div class="met-k">
-      <div class="met-kt">${esc(k[0])}</div><div class="met-kv">${esc(String(k[1]))}</div>
-      <div class="met-kd${k[3] ? ' ' + k[3] : ''}">${esc(k[2])}</div></div>`).join('')}</div>
-
-    <div class="met-sec">
-      <div class="met-h">Publicación por publicación</div>
-      <p class="met-sub">Cuántos vendedores la abrieron y, en las obligatorias, cuántos confirmaron.</p>
-      <table class="met-tabla"><thead><tr>
-        <th>Publicación</th><th>Alcance</th><th></th><th>Confirmaciones</th>
-      </tr></thead><tbody>${filas}</tbody></table>
-    </div>
-
-    ${pendiente ? `<div class="met-sec">
-      <div class="met-h">Quién no confirmó todavía</div>
-      <p class="met-sub">De “${esc(pendiente.titulo || '')}”. Con la base conectada, acá va el nombre de cada uno y un botón para recordárselo.</p>
-      ${faltantes.length ? `<ul class="met-lista">${faltantes.map(f => `<li>
-          <span class="n">${f.faltan}</span> ${esc(f.s)}
-          <span class="v">${f.faltan === 1 ? 'falta 1' : 'faltan ' + f.faltan}</span></li>`).join('')}</ul>`
-        : `<p class="met-sub" style="margin:0">Confirmaron todos. 👏</p>`}
-    </div>` : ''}
-
-    <div class="met-cols">
-      <div class="met-sec">
-        <div class="met-h">Lo que más buscan</div>
-        <p class="met-sub">Sirve para saber qué material falta o está escondido.</p>
-        <ul class="met-lista">${buscado.map((x, i) => `<li><span class="n">${i + 1}</span>
-          ${esc(x.t)}<span class="v">${x.n}</span></li>`).join('')}</ul>
-      </div>
-      <div class="met-sec">
-        <div class="met-h">Lo que más descargan</div>
-        <p class="met-sub">Qué placas están usando de verdad con los clientes.</p>
-        <ul class="met-lista">${placas.map((x, i) => `<li><span class="n">${i + 1}</span>
-          ${esc(x.t)}<span class="v">${x.n}</span></li>`).join('')}</ul>
-      </div>
-    </div>`;
-}
-$('#btnMetricas').onclick = abrirMetricas;
-$('#metVolver').onclick = cerrarMetricas;
+/* MÉTRICAS: se quitó el 22-sep-2026, a pedido del usuario. Era una vista
+   PREVIA con números inventados, tapada con un candado que decía "No
+   disponible sin login". Medir quién abre cada módulo necesita que el
+   vendedor se identifique, y la decisión es que la intranet NO va a tener
+   login: es pública para los vendedores. Una pantalla que nunca va a
+   poder mostrar datos de verdad confunde más de lo que aporta. Los datos
+   que sí existen viven en la sección Datos. */

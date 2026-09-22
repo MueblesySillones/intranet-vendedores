@@ -993,3 +993,7 @@ main.lienzo{padding:0; max-width:none; margin:0}
    borde del compositor. Ahí tiene que estar POR ENCIMA del modal (.fondo es
    z-index 100), o el compositor se la come y no se puede ni tocar. */
 body > .sel2-pop{z-index:220}
+
+/* el renglón que aclara que la actualización salta directo a la última */
+.update-aviso .upd-salto{display:block; margin-top:2px; font-size:var(--t-nano);
+  font-weight:600; opacity:.75}

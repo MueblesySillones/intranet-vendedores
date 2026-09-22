@@ -335,7 +335,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 83
+VERSION = 84
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -343,18 +343,22 @@ VERSION = 83
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.30.1"
-VERSION_LABEL = "1.30.1 - listas desplegables con la cara del panel"
+VERSION_PUBLICA = "1.31.0"
+VERSION_LABEL = "1.31.0 - sin metricas de mentira, y actualizar mas claro"
 VERSION_NOTES = (
-                 "LAS LISTAS DESPLEGABLES, CON LA CARA DEL PANEL: las de Enviar al "
-                 "modulo eran las listas grises del navegador, con la tipografia de "
-                 "Windows y las filas apretadas. Ahora son del panel: fondo claro, "
-                 "borde redondeado, la flechita que gira al abrir, un tilde en la "
-                 "opcion elegida y, en cada grilla, un segundo renglon en gris que "
-                 "dice cuantas fotos tiene. La lista se abre por encima del "
-                 "compositor y, si no entra para abajo, se abre para arriba: antes "
-                 "hubiera quedado cortada contra el borde de la caja. Se maneja con "
-                 "el mouse o con el teclado (flechas, Enter y Escape para cerrar).")
+                 "FUERA LO QUE PEDIA LOGIN, Y EL AVISO DE ACTUALIZAR MAS CLARO. La "
+                 "pantalla de Metricas se saco: eran numeros de ejemplo detras de un "
+                 "candado que decia No disponible sin login. Para medir quien abre "
+                 "cada modulo haria falta que el vendedor se identifique, y la "
+                 "intranet no va a tener login: es publica para los vendedores. Lo "
+                 "mismo con la tarjeta tapada que aparecia al costado de la "
+                 "Cartelera. Los datos de verdad siguen en la seccion Datos. "
+                 "ACTUALIZAR: el panel ya saltaba directo a la ultima version en un "
+                 "solo paquete, aunque la computadora estuviera varias versiones "
+                 "atras; esta verificado. Lo que confundia era el aviso, que "
+                 "nombraba solo la ultima version y parecia una escalera cuando se "
+                 "publica varias veces en el dia. Ahora dice cuantas versiones se "
+                 "saltean de una sola vez.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2407,6 +2411,10 @@ def chequear_update(timeout=8):
         "label": data.get("label", ""), "notes": data.get("notes", ""),
         "sha256": data.get("sha256", ""), "size": int(data.get("size") or 0),
         "url": (data.get("url") or "").strip(),
+        # las versiones que quedaron en el medio: el aviso puede decir cuantas
+        # se saltean de una (la actualizacion SIEMPRE va directo a la ultima)
+        "historial": [h for h in (data.get("historial") or [])
+                      if isinstance(h, dict) and int(h.get("version") or 0) > VERSION],
     }
 
 

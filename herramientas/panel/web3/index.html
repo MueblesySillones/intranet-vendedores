@@ -55,10 +55,6 @@
       </div>
       <div class="grupo">
         <h4>Medir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></h4>
-        <button class="item" type="button" data-sec="metricas">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V8M17 16v-3"/></svg>
-          Métricas
-        </button>
         <button class="item" type="button" data-sec="datos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
           Datos <span class="n" id="navNDatos" hidden></span>
@@ -97,7 +93,6 @@
       <button id="btnBandeja" hidden>Aprobaciones <span id="pendBadge" hidden>0</span></button>
       <span id="rolBadge" hidden></span>
       <span id="gitState" hidden><span class="dot"></span><span id="gitText"></span></span>
-      <button id="btnMetricas" hidden>Métricas</button>
     </div>
   </nav>
 
@@ -161,22 +156,6 @@
             <h4>Por etiqueta</h4>
             <div class="lista-etq" id="asideEtiquetas"></div>
           </div>
-          <div class="card blq bloq">
-            <div class="velado" aria-hidden="true">
-              <h4>Sucursales al día</h4>
-              <div class="dato"><span>Paneles conectados</span><b>7/7</b></div>
-              <div class="dato"><span>Versión más vieja</span><b class="mono" style="font-size:var(--t-mini)">v1.2.2</b></div>
-              <div class="pila" style="margin-top:12px">
-                <i style="background:#1A1A2E">HU</i><i style="background:#2C6E8A">CA</i><i style="background:#3A7A55">CN</i>
-                <i style="background:#8A5A2C">NC</i><i class="mas">+3</i>
-                <span class="pila-txt">todas al día</span>
-              </div>
-            </div>
-            <div class="tapa">
-              <span class="candado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
-              <b>No disponible sin login</b>
-            </div>
-          </div>
         </aside>
       </div></div>
     </section>
@@ -202,64 +181,6 @@
         <div class="grid-mod" id="modList"></div>
         <button type="button" id="btnAddModulo2" hidden>+ Agregar módulo</button>
       </div></div>
-    </section>
-
-    <!-- ---------- MÉTRICAS ---------- -->
-    <section data-vista="metricas" class="main-sec" id="viewMetricas" hidden>
-      <header class="top"><div class="top-in">
-        <div>
-          <h1>Métricas</h1>
-          <p>Últimos 30 días · comparado con los 30 anteriores</p>
-        </div>
-        <div class="der velado" aria-hidden="true">
-          <div class="seg">
-            <button type="button">7 días</button><button type="button" class="on">30 días</button><button type="button">90 días</button>
-          </div>
-          <button class="btn btn-2" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>Exportar</button>
-        </div>
-      </div></header>
-
-      <div class="hoja"><div class="wrap-1col bloq">
-        <div class="velado" aria-hidden="true">
-        <div class="kpis">
-          <div class="card kpi">
-            <span>Publicaciones</span><b>14</b>
-            <span class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>+4 vs. mes anterior</span>
-            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,20 14,18 28,21 42,12 56,14 70,8 84,9 100,4" fill="none" stroke="#7C6A55" stroke-width="1.6"/></svg>
-          </div>
-          <div class="card kpi">
-            <span>Vendedores activos</span><b>38</b>
-            <span class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>+6</span>
-            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,22 14,20 28,16 42,17 56,11 70,10 84,7 100,6" fill="none" stroke="#7C6A55" stroke-width="1.6"/></svg>
-          </div>
-          <div class="card kpi">
-            <span>Descargas de material</span><b>412</b>
-            <span class="delta down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/></svg>−38</span>
-            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,6 14,8 28,7 42,12 56,11 70,16 84,15 100,19" fill="none" stroke="#7C6A55" stroke-width="1.6"/></svg>
-          </div>
-          <div class="card kpi">
-            <span>Sucursales al día</span><b>7/7</b>
-            <span class="delta flat">Sin cambios este mes</span>
-            <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><polyline points="0,10 14,10 28,10 42,10 56,10 70,10 84,10 100,10" fill="none" stroke="#8B857A" stroke-width="1.6" stroke-dasharray="3 3"/></svg>
-          </div>
-        </div>
-
-        <div class="card" style="padding:16px 0 4px">
-          <h4 style="margin:0 0 12px;padding:0 14px;font-size:var(--t-nano);font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3)">Módulos más abiertos</h4>
-          <div class="tabla-scroll"><table class="tabla">
-            <thead><tr><th>Módulo</th><th>Etiqueta</th><th class="num">Aperturas</th><th class="num">Descargas</th><th class="num">Comparte</th></tr></thead>
-            <tbody id="tablaMod"></tbody>
-          </table></div>
-        </div>
-        </div>
-        <div class="tapa">
-          <span class="candado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
-          <b>No disponible sin login</b>
-          <span class="porque">Para saber <b>quién</b> abrió cada módulo hace falta que el vendedor se identifique. Hoy la intranet es pública y sin registro, así que estos números son una vista previa. Los datos de arriba son de ejemplo.</span>
-        </div>
-      </div></div>
-      <!-- puentes para app.js (la vista vieja de métricas ya no se pinta) -->
-      <div hidden><div id="metAviso"></div><div id="metBody"></div><button id="metVolver">Volver</button></div>
     </section>
 
     <!-- ---------- DATOS ---------- -->

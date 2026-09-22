@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  const SECS = ['muro', 'modulos', 'datos', 'metricas', 'tutoriales', 'archivadas'];
+  const SECS = ['muro', 'modulos', 'datos', 'tutoriales', 'archivadas'];
   let SEC = 'muro';
   let FILTRO = 'todas';
 
@@ -19,7 +19,7 @@
       sec === 'modulos' ? 'viewModulos' :
       sec === 'datos' ? 'viewDatos' :
       sec === 'tutoriales' ? 'viewTutoriales' :
-      sec === 'archivadas' ? 'viewArch' : 'viewMetricas');
+      'viewArch');
   }
   function irASeccion(sec) {
     if (SECS.indexOf(sec) < 0) sec = 'muro';
@@ -48,7 +48,6 @@
     if (sec === 'tutoriales' && typeof window.refrescarTutoriales === 'function') {
       window.refrescarTutoriales();
     }
-    /* Métricas es la vista previa de la maqueta: estática, no se pinta. */
     /* Datos NO se pinta desde aca: lo hace datos_puente.js, que va a buscar la
        planilla al servidor. Leerla al entrar al panel seria una espera que
        nadie pidio, asi que se carga recien la primera vez que se entra. */
