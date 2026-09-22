@@ -344,6 +344,27 @@ window.MODULES = [
       ],
       "papelera": [
         {
+          "id": "dmud4gm99x6lu",
+          "titulo": "Prueba",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-22",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "prueba2"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">prueba2</p></div>",
+          "borradoEl": "2026-09-22"
+        },
+        {
           "id": "dmud5obvi62oe",
           "titulo": "prueba",
           "autor": "Marketing",
@@ -4348,6 +4369,36 @@ window.MODULES = [
 window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administración", "Dirección", "Tapicería", "Depósito y Entregas"]};
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
 window.TUTORIALES = [
+  {
+    "id": "tut_mud76s9t",
+    "titulo": "PUBLICACIONES",
+    "nota": "Todo para hacer una publicación",
+    "src": "assets/_tutoriales/tut_mud76s9t.mp4",
+    "duracion": 100,
+    "capitulos": [
+      {
+        "t": 0,
+        "texto": "¿Cómo crear una publicación?"
+      },
+      {
+        "t": 22,
+        "texto": "Fijar una publicación"
+      },
+      {
+        "t": 38,
+        "texto": "Enviar a un Módulo una publicación"
+      },
+      {
+        "t": 74,
+        "texto": "¿Cómo editar una publicación?"
+      },
+      {
+        "t": 80,
+        "texto": "Eliminar publicación"
+      }
+    ],
+    "creado": "2026-09-22"
+  },
   {
     "id": "tut_mubdbusm",
     "titulo": "Prueba de video - ¿como editar modulos?",
