@@ -14,8 +14,8 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
-          "id": "zzsucursal1",
-          "titulo": "Desde la sucursal",
+          "id": "dmucviejubsyw",
+          "titulo": "SILLÓN TORINO NUEVO",
           "autor": "Marketing",
           "sucursal": "",
           "fecha": "2026-09-22",
@@ -27,13 +27,17 @@ window.MODULES = [
           "archivar": "",
           "bloques": [
             {
+              "t": "parrafo",
+              "texto": "2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts."
+            },
+            {
               "t": "imagen",
-              "src": "assets/_modulos/muro_img_1790092887549.png",
+              "src": "assets/_modulos/muro_img_1790093596297.png",
               "alt": "",
               "tam": "md"
             }
           ],
-          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790092887549.png\" alt=\"\" loading=\"lazy\"></figure></div>"
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790093596297.png\" alt=\"\" loading=\"lazy\"></figure></div>"
         },
         {
           "id": "dmucv3gbsdik0",
@@ -3940,7 +3944,7 @@ window.MODULES = [
   {
     "key": "manual",
     "title": "Manual de derivaciones",
-    "desc": "Editado en la sucursal",
+    "desc": "Guía completa del proceso de derivación.",
     "icon": "play",
     "color": "--c-hudson",
     "ready": true,
@@ -4365,15 +4369,6 @@ window.MODULES = [
 window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administración", "Dirección", "Tapicería", "Depósito y Entregas"]};
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
 window.TUTORIALES = [
-  {
-    "id": "tut_muddlhf0",
-    "titulo": "AUDITORIA QA — tutorial de prueba",
-    "nota": "Nota de la auditoria: video de 100 segundos",
-    "src": "assets/_tutoriales/tut_muddlhf0.mp4",
-    "duracion": 100,
-    "capitulos": [],
-    "creado": "2026-09-23"
-  },
   {
     "id": "tut_mud76s9t",
     "titulo": "PUBLICACIONES",
