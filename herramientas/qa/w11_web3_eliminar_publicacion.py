@@ -55,8 +55,13 @@ def main():
         os.makedirs(estado)
         s = socket.socket(); s.bind(("127.0.0.1", 0)); pp = s.getsockname()[1]; s.close()
         env = dict(os.environ, MYS_PROYECTO=proy, MYS_PANEL_STATE=estado, MYS_PANEL_PORT=str(pp),
-                   MYS_PANEL_WEB="web3", BROWSER="cmd.exe /c echo")
-        proc = subprocess.Popen([sys.executable, os.path.join(PANEL, "panel_server.py")], cwd=PANEL,
+                   MYS_PANEL_WEB="web3", BROWSER="none")
+        # ⚠️ desde una COPIA del panel sin panel_config.json: desde herramientas/panel
+        # lee la clave y el cerebro REALES de la central, y asi esta prueba publico
+        # en el sitio real el 23-sep (vacio las galerias).
+        import test_publicar_fusion as _tpf
+        _pan = _tpf.copia_del_panel(tmp)
+        proc = subprocess.Popen([sys.executable, os.path.join(_pan, "panel_server.py")], cwd=_pan,
                                 env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         base = "http://127.0.0.1:%d" % pp
         for _ in range(60):

@@ -350,6 +350,7 @@ async function avisarFusion(fu, nada) {
   if (traidos.length || choques.length || fu.imagenes) {
     try {
       const d = await api('/api/modulos');
+      if (d.version) VERSION_MODULOS = d.version;
       if (Array.isArray(d.modulos)) MODULOS = d.modulos;
       if (d.ajustes) AJUSTES = d.ajustes;
       // el editor abierto sigue apuntando a SU módulo aunque haya cambiado el orden
@@ -591,6 +592,9 @@ const esCartelera = c => !!c && (c.tipo === 'cartelera' || c.tipo === 'muro');
 const iconSvg = k => `<svg viewBox="0 0 24 24">${ICONS[k] || ICONS.layers}</svg>`;
 
 let MODULOS = [];
+/* la version de modulos.js que tiene esta pantalla: al guardar se devuelve y,
+   si el disco cambio por detras (ponerse al dia), el panel combina en vez de pisar */
+let VERSION_MODULOS = '';
 const GRUPOS_DESCARGABLES = ['fechas_especiales', 'promos_bancarias', 'promos_mensuales', 'entregas', 'porque'];
 
 // estado de la pantalla de detalle (working copy)
@@ -599,6 +603,7 @@ let det = null, detIdx = null, detNew = false, detOriginal = null;
 async function cargarModulos() {
   try {
     const d = await api('/api/modulos');
+    if (d.version) VERSION_MODULOS = d.version;
     if (d.ajustes) AJUSTES = d.ajustes;
     if (Array.isArray(d.novedad_opciones) && d.novedad_opciones.length) {
       NOVEDAD_OPCIONES = d.novedad_opciones;
@@ -838,8 +843,9 @@ function modCard(m, idx, pos) {
 async function persistModulos(msg, deQuien) {
   const r = await api('/api/modulos', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ modulos: MODULOS, ajustes: AJUSTES })
+    body: JSON.stringify({ modulos: MODULOS, ajustes: AJUSTES, version: VERSION_MODULOS })
   });
+  if (r.version) VERSION_MODULOS = r.version;
   if (r.ajustes) AJUSTES = r.ajustes;
   if (deQuien) marcarEditado(deQuien); else marcarOtroCambio();
   MODULOS = r.modulos; pintarModulos();

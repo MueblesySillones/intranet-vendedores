@@ -253,7 +253,7 @@ def main():
 
         pp = puerto_libre()
         env = dict(os.environ, MYS_PROYECTO=proy, MYS_PANEL_STATE=estado,
-                   MYS_PANEL_PORT=str(pp), BROWSER="cmd.exe /c echo", PYTHONIOENCODING="utf-8")
+                   MYS_PANEL_PORT=str(pp), BROWSER="none", PYTHONIOENCODING="utf-8")
         log = open(os.path.join(tmp, "panel.log"), "w", encoding="utf-8")
         # ⚠️ Se corre desde una COPIA del panel sin panel_config.json. Corriendo
         # desde herramientas/panel, el panel lee el config de la central y
@@ -280,7 +280,7 @@ def main():
         nueva = copy.deepcopy(c["content"]["docs"][0])
         nueva.update({"id": "zzsucursal1", "titulo": "Desde la sucursal"})
         c["content"]["docs"].insert(0, nueva)
-        r = api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        r = api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
         check("guardar la publicacion", r.get("ok"), r)
         antes = REPO_F.publicaciones
         r = api(base, "/api/publicar", {})
@@ -308,7 +308,7 @@ def main():
         mods = d["modulos"]
         m_mio = next(m for m in mods if m["key"] == "manual")
         m_mio["desc"] = "Editado en la sucursal"
-        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
         r = api(base, "/api/publicar", {})
         pub = modulos_de(REPO_F.texto("modulos.js"))
         check("queda la edicion de la otra computadora",
@@ -335,7 +335,7 @@ def main():
         mods = d["modulos"]
         next(m for m in mods if m["key"] == "cartelera")["content"]["docs"].insert(
             0, dict(nueva, id="zzsinpublicar", titulo="Sin publicar"))
-        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
         img_local = os.path.join(intr, "assets", "_modulos", "subida-aca.png")
         os.makedirs(os.path.dirname(img_local), exist_ok=True)
         open(img_local, "wb").write(b"\x89PNG local")
@@ -367,7 +367,7 @@ def main():
         d = api(base, "/api/modulos")
         mods = d["modulos"]
         next(m for m in mods if m["key"] == "manual")["desc"] = "Otra edicion"
-        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
         r = api(base, "/api/publicar", {})
         check("publica", r.get("ok"), r.get("log"))
         check("la imagen de la otra computadora se bajo aca",
@@ -380,7 +380,7 @@ def main():
         d = api(base, "/api/modulos")
         mods = d["modulos"]
         next(m for m in mods if m["key"] == "manual")["desc"] = "Sin GitHub"
-        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
         r = api(base, "/api/publicar", {})
         REPO_F.caido = False
         check("publica igual", r.get("ok") and not r.get("nada"), r.get("log"))
@@ -394,7 +394,7 @@ def main():
             doc = next(x for x in c["docs"] if x["id"] == doc_id)
             c["docs"] = [x for x in c["docs"] if x["id"] != doc_id]
             c.setdefault("papelera", []).insert(0, dict(doc, borradoEl="2026-09-15"))
-            api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+            api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
             return api(base, "/api/publicar", {})
         REPO_F.atrasada = True
         r1 = borrar_doc("zzotra3")
@@ -428,7 +428,7 @@ def main():
         cc = next(m for m in mods if m["key"] == "cartelera")["content"]
         cc["docs"].insert(0, dict(nueva, id="zzborrar9a", titulo="Borrar 9a"))
         cc["docs"].insert(0, dict(nueva, id="zzborrar9b", titulo="Borrar 9b"))
-        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"]})
+        api(base, "/api/modulos", {"modulos": mods, "ajustes": d["ajustes"], "version": d.get("version")})
         REPO_F.atrasada = False
         api(base, "/api/publicar", {})
         # un commit de otra cosa (no toca modulos.js): asi la API atrasada, que

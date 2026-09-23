@@ -100,7 +100,7 @@ def correr(tmp, nombre, clave_local, falso):
     os.makedirs(estado)
     pp = puerto_libre()
     env = dict(os.environ, MYS_PROYECTO=proy, MYS_PANEL_STATE=estado, MYS_PANEL_PORT=str(pp),
-               BROWSER="cmd.exe /c echo")
+               BROWSER="none")
     proc = subprocess.Popen([sys.executable, os.path.join(prog, "panel_server.py")], cwd=prog,
                             env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     base = "http://127.0.0.1:%d" % pp

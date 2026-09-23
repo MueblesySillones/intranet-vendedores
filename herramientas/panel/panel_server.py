@@ -28,6 +28,7 @@ import shutil
 import hashlib
 import subprocess
 import threading
+import collections
 import webbrowser
 import email
 import zipfile
@@ -1818,6 +1819,15 @@ def _publicar_cerebro(mensaje="", _reintento=False):
     borraron quedan huerfanos en el repo (no afectan el sitio)."""
     if not CEREBRO_URL:
         return {"ok": False, "log": "No esta configurada la direccion del cerebro."}
+    # ⚠️ 23-sep-2026: una prueba corrida desde herramientas/panel leyo el
+    # panel_config.json de la central (clave real, cerebro real) y publico su
+    # copia de prueba EN EL SITIO: vacio las galerias y borro una publicacion
+    # (commits 8474e3e/7e0af79, restaurado en a21597b). MYS_PANEL_STATE solo lo
+    # usan las pruebas: con el estado apuntado a otro lado, al cerebro real no.
+    if (os.environ.get("MYS_PANEL_STATE") and "mys-cerebro." in CEREBRO_URL
+            and os.environ.get("MYS_PUBLICAR_DE_VERDAD") != "1"):
+        return {"ok": False, "log": "Panel de PRUEBA (MYS_PANEL_STATE): no publico en "
+                                    "el sitio real. Apunta cerebro_url a un cerebro falso."}
     if not PUBLISH_TOKEN:
         return {"ok": False, "falta_token": True,
                 "log": "Falta tu clave de publicacion. Cargala una vez y volve a publicar."}
@@ -2909,6 +2919,58 @@ def validar_tutoriales(lista):
     return out
 
 
+# =====================================================================
+#  GUARDAR DESDE UNA PANTALLA ATRASADA (23-sep-2026, auditoria)
+# =====================================================================
+#  La pantalla guarda la lista ENTERA de modulos. Pero el disco puede cambiar
+#  por detras: "ponerse al dia" corre al abrir el panel y cada 30 min, trae lo
+#  que publicaron otras computadoras y lo anota como base. Si la pantalla
+#  guardaba lo que tenia en memoria (de antes), pisaba lo que se acababa de
+#  traer, y como la base ya lo daba por visto, el publicar siguiente lo subia
+#  como si esta computadora lo hubiera deshecho: se perdia la edicion de otra
+#  PC. Medido en qa/test_publicar_fusion.py (caso 2), fallaba 1 de cada 2.
+#  Ahora cada lectura lleva una `version`; al guardar, si el disco ya no es esa
+#  version, se combina (fusion.py) contra lo que la pantalla habia cargado.
+_VERSIONES_VISTAS = collections.OrderedDict()   # huella -> partes (lo que se entrego)
+
+
+def _partes_en_disco():
+    return {"modulos": leer_modulos(), "ajustes": leer_ajustes(),
+            "tutoriales": leer_tutoriales()}
+
+
+def version_entregada():
+    """Anota lo que hay en disco como una version que una pantalla va a tener
+    en memoria, y devuelve su huella."""
+    p = _partes_en_disco()
+    h = fusion.huella(p)
+    _VERSIONES_VISTAS[h] = p
+    _VERSIONES_VISTAS.move_to_end(h)
+    while len(_VERSIONES_VISTAS) > 30:
+        _VERSIONES_VISTAS.popitem(last=False)
+    return h
+
+
+def guardar_modulos_de_pantalla(lista, ajustes, version):
+    """Guarda lo que manda la pantalla sin pisar lo que cambio en disco desde
+    que la pantalla lo cargo. Devuelve el informe de la fusion (o None)."""
+    base = _VERSIONES_VISTAS.get(version) if version else None
+    ahora = _partes_en_disco()
+    if base is None or fusion.iguales(base, ahora):
+        # nada cambio por detras (o una pantalla sin version: como siempre)
+        escribir_modulos(lista, ajustes)
+        return None
+    mia = {"modulos": lista,
+           "ajustes": ajustes if ajustes is not None else base["ajustes"],
+           "tutoriales": base["tutoriales"]}
+    fus, inf = fusion.fusionar(base, mia, ahora)
+    if ahora["modulos"] and not fus["modulos"]:
+        raise ValueError("la combinacion dio una intranet sin modulos; no se toca nada")
+    _respaldar_modulos("guardar")
+    escribir_modulos(fus["modulos"], fus["ajustes"], fus["tutoriales"])
+    return inf
+
+
 def escribir_modulos(lista, ajustes=None, tutoriales=None):
     """⚠️ Ver `_lista_de`: si la lectura de los modulos falla, lo que llega aca
     es [] y este guardado deja la intranet vacia. El freno esta en el llamador
@@ -3881,9 +3943,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/tutoriales":
             return self._json({"ok": True, "tutoriales": leer_tutoriales()})
         if path == "/api/modulos":
-            return self._json({"modulos": leer_modulos(),
-                               "ajustes": leer_ajustes(),
-                               "novedad_opciones": NOVEDAD_HORAS_VALIDAS})
+            with _LOCK_CONTENIDO:
+                ver = version_entregada()
+                return self._json({"modulos": leer_modulos(),
+                                   "ajustes": leer_ajustes(), "version": ver,
+                                   "novedad_opciones": NOVEDAD_HORAS_VALIDAS})
         if path == "/api/contenido":
             q = parse_qs(u.query)
             key = (q.get("key") or [""])[0]
@@ -3997,9 +4061,14 @@ class Handler(BaseHTTPRequestHandler):
                 aj = (validar_ajustes(d["ajustes"])
                       if isinstance(d.get("ajustes"), dict) else None)
                 with _LOCK_CONTENIDO:
-                    escribir_modulos(lista, aj)
-                return self._json({"ok": True, "modulos": lista,
-                                   "ajustes": leer_ajustes()})
+                    try:
+                        inf = guardar_modulos_de_pantalla(lista, aj, d.get("version"))
+                    except ValueError as e:
+                        return self._json({"error": str(e)}, 409)
+                    ver = version_entregada()
+                    return self._json({"ok": True, "modulos": leer_modulos(),
+                                       "ajustes": leer_ajustes(), "version": ver,
+                                       "fusion": inf})
             if path == "/api/regenerar":
                 rc, out, err = regenerar_galerias()
                 return self._json({"ok": rc == 0, "log": (out + err).strip()})
@@ -4535,7 +4604,16 @@ def _abrir_panel(url):
     ventana modo --app de Edge (v32, pedido del usuario: la ventana separada
     confundia y arrastraba su propia cache/perfil). webbrowser usa el navegador
     por defecto del sistema; con BROWSER definido se respeta igual que siempre
-    (lo usan las pruebas para no abrir nada en la cara del usuario)."""
+    (lo usan las pruebas para no abrir nada en la cara del usuario).
+
+    ⚠️ 23-sep-2026: las pruebas ponian BROWSER="cmd.exe /c echo" o "none"
+    creyendo que asi no se abria nada. En Windows ninguno de los dos existe
+    como programa: webbrowser falla en silencio y cae al navegador POR DEFECTO.
+    Cada prueba abria una pestana real del panel de prueba, que corria
+    "ponerse al dia" por su cuenta y se metia en medio de lo que se media (asi
+    aparecio como intermitente la perdida de ediciones de otra PC)."""
+    if os.environ.get("BROWSER", "").strip().lower() in ("none", "cmd.exe /c echo"):
+        return
     try:
         webbrowser.open(url)
     except Exception:  # noqa

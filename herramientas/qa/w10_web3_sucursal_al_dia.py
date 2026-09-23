@@ -82,7 +82,7 @@ def levantar(tmp, rol, panel_dir):
                   open(os.path.join(estado, "identity.json"), "w", encoding="utf-8"))
     pp = puerto_libre()
     env = dict(os.environ, MYS_PROYECTO=proy, MYS_PANEL_STATE=estado, MYS_PANEL_PORT=str(pp),
-               MYS_PANEL_WEB="web3", BROWSER="cmd.exe /c echo")
+               MYS_PANEL_WEB="web3", BROWSER="none")
     proc = subprocess.Popen([sys.executable, os.path.join(panel_dir, "panel_server.py")], cwd=panel_dir,
                             env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     base = "http://127.0.0.1:%d" % pp

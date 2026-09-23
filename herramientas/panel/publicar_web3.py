@@ -242,7 +242,7 @@ try:
     json.dump({"rol": "colaborador", "usuario": "prueba release", "publish_token": ""},
               io.open(os.path.join(prueba, "e", "identity.json"), "w", encoding="utf-8"))
     env = dict(os.environ, MYS_PROYECTO=os.path.join(prueba, "p"), MYS_PANEL_STATE=os.path.join(prueba, "e"),
-               MYS_PANEL_PORT=str(puerto), BROWSER="cmd.exe /c echo")
+               MYS_PANEL_PORT=str(puerto), BROWSER="none")
     exe = subprocess.Popen([os.path.join(aqui, "dist", "PanelMyS", "PanelMyS.exe")], env=env,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     cfg = None
