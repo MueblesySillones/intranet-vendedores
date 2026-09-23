@@ -1,10 +1,10 @@
 {
-  "version": 85,
-  "label": "1.31.1 - las fotos pesan 75% menos",
-  "notes": "LAS FOTOS PESAN 75 POR CIENTO MENOS: las placas se guardaban en PNG. Medido: 90 placas ocupaban 70 de los 112 MB de TODO el material de la intranet. Ahora se guardan en JPG de calidad alta, sin el submuestreo de color que emborrona los textos de colores. Sobre las placas reales del sitio: de 1428 KB a 296 KB, con una diferencia por pixel de menos de 1 punto sobre 255, o sea que no se ve. Ademas bajan mucho mas rapido en el celular del vendedor. Lo unico que se sigue guardando en PNG es lo que tiene transparencia de verdad, como un logo recortado, porque el JPG no la soporta y quedaria con fondo blanco. Las fotos que ya estan subidas no se tocan: siguen viendose igual.",
-  "sha256": "900ee9946221f802677daf4205b3077783adb522925a2e5648a1a1bfe49a846f",
-  "size": 20365047,
-  "url": "panel/PanelMyS-v85.zip",
+  "version": 86,
+  "label": "1.32.0 - actualizar es obligatorio y los errores salen en castellano",
+  "notes": "ACTUALIZAR ES OBLIGATORIO: si hay una version nueva, aparece un cartel grande DEBES ACTUALIZAR PARA SEGUIR USANDO EL PANEL al abrir el panel y al empezar a crear o editar algo. Nunca al guardar o publicar, para no perder trabajo. LOS ERRORES SALEN EN CASTELLANO y dicen que hacer (antes decian cosas como getaddrinfo failed o Error 500). UNA COMPUTADORA YA NO PISA LO QUE EDITO OTRA: si el panel se puso al dia mientras tenias la pantalla abierta, guardar combina en vez de pisar. SI EL ARCHIVO DE CONTENIDO SE DANA, el panel avisa y no guarda encima (antes podia borrar todos los modulos sin decir nada). CARTELERA: adjuntar un PDF anda, y un segundo clic en Publicar ya no duplica. TUTORIALES: no deja poner un capitulo despues del final del video. DATOS: conectar la misma planilla dos veces ya no crea tarjetas repetidas. Los archivos que se suben se guardan con su nombre original, no con numeros. Se puede usar con teclado y tiene mejor contraste. La tarjeta de la computadora dice si es la central o una sucursal.",
+  "sha256": "f50c5fd07ad9671c1c767b32283acfc89bdd96fb331f5abc5971c8c4cc986f26",
+  "size": 20383695,
+  "url": "panel/PanelMyS-v86.zip",
   "historial": [
     {
       "version": 83,
@@ -13,6 +13,10 @@
     {
       "version": 84,
       "label": "1.31.0 - sin metricas de mentira, y actualizar mas claro"
+    },
+    {
+      "version": 85,
+      "label": "1.31.1 - las fotos pesan 75% menos"
     }
   ]
 }
