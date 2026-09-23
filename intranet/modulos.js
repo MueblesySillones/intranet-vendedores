@@ -3940,7 +3940,7 @@ window.MODULES = [
   {
     "key": "manual",
     "title": "Manual de derivaciones",
-    "desc": "Guía completa del proceso de derivación.",
+    "desc": "Editado en la sucursal",
     "icon": "play",
     "color": "--c-hudson",
     "ready": true,
