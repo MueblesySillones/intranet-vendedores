@@ -14,6 +14,31 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmuecunnmost5",
+          "titulo": "SILLA VIETNAM LAQUEADA WENGUE",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-23",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "video",
+              "src": "assets/_modulos/cartelera_vid_1790183186858.mp4",
+              "tam": "md",
+              "orient": "vert",
+              "ar": "720/1280",
+              "medido": true,
+              "poster": "assets/_modulos/muro_poster_1790183192355.jpg"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-video vert tam-md\" data-med=\"1\" style=\"--arw:720;--arh:1280\"><div class=\"v-box\"><video src=\"assets/_modulos/cartelera_vid_1790183186858.mp4\" controls preload=\"metadata\" playsinline poster=\"assets/_modulos/muro_poster_1790183192355.jpg\"></video></div></figure></div>"
+        },
+        {
           "id": "dmue8pa3fpq0u",
           "titulo": "Silla Mónaco",
           "autor": "Marketing",
