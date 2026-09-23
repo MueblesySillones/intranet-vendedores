@@ -561,6 +561,8 @@ main > *{ width:100%; }
   background:rgba(0,0,0,.5); color:#fff; cursor:pointer; display:grid;
   place-items:center; backdrop-filter:blur(3px); transition:background .16s, transform .16s; }
 .mr-play:hover{ background:rgba(0,0,0,.72); transform:scale(1.07); }
+.mr-play{ position:relative; }
+.mr-play::after{ content:''; position:absolute; inset:-7px; border-radius:50%; }  /* 23-sep: se ve de 30px, se toca de 44 */
 .mr-play svg{ width:14px; height:14px; }
 .mr-play .ic-pausa{ display:none; }
 .mr-play.andando .ic-play{ display:none; }
@@ -1038,7 +1040,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 /* filtros por tipo de publicacion */
 .mu-filtros{ display:flex; gap:8px; overflow-x:auto; padding:0 0 16px; scrollbar-width:none; }
 .mu-filtros::-webkit-scrollbar{ display:none; }
-.mu-chip{ flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:8px 14px; min-height:38px;
+.mu-chip{ flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:8px 14px; min-height:44px;
   border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--ink2);
   font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; transition:.2s; }
 .mu-chip:hover{ border-color:var(--ink); color:var(--ink); }
@@ -1180,7 +1182,7 @@ body.report-mode .sec-body{ flex:1; min-height:0; margin-top:0; }
 .mu-acc .ico{ width:15px; height:15px; flex:0 0 auto; }
 /* OJO: la clase va prefijada. Un `.wa` suelto choca con el maquetado del
    telefono de WhatsApp del manual (`.wa{margin:18px auto}`) y descoloca el pie. */
-.mu-acc.mu-wa:hover{ border-color:#25D366; color:#128C4A; }
+.mu-acc.mu-wa:hover{ border-color:#25D366; color:#0F7A40; }
 .mu-acc.hecho{ border-color:var(--c-success); color:var(--c-success); }
 
 /* estado vacio (ningun post pasa el filtro) */

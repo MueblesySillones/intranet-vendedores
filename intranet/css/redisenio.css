@@ -27,7 +27,7 @@
   --surface:   #FFFFFF;
   --ink:       #18181B;
   --ink2:      #52525B;
-  --ink3:      #8B8B93;
+  --ink3:      #67676F;   /* 23-sep: era #8B8B93 (3,2:1, no llegaba a AA); este da 4,5-5,6 sobre todos los fondos */
   --border:    #E7E7EA;
   --border-fuerte:#D6D6DB;
 }
@@ -128,7 +128,7 @@
 
 /* La acción principal del vendedor es MANDAR el material por WhatsApp. */
 .mu-wa, .mu-acc .btn-wa{
-  background:#128C4A !important; color:#fff !important; border-color:#128C4A !important;
+  background:#0F7A40 !important; color:#fff !important; border-color:#0F7A40 !important; /* 23-sep: #128C4A daba 4,3:1 con el blanco */
   font-weight:600;
 }
 .mu-wa:hover{ background:#0E7038 !important; }

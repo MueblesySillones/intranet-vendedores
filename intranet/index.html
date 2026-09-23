@@ -68,6 +68,8 @@
   <link rel="stylesheet" href="css/redisenio.css">
 </head>
 <body>
+<!-- título para lectores de pantalla (auditoría a11y 23-sep): la página no tenía ningún h1 -->
+<h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0;padding:0">Intranet de vendedores de Muebles y Sillones</h1>
 <header class="top">
   <div class="top-l">
     <button class="lista-btn" id="listaBtn" onclick="volverIndice()" hidden>
@@ -178,7 +180,7 @@
     <div class="bu-head">
       <span class="bu-lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
         stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-      <input type="search" id="buInput" class="bu-input" autocomplete="off" enterkeyhint="search"
+      <input type="search" id="buInput" aria-label="Buscar en la intranet" class="bu-input" autocomplete="off" enterkeyhint="search"
         placeholder="Buscá lo que necesites… ej: cuotas Galicia, plazo de entrega">
       <button class="bu-x" onclick="cerrarBuscador()" aria-label="Cerrar la búsqueda">✕</button>
     </div>
@@ -186,7 +188,7 @@
   </div>
 </div>
 
-<div id="lightbox" hidden onclick="closeLightbox()"><img id="lbimg" src="" alt="Vista ampliada"></div>
+<div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Imagen ampliada" onclick="closeLightbox()"><img id="lbimg" src="" alt="Vista ampliada"></div>
 
 <script>
 /* ---- iconos SVG ---- */
@@ -869,6 +871,9 @@ function openLightbox(src, name){
     + `<div class="lb-hint" id="lbHint" hidden onclick="event.stopPropagation()">📱 Girá el teléfono para verla más grande</div>`
     + `<a class="dl-btn lb-dl" href="${esc(src)}" download="${esc(name||'')}" onclick="event.stopPropagation()">${svg(I.download)} Descargar</a>`;
   lb.hidden=false;
+  /* el foco entra al visor y, al cerrar, vuelve a la foto que lo abrió */
+  openLightbox._origen = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+  const cerrarBtn = lb.querySelector('.lb-close'); if(cerrarBtn) cerrarBtn.focus();
   const img=document.getElementById('lbimg');
   if(img.complete) chequearHintLightbox(); else img.onload=chequearHintLightbox;
 }
@@ -1019,7 +1024,11 @@ document.addEventListener('click', function(e){
     if(q) filtrar(q.closest('.m-tablaw'));
   });
 })();
-function closeLightbox(){ document.getElementById('lightbox').hidden=true; }
+function closeLightbox(){
+  document.getElementById('lightbox').hidden=true;
+  const o = openLightbox._origen; openLightbox._origen = null;
+  if(o && document.contains(o)) try{ o.focus(); }catch(e){}
+}
 /* visor de PDF a pantalla completa (para el bloque PDF en modo tarjeta) */
 function openPdf(src, name){
   let pv=document.getElementById('pdfview');
@@ -2192,10 +2201,44 @@ if(typeof MutationObserver === 'function'){
   new MutationObserver(() => {
     if(pendiente) return;
     pendiente = true;
-    requestAnimationFrame(() => { pendiente = false; pintarBotonesDescarga(); });
+    requestAnimationFrame(() => { pendiente = false; pintarBotonesDescarga(); hacerAbribles(); });
   }).observe(document.documentElement, { childList:true, subtree:true });
 }
 document.addEventListener('DOMContentLoaded', pintarBotonesDescarga);
+document.addEventListener('DOMContentLoaded', hacerAbribles);
+
+/* ===================================================================
+   TECLADO (auditoría de accesibilidad, 23-sep-2026)
+   Las fotos que se amplían eran <img onclick> planas: con teclado no se
+   llegaba a ninguna, así que un vendedor sin mouse no podía abrir una placa
+   para mandarla. Se vuelven "botones" (tabindex + role) sobre lo ya dibujado,
+   también el HTML que viene del panel, y Enter o Espacio las abren.
+   =================================================================== */
+function hacerAbribles(){
+  document.querySelectorAll('img[onclick*="openLightbox"]:not([tabindex])').forEach(img => {
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    if(!img.getAttribute('aria-label'))
+      img.setAttribute('aria-label', 'Ampliar' + (img.alt ? ': ' + img.alt : ' la imagen'));
+  });
+}
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if((e.key === 'Enter' || e.key === ' ') && t && t.matches && t.matches('img[onclick*="openLightbox"]')){
+    e.preventDefault(); t.click();
+    return;
+  }
+  /* con el visor abierto el Tab no se escapa a la página de atrás */
+  const lb = document.getElementById('lightbox');
+  if(e.key === 'Tab' && lb && !lb.hidden){
+    const els = [...lb.querySelectorAll('button, a[href]')].filter(x => x.offsetParent !== null);
+    if(!els.length) return;
+    const pri = els[0], ult = els[els.length - 1];
+    if(!lb.contains(document.activeElement)){ e.preventDefault(); pri.focus(); }
+    else if(e.shiftKey && document.activeElement === pri){ e.preventDefault(); ult.focus(); }
+    else if(!e.shiftKey && document.activeElement === ult){ e.preventDefault(); pri.focus(); }
+  }
+});
 
 /* ===================================================================
    BUSCADOR
@@ -3419,7 +3462,12 @@ window.__mysArrancar();
     }).catch(() => null);
   }
   let FIRMA = null;
-  firma().then(f => { FIRMA = f; });
+  /* 23-sep-2026 (auditoría): pedir la firma mientras el <script> todavía baja
+     modulos.js hacía que Chrome abortara el pedido (net::ERR_ABORTED en cada
+     carga). Se pide recién con la página cargada. */
+  const primeraFirma = () => firma().then(f => { FIRMA = f; });
+  if (document.readyState === 'complete') primeraFirma();
+  else window.addEventListener('load', primeraFirma, { once: true });
 
   let revisando = false;
   function revisar(){
