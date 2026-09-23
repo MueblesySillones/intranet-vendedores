@@ -15,7 +15,7 @@ window.MODULES = [
       "docs": [
         {
           "id": "dmue8pa3fpq0u",
-          "titulo": "Silla Monaco",
+          "titulo": "Silla Mónaco",
           "autor": "Marketing",
           "sucursal": "",
           "fecha": "2026-09-23",
