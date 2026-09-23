@@ -194,7 +194,8 @@ def copia_del_panel(tmp):
         return dest
     os.makedirs(dest)
     for n in os.listdir(PANEL):
-        if n in ("panel_config.json", "dist", "build", "instalador", "paquete",
+        # clave_equipo.py lleva la clave REAL del equipo: una copia de prueba no la necesita
+        if n in ("panel_config.json", "clave_equipo.py", "dist", "build", "instalador", "paquete",
                  "__pycache__", "datos", "investigacion"):
             continue
         o = os.path.join(PANEL, n)

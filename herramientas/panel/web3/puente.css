@@ -566,6 +566,9 @@ main.lienzo{padding:0; max-width:none; margin:0}
    renglón, separado de su texto. */
 .pubcard-tx .pubcard-espera{display:flex; align-items:center; gap:7px; margin-top:6px;
   font-size:var(--t-micro); color:var(--ink3); line-height:1.3}
+/* el display:flex de arriba le ganaba al atributo hidden: el contador de una
+   publicacion anterior quedaba encimado en la siguiente (auditoria 23-sep) */
+.pubcard-tx .pubcard-espera[hidden]{display:none}
 .pubcard-espera svg{flex:0 0 13px; color:var(--ink3)}
 .pubcard-tx .pubcard-espera>span{display:inline; font-size:var(--t-micro); margin:0}
 .pubcard-espera b{font-family:"JetBrains Mono",ui-monospace,monospace; font-weight:700;
@@ -997,3 +1000,12 @@ body > .sel2-pop{z-index:220}
 /* el renglón que aclara que la actualización salta directo a la última */
 .update-aviso .upd-salto{display:block; margin-top:2px; font-size:var(--t-nano);
   font-weight:600; opacity:.75}
+
+/* ---- Actualizar obligatorio (23-sep-2026) ---- */
+.forzar-upd{max-width:620px}
+.forzar-upd .modal-cab{padding-top:28px;padding-bottom:18px}
+.forzar-upd .modal-cab h2{font-size:28px;line-height:1.2;text-transform:uppercase;letter-spacing:.02em;color:var(--danger,#B5503F)}
+.forzar-upd .modal-cuerpo p{font-size:16.5px;line-height:1.55;margin:0}
+.forzar-upd .forzar-err{margin-top:12px !important;color:var(--danger,#B5503F);font-weight:600}
+.forzar-upd .forzar-btn{flex:1;font-size:18px;padding:16px 20px}
+.forzar-upd .modal-pie{display:flex;gap:10px;flex-wrap:wrap}

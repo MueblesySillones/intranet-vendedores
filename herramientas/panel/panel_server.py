@@ -29,6 +29,7 @@ import hashlib
 import subprocess
 import threading
 import collections
+import socket
 import webbrowser
 import email
 import zipfile
@@ -255,7 +256,11 @@ try:
     import datos_api
 except Exception as _e:                    # noqa: el panel anda igual sin esto
     datos_api = None
-    _datos_error = str(_e)
+    # (aca todavia no existe _legible: esto corre al importar el programa)
+    print("  (detalle tecnico) Datos no cargo: %s" % _e)
+    _datos_error = ("falta una parte del programa; actualizá o reinstalá el Panel MyS"
+                    if isinstance(_e, ImportError) else
+                    "la sección Datos no pudo arrancar; cerrá y abrí el Panel MyS")
 else:
     _datos_error = ""
     # ⚠️ Los modulos de Google calculan su propia carpeta de estado para poder
@@ -336,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 85
+VERSION = 86
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -344,20 +349,25 @@ VERSION = 85
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.31.1"
-VERSION_LABEL = "1.31.1 - las fotos pesan 75% menos"
+VERSION_PUBLICA = "1.32.0"
+VERSION_LABEL = "1.32.0 - actualizar es obligatorio y los errores salen en castellano"
 VERSION_NOTES = (
-                 "LAS FOTOS PESAN 75 POR CIENTO MENOS: las placas se guardaban en "
-                 "PNG. Medido: 90 placas ocupaban 70 de los 112 MB de TODO el "
-                 "material de la intranet. Ahora se guardan en JPG de calidad alta, "
-                 "sin el submuestreo de color que emborrona los textos de colores. "
-                 "Sobre las placas reales del sitio: de 1428 KB a 296 KB, con una "
-                 "diferencia por pixel de menos de 1 punto sobre 255, o sea que no "
-                 "se ve. Ademas bajan mucho mas rapido en el celular del vendedor. "
-                 "Lo unico que se sigue guardando en PNG es lo que tiene "
-                 "transparencia de verdad, como un logo recortado, porque el JPG no "
-                 "la soporta y quedaria con fondo blanco. Las fotos que ya estan "
-                 "subidas no se tocan: siguen viendose igual.")
+                 "ACTUALIZAR ES OBLIGATORIO: si hay una version nueva, aparece un "
+                 "cartel grande DEBES ACTUALIZAR PARA SEGUIR USANDO EL PANEL al "
+                 "abrir el panel y al empezar a crear o editar algo. Nunca al "
+                 "guardar o publicar, para no perder trabajo. LOS ERRORES SALEN EN "
+                 "CASTELLANO y dicen que hacer (antes decian cosas como getaddrinfo "
+                 "failed o Error 500). UNA COMPUTADORA YA NO PISA LO QUE EDITO OTRA: "
+                 "si el panel se puso al dia mientras tenias la pantalla abierta, "
+                 "guardar combina en vez de pisar. SI EL ARCHIVO DE CONTENIDO SE "
+                 "DANA, el panel avisa y no guarda encima (antes podia borrar todos "
+                 "los modulos sin decir nada). CARTELERA: adjuntar un PDF anda, y un "
+                 "segundo clic en Publicar ya no duplica. TUTORIALES: no deja poner "
+                 "un capitulo despues del final del video. DATOS: conectar la misma "
+                 "planilla dos veces ya no crea tarjetas repetidas. Los archivos que "
+                 "se suben se guardan con su nombre original, no con numeros. Se "
+                 "puede usar con teclado y tiene mejor contraste. La tarjeta de la "
+                 "computadora dice si es la central o una sucursal.")
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -553,7 +563,7 @@ def _bajar_ffmpeg(jid):
         _FFMPEG_CACHE = exe
         _job_set(jid, estado="listo", pct=100, msg="Compresor listo.")
     except Exception as e:      # noqa - cualquier fallo tiene que llegar al usuario
-        _job_set(jid, estado="error", error="No se pudo preparar el compresor: %s" % e)
+        _job_set(jid, estado="error", error="No se pudo preparar el compresor: %s" % _legible(e))
     finally:
         if tmp:
             try:
@@ -749,9 +759,9 @@ def historial_publicaciones(limite=20):
     except urllib.error.HTTPError as e:
         if e.code == 403:
             return {"ok": False, "error": "GitHub esta limitando las consultas. Proba de nuevo en un rato."}
-        return {"ok": False, "error": "GitHub respondio %d" % e.code}
+        return {"ok": False, "error": _legible(e)}
     except Exception as e:  # noqa
-        return {"ok": False, "error": "No pude consultar el historial: %s" % e}
+        return {"ok": False, "error": "No pude consultar el historial: %s" % _legible(e)}
 
     # cual es la version que hay AHORA en disco (para no ofrecer volver a ella)
     try:
@@ -786,7 +796,7 @@ def restaurar_version(sha):
         with urllib.request.urlopen(req, timeout=30) as resp:
             crudo = resp.read().decode("utf-8")
     except Exception as e:  # noqa
-        return {"ok": False, "error": "No pude bajar esa version: %s" % e}
+        return {"ok": False, "error": "No pude bajar esa version: %s" % _legible(e)}
 
     # que sea de verdad un modulos.js antes de pisar nada.
     # ⚠️ Antes se leia con rindex("]"): desde que TUTORIALES va al final del
@@ -806,7 +816,7 @@ def restaurar_version(sha):
         with open(destino, "w", encoding="utf-8", newline="\n") as f:
             f.write(crudo)
     except OSError as e:
-        return {"ok": False, "error": "No pude escribir el archivo: %s" % e}
+        return {"ok": False, "error": "No pude escribir el archivo: %s" % _legible(e)}
     return {"ok": True, "modulos": len(mods), "sha": sha[:8]}
 
 
@@ -970,7 +980,7 @@ def _comprimir(jid, origen, destino, objetivo=OBJETIVO_VIDEO):
             raise ValueError("no se genero el archivo")
         return True, ""
     except Exception as e:      # noqa
-        return False, str(e)
+        return False, _legible(e)
     finally:
         if p is not None:
             try:
@@ -1233,7 +1243,7 @@ def regenerar_galerias():
         return 0, "galerias.js regenerado: %d imagen(es) en %d seccion(es)." % (
             sum(len(v) for v in data.values()), len(data)), ""
     except Exception as e:  # noqa
-        return 1, "", "No se pudo regenerar galerias.js: %s" % e
+        return 1, "", "No se pudo regenerar galerias.js: %s" % _legible(e)
 
 
 # =====================================================================
@@ -1257,6 +1267,75 @@ BASE_PUBLICADA = os.path.join(STATE_DIR, "base_publicada") if STATE_DIR else ""
 # escribia modulos.js. RLock: publicar se llama a si mismo al reintentar con
 # la clave del equipo.
 _LOCK_CONTENIDO = threading.RLock()
+
+
+# =====================================================================
+#  ERRORES EN CASTELLANO (23-sep-2026, auditoria)
+# =====================================================================
+#  Quien usa el panel no sabe programar: "<urlopen error [Errno 11001]
+#  getaddrinfo failed>" no le dice nada. Todo error que llega a la pantalla
+#  pasa por aca y sale como una frase que dice QUE paso y QUE hacer. El texto
+#  tecnico original queda en la consola del programa, para quien lo mantenga.
+_HTTP_LEGIBLE = {
+    400: "el servidor no entendió el pedido",
+    401: "la clave de publicación no es válida",
+    403: "no hay permiso para hacer eso",
+    404: "no se encontró lo que se buscaba en internet",
+    409: "otra computadora cambió lo mismo al mismo tiempo; probá de nuevo",
+    413: "el archivo es demasiado grande para subirlo",
+    429: "se hicieron demasiados pedidos seguidos; esperá un minuto y probá de nuevo",
+    500: "el servidor de publicación tuvo un problema; probá de nuevo en un rato",
+    502: "el servidor de publicación no responde; probá de nuevo en un rato",
+    503: "el servidor de publicación no está disponible; probá de nuevo en un rato",
+    504: "el servidor de publicación tardó demasiado; probá de nuevo en un rato",
+}
+
+
+def _legible(e):
+    """Una excepcion -> una frase en castellano para mostrar en pantalla."""
+    try:
+        print("  (detalle tecnico) %s: %s" % (type(e).__name__, e))
+    except Exception:  # noqa
+        pass
+    if isinstance(e, urllib.error.HTTPError):
+        return _HTTP_LEGIBLE.get(e.code, "el servidor respondió con un error (código %d)" % e.code)
+    txt = str(e)
+    bajo = txt.lower()
+    red = ("getaddrinfo", "11001", "11004", "name or service not known",
+           "nodename nor servname", "no address associated", "network is unreachable",
+           "10051", "10065", "no route to host")
+    if any(x in bajo for x in red):
+        return "no hay conexión a internet en esta computadora"
+    if isinstance(e, (TimeoutError, socket.timeout)) or "timed out" in bajo or "10060" in bajo:
+        return "internet está muy lento o se cortó: tardó demasiado en responder"
+    if "connection refused" in bajo or "10061" in bajo:
+        return "el servicio al que se queria llegar no está atendiendo"
+    if "connection reset" in bajo or "10054" in bajo or "connection aborted" in bajo or "10053" in bajo:
+        return "se cortó la conexión a mitad de camino; probá de nuevo"
+    if "certificate" in bajo or "ssl" in bajo:
+        return ("no se pudo verificar la conexión segura; revisá que la fecha y hora "
+                "de la computadora estén bien")
+    if isinstance(e, PermissionError) or "permission denied" in bajo or "errno 13" in bajo:
+        return ("Windows no dejó usar el archivo: puede estar abierto en otro programa. "
+                "Cerralo y probá de nuevo")
+    if "no space left" in bajo or "errno 28" in bajo or "espacio en disco" in bajo:
+        return "el disco de esta computadora está lleno"
+    if isinstance(e, FileNotFoundError) or "no such file" in bajo or "errno 2]" in bajo:
+        return "falta un archivo que se necesitaba (puede haberse movido o borrado)"
+    if isinstance(e, json.JSONDecodeError) or "expecting value" in bajo:
+        return "llegó una respuesta que no se pudo leer"
+    if "no module named" in bajo:
+        return "falta una parte del programa; actualizá o reinstalá el Panel MyS"
+    if "ffmpeg" in bajo:
+        return "no se pudo comprimir el video; probá con otro archivo o uno más corto"
+    if "cannot identify image" in bajo:
+        return "el archivo no es una imagen que se pueda abrir (usá JPG o PNG)"
+    if isinstance(e, MemoryError):
+        return "el archivo es demasiado grande para esta computadora"
+    # un mensaje que ya escribimos en castellano pasa tal cual
+    if txt and not re.search(r"\[Errno|Error\b|errno|Traceback|<[a-z]+ ", txt) and re.search(r"[a-z]", bajo):
+        return txt
+    return "algo falló inesperadamente; probá de nuevo y, si se repite, reiniciá el panel"
 
 
 def _repo_urls():
@@ -1619,7 +1698,7 @@ def sincronizar_con_publicado():
     try:
         local_txt = open(MODULOS_JS, encoding="utf-8").read()
     except OSError as e:
-        info["aviso"] = "No pude leer los modulos de esta computadora: %s" % e
+        info["aviso"] = "No pude leer los modulos de esta computadora: %s" % _legible(e)
         return info
     local = fusion.partes(local_txt)
     if local is None:
@@ -1631,7 +1710,7 @@ def sincronizar_con_publicado():
         remoto_gal = _publicado_texto(sha, "galerias.js", obligatorio=False)
     except Exception as e:  # noqa
         info["aviso"] = ("No pude ver lo que esta publicado (%s). Se publica sin "
-                         "combinar con los cambios de otras computadoras." % e)
+                         "combinar con los cambios de otras computadoras." % _legible(e))
         return info
     if fusion.partes(remoto_txt) is None:
         info["aviso"] = "Lo publicado no se pudo leer; se publica sin combinar."
@@ -1657,6 +1736,27 @@ def guardar_publish_token(token):
     token = _sanear_clave(token)
     global PUBLISH_TOKEN
     token = (token or "").strip()
+    # ⚠️ 23-sep-2026 (auditoria de errores): un panel de PRUEBA que recibia un
+    # 401 guardaba la clave REAL del equipo en el panel_config.json de su copia.
+    # Si despues se lo arrancaba de nuevo desde ahi, era una "central" con la
+    # clave de verdad. En modo prueba la clave vive solo en memoria.
+    if os.environ.get("MYS_PANEL_STATE") and not os.path.isfile(
+            os.path.join(EXE_DIR, "panel_config.json")):
+        # NO se crea un panel_config.json que no existia (eso volvia "central" a
+        # la copia, con la clave real). Solo la identidad de la carpeta de prueba, tocando UNICAMENTE la clave:
+        # _guardar_identidad reescribe con pocos campos y se llevaria el
+        # cerebro_url falso (la copia volveria a apuntar al sitio real)
+        PUBLISH_TOKEN = token
+        if IDENTITY_FILE and os.path.isfile(IDENTITY_FILE):
+            ident, _ok = _leer_json_file(IDENTITY_FILE)
+            if isinstance(ident, dict):
+                ident["publish_token"] = token
+                try:
+                    with open(IDENTITY_FILE, "w", encoding="utf-8") as f:
+                        json.dump(ident, f)
+                except OSError:
+                    pass
+        return {"ok": True}
     p = os.path.join(EXE_DIR, "panel_config.json")
     cfg = {}
     if os.path.isfile(p):
@@ -1669,7 +1769,7 @@ def guardar_publish_token(token):
         with open(p, "w", encoding="utf-8") as f:
             json.dump(cfg, f, ensure_ascii=False, indent=2)
     except OSError as e:  # noqa
-        return {"ok": False, "error": "no pude guardar la clave: %s" % e}
+        return {"ok": False, "error": "no pude guardar la clave: %s" % _legible(e)}
     PUBLISH_TOKEN = token
     _guardar_identidad(cfg)
     return {"ok": True}
@@ -1692,7 +1792,7 @@ def guardar_nombre_equipo(nombre):
         with open(p, "w", encoding="utf-8") as f:
             json.dump(cfg, f, ensure_ascii=False, indent=2)
     except OSError as e:  # noqa
-        return {"ok": False, "error": "no pude guardar el nombre: %s" % e}
+        return {"ok": False, "error": "no pude guardar el nombre: %s" % _legible(e)}
     NOMBRE_EQUIPO = nombre
     return {"ok": True, "nombre_equipo": nombre}
 
@@ -1792,7 +1892,7 @@ def ponerse_al_dia():
         try:
             info = sincronizar_con_publicado()
         except Exception as e:  # noqa
-            return {"ok": False, "error": str(e)}
+            return {"ok": False, "error": _legible(e)}
         if info.get("aviso"):
             return {"ok": False, "error": info["aviso"]}
         remoto = info.get("remoto") or {}
@@ -1837,7 +1937,7 @@ def _publicar_cerebro(mensaje="", _reintento=False):
         sinc = sincronizar_con_publicado()
     except Exception as e:  # noqa
         return {"ok": False, "log": "No pude combinar con lo publicado, asi que no "
-                                    "publique nada (para no pisar a nadie): %s" % e}
+                                    "publique nada (para no pisar a nadie): %s" % _legible(e)}
     if sinc["aviso"]:
         log.append(sinc["aviso"])
     if sinc["traidos"]:
@@ -1978,10 +2078,11 @@ def _publicar_cerebro(mensaje="", _reintento=False):
                        "(solo el valor, sin el nombre de adelante).")
                 return {"ok": False, "falta_token": True,
                         "log": chr(10).join(log + [msj])}
-            cual = "clave de publicacion invalida" if e.code == 401 else detalle
-            return {"ok": False, "log": "El cerebro rechazo la publicacion (HTTP %d). %s" % (e.code, cual)}
+            # "El cerebro rechazo la publicacion (HTTP 500)" no le decia nada a nadie
+            print("  (detalle tecnico) cerebro HTTP %d: %s" % (e.code, detalle))
+            return {"ok": False, "log": "No se pudo subir al sitio: %s. Los cambios quedan guardados en esta computadora." % _legible(e)}
         except Exception as e:  # noqa
-            return {"ok": False, "log": "No pude contactar el cerebro: %s" % e}
+            return {"ok": False, "log": "No pude contactar el cerebro: %s" % _legible(e)}
         if not r.get("ok"):
             return {"ok": False, "log": "El cerebro no pudo publicar: %s" % r.get("error", "")}
         commits.append((r.get("commit") or "")[:8])
@@ -2097,9 +2198,9 @@ def enviar_propuesta(mensaje):
         with urllib.request.urlopen(req, timeout=CENTRAL_TIMEOUT) as resp:
             out = json.loads(resp.read().decode("utf-8"))
     except urllib.error.URLError as e:
-        return {"ok": False, "error": "No me pude conectar con la central. Fijate que este prendida y en la misma red. (%s)" % e}
+        return {"ok": False, "error": "No me pude conectar con la central. Fijate que este prendida y en la misma red. (%s)" % _legible(e)}
     except Exception as e:  # noqa
-        return {"ok": False, "error": str(e)}
+        return {"ok": False, "error": _legible(e)}
     return {"ok": True, "id": out.get("id"), "bytes": len(data)}
 
 
@@ -2329,7 +2430,7 @@ def _traer_de_central(jid=None):
             _guardar_sello(_sello_publicado())   # quedamos al dia
             return {"ok": True, "fuente": "internet", "fusion": info}
         except Exception as e:  # noqa
-            fallas.append("internet: %s" % e)
+            fallas.append("internet: %s" % _legible(e))
     if not CENTRAL_URL:
         return {"ok": False, "error": "No pude bajar la ultima version por internet. (%s)" % "; ".join(fallas)}
     try:
@@ -2341,7 +2442,7 @@ def _traer_de_central(jid=None):
         _volcar_zip_en_intranet(data)
         return {"ok": True, "fuente": "central"}
     except Exception as e:  # noqa
-        fallas.append("central: %s" % e)
+        fallas.append("central: %s" % _legible(e))
         return {"ok": False, "error": "No pude bajar la ultima version ni por internet ni de la central. (%s)" % "; ".join(fallas)}
 
 
@@ -2438,13 +2539,13 @@ def chequear_update(timeout=8):
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 data = json.loads(r.read().decode("utf-8"))
         except Exception as e:  # noqa
-            fallas.append("internet: %s" % e)
+            fallas.append("internet: %s" % _legible(e))
     if data is None and CENTRAL_URL and not ES_CENTRAL:
         try:
             with urllib.request.urlopen(CENTRAL_URL + "/update/version", timeout=timeout) as r:
                 data = json.loads(r.read().decode("utf-8"))
         except Exception as e:  # noqa
-            fallas.append("central: %s" % e)
+            fallas.append("central: %s" % _legible(e))
     if data is None:
         return {"disponible": False, "error": "no pude consultar la version (%s)" % "; ".join(fallas), "local": VERSION}
     remota = int(data.get("version") or 0)
@@ -2636,7 +2737,7 @@ def aplicar_update(dry=False, jid=None):
         liberar = False   # el proceso se va a morir; no re-habilitamos el flag
         return {"ok": True, "aplicando": True, "version": version_esp}
     except Exception as e:  # noqa
-        return {"ok": False, "error": str(e)}
+        return {"ok": False, "error": _legible(e)}
     finally:
         if liberar:
             _UPDATE_EN_CURSO = False
@@ -2649,7 +2750,7 @@ def ping_central():
         with urllib.request.urlopen(CENTRAL_URL + "/ping", timeout=8) as resp:
             return {"ok": True, "central": json.loads(resp.read().decode("utf-8"))}
     except Exception as e:  # noqa
-        return {"ok": False, "error": str(e)}
+        return {"ok": False, "error": _legible(e)}
 
 
 # ---------- lado CENTRAL: bandeja de aprobaciones ----------
@@ -2971,6 +3072,31 @@ def guardar_modulos_de_pantalla(lista, ajustes, version):
     return inf
 
 
+MSJ_MODULOS_DANADOS = ("El archivo con el contenido de esta computadora está dañado y no se puede "
+                       "leer. Para no borrar nada, no se guardó ningún cambio. Si esta computadora "
+                       "es una sucursal: Configuración > Traer la última versión. Si es la central: "
+                       "Configuración > Historial, y volvé a la última versión publicada.")
+
+
+def modulos_danados():
+    """True si modulos.js EXISTE, tiene contenido y no se puede leer.
+
+    ⚠️ 23-sep-2026 (auditoria de errores): con el archivo roto, leer_modulos()
+    devuelve [] y la pantalla mostraba Modulos VACIO con "Todo publicado". Si
+    alguien guardaba algo en ese estado, se escribia un modulos.js con un solo
+    modulo: se borraban los otros 11 sin un solo aviso, y el publicar siguiente
+    se los llevaba del sitio a las 5 sucursales."""
+    if not MODULOS_JS or not os.path.isfile(MODULOS_JS):
+        return False
+    try:
+        if os.path.getsize(MODULOS_JS) < 64:
+            return False
+        txt = open(MODULOS_JS, encoding="utf-8").read()
+    except (OSError, UnicodeDecodeError):
+        return True
+    return fusion.partes(txt) is None
+
+
 def escribir_modulos(lista, ajustes=None, tutoriales=None):
     """⚠️ Ver `_lista_de`: si la lectura de los modulos falla, lo que llega aca
     es [] y este guardado deja la intranet vacia. El freno esta en el llamador
@@ -2980,6 +3106,8 @@ def escribir_modulos(lista, ajustes=None, tutoriales=None):
     archivo a proposito: asi se publican en el mismo commit que los modulos y
     no puede pasar que el sitio tenga los modulos nuevos con los ajustes o los
     tutoriales viejos."""
+    if modulos_danados():
+        raise ValueError(MSJ_MODULOS_DANADOS)
     cuerpo = json.dumps(lista, ensure_ascii=False, indent=2)
     aj = validar_ajustes(ajustes if ajustes is not None else leer_ajustes())
     tut = validar_tutoriales(tutoriales if tutoriales is not None
@@ -3263,7 +3391,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _datos_get(self, path, q):
         if datos_api is None:
-            return self._json({"error": "la seccion Datos no cargo: %s" % _datos_error}, 500)
+            return self._json({"error": "la sección Datos no cargó: %s" % _datos_error}, 500)
         cfg = datos_api.cargar(STATE_DIR)
 
         if path == "/api/datos/estado":
@@ -3290,7 +3418,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from datos import google_sheets as gs
             except Exception as e:         # noqa
-                return self._json({"disponible": False, "error": str(e)})
+                return self._json({"disponible": False, "error": _legible(e)})
             d = gs.estado()
             d["disponible"] = True
             d["client_id"] = bool((cfg.get("google") or {}).get("client_id"))
@@ -3302,7 +3430,7 @@ class Handler(BaseHTTPRequestHandler):
                 from datos import google_cuenta as gcu
                 d["cuenta"] = gcu.estado()
             except Exception as e:         # noqa
-                d["cuenta"] = {"conectado": False, "error": str(e)}
+                d["cuenta"] = {"conectado": False, "error": _legible(e)}
             # cual se usa para leer, si estan las dos (datos_api prefiere la
             # cuenta: no se vence y ve menos archivos)
             d["usando"] = "cuenta" if d["cuenta"].get("conectado") else (
@@ -3320,7 +3448,7 @@ class Handler(BaseHTTPRequestHandler):
                 from datos import google_link as gl
                 pes = gl.pestanas(link)
             except Exception as e:         # noqa
-                return self._json({"error": str(e)}, 400)
+                return self._json({"error": _legible(e)}, 400)
             if not pes:
                 return self._json({"ok": True, "hojas": [], "sin_lista": True})
             salida = []
@@ -3346,11 +3474,11 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from datos import google_cuenta as gcu
             except Exception as e:         # noqa
-                return self._json({"error": str(e)}, 500)
+                return self._json({"error": _legible(e)}, 500)
             try:
                 arch = gcu.archivos((q.get("buscar") or [""])[0])
             except Exception as e:         # noqa: ya viene en castellano
-                return self._json({"error": str(e)}, 400)
+                return self._json({"error": _legible(e)}, 400)
             return self._json({"ok": True, "archivos": arch})
 
         if path == "/api/datos/analizar":
@@ -3476,12 +3604,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def _datos_post(self, path):
         if datos_api is None:
-            return self._json({"error": "la seccion Datos no cargo: %s" % _datos_error}, 500)
+            return self._json({"error": "la sección Datos no cargó: %s" % _datos_error}, 500)
         try:
             largo = int(self.headers.get("Content-Length") or 0)
             cuerpo = json.loads(self.rfile.read(largo).decode("utf-8")) if largo else {}
         except Exception as e:              # noqa
-            return self._json({"error": "no entendi el pedido: %s" % e}, 400)
+            return self._json({"error": "no entendi el pedido: %s" % _legible(e)}, 400)
         cfg = datos_api.cargar(STATE_DIR)
 
         if path == "/api/datos/fuente":
@@ -3503,6 +3631,16 @@ class Handler(BaseHTTPRequestHandler):
                 # y arrastrarlos publicaria algo que nadie miro.
                 rep["publicados"] = []
             else:
+                # 23-sep-2026 (auditoria): conectar dos veces la misma planilla con
+                # el mismo nombre creaba tarjetas identicas. Una planilla SI puede
+                # dar varios reportes (con nombres distintos); la copia exacta no.
+                tit = titulo or os.path.splitext(fuente["archivo"])[0]
+                igual = next((r for r in (cfg.get("reportes") or [])
+                              if (r.get("fuente") or {}).get("ruta") == ruta
+                              and (r.get("titulo") or "").strip().lower() == tit.lower()), None)
+                if igual:
+                    return self._json({"ok": True, "id": igual["id"], "titulo": igual["titulo"],
+                                       "archivo": fuente["archivo"], "ya_estaba": True})
                 if len(cfg.get("reportes") or []) >= 30:
                     return self._json({"error": "ya hay 30 reportes, es demasiado"}, 400)
                 rep = {"id": datos_api.nuevo_id(),
@@ -3517,7 +3655,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from datos import google_sheets as gs
             except Exception as e:         # noqa
-                return self._json({"error": "no cargo el modulo: %s" % e}, 500)
+                return self._json({"error": "no cargo el modulo: %s" % _legible(e)}, 500)
             cid = str(cuerpo.get("client_id") or "").strip()
             sec = str(cuerpo.get("client_secret") or "").strip()
             if not cid:
@@ -3542,7 +3680,7 @@ class Handler(BaseHTTPRequestHandler):
                     gs.conectar(cid, sec)
                     _GOOGLE_BAILE.update({"estado": "listo", "error": ""})
                 except Exception as e:     # noqa: se lo cuenta a la pantalla
-                    _GOOGLE_BAILE.update({"estado": "error", "error": str(e)})
+                    _GOOGLE_BAILE.update({"estado": "error", "error": _legible(e)})
 
             threading.Thread(target=_bailar, daemon=True).start()
             return self._json({"ok": True, "esperando": True})
@@ -3554,18 +3692,18 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from datos import google_cuenta as gcu
             except Exception as e:         # noqa
-                return self._json({"error": "no cargo el modulo: %s" % e}, 500)
+                return self._json({"error": "no cargo el modulo: %s" % _legible(e)}, 500)
             try:
                 r = gcu.guardar(str(cuerpo.get("json") or ""))
             except Exception as e:         # noqa: viene en castellano
-                return self._json({"error": str(e)}, 400)
+                return self._json({"error": _legible(e)}, 400)
             return self._json({"ok": True, "mail": r["mail"]})
 
         if path == "/api/datos/google-cuenta-borrar":
             try:
                 from datos import google_cuenta as gcu
             except Exception as e:         # noqa
-                return self._json({"error": str(e)}, 500)
+                return self._json({"error": _legible(e)}, 500)
             gcu.desconectar()
             return self._json({"ok": True})
 
@@ -3573,7 +3711,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from datos import google_sheets as gs
             except Exception as e:         # noqa
-                return self._json({"error": str(e)}, 500)
+                return self._json({"error": _legible(e)}, 500)
             gs.desconectar()
             _GOOGLE_BAILE.clear()
             return self._json({"ok": True})
@@ -3601,7 +3739,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json(
                         {"error": "Ese link no parece de Drive. Pegá el link "
                                   "entero de una planilla o un documento de "
-                                  "Google. (%s)" % e}, 400)
+                                  "Google. (%s)" % _legible(e)}, 400)
             titulo = str(cuerpo.get("titulo") or "").strip()
             rango = str(cuerpo.get("rango") or "").strip()
             rid = str(cuerpo.get("id") or "").strip()
@@ -3947,6 +4085,7 @@ class Handler(BaseHTTPRequestHandler):
                 ver = version_entregada()
                 return self._json({"modulos": leer_modulos(),
                                    "ajustes": leer_ajustes(), "version": ver,
+                                   "danado": MSJ_MODULOS_DANADOS if modulos_danados() else "",
                                    "novedad_opciones": NOVEDAD_HORAS_VALIDAS})
         if path == "/api/contenido":
             q = parse_qs(u.query)
@@ -4034,8 +4173,7 @@ class Handler(BaseHTTPRequestHandler):
                 # comprueba que lo leido tenga sentido.
                 mods = leer_modulos()
                 if not mods and os.path.isfile(MODULOS_JS) and                         os.path.getsize(MODULOS_JS) > 400:
-                    return self._json(
-                        {"error": "no pude leer los modulos; no toco nada"}, 500)
+                    return self._json({"error": MSJ_MODULOS_DANADOS}, 409)
                 _barrer_tutoriales(usados)
                 escribir_modulos(mods, None, limpios)
                 return self._json({"ok": True, "tutoriales": limpios})
@@ -4064,7 +4202,7 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         inf = guardar_modulos_de_pantalla(lista, aj, d.get("version"))
                     except ValueError as e:
-                        return self._json({"error": str(e)}, 409)
+                        return self._json({"error": _legible(e)}, 409)
                     ver = version_entregada()
                     return self._json({"ok": True, "modulos": leer_modulos(),
                                        "ajustes": leer_ajustes(), "version": ver,
@@ -4110,7 +4248,7 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         r = traer_de_central(j)
                     except Exception as e:  # noqa
-                        r = {"ok": False, "error": str(e)}
+                        r = {"ok": False, "error": _legible(e)}
                     if r.get("ok"):
                         _job_set(j, estado="listo", pct=100,
                                  msg="¡Listo! Ya tenés la última versión.",
@@ -4132,7 +4270,7 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         r = aplicar_update(jid=jid)
                     except Exception as e:  # noqa
-                        _job_set(jid, estado="error", error=str(e))
+                        _job_set(jid, estado="error", error=_legible(e))
                         return
                     if r.get("aplicando"):
                         _job_set(jid, pct=100, estado="listo",
@@ -4158,7 +4296,7 @@ class Handler(BaseHTTPRequestHandler):
                 d = self._leer_json()
                 return self._json(rechazar_propuesta(d.get("id", "")))
         except Exception as e:  # noqa
-            return self._json({"error": str(e)}, 500)
+            return self._json({"error": _legible(e)}, 500)
         self.send_error(404)
 
     def _leer_body(self):
@@ -4207,7 +4345,7 @@ class Handler(BaseHTTPRequestHandler):
                 base = sanear(os.path.splitext(os.path.basename(filename))[0])
                 guardados.append(guardar_foto(img, carpeta, base))
             except Exception as e:  # noqa
-                errores.append("%s: %s" % (filename, e))
+                errores.append("%s: %s" % (filename, _legible(e)))
 
         return self._json({"ok": not errores, "guardados": guardados,
                            "errores": errores, "images": listar(seccion)})
@@ -4267,7 +4405,7 @@ class Handler(BaseHTTPRequestHandler):
                          quality=90, subsampling=0, optimize=True, progressive=True)
                 ext = "jpg"
         except Exception as e:  # noqa
-            return self._json({"error": "no se pudo procesar la imagen: %s" % e}, 400)
+            return self._json({"error": "no se pudo procesar la imagen: %s" % _legible(e)}, 400)
         return self._json({"ok": True, "src": "assets/_modulos/%s.%s" % (key, ext)})
 
     def _upload_pdf(self):
@@ -4303,7 +4441,7 @@ class Handler(BaseHTTPRequestHandler):
             with open(os.path.join(MOD_ASSETS, key + ".pdf"), "wb") as f:
                 f.write(data)
         except Exception as e:  # noqa
-            return self._json({"error": "no se pudo guardar el PDF: %s" % e}, 400)
+            return self._json({"error": "no se pudo guardar el PDF: %s" % _legible(e)}, 400)
         return self._json({"ok": True, "src": "assets/_modulos/%s.pdf" % key})
 
     # ---- video -------------------------------------------------------
@@ -4367,7 +4505,7 @@ class Handler(BaseHTTPRequestHandler):
                 finally:
                     mm.close()
         except (OSError, ValueError) as e:
-            return None, "", "no se pudo recibir el archivo: %s" % e
+            return None, "", "no se pudo recibir el archivo: %s" % _legible(e)
         finally:
             try:
                 os.remove(crudo)
@@ -4424,7 +4562,7 @@ class Handler(BaseHTTPRequestHandler):
                 os.replace(tmp, final)
             except OSError as e:
                 self._borrar_tmp(tmp)
-                return self._json({"error": "no se pudo guardar el video: %s" % e}, 400)
+                return self._json({"error": "no se pudo guardar el video: %s" % _legible(e)}, 400)
             return self._json({"ok": True, "src": src, "peso": peso})
 
         # hay que convertir
@@ -4455,7 +4593,7 @@ class Handler(BaseHTTPRequestHandler):
                 _job_set(jid, estado="listo", pct=100, src=src,
                          info="%.1f MB -> %.1f MB" % (peso / 1048576.0, nuevo / 1048576.0))
             except OSError as e:
-                _job_set(jid, estado="error", error="No se pudo guardar el video: %s" % e)
+                _job_set(jid, estado="error", error="No se pudo guardar el video: %s" % _legible(e))
             finally:
                 self._borrar_tmp(tmp)
                 self._borrar_tmp(salida)

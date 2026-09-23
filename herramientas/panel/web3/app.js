@@ -3,14 +3,35 @@
 const $ = s => document.querySelector(s);
 
 // ---------- helpers ----------
+/* ⚠️ 23-sep-2026 (auditoría): los errores llegaban a la pantalla en inglés o
+   como "Error 500" / "Failed to fetch". Quien usa el panel no sabe programar:
+   cada error dice en castellano qué pasó y qué hacer. */
+const ERRORES_HTTP = {
+  400: 'El panel no entendió el pedido. Probá de nuevo.',
+  404: 'No se encontró lo que se buscaba. Recargá la página (F5).',
+  409: 'Otra computadora cambió lo mismo al mismo tiempo. Probá de nuevo.',
+  413: 'El archivo es demasiado grande.',
+  500: 'El panel tuvo un problema al hacer eso. Probá de nuevo y, si se repite, cerrá y abrí el Panel MyS.',
+};
+function mensajeError(m, status) {
+  const t = String(m || '');
+  if (!t || /^Error \d+$/.test(t)) return ERRORES_HTTP[status] || ('El panel respondió con un error (' + status + '). Probá de nuevo.');
+  /* el servidor ya lo manda en castellano y en minúscula: se le pone la mayúscula */
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
 async function api(url, opts) {
-  const r = await fetch(url, opts);
-  if (!r.ok) {
-    let m = 'Error ' + r.status;
-    try { m = (await r.json()).error || m; } catch (e) {}
-    throw new Error(m);
+  let r;
+  try { r = await fetch(url, opts); }
+  catch (e) {
+    throw new Error('El panel no responde. Puede que se haya cerrado el programa: abrí de nuevo el Panel MyS y recargá esta página.');
   }
-  return r.json();
+  if (!r.ok) {
+    let m = '';
+    try { m = (await r.json()).error || ''; } catch (e) {}
+    throw new Error(mensajeError(m, r.status));
+  }
+  try { return await r.json(); }
+  catch (e) { throw new Error('El panel mandó una respuesta que no se pudo leer. Recargá la página (F5).'); }
 }
 function toast(msg, tipo) {
   const t = $('#toast');
@@ -18,7 +39,8 @@ function toast(msg, tipo) {
   t.className = 'toast ' + (tipo || '');   // de paso pisa un .yendose a medio salir
   t.hidden = false;
   clearTimeout(toast._t); clearTimeout(toast._tf);
-  toast._t = setTimeout(() => ocultarToast(t), 3200);
+  /* un error se lee con más calma que un "Guardado": queda más tiempo */
+  toast._t = setTimeout(() => ocultarToast(t), tipo === 'err' ? 8000 : 3200);
 }
 /* F4: el toast se despide con el fade de .yendose y recien despues hidden
    (mismo patron que el picker del muro). El boton de accion ("Deshacer") NO
@@ -67,6 +89,63 @@ function esconderModal(m) {
   m.classList.remove('on');
   if (!document.querySelector('.fondo.on')) document.body.classList.remove('trabado');
 }
+
+/* ===================================================================
+   EL FOCO DENTRO DE LOS CUADROS (auditoría de accesibilidad, 23-sep-2026)
+   Quien usa solo el teclado: al abrirse un cuadro (.fondo.on) el foco entra,
+   el Tab no se escapa a lo que queda tapado detrás, y al cerrarse el foco
+   vuelve al botón que lo abrió (antes caía en <body> y había que empezar de
+   cero). Vale para TODOS los cuadros, también el compositor de muro.js, sin
+   tocar cada uno: se mira la clase .on de cada .fondo.
+   =================================================================== */
+(function () {
+  const PILA = [];            // [{fondo, origen}] el último es el de arriba
+  const ENFOCABLE = 'button:not([disabled]):not([hidden]), [href], input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), [contenteditable="true"]';
+  const visibles = f => [...f.querySelectorAll(ENFOCABLE)].filter(el => el.offsetParent !== null && !el.closest('[hidden]'));
+  function alAbrir(f) {
+    if (PILA.some(p => p.fondo === f)) return;
+    const origen = document.activeElement && !f.contains(document.activeElement) ? document.activeElement : null;
+    PILA.push({ fondo: f, origen });
+    /* se espera un cuadro: cada cuadro elige su propio foco (p. ej. el título
+       del compositor); solo si nadie lo movió adentro, va al primer control */
+    setTimeout(() => {
+      if (!f.classList.contains('on') || f.contains(document.activeElement)) return;
+      const els = visibles(f);
+      (els[0] || f.querySelector('.modal') || f).focus && (els[0] || f).focus();
+    }, 120);
+  }
+  function alCerrar(f) {
+    const i = PILA.findIndex(p => p.fondo === f);
+    if (i < 0) return;
+    const { origen } = PILA.splice(i, 1)[0];
+    if (origen && document.contains(origen) && origen.offsetParent !== null &&
+        (!document.activeElement || document.activeElement === document.body || f.contains(document.activeElement))) {
+      try { origen.focus(); } catch (e) {}
+    }
+  }
+  const obs = new MutationObserver(ms => ms.forEach(m => {
+    const f = m.target;
+    if (f.classList.contains('on')) alAbrir(f); else alCerrar(f);
+  }));
+  document.querySelectorAll('.fondo').forEach(f => obs.observe(f, { attributes: true, attributeFilter: ['class'] }));
+  document.addEventListener('keydown', e => {
+    const arriba = PILA.length && PILA[PILA.length - 1].fondo;
+    if (!arriba || !arriba.classList.contains('on')) return;
+    if (e.key === 'Tab') {
+      const els = visibles(arriba);
+      if (!els.length) { e.preventDefault(); return; }
+      const pri = els[0], ult = els[els.length - 1];
+      if (!arriba.contains(document.activeElement)) { e.preventDefault(); pri.focus(); }
+      else if (e.shiftKey && document.activeElement === pri) { e.preventDefault(); ult.focus(); }
+      else if (!e.shiftKey && document.activeElement === ult) { e.preventDefault(); pri.focus(); }
+    } else if (e.key === 'Escape' && arriba.id === 'confirmModal') {
+      /* el cartel de confirmar ("¿Eliminar?") no se cerraba con Escape: se
+         cancela igual que tocando afuera, y no le llega a los de atrás */
+      const ov = arriba.querySelector('.modal-ov');
+      if (ov && typeof ov.onclick === 'function') { e.preventDefault(); e.stopImmediatePropagation(); ov.onclick(); }
+    }
+  }, true);
+})();
 
 /* ===================================================================
    UN BOTON QUE ESTA TRABAJANDO
@@ -383,7 +462,12 @@ async function avisarFusion(fu, nada) {
 // pide y guarda la clave de publicacion (una sola vez por computadora)
 async function pedirToken() {
   const t = prompt('Pegá tu CLAVE DE PUBLICACIÓN (te la pasa el administrador).\nSe guarda una sola vez en esta computadora.');
-  if (!t || !t.trim()) return false;
+  if (!t || !t.trim()) {
+    /* cancelar dejaba todo en silencio: no se sabía que no se había publicado
+       (auditoría de errores 23-sep) */
+    toast('No se publicó: hace falta la clave de publicación. Tus cambios siguen guardados en esta computadora.', 'err');
+    return false;
+  }
   try {
     const r = await api('/api/set-publish-token', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: t.trim() }) });
     if (r.ok) { toast('Clave guardada ✓', 'ok'); return true; }
@@ -435,6 +519,10 @@ function aplicarRol(cfg) {
   pintarNombreEquipo(cfg && cfg.nombre_equipo);
   const sb2 = $('#sucBtn');
   if (sb2) sb2.title = central ? 'Esta computadora publica al sitio.' : 'Publicás directo al sitio online.';
+  /* 23-sep-2026 (auditoría): no se veía en ningún lado si esta computadora es
+     la central o una sucursal; con un nombre propio ("Hudson") se perdía. */
+  const sub = $('#sucSub');
+  if (sub) sub.textContent = central ? 'Computadora central' : 'Sucursal';
   // botón de publicar dentro del editor. Va por rotularBoton y no por
   // textContent: el botón lleva un <svg> al lado del texto y un textContent
   // pelado se lo comía (quedaba "Publicar" sin el ícono del avión).
@@ -605,6 +693,9 @@ async function cargarModulos() {
     const d = await api('/api/modulos');
     if (d.version) VERSION_MODULOS = d.version;
     if (d.ajustes) AJUSTES = d.ajustes;
+    /* archivo de contenido dañado: se dice claro, en vez de una lista vacía
+       con "Todo publicado" (auditoría de errores 23-sep) */
+    if (d.danado) { toast(d.danado, 'err'); clearTimeout(toast._t); }
     if (Array.isArray(d.novedad_opciones) && d.novedad_opciones.length) {
       NOVEDAD_OPCIONES = d.novedad_opciones;
     }
@@ -858,6 +949,7 @@ async function persistModulos(msg, deQuien) {
    PANTALLA DE DETALLE DE MÓDULO (apariencia + contenido + editor visual)
    =================================================================== */
 const nuevoModulo = () => {
+  if (exigirActualizacion()) return;
   det = { title: '', desc: '', icon: 'layers', color: '--c-hudson', ready: true, builtin: false };
   detNew = true; detIdx = null;
   renderDetalle();
@@ -867,6 +959,7 @@ $('#btnAddModulo').onclick = nuevoModulo;
 if ($('#btnAddModulo2')) $('#btnAddModulo2').onclick = nuevoModulo;
 
 function openDetalle(idx) {
+  if (exigirActualizacion()) return;
   det = JSON.parse(JSON.stringify(MODULOS[idx]));   // copia de trabajo
   detIdx = idx; detNew = false;
   renderDetalle();
@@ -914,6 +1007,7 @@ async function renderDetalle() {
   const bus = $('#gbBuscar'); if (bus) bus.value = '';
   gbPane('agregar');
   $('#apSec').classList.toggle('open', detNew);
+  syncApAria();
   mostrarDetalle(true);
   setVista('desktop');
   editorSnapshot = estadoEditor();   // base para detectar cambios sin guardar
@@ -1035,6 +1129,23 @@ function modoActual() {
   return PRESENTACION ? 'presentacion' : 'pagina';
 }
 function nuevoId() { return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+/* ⚠️ 23-sep-2026 (auditoría): los archivos se guardaban como
+   "cartelera_vid_1790008239491.mp4": la hora en milisegundos. Ese nombre es el
+   que ve el vendedor si baja un video desde el menú del reproductor. Ahora el
+   archivo se llama como el original ("Silla Mónaco.mp4" -> silla_monaco_x7k2),
+   o como el título si el original es genérico (IMG_1234, WhatsApp Video…).
+   Las 4 letras del final evitan que dos archivos se pisen: subir con la misma
+   clave REEMPLAZA el archivo anterior. */
+function claveArchivo(file, respaldo) {
+  /* sin tiras de 6+ dígitos: un archivo que ya venía con nombre de máquina
+     ("placa_1784571732495") no arrastra el número */
+  let base = String((file && file.name) || '').replace(/\.[^.]+$/, '').replace(/[\s_-]*\d{6,}/g, '').trim();
+  const generico = /^(blob|poster|img|vid|dsc|pxl|mvimg|screenshot|captura|whatsapp|image|video|photo|foto|archivo|document|scan)[\s_-]*|^\d[\d\s_.-]*$/i;
+  if (!base || generico.test(base) || !/[a-záéíóúñ]{3}/i.test(base)) base = respaldo || 'archivo';
+  base = base.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+             .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40) || 'archivo';
+  return base + '_' + Math.random().toString(36).slice(2, 6);
+}
 
 // ---- interruptor Página / Presentación / Biblioteca (acordeón de Apariencia) ----
 function pintarModo() {
@@ -2811,7 +2922,7 @@ function galeriaInspector(bk) {
 }
 async function subirImgGaleria(bk, i, file) {
   const fd = new FormData();
-  fd.append('key', (det.key || $('#dTitle').value || 'modulo') + '-gal-' + Date.now());
+  fd.append('key', claveArchivo(file, ($('#dTitle').value || det.key || 'modulo')));
   fd.append('file', file);
   toast('Subiendo placa…');
   try { const r = await api('/api/upload-contenido', { method: 'POST', body: fd }); bk.items[i].src = r.src; if (!bk.items[i].nombre) bk.items[i].nombre = file.name.replace(/\.[^.]+$/, ''); renderCanvas(); renderInspector(); toast('Placa lista', 'ok'); }
@@ -2824,7 +2935,7 @@ async function subirImgsGaleria(bk, files) {
   for (let k = 0; k < files.length; k++) {
     const f = files[k];
     const fd = new FormData();
-    fd.append('key', (det.key || $('#dTitle').value || 'modulo') + '-gal-' + Date.now() + '-' + k);
+    fd.append('key', claveArchivo(f, ($('#dTitle').value || det.key || 'modulo')));
     fd.append('file', f);
     try { const r = await api('/api/upload-contenido', { method: 'POST', body: fd }); bk.items.push({ src: r.src, nombre: f.name.replace(/\.[^.]+$/, '') }); ok++; }
     catch (e) {}
@@ -2836,7 +2947,7 @@ async function subirImgsGaleria(bk, files) {
 }
 async function subirImagenBloque(bk, file) {
   const fd = new FormData();
-  fd.append('key', (det.key || $('#dTitle').value || 'modulo') + '-img-' + Date.now());
+  fd.append('key', claveArchivo(file, ($('#dTitle').value || det.key || 'modulo')));
   fd.append('file', file);
   toast('Subiendo imagen…');
   try { const r = await api('/api/upload-contenido', { method: 'POST', body: fd }); bk.src = r.src; renderCanvas(); renderInspector(); toast('Imagen lista', 'ok'); }
@@ -2875,7 +2986,7 @@ function pdfInspector(bk) {
 }
 async function subirPdfBloque(bk, file) {
   const fd = new FormData();
-  fd.append('key', (det.key || $('#dTitle').value || 'modulo') + '-pdf-' + Date.now());
+  fd.append('key', claveArchivo(file, ($('#dTitle').value || det.key || 'modulo')));
   fd.append('file', file);
   toast('Subiendo PDF…');
   try {
@@ -3033,7 +3144,7 @@ async function subirVideoBloque(bk, file, estado, btn) {
     poner('Subiendo el video…');
     btn.disabled = true;
     const fd = new FormData();
-    fd.append('key', (det.key || $('#dTitle').value || 'modulo') + '-video-' + Date.now());
+    fd.append('key', claveArchivo(file, ($('#dTitle').value || det.key || 'modulo')));
     fd.append('file', file);
     const r = await api('/api/upload-video', { method: 'POST', body: fd });
 
@@ -3516,7 +3627,7 @@ function botonesPlantilla(bk, lista, max, refrescar, soloCanvas) {
 
 async function subirImgPlantilla(obj, file) {
   const fd = new FormData();
-  fd.append('key', (det.key || $('#dTitle').value || 'modulo') + '-wa-' + Date.now());
+  fd.append('key', claveArchivo(file, ($('#dTitle').value || det.key || 'modulo')));
   fd.append('file', file);
   toast('Subiendo imagen…');
   try {
@@ -4161,7 +4272,9 @@ function htmlABloques(html) {
 }
 
 /* ---- acordeón de apariencia + menú "⋯ Más" de la barra ---- */
-$('#apToggle').onclick = () => $('#apSec').classList.toggle('open');
+/* aria-expanded: un lector de pantalla tiene que saber si está abierto (auditoría 23-sep) */
+function syncApAria() { const b = $('#apToggle'), sec = $('#apSec'); if (b && sec) b.setAttribute('aria-expanded', sec.classList.contains('open') ? 'true' : 'false'); }
+$('#apToggle').onclick = () => { $('#apSec').classList.toggle('open'); syncApAria(); };
 
 /* En un módulo NUEVO los tres ítems del menú están ocultos (no se puede ocultar,
    restaurar ni eliminar algo que todavía no existe), así que "⋯ Más" abría una
@@ -4880,6 +4993,63 @@ function updProgreso(pct) {
   const f = $('#updProgFill'); if (f) f.style.width = pct + '%';
   const t = $('#updProgPct'); if (t) t.textContent = pct + '%';
 }
+/* ===================================================================
+   ACTUALIZAR OBLIGATORIO (23-sep-2026, pedido del dueño)
+   El botón "Actualizar" de arriba se pasaba por alto: las computadoras
+   seguían con versiones viejas y les salían errores. Si hay una versión
+   nueva, el cartel grande aparece ANTES de empezar a trabajar: al abrir el
+   panel y al entrar a crear o editar algo. NUNCA al guardar o publicar: ahí
+   ya hay trabajo hecho, y frenarlo es perderlo. Si aparece una versión
+   mientras alguien escribe, se lo deja terminar y el cartel sale en la
+   próxima acción. La única salida es actualizar; solo si la actualización
+   FALLA (sin internet, p. ej.) se ofrece seguir por ahora.
+   =================================================================== */
+let UPD_PENDIENTE = null;     // lo que contestó /api/update-status con disponible
+let UPD_OMITIDO = false;      // solo después de un intento fallido, y hasta cerrar el panel
+function hayTrabajoAbierto() {
+  const comp = $('#fondo');
+  if (comp && comp.classList.contains('on')) return true;           // compositor abierto
+  const detV = $('#viewDetalle');
+  if (detV && !detV.hidden) return true;                            // editor de módulo abierto
+  const tut = $('#tutModal');
+  if (tut && tut.classList.contains('on')) return true;
+  return false;
+}
+function exigirActualizacion() {
+  if (!UPD_PENDIENTE || UPD_OMITIDO) return false;
+  const m = $('#forzarUpd'); if (!m) return false;
+  const v = $('#forzarUpdVer');
+  if (v) v.textContent = UPD_PENDIENTE.label ? ' (' + UPD_PENDIENTE.label + ')' : '';
+  $('#forzarUpdErr').hidden = true;
+  $('#forzarUpdLuego').hidden = true;
+  const si = $('#forzarUpdSi'); si.disabled = false; si.textContent = 'Actualizar ahora';
+  if (!m.classList.contains('on')) abrirModal(m);
+  return true;
+}
+window.exigirActualizacion = exigirActualizacion;
+function forzarUpdFallo(msg) {
+  if (!UPD_PENDIENTE) return;
+  const m = $('#forzarUpd'); if (!m) return;
+  const e = $('#forzarUpdErr');
+  e.textContent = 'No se pudo actualizar: ' + (msg || 'probá de nuevo') + '. Probá otra vez; si sigue fallando, podés seguir por ahora y actualizar más tarde.';
+  e.hidden = false;
+  $('#forzarUpdLuego').hidden = false;
+  const si = $('#forzarUpdSi'); si.disabled = false; si.textContent = 'Probar de nuevo';
+  abrirModal(m);
+}
+$('#forzarUpdSi').onclick = () => {
+  const btn = $('#btnUpdate'); if (!btn || !btn.onclick) return;
+  $('#forzarUpdSi').disabled = true;
+  esconderModal($('#forzarUpd'));
+  btn._sinPreguntar = true;
+  btn.onclick();
+};
+$('#forzarUpdLuego').onclick = () => {
+  UPD_OMITIDO = true;
+  esconderModal($('#forzarUpd'));
+  toast('Seguís con la versión vieja: actualizá apenas puedas desde el botón de arriba.', 'err');
+};
+
 async function chequearActualizacion() {
   /* si el cartel ya esta a la vista, o hay una actualizacion corriendo, no se
      vuelve a consultar: repintar el cartel mientras se aplica lo pisaria */
@@ -4901,11 +5071,17 @@ async function chequearActualizacion() {
     (saltea ? ' <span class="upd-salto">Vas de una sola vez desde la tuya: incluye ' +
       saltea + (saltea === 1 ? ' versión' : ' versiones') + ' más.</span>' : ''));
   bar.hidden = false;
+  UPD_PENDIENTE = st;
+  /* al abrir el panel (o si salió una versión mientras no se está haciendo
+     nada) el cartel sale enseguida, ANTES de que se empiece a trabajar */
+  if (!hayTrabajoAbierto()) exigirActualizacion();
   let enCurso = false;
   btn.onclick = async () => {
     if (enCurso) return;                       // anti doble-submit (sincrono, antes del await)
     enCurso = true; btn.disabled = true;
-    if (!await confirmar('El panel se va a actualizar y reiniciar solo en unos segundos. Guardá lo que estés editando antes de seguir.', 'Actualizar ahora', 'Actualizar el panel')) {
+    /* desde el cartel obligatorio ya se preguntó: no se pregunta dos veces */
+    const sinPreguntar = btn._sinPreguntar; btn._sinPreguntar = false;
+    if (!sinPreguntar && !await confirmar('El panel se va a actualizar y reiniciar solo en unos segundos. Guardá lo que estés editando antes de seguir.', 'Actualizar ahora', 'Actualizar el panel')) {
       enCurso = false; btn.disabled = false; return;
     }
     bar.classList.add('aplicando');
@@ -4926,6 +5102,7 @@ async function chequearActualizacion() {
       btn.disabled = false; btn.hidden = false; enCurso = false;
       setTxt('<b>No se pudo actualizar.</b> ' + esc(msg || ''));
       toast(msg || 'No se pudo actualizar', 'err');
+      forzarUpdFallo(msg);
     };
     try {
       // El servidor contesta AL TOQUE con un numero de trabajo y hace la
@@ -5024,7 +5201,12 @@ function esperarReinicio() {
 async function ponerseAlDia() {
   if (ES_CENTRAL) return;
   let r;
-  try { r = await api('/api/al-dia'); } catch (e) { return; }
+  /* ⚠️ 23-sep-2026 (auditoría): si fallaba (sin internet) no se avisaba nada
+     y la sucursal no se enteraba de que estaba mirando contenido viejo. */
+  const avisar = (m) => toast('No se pudo traer lo último publicado desde otras computadoras: ' +
+    String(m || 'no hay conexión').replace(/\.$/, '') + '. Se vuelve a intentar solo en 30 minutos.', 'err');
+  try { r = await api('/api/al-dia'); } catch (e) { avisar(e.message); return; }
+  if (r && r.ok === false) { avisar(r.error); return; }
   if (!r || !r.ok || !r.cambios) return;
   await cargarModulos().catch(() => {});
   /* corto a propósito: el detalle de QUÉ cambió es un párrafo entero y no

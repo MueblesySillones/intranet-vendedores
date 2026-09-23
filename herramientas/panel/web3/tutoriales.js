@@ -591,6 +591,20 @@
       aviso('Hay ' + sinTexto.length + ' capítulo(s) sin texto: escribí de qué habla o quitalos', 'err');
       return;
     }
+    /* 23-sep-2026 (auditoría): se aceptaba un capítulo en 5:00 de un video de
+       0:29; nunca se marcaba y quedaba como fantasma en la lista y la lupa. */
+    var v = video();
+    var dur = (v && isFinite(v.duration) && v.duration) || t.duracion || 0;
+    if (dur > 0) {
+      var fuera = CAPS.filter(function (c) { return c.t >= dur; });
+      if (fuera.length) {
+        aviso('El video dura ' + reloj(dur) + ': ' +
+              (fuera.length === 1 ? 'el capítulo en ' + reloj(fuera[0].t) + ' queda'
+                                  : fuera.length + ' capítulos quedan') +
+              ' después del final. Corregí el minuto o quitalo.', 'err');
+        return;
+      }
+    }
     var btn = document.getElementById('tutGuardar');
     btn.disabled = true; btn.textContent = 'Guardando…';
     var copia = LISTA.map(function (x) {
@@ -623,6 +637,7 @@
 
   /* ───────────── subir uno nuevo ───────────── */
   function abrirSubir() {
+    if (window.exigirActualizacion && window.exigirActualizacion()) return;
     var modal = document.getElementById('tutModal');
     if (!modal) return;
     document.getElementById('tutTitulo').value = '';

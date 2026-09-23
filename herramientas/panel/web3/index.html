@@ -118,7 +118,7 @@
         <div class="der">
           <span class="campo-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input class="campo" id="muroBuscar" type="search" autocomplete="off" placeholder="Buscar publicación...">
+            <input class="campo" id="muroBuscar" type="search" aria-label="Buscar publicación" autocomplete="off" placeholder="Buscar publicación...">
           </span>
           <button class="btn btn-1" id="btnNuevaPub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Publicar</button>
         </div>
@@ -170,7 +170,7 @@
         <div class="der">
           <span class="campo-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input class="campo" id="buscarTodo" type="search" autocomplete="off" placeholder="Buscar en todo el panel...">
+            <input class="campo" id="buscarTodo" type="search" aria-label="Buscar en todo el panel" autocomplete="off" placeholder="Buscar en todo el panel...">
           </span>
           <button class="btn btn-1" id="btnAddModulo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Agregar módulo</button>
         </div>
@@ -346,7 +346,7 @@
             <div class="gb-pane" data-pane="agregar">
               <span class="campo-wrap" style="width:100%">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input class="campo" style="width:100%" id="gbBuscar" type="search" autocomplete="off" placeholder="tabla, foto, whatsapp...">
+                <input class="campo" style="width:100%" id="gbBuscar" type="search" aria-label="Buscar un tipo de bloque" autocomplete="off" placeholder="tabla, foto, whatsapp...">
               </span>
               <div id="gbAdd"></div>
               <button type="button" id="btnPegar" class="pal-nota">
@@ -458,8 +458,8 @@
         <div class="pop pop-autor" id="coAutores"></div>
       </div>
 
-      <input class="comp-tit" id="coTitulo" maxlength="120" placeholder="Título de la publicación" autocomplete="off">
-      <textarea class="comp-cuerpo" id="coTexto" rows="3" placeholder="Contales al equipo de qué se trata. Lo que escribas acá lo ven los vendedores."></textarea>
+      <input class="comp-tit" id="coTitulo" aria-label="Título de la publicación" maxlength="120" placeholder="Título de la publicación" autocomplete="off">
+      <textarea class="comp-cuerpo" id="coTexto" aria-label="Texto de la publicación" rows="3" placeholder="Contales al equipo de qué se trata. Lo que escribas acá lo ven los vendedores."></textarea>
 
       <div id="coAdjuntos"></div>
 
@@ -480,7 +480,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/><path d="M4 4h16"/></svg>
         <span class="t"><b>Enviar al módulo</b><span>El material queda guardado adentro del módulo, no sólo en la cartelera</span></span>
         <span class="ctrl-der">
-          <button type="button" class="sw-btn" id="coCargarBtn" aria-pressed="false"><span class="sw"></span></button>
+          <button type="button" class="sw-btn" id="coCargarBtn" aria-pressed="false" aria-label="Enviar al módulo"><span class="sw"></span></button>
           <select id="coCargarMod" aria-label="Módulo donde se carga el contenido"></select>
           <select id="coCargarGrilla" aria-label="Dónde, adentro del módulo"></select>
         </span>
@@ -517,9 +517,9 @@
 
 <!-- ============ MODAL: avisar novedad ============ -->
 <div class="fondo" id="avisarModal">
-  <div class="modal medio" role="dialog" aria-modal="true">
+  <div class="modal medio" role="dialog" aria-modal="true" aria-labelledby="dlgTit1">
     <div class="modal-cab izq">
-      <h2>Avisar novedad a los vendedores<span class="sub">Los marcados salen con la chapita "NUEVO" en la intranet</span></h2>
+      <h2 id="dlgTit1">Avisar novedad a los vendedores<span class="sub">Los marcados salen con la chapita "NUEVO" en la intranet</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-avisar aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="av-vig">
@@ -538,9 +538,9 @@
 
 <!-- ============ MODAL: historial ============ -->
 <div class="fondo" id="histModal">
-  <div class="modal medio" role="dialog" aria-modal="true">
+  <div class="modal medio" role="dialog" aria-modal="true" aria-labelledby="dlgTit2">
     <div class="modal-cab izq">
-      <h2>Historial de publicaciones<span class="sub">Cada vez que publicás queda una versión guardada</span></h2>
+      <h2 id="dlgTit2">Historial de publicaciones<span class="sub">Cada vez que publicás queda una versión guardada</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-hist aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-cuerpo p16">
@@ -553,9 +553,9 @@
 <!-- ============ MODAL: kit de recuperación ============ -->
 <!-- ============ MODAL: configuración ============ -->
 <div class="fondo" id="configModal">
-  <div class="modal chico" role="dialog" aria-modal="true">
+  <div class="modal chico" role="dialog" aria-modal="true" aria-labelledby="dlgTit3">
     <div class="modal-cab izq">
-      <h2>Configuración<span class="sub">Ajustes de esta computadora</span></h2>
+      <h2 id="dlgTit3">Configuración<span class="sub">Ajustes de esta computadora</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-config aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-cuerpo p16">
@@ -605,9 +605,9 @@
 </div>
 
 <div class="fondo" id="sectoresModal">
-  <div class="modal chico" role="dialog" aria-modal="true">
+  <div class="modal chico" role="dialog" aria-modal="true" aria-labelledby="dlgTit4">
     <div class="modal-cab izq">
-      <h2>Quién comunica<span class="sub">Los sectores que pueden firmar una publicación</span></h2>
+      <h2 id="dlgTit4">Quién comunica<span class="sub">Los sectores que pueden firmar una publicación</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-sectores aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-cuerpo p16">
@@ -634,9 +634,9 @@
 </div>
 
 <div class="fondo" id="kitModal">
-  <div class="modal chico" role="dialog" aria-modal="true">
+  <div class="modal chico" role="dialog" aria-modal="true" aria-labelledby="dlgTit5">
     <div class="modal-cab izq">
-      <h2>Para desarrolladores<span class="sub">El archivo que se le entrega a quien vaya a trabajar sobre el sistema</span></h2>
+      <h2 id="dlgTit5">Para desarrolladores<span class="sub">El archivo que se le entrega a quien vaya a trabajar sobre el sistema</span></h2>
       <button class="comp-cerrar" type="button" data-cerrar-kit aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-cuerpo p16">
@@ -664,9 +664,30 @@
 </div>
 
 <!-- ============ MODAL: confirmación ============ -->
+<!-- ACTUALIZAR OBLIGATORIO (23-sep-2026): el botón "Actualizar" de arriba se
+     pasaba por alto y las computadoras seguían con versiones viejas, con errores.
+     Si hay una versión nueva, crear, editar, guardar o publicar muestran esto.
+     No se cierra con Escape ni tocando afuera: la única salida es actualizar
+     (o, SOLO si la actualización falla, seguir por ahora). -->
+<div class="fondo" id="forzarUpd">
+  <div class="modal medio forzar-upd" role="alertdialog" aria-modal="true" aria-labelledby="forzarUpdTit" aria-describedby="forzarUpdTx">
+    <div class="modal-cab">
+      <h2 id="forzarUpdTit">Debés actualizar para seguir usando el panel</h2>
+    </div>
+    <div class="modal-cuerpo">
+      <p id="forzarUpdTx">Hay una versión nueva del panel<span id="forzarUpdVer"></span>. Sin actualizar, esta computadora puede dar errores al guardar o publicar. Tarda menos de un minuto y lo que ya guardaste no se pierde.</p>
+      <p id="forzarUpdErr" class="forzar-err" hidden></p>
+    </div>
+    <div class="modal-pie">
+      <button class="btn btn-1 forzar-btn" id="forzarUpdSi" type="button">Actualizar ahora</button>
+      <button class="btn btn-2" id="forzarUpdLuego" type="button" hidden>Seguir sin actualizar por ahora</button>
+    </div>
+  </div>
+</div>
+
 <div class="fondo" id="confirmModal">
   <div class="modal-ov"></div>
-  <div class="modal chico" role="dialog" aria-modal="true">
+  <div class="modal chico" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
     <div class="modal-cab izq">
       <h2 id="confirmTitle">¿Confirmás?</h2>
     </div>
@@ -684,9 +705,9 @@
 <!-- ============ MODAL: aprobaciones (central) ============ -->
 <div class="fondo" id="bandeja">
   <div class="modal-ov" id="bandejaOv"></div>
-  <div class="modal medio" role="dialog" aria-modal="true">
+  <div class="modal medio" role="dialog" aria-modal="true" aria-labelledby="dlgTit6">
     <div class="modal-cab izq">
-      <h2>Aprobaciones de colaboradores<span class="sub" id="bandejaHint">Publicaciones esperando el visto bueno de Central</span></h2>
+      <h2 id="dlgTit6">Aprobaciones de colaboradores<span class="sub" id="bandejaHint">Publicaciones esperando el visto bueno de Central</span></h2>
       <button class="comp-cerrar" id="bandejaClose" type="button" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-cuerpo p16" id="bandejaList"><p class="muted">Cargando…</p></div>
@@ -696,9 +717,9 @@
 
 <!-- ============ MODAL: actualizando el panel ============ -->
 <div class="fondo" id="mActualizando">
-  <div class="modal chico" role="dialog" aria-modal="true">
+  <div class="modal chico" role="dialog" aria-modal="true" aria-labelledby="dlgTit7">
     <div class="modal-cab izq">
-      <h2>Actualizando el panel<span class="sub">No cierres esta ventana</span></h2>
+      <h2 id="dlgTit7">Actualizando el panel<span class="sub">No cierres esta ventana</span></h2>
     </div>
     <div class="modal-cuerpo p16">
       <div class="barra-prog"><i id="updProgFill" style="width:8%"></i></div>

@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.31.1"
-NUEVO_LABEL = "1.31.1 - las fotos pesan 75% menos"
-NUEVAS_NOTAS = ("LAS FOTOS PESAN 75 POR CIENTO MENOS: las placas se guardaban en PNG. Medido: 90 placas ocupaban 70 de los 112 MB de TODO el material de la intranet. Ahora se guardan en JPG de calidad alta, sin el submuestreo de color que emborrona los textos de colores. Sobre las placas reales del sitio: de 1428 KB a 296 KB, con una diferencia por pixel de menos de 1 punto sobre 255, o sea que no se ve. Ademas bajan mucho mas rapido en el celular del vendedor. Lo unico que se sigue guardando en PNG es lo que tiene transparencia de verdad, como un logo recortado, porque el JPG no la soporta y quedaria con fondo blanco. Las fotos que ya estan subidas no se tocan: siguen viendose igual.")
+NUEVA_PUBLICA = "1.32.0"
+NUEVO_LABEL = "1.32.0 - actualizar es obligatorio y los errores salen en castellano"
+NUEVAS_NOTAS = ('ACTUALIZAR ES OBLIGATORIO: si hay una version nueva, aparece un cartel grande DEBES ACTUALIZAR PARA SEGUIR USANDO EL PANEL al abrir el panel y al empezar a crear o editar algo. Nunca al guardar o publicar, para no perder trabajo. LOS ERRORES SALEN EN CASTELLANO y dicen que hacer (antes decian cosas como getaddrinfo failed o Error 500). UNA COMPUTADORA YA NO PISA LO QUE EDITO OTRA: si el panel se puso al dia mientras tenias la pantalla abierta, guardar combina en vez de pisar. SI EL ARCHIVO DE CONTENIDO SE DANA, el panel avisa y no guarda encima (antes podia borrar todos los modulos sin decir nada). CARTELERA: adjuntar un PDF anda, y un segundo clic en Publicar ya no duplica. TUTORIALES: no deja poner un capitulo despues del final del video. DATOS: conectar la misma planilla dos veces ya no crea tarjetas repetidas. Los archivos que se suben se guardan con su nombre original, no con numeros. Se puede usar con teclado y tiene mejor contraste. La tarjeta de la computadora dice si es la central o una sucursal.')
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -37,8 +37,8 @@ NUEVAS_NOTAS = ("LAS FOTOS PESAN 75 POR CIENTO MENOS: las placas se guardaban en
 NUEVO_CUERPO = ""
 
 # firma de los commits que arma este guion
-FIRMA = ("\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>\n"
-         "Claude-Session: https://claude.ai/code/session_0196UcFB1vXvn57qLw8rSPAa\n")
+FIRMA = ("\n\nCo-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>\n"
+         "Claude-Session: https://claude.ai/code/session_01DzZ8bR4LLxi28RHRfjRJFj\n")
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",

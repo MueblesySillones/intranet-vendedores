@@ -15,9 +15,20 @@
   var LISTA = [];          // los reportes, como los devuelve el servidor
   var ABIERTO = null;      // el id del que se esta mirando
 
+  /* los errores vuelven como { error } en castellano, igual que en app.js: si
+     el programa se cerró, fetch fallaba y la promesa quedaba sin atender, sin
+     ningún aviso (auditoría de errores 23-sep) */
   function api(ruta, opciones) {
     return fetch(ruta, opciones || {}).then(function (r) {
-      return r.json().catch(function () { return {}; });
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok && !(d && d.error)) {
+          d = { error: (window.mensajeError ? window.mensajeError('', r.status)
+                                            : 'El panel respondió con un error (' + r.status + ').') };
+        }
+        return d;
+      });
+    }, function () {
+      return { error: 'El panel no responde. Puede que se haya cerrado el programa: abrí de nuevo el Panel MyS y recargá esta página.' };
     });
   }
 
@@ -568,7 +579,7 @@
           traerLista().then(function () { pintarLista(r && r.error); });
           return;
         }
-        aviso('Archivo conectado', 'ok');
+        aviso(r.ya_estaba ? 'Esa planilla ya estaba conectada con ese nombre: te abro la que ya existe' : 'Archivo conectado', 'ok');
         traerLista().then(function () { abrir(r.id); });
       });
   }

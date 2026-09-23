@@ -1094,6 +1094,7 @@
      Es el mismo patron que borro Marzo-Mayo. Por eso esas van al editor de
      siempre, avisando. */
   async function editarPublicacion(i) {
+    if (window.exigirActualizacion && window.exigirActualizacion()) return;
     var idx = idxMuro(); if (idx < 0) return;
     var d = (MODULOS[idx].content.docs || [])[i];
     if (!d) return;
@@ -1612,6 +1613,8 @@
   }
 
   function abrirComp(tipo) {
+    /* versión nueva pendiente: se actualiza ANTES de empezar a escribir */
+    if (window.exigirActualizacion && window.exigirActualizacion()) return;
     COMP.abierto = true;
     COMP.tipo = tipo || '';
     COMP.bloques = [];
@@ -2000,7 +2003,7 @@
 
     toast('Subiendo el video…');
     var fd = new FormData();
-    fd.append('key', 'cartelera-vid-' + Date.now());
+    fd.append('key', window.claveArchivo ? window.claveArchivo(file, ((document.getElementById('coTitulo') || {}).value || 'cartelera')) : 'cartelera-vid-' + Date.now());
     fd.append('file', file);
     var r = await api('/api/upload-video', { method: 'POST', body: fd });
     if (r.falta_ffmpeg) throw new Error(r.error || 'Falta el compresor.');
@@ -2019,7 +2022,7 @@
   /* sube un archivo por el mismo camino que usa el editor de módulos */
   function subir(file, etiqueta, fmt) {
     var fd = new FormData();
-    fd.append('key', 'muro-' + (etiqueta || 'archivo') + '-' + Date.now());
+    fd.append('key', window.claveArchivo ? window.claveArchivo(file, ((document.getElementById('coTitulo') || {}).value || 'cartelera')) : 'muro-' + (etiqueta || 'archivo') + '-' + Date.now());
     if (fmt) fd.append('fmt', fmt);
     fd.append('file', file);
     /* ⚠️ 23-sep-2026 (auditoría): los PDF iban a /api/upload-contenido, que los

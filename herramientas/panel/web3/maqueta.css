@@ -7,7 +7,7 @@
    =========================================================== */
 :root{
   --bg:#F4F1EC; --panel:#FBFAF7; --surface:#FFFFFF;
-  --ink:#2C2A26; --ink2:#5B574F; --ink3:#8B857A;
+  --ink:#2C2A26; --ink2:#5B574F; --ink3:#6B665C; /* 23-sep (auditoría a11y): #8B857A daba 2,9-3,7:1, no llegaba a AA */
   --line:#E4DFD6; --line2:rgba(0,0,0,.09); --line3:#C9C0B2;
   --accent:#7C6A55; --accent-soft:#EFE9E0; --accent-ink:#5E4F3E;
   --ok:#5B7A5B; --warn:#B07A4A; --danger:#B5503F;
@@ -558,6 +558,9 @@ section[data-vista="editor"]{display:flex;flex-direction:column;height:100vh}
     font-size:var(--t-base);line-height:1.62;color:var(--ink2);resize:none;min-height:104px}
 .comp-cuerpo::placeholder{color:var(--ink3)}
 .comp-cuerpo:focus{outline:0}
+/* el cuerpo no tiene borde propio: con el teclado se marca con una línea
+   suave abajo, para que se vea dónde está el foco (auditoría 23-sep) */
+.comp-cuerpo:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
 
 /* lo adjuntado, ya cargado */
 .cargado{display:flex;align-items:center;gap:10px;margin-top:10px;padding:9px 11px;
