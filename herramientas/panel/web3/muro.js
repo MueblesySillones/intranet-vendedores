@@ -1636,6 +1636,12 @@
   function cerrarComp() {
     COMP.abierto = false;
     COMP.bloques = [];
+    /* ⚠️ 23-sep-2026 (auditoría): el título y el texto quedaban escritos
+       después de publicar; un segundo clic en Publicar, llegado cuando el
+       primero ya había terminado, creaba la misma publicación dos veces.
+       Abrir el compositor ya los carga o los limpia, así que acá se vacían. */
+    elCo('coTitulo').value = '';
+    elCo('coTexto').value = '';
     COMP.editando = null;
     marcarModo();
     cerrarModalComp();
@@ -2016,7 +2022,11 @@
     fd.append('key', 'muro-' + (etiqueta || 'archivo') + '-' + Date.now());
     if (fmt) fd.append('fmt', fmt);
     fd.append('file', file);
-    return api('/api/upload-contenido', { method: 'POST', body: fd }).then(function (r) { return r.src; });
+    /* ⚠️ 23-sep-2026 (auditoría): los PDF iban a /api/upload-contenido, que los
+       abre como imagen (Pillow) y devuelve 400: adjuntar un PDF en la Cartelera
+       no andaba. El editor de módulos siempre usó /api/upload-pdf. */
+    var ruta = etiqueta === 'pdf' ? '/api/upload-pdf' : '/api/upload-contenido';
+    return api(ruta, { method: 'POST', body: fd }).then(function (r) { return r.src; });
   }
 
   /* ══════════════ EL PRIMER CUADRO DEL VIDEO, COMO IMAGEN ══════════════
@@ -2369,6 +2379,7 @@
 
   /* --------------------------- publicar --------------------------- */
   async function publicar() {
+    if (!COMP.abierto) return;       /* el compositor ya se cerró: nada que publicar */
     var titulo = elCo('coTitulo').value.trim();
     if (!titulo) { toast('Ponele un título al aviso', 'err'); elCo('coTitulo').focus(); return; }
 
