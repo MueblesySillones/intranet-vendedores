@@ -14,6 +14,58 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "zzbC",
+          "titulo": "QA queda C",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-22",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts."
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1790093596297.png",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790093596297.png\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
+          "id": "zzbB",
+          "titulo": "QA borrar B",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-22",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts."
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1790093596297.png",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790093596297.png\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmucviejubsyw",
           "titulo": "SILLÓN TORINO NUEVO",
           "autor": "Marketing",
@@ -343,6 +395,33 @@ window.MODULES = [
         }
       ],
       "papelera": [
+        {
+          "id": "zzbA",
+          "titulo": "QA borrar A",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-22",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts."
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1790093596297.png",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">2.25x1.05x0.77mts. Con zócalo perimetral en madera maciza. Viene con 5 almohadones de 0.45x0.45mts.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790093596297.png\" alt=\"\" loading=\"lazy\"></figure></div>",
+          "borradoEl": "2026-09-23"
+        },
         {
           "id": "dmud4gm99x6lu",
           "titulo": "Prueba",
