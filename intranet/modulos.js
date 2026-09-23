@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmue7vcfb078m",
+          "titulo": "RECUERDEN PORFAVOR 📣",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-23",
+          "etiqueta": "importante",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Revisar sus contactos en el Chatbot 🤖\nEstamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento."
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Revisar sus contactos en el Chatbot 🤖<br>Estamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento.</p></div>"
+        },
+        {
           "id": "dmucviejubsyw",
           "titulo": "SILLÓN TORINO NUEVO",
           "autor": "Marketing",
