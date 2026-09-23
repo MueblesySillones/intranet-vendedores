@@ -187,6 +187,21 @@ def texto_modulos(p):
             "window.TUTORIALES = " + json.dumps(p["tutoriales"], ensure_ascii=False, indent=2) + ";\n")
 
 
+def copia_del_panel(tmp):
+    """El panel sin el panel_config.json de la central (ver arriba)."""
+    dest = os.path.join(tmp, "panel_copia")
+    if os.path.isdir(dest):
+        return dest
+    os.makedirs(dest)
+    for n in os.listdir(PANEL):
+        if n in ("panel_config.json", "dist", "build", "instalador", "paquete",
+                 "__pycache__", "datos", "investigacion"):
+            continue
+        o = os.path.join(PANEL, n)
+        (shutil.copytree if os.path.isdir(o) else shutil.copy2)(o, os.path.join(dest, n))
+    return dest
+
+
 def api(base, ruta, datos=None, timeout=120):
     req = urllib.request.Request(base + ruta, method="POST" if datos is not None else "GET",
                                  data=json.dumps(datos).encode("utf-8") if datos is not None else None,
@@ -240,8 +255,13 @@ def main():
         env = dict(os.environ, MYS_PROYECTO=proy, MYS_PANEL_STATE=estado,
                    MYS_PANEL_PORT=str(pp), BROWSER="cmd.exe /c echo", PYTHONIOENCODING="utf-8")
         log = open(os.path.join(tmp, "panel.log"), "w", encoding="utf-8")
-        proc = subprocess.Popen([sys.executable, os.path.join(PANEL, "panel_server.py")],
-                                cwd=PANEL, env=env, stdout=log, stderr=subprocess.STDOUT)
+        # ⚠️ Se corre desde una COPIA del panel sin panel_config.json. Corriendo
+        # desde herramientas/panel, el panel lee el config de la central y
+        # arranca como CENTRAL: la "sucursal" de esta prueba no era una
+        # sucursal y /api/traer contestaba "esta PC es la central" (sin job).
+        panel_dir = copia_del_panel(tmp)
+        proc = subprocess.Popen([sys.executable, os.path.join(panel_dir, "panel_server.py")],
+                                cwd=panel_dir, env=env, stdout=log, stderr=subprocess.STDOUT)
         base = "http://127.0.0.1:%d" % pp
         for _ in range(60):
             try:
