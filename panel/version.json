@@ -1,10 +1,20 @@
 {
-  "version": 86,
-  "label": "1.32.0 - actualizar es obligatorio y los errores salen en castellano",
-  "notes": "ACTUALIZAR ES OBLIGATORIO: si hay una version nueva, aparece un cartel grande DEBES ACTUALIZAR PARA SEGUIR USANDO EL PANEL al abrir el panel y al empezar a crear o editar algo. Nunca al guardar o publicar, para no perder trabajo. LOS ERRORES SALEN EN CASTELLANO y dicen que hacer (antes decian cosas como getaddrinfo failed o Error 500). UNA COMPUTADORA YA NO PISA LO QUE EDITO OTRA: si el panel se puso al dia mientras tenias la pantalla abierta, guardar combina en vez de pisar. SI EL ARCHIVO DE CONTENIDO SE DANA, el panel avisa y no guarda encima (antes podia borrar todos los modulos sin decir nada). CARTELERA: adjuntar un PDF anda, y un segundo clic en Publicar ya no duplica. TUTORIALES: no deja poner un capitulo despues del final del video. DATOS: conectar la misma planilla dos veces ya no crea tarjetas repetidas. Los archivos que se suben se guardan con su nombre original, no con numeros. Se puede usar con teclado y tiene mejor contraste. La tarjeta de la computadora dice si es la central o una sucursal.",
-  "sha256": "f50c5fd07ad9671c1c767b32283acfc89bdd96fb331f5abc5971c8c4cc986f26",
-  "size": 20383695,
-  "url": "panel/PanelMyS-v86.zip",
+  "version": 87,
+  "label": "1.33.0 - fotos y videos de la Cartelera, y la pantalla se recarga sola al actualizar",
+  "notes": "ARREGLOS: en la Cartelera del panel las fotos se abren en grande y los videos se reproducen (antes era solo un dibujo). El visor de fotos del panel se cierra bien: antes quedaba tapando la pantalla. Despues de actualizar, la pantalla se recarga sola con la version nueva: antes podia quedar mostrando la anterior y pidiendo actualizar otra vez. MEJORAS: el cartel de actualizar dice que version llega y, en dos listas cortas, que arreglos y que mejoras trae. Una pestana que quedo abierta con una version vieja se recarga sola, sin perder lo que estas escribiendo.",
+  "arreglos": [
+    "Las fotos de la Cartelera del panel se abren en grande",
+    "Los videos de la Cartelera del panel se reproducen",
+    "El visor de fotos del panel se cierra bien (antes quedaba tapando la pantalla)",
+    "Después de actualizar, la pantalla se recarga sola con la versión nueva"
+  ],
+  "mejoras": [
+    "El cartel de actualizar dice qué versión llega y qué trae",
+    "Si una pestaña quedó abierta con una versión vieja, se recarga sola sin perder lo que estás escribiendo"
+  ],
+  "sha256": "6bf48d48574bfba988d509ed327aa7d034c159e72f6b3c6b48cbcc45b210227e",
+  "size": 20384093,
+  "url": "panel/PanelMyS-v87.zip",
   "historial": [
     {
       "version": 83,
@@ -17,6 +27,12 @@
     {
       "version": 85,
       "label": "1.31.1 - las fotos pesan 75% menos"
+    },
+    {
+      "version": 86,
+      "label": "1.32.0 - actualizar es obligatorio y los errores salen en castellano",
+      "arreglos": [],
+      "mejoras": []
     }
   ]
 }
