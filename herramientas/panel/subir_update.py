@@ -29,11 +29,12 @@ def leer_version():
     que el modulo tiene efectos al cargar)."""
     src = io.open(os.path.join(AQUI, "panel_server.py"), encoding="utf-8").read()
     quiero = {"VERSION", "VERSION_LABEL", "VERSION_NOTES"}
+    opcionales = {"VERSION_ARREGLOS", "VERSION_MEJORAS"}   # las listas del cartel (23-sep)
     out = {}
     for nodo in ast.parse(src).body:
         if isinstance(nodo, ast.Assign) and len(nodo.targets) == 1:
             t = nodo.targets[0]
-            if isinstance(t, ast.Name) and t.id in quiero:
+            if isinstance(t, ast.Name) and t.id in (quiero | opcionales):
                 out[t.id] = ast.literal_eval(nodo.value)
     faltan = quiero - set(out)
     if faltan:
@@ -95,12 +96,17 @@ def main():
     historial = [h for h in (previo.get("historial") or [])
                  if isinstance(h, dict) and h.get("version") != previo.get("version")]
     if previo.get("version"):
-        historial.append({"version": previo["version"], "label": previo.get("label", "")})
+        # con sus listas: una PC que se saltea versiones ve TODO lo que se le suma
+        historial.append({"version": previo["version"], "label": previo.get("label", ""),
+                          "arreglos": previo.get("arreglos") or [],
+                          "mejoras": previo.get("mejoras") or []})
     historial = historial[-20:]
     meta = {
         "version": v["VERSION"],
         "label": v["VERSION_LABEL"],
         "notes": v["VERSION_NOTES"],
+        "arreglos": v.get("VERSION_ARREGLOS") or [],
+        "mejoras": v.get("VERSION_MEJORAS") or [],
         "sha256": sha,
         "size": len(data),
         "url": "panel/" + nombre,

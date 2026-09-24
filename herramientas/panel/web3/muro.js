@@ -618,11 +618,11 @@
         if (!fotos.length) return;
         if (!medio) {
           if (fotos.length === 1) {
-            medio = '<div class="medio"><img src="/intranet/' + esc(fotos[0].src) + '" alt="" loading="lazy"></div>';
+            medio = '<div class="medio" data-ver="' + esc(fotos[0].src) + '" role="button" tabindex="0" aria-label="Ver la foto en grande"><img src="/intranet/' + esc(fotos[0].src) + '" alt="" loading="lazy"></div>';
           } else {
             medio = '<div class="medio grilla" data-n="' + Math.min(fotos.length, 3) + '">' +
               fotos.slice(0, 3).map(function (it) {
-                return '<figure><img src="/intranet/' + esc(it.src) + '" alt="" loading="lazy"></figure>';
+                return '<figure data-ver="' + esc(it.src) + '" role="button" tabindex="0" aria-label="Ver la foto en grande"><img src="/intranet/' + esc(it.src) + '" alt="" loading="lazy"></figure>';
               }).join('') +
               '<span class="contador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>' +
               fotos.length + (fotos.length === 1 ? ' placa' : ' placas') + '</span></div>';
@@ -634,14 +634,14 @@
         return;
       }
       if (bk.t === 'imagen' && bk.src) {
-        if (!medio) medio = '<div class="medio"><img src="/intranet/' + esc(bk.src) + '" alt="" loading="lazy"></div>';
+        if (!medio) medio = '<div class="medio" data-ver="' + esc(bk.src) + '" role="button" tabindex="0" aria-label="Ver la foto en grande"><img src="/intranet/' + esc(bk.src) + '" alt="" loading="lazy"></div>';
         else adjs.push(adjCard('descarga', bk.caption || bk.alt || 'Imagen', 'Imagen'));
         return;
       }
       if (bk.t === 'video' && (bk.src || bk.url)) {
         var nom = (bk.caption || bk.dlNombre || 'Video').trim() || 'Video';
         if (!medio) {
-          medio = '<div class="medio">' +
+          medio = '<div class="medio es-video" data-video="' + esc(bk.src || '') + '" data-url="' + esc(bk.url || '') + '" role="button" tabindex="0" aria-label="Reproducir el video">' +
             (bk.poster
               ? '<img src="/intranet/' + esc(bk.poster) + '" alt="" loading="lazy">'
               : (bk.src ? '<video src="/intranet/' + esc(bk.src) + '" preload="metadata" muted playsinline></video>' : '')) +
@@ -717,7 +717,28 @@
         <button type="button" class="sep" data-a="editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Editar</button>
         <button type="button" class="solo mp-mas" data-a="menu" aria-haspopup="true" aria-expanded="false" title="Más opciones" aria-label="Más opciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
       </div>`;
+    el.addEventListener('keydown', ev => {
+      if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches && ev.target.matches('[data-ver], .medio.es-video[role]')) {
+        ev.preventDefault(); ev.target.click();
+      }
+    });
     el.addEventListener('click', ev => {
+      /* ⚠️ 23-sep-2026 (reportado por el dueño): la foto y el botón de play de
+         la tarjeta eran solo un dibujo; tocarlos no hacía nada. La foto se abre
+         en grande con el visor del panel y el video se reproduce ahí mismo. */
+      const verFoto = ev.target.closest('[data-ver]');
+      if (verFoto && window.verImagen) { ev.stopPropagation(); window.verImagen(verFoto.dataset.ver); return; }
+      const vid = ev.target.closest('.medio.es-video');
+      if (vid && !vid.querySelector('video[controls]')) {
+        ev.stopPropagation();
+        if (vid.dataset.video) {
+          vid.innerHTML = '<video src="/intranet/' + esc(vid.dataset.video) + '" controls autoplay playsinline style="width:100%;height:100%;display:block;background:#000"></video>';
+          vid.removeAttribute('role'); vid.removeAttribute('tabindex');
+        } else if (vid.dataset.url) {
+          window.open(vid.dataset.url, '_blank', 'noopener');
+        }
+        return;
+      }
       const mas = ev.target.closest('.mp-mas');
       if (mas) { ev.stopPropagation(); abrirMenuPost(mas, d, i, el); return; }
       const b = ev.target.closest('[data-a]');

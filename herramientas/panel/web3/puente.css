@@ -1009,3 +1009,13 @@ body > .sel2-pop{z-index:220}
 .forzar-upd .forzar-err{margin-top:12px !important;color:var(--danger,#B5503F);font-weight:600}
 .forzar-upd .forzar-btn{flex:1;font-size:18px;padding:16px 20px}
 .forzar-upd .modal-pie{display:flex;gap:10px;flex-wrap:wrap}
+.forzar-upd .modal-cuerpo{display:flex;flex-direction:column;gap:14px}
+.forzar-upd .forzar-ver{font-size:17px !important}
+.forzar-upd .forzar-ver b{font-size:19px}
+.forzar-upd .forzar-listas{display:flex;flex-direction:column;gap:12px;max-height:42vh;overflow:auto}
+.forzar-upd .forzar-lista h3{margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.forzar-upd .forzar-lista h3 .ptito{width:9px;height:9px;border-radius:50%;display:inline-block}
+.forzar-upd .forzar-lista.arreglos h3{color:var(--danger,#B5503F)} .forzar-upd .forzar-lista.arreglos .ptito{background:var(--danger,#B5503F)}
+.forzar-upd .forzar-lista.mejoras h3{color:var(--ok,#5B7A5B)} .forzar-upd .forzar-lista.mejoras .ptito{background:var(--ok,#5B7A5B)}
+.forzar-upd .forzar-lista ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px;line-height:1.45}
+.forzar-upd .forzar-tx{color:var(--ink2);font-size:14.5px !important}

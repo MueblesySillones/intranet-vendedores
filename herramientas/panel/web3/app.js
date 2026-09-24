@@ -87,6 +87,10 @@ function esconderModal(m) {
   if (!m || !m.classList.contains('on')) return;
   m._cierre = (m._cierre || 0) + 1;
   m.classList.remove('on');
+  /* ⚠️ 23-sep-2026: el visor de fotos (#imgLightbox) NO es un .fondo: se
+     muestra y se esconde con `hidden`. Desde que cerrar pasó a ser solo sacar
+     .on, el visor no se iba nunca: la foto quedaba encima tapando el panel. */
+  if (!m.classList.contains('fondo')) m.hidden = true;
   if (!document.querySelector('.fondo.on')) document.body.classList.remove('trabado');
 }
 
@@ -476,6 +480,7 @@ async function pedirToken() {
 }
 // ---------- rol: central vs colaborador (ambos publican DIRECTO via el cerebro) ----------
 let ES_CENTRAL = true;   // hasta que /api/config diga lo contrario
+let VERSION_PAGINA = null;   // la version del programa con la que se cargo ESTA pagina
 let MODO_CEREBRO = true; // publicacion directa: se ignora el estado de git local
 
 async function cargarConfig() {
@@ -484,6 +489,7 @@ async function cargarConfig() {
   catch (e) { return; }                 // sin config => se comporta como central
   ES_CENTRAL = cfg.es_central !== false;
   MODO_CEREBRO = cfg.cerebro !== false;
+  if (VERSION_PAGINA === null && cfg.version) VERSION_PAGINA = cfg.version;
   // la direccion del sitio online: para armar links que sirven fuera de esta PC
   window.WEB_PUBLICA = (cfg.web_publica || '').replace(/\/$/, '');
   const nv = $('#navVersion');
@@ -5018,8 +5024,7 @@ function hayTrabajoAbierto() {
 function exigirActualizacion() {
   if (!UPD_PENDIENTE || UPD_OMITIDO) return false;
   const m = $('#forzarUpd'); if (!m) return false;
-  const v = $('#forzarUpdVer');
-  if (v) v.textContent = UPD_PENDIENTE.label ? ' (' + UPD_PENDIENTE.label + ')' : '';
+  pintarNovedadesUpd(UPD_PENDIENTE);
   $('#forzarUpdErr').hidden = true;
   $('#forzarUpdLuego').hidden = true;
   const si = $('#forzarUpdSi'); si.disabled = false; si.textContent = 'Actualizar ahora';
@@ -5027,6 +5032,37 @@ function exigirActualizacion() {
   return true;
 }
 window.exigirActualizacion = exigirActualizacion;
+/* Qué trae la versión nueva, en dos listas cortas (pedido del dueño, 23-sep):
+   ARREGLOS (errores corregidos) y MEJORAS (funciones nuevas). Si la
+   computadora se salteó versiones, se suman las de todas las que se le
+   agregan, sin repetir. Una versión publicada antes de que existieran las
+   listas no las trae: ahí se muestra su título. */
+function pintarNovedadesUpd(st) {
+  const ver = $('#forzarUpdVer'), cont = $('#forzarUpdListas');
+  const numero = l => String(l || '').split(' - ')[0].trim();
+  if (ver) ver.textContent = numero(st.label) || ('versión ' + st.version);
+  if (!cont) return;
+  const todas = [st].concat((st.historial || []).slice().reverse());
+  const junta = campo => {
+    const vistos = new Set(), out = [];
+    todas.forEach(v => (v[campo] || []).forEach(x => {
+      const k = String(x).trim().toLowerCase();
+      if (k && !vistos.has(k)) { vistos.add(k); out.push(String(x).trim()); }
+    }));
+    return out;
+  };
+  const arr = junta('arreglos'), mej = junta('mejoras');
+  const lista = (cls, tit, items) => items.length
+    ? '<div class="forzar-lista ' + cls + '"><h3><span class="ptito" aria-hidden="true"></span>' + tit +
+      '</h3><ul>' + items.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '';
+  let html = lista('arreglos', 'Arreglos', arr) + lista('mejoras', 'Mejoras', mej);
+  if (!html) {
+    const t = String(st.label || '').split(' - ').slice(1).join(' - ').trim();
+    html = t ? '<div class="forzar-lista mejoras"><h3><span class="ptito" aria-hidden="true"></span>Qué trae</h3><ul><li>' + esc(t) + '</li></ul></div>' : '';
+  }
+  cont.innerHTML = html;
+  cont.hidden = !html;
+}
 function forzarUpdFallo(msg) {
   if (!UPD_PENDIENTE) return;
   const m = $('#forzarUpd'); if (!m) return;
@@ -5170,24 +5206,53 @@ async function seguirUpdate(jid) {
 }
 
 // espera a que el panel se reinicie (server cae y vuelve) y recarga la version nueva
+/* ⚠️ 23-sep-2026 (reportado por el dueño: "aprieto actualizar, se abre la
+   pestaña nueva y sigue mostrando la versión anterior y me dice que debo
+   actualizar"). Esta pestaña esperaba VER la caída del programa para
+   recargarse, mirando cada 2 s. Si el reinicio caía entre dos miradas, nunca
+   veía la caída, a los 80 s se rendía y quedaba para siempre con la versión
+   vieja y el aviso de actualizar, aunque la nueva ya estaba instalada y andando
+   en otra pestaña. Ahora se pregunta QUÉ VERSIÓN contesta el programa y se
+   recarga apenas es otra; y si se acaba el tiempo, se recarga igual. */
 function esperarReinicio() {
-  let cayo = false, intentos = 0;
+  let intentos = 0;
   const t = setInterval(async () => {
     intentos++;
-    try {
-      await api('/api/config');
-      if (cayo) {   // volvio -> cargar la version nueva
-        clearInterval(t);
-        updPaso('reabrir', 'ok'); updProgreso(100);
-        location.reload();
-      }
-    } catch (e) {
-      if (!cayo) { updPaso('instalar', 'ok'); updPaso('reabrir', 'ahora'); updProgreso(84); }
-      cayo = true;                                          // se esta reiniciando
+    let cfg = null;
+    try { cfg = await api('/api/config'); }
+    catch (e) { updPaso('instalar', 'ok'); updPaso('reabrir', 'ahora'); updProgreso(84); }
+    if ((cfg && VERSION_PAGINA !== null && cfg.version && cfg.version !== VERSION_PAGINA) ||
+        (cfg && intentos > 45)) {
+      clearInterval(t);
+      updPaso('reabrir', 'ok'); updProgreso(100);
+      location.reload();
     }
-    if (intentos > 40) clearInterval(t);                   // ~80s: dejar de insistir
+    if (intentos > 90) { clearInterval(t); location.reload(); }   // ~3 min: recargar igual
   }, 2000);
 }
+
+/* ---------- ninguna pestaña se queda con una versión vieja ----------
+   Pasa si el panel se actualizó y reinició mientras esta pestaña estaba
+   abierta (o quedó abierta de ayer). Cada vez que se vuelve a la pestaña, y
+   cada minuto, se compara la versión de la página con la del programa: si no
+   son la misma, se recarga. Con trabajo a medio hacer no se recarga en seco
+   (se perdería): se avisa, y se recarga apenas se cierra lo que está abierto. */
+let recargaPendiente = false;
+async function vigilarVersionPagina() {
+  if (VERSION_PAGINA === null) return;
+  let cfg;
+  try { cfg = await api('/api/config'); } catch (e) { return; }
+  if (!cfg || !cfg.version || cfg.version === VERSION_PAGINA) return;
+  if (!hayTrabajoAbierto()) { location.reload(); return; }
+  if (!recargaPendiente) {
+    recargaPendiente = true;
+    toast('El panel ya se actualizó a la versión nueva. Cuando termines lo que estás haciendo, la pantalla se va a recargar sola.', 'ok');
+    const t = setInterval(() => { if (!hayTrabajoAbierto()) { clearInterval(t); location.reload(); } }, 3000);
+  }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) vigilarVersionPagina(); });
+window.addEventListener('focus', vigilarVersionPagina);
+setInterval(vigilarVersionPagina, 60 * 1000);
 
 /* ---------- que el CONTENIDO llegue solo (22-sep) ----------
    El panel avisaba de versiones nuevas del programa pero nunca de contenido

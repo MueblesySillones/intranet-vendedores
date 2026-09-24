@@ -25,9 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.32.0"
-NUEVO_LABEL = "1.32.0 - actualizar es obligatorio y los errores salen en castellano"
-NUEVAS_NOTAS = ('ACTUALIZAR ES OBLIGATORIO: si hay una version nueva, aparece un cartel grande DEBES ACTUALIZAR PARA SEGUIR USANDO EL PANEL al abrir el panel y al empezar a crear o editar algo. Nunca al guardar o publicar, para no perder trabajo. LOS ERRORES SALEN EN CASTELLANO y dicen que hacer (antes decian cosas como getaddrinfo failed o Error 500). UNA COMPUTADORA YA NO PISA LO QUE EDITO OTRA: si el panel se puso al dia mientras tenias la pantalla abierta, guardar combina en vez de pisar. SI EL ARCHIVO DE CONTENIDO SE DANA, el panel avisa y no guarda encima (antes podia borrar todos los modulos sin decir nada). CARTELERA: adjuntar un PDF anda, y un segundo clic en Publicar ya no duplica. TUTORIALES: no deja poner un capitulo despues del final del video. DATOS: conectar la misma planilla dos veces ya no crea tarjetas repetidas. Los archivos que se suben se guardan con su nombre original, no con numeros. Se puede usar con teclado y tiene mejor contraste. La tarjeta de la computadora dice si es la central o una sucursal.')
+NUEVA_PUBLICA = "1.33.0"
+NUEVO_LABEL = "1.33.0 - fotos y videos de la Cartelera, y la pantalla se recarga sola al actualizar"
+NUEVAS_NOTAS = ('ARREGLOS: en la Cartelera del panel las fotos se abren en grande y los videos se reproducen (antes era solo un dibujo). El visor de fotos del panel se cierra bien: antes quedaba tapando la pantalla. Despues de actualizar, la pantalla se recarga sola con la version nueva: antes podia quedar mostrando la anterior y pidiendo actualizar otra vez. MEJORAS: el cartel de actualizar dice que version llega y, en dos listas cortas, que arreglos y que mejoras trae. Una pestana que quedo abierta con una version vieja se recarga sola, sin perder lo que estas escribiendo.')
+
+# ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
+# (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
+# MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
+# sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
+# anterior, el guion frena: el cartel mostraría lo de otra versión.
+NUEVOS_ARREGLOS = ["Las fotos de la Cartelera del panel se abren en grande", "Los videos de la Cartelera del panel se reproducen", "El visor de fotos del panel se cierra bien (antes quedaba tapando la pantalla)", "Después de actualizar, la pantalla se recarga sola con la versión nueva"]
+NUEVAS_MEJORAS = ["El cartel de actualizar dice qué versión llega y qué trae", "Si una pestaña quedó abierta con una versión vieja, se recarga sola sin perder lo que estás escribiendo"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -114,6 +122,18 @@ src = re.sub(r'^VERSION_PUBLICA\s*=\s*".*?"\s*$',
              'VERSION_PUBLICA = "%s"' % NUEVA_PUBLICA, src, count=1, flags=re.M)
 src = re.sub(r'^VERSION_LABEL\s*=\s*".*?"\s*$',
              'VERSION_LABEL = "%s"' % NUEVO_LABEL, src, count=1, flags=re.M)
+
+# las dos listas del cartel
+if not (NUEVOS_ARREGLOS or NUEVAS_MEJORAS):
+    morir("completá NUEVOS_ARREGLOS y/o NUEVAS_MEJORAS (arriba de todo): es lo que ve la persona en el cartel de actualizar")
+_prev_arr = re.search(r"^VERSION_ARREGLOS = (.*)$", src, flags=re.M)
+_prev_mej = re.search(r"^VERSION_MEJORAS = (.*)$", src, flags=re.M)
+if not _prev_arr or not _prev_mej:
+    morir("no encuentro VERSION_ARREGLOS / VERSION_MEJORAS en panel_server.py")
+if (json.loads(_prev_arr.group(1)) == NUEVOS_ARREGLOS and json.loads(_prev_mej.group(1)) == NUEVAS_MEJORAS):
+    morir("NUEVOS_ARREGLOS / NUEVAS_MEJORAS son los de la version anterior: escribí los de esta")
+src = re.sub(r"^VERSION_ARREGLOS = .*$", lambda m: "VERSION_ARREGLOS = " + json.dumps(NUEVOS_ARREGLOS, ensure_ascii=False), src, count=1, flags=re.M)
+src = re.sub(r"^VERSION_MEJORAS = .*$", lambda m: "VERSION_MEJORAS = " + json.dumps(NUEVAS_MEJORAS, ensure_ascii=False), src, count=1, flags=re.M)
 
 i = src.find("VERSION_NOTES")
 if i < 0:

@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 86
+VERSION = 87
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,25 +349,23 @@ VERSION = 86
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.32.0"
-VERSION_LABEL = "1.32.0 - actualizar es obligatorio y los errores salen en castellano"
+VERSION_PUBLICA = "1.33.0"
+VERSION_LABEL = "1.33.0 - fotos y videos de la Cartelera, y la pantalla se recarga sola al actualizar"
 VERSION_NOTES = (
-                 "ACTUALIZAR ES OBLIGATORIO: si hay una version nueva, aparece un "
-                 "cartel grande DEBES ACTUALIZAR PARA SEGUIR USANDO EL PANEL al "
-                 "abrir el panel y al empezar a crear o editar algo. Nunca al "
-                 "guardar o publicar, para no perder trabajo. LOS ERRORES SALEN EN "
-                 "CASTELLANO y dicen que hacer (antes decian cosas como getaddrinfo "
-                 "failed o Error 500). UNA COMPUTADORA YA NO PISA LO QUE EDITO OTRA: "
-                 "si el panel se puso al dia mientras tenias la pantalla abierta, "
-                 "guardar combina en vez de pisar. SI EL ARCHIVO DE CONTENIDO SE "
-                 "DANA, el panel avisa y no guarda encima (antes podia borrar todos "
-                 "los modulos sin decir nada). CARTELERA: adjuntar un PDF anda, y un "
-                 "segundo clic en Publicar ya no duplica. TUTORIALES: no deja poner "
-                 "un capitulo despues del final del video. DATOS: conectar la misma "
-                 "planilla dos veces ya no crea tarjetas repetidas. Los archivos que "
-                 "se suben se guardan con su nombre original, no con numeros. Se "
-                 "puede usar con teclado y tiene mejor contraste. La tarjeta de la "
-                 "computadora dice si es la central o una sucursal.")
+                 "ARREGLOS: en la Cartelera del panel las fotos se abren en grande y "
+                 "los videos se reproducen (antes era solo un dibujo). El visor de "
+                 "fotos del panel se cierra bien: antes quedaba tapando la pantalla. "
+                 "Despues de actualizar, la pantalla se recarga sola con la version "
+                 "nueva: antes podia quedar mostrando la anterior y pidiendo "
+                 "actualizar otra vez. MEJORAS: el cartel de actualizar dice que "
+                 "version llega y, en dos listas cortas, que arreglos y que mejoras "
+                 "trae. Una pestana que quedo abierta con una version vieja se "
+                 "recarga sola, sin perder lo que estas escribiendo.")
+# Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
+# pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
+# Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
+VERSION_ARREGLOS = ["Las fotos de la Cartelera del panel se abren en grande", "Los videos de la Cartelera del panel se reproducen", "El visor de fotos del panel se cierra bien (antes quedaba tapando la pantalla)", "Después de actualizar, la pantalla se recarga sola con la versión nueva"]
+VERSION_MEJORAS = ["El cartel de actualizar dice qué versión llega y qué trae", "Si una pestaña quedó abierta con una versión vieja, se recarga sola sin perder lo que estás escribiendo"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2553,6 +2551,8 @@ def chequear_update(timeout=8):
         "disponible": remota > VERSION,
         "version": remota, "local": VERSION,
         "label": data.get("label", ""), "notes": data.get("notes", ""),
+        "arreglos": [x for x in (data.get("arreglos") or []) if isinstance(x, str)],
+        "mejoras": [x for x in (data.get("mejoras") or []) if isinstance(x, str)],
         "sha256": data.get("sha256", ""), "size": int(data.get("size") or 0),
         "url": (data.get("url") or "").strip(),
         # las versiones que quedaron en el medio: el aviso puede decir cuantas
