@@ -1071,7 +1071,10 @@ async function renderContenidoEditor() {
     await renderDescargables();
     return;
   }
-  $('#dModoFld').hidden = false;
+  /* 24-sep-2026 (pedido del dueño): "Qué es este módulo" (Página /
+     Presentación / Biblioteca / Cartelera) ya no se muestra: confundía y no se
+     entendía qué cambiaba. Los módulos que ya son de otro tipo lo conservan. */
+  $('#dModoFld').hidden = true;
   let data = {};
   if (key) { try { data = await api('/api/contenido?key=' + encodeURIComponent(key)); } catch (e) {} }
   detOriginal = data.original || null;
@@ -1186,8 +1189,7 @@ function pintarModo() {
   // con el acordeón cerrado igual se lee qué es el módulo ("Reporte · Biblioteca")
   const am = $('#apMeta');
   if (am) {
-    const nm = { pagina: 'Página', presentacion: 'Presentación', biblioteca: 'Biblioteca', muro: 'Cartelera' }[modo] || '';
-    am.textContent = (($('#dTitle') || {}).value || 'Sin nombre') + ' · ' + nm;
+    am.textContent = (($('#dTitle') || {}).value || 'Sin nombre');
   }
 }
 
@@ -1750,19 +1752,24 @@ const BK_ICONOS = ['check', 'x', 'clock', 'map', 'mic', 'phone', 'truck', 'shiel
    que dicen lo que diría un vendedor y no lo que diría un programador.
    "Sección de descargas" era el bloque estrella y estaba enterrado cuarto. */
 const GRUPOS_BLOQUE = {
-  'Texto': ['titulo', 'subtitulo', 'parrafo', 'destacado', 'kicker'],
-  'Listas y avisos': ['lista', 'pasos', 'nota', 'advertencia', 'chat', 'situacion'],
-  'Fotos, videos y archivos': ['imagen', 'galeria', 'video', 'pdf', 'plantilla', 'embed', 'boton'],
+  /* 24-sep-2026 (pedido del dueño): título y subtítulo son UN bloque (el
+     tamaño se elige en Ajustes); "Destacado" se sacó (era un párrafo más
+     grande y confundía); chat y situación son UN bloque (se elige en Ajustes).
+     Los bloques viejos de esos tipos se siguen viendo y editando igual. */
+  'Texto': ['titulo', 'parrafo', 'kicker'],
+  'Listas y avisos': ['lista', 'pasos', 'nota', 'advertencia', 'chat'],
+  /* la plantilla de WhatsApp vive adentro del bloque Chat (24-sep) */
+  'Fotos, videos y archivos': ['imagen', 'galeria', 'video', 'pdf', 'embed', 'boton'],
   'Números y tablas': ['tabla', 'kpis', 'barras', 'podio', 'tarjetas'],
   'Separaciones': ['separador', 'espacio'],
   'Presentación': ['diapo'],
 };
 // sinónimos: nadie busca "kicker", buscan "excel", "foto", "whatsapp", "ranking"
 const ALIAS_BLOQUE = {
-  titulo: 'encabezado h1 titular', subtitulo: 'encabezado h2 seccion',
+  titulo: 'encabezado h1 titular subtitulo h2 seccion', subtitulo: 'encabezado h2 seccion',
   parrafo: 'texto cuerpo escribir', destacado: 'copete intro lead resumen',
   kicker: 'etiqueta rotulo numero paso', lista: 'checklist tildes puntos bullets requisitos',
-  pasos: 'flujo proceso diagrama circuito', chat: 'whatsapp conversacion mensaje burbuja cliente',
+  pasos: 'flujo proceso diagrama circuito', chat: 'whatsapp conversacion mensaje burbuja cliente situacion caso ejemplo respuesta plantilla carrusel meta',
   situacion: 'objecion caso guion respuesta cliente', nota: 'aviso importante atencion recuadro recordatorio',
   advertencia: 'peligro cuidado alerta atencion rojo critico grave error prohibido',
   separador: 'linea divisoria raya corte', espacio: 'aire margen blanco separacion',
@@ -1780,14 +1787,14 @@ const ALIAS_BLOQUE = {
 const SVG_WARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.2 20H2.8z"/><path d="M12 10v4"/><path d="M12 17.2v.1"/></svg>';
 const BLOQUE_INFO = {
   ref: { label: 'Señalar un módulo', desc: 'Tarjeta que lleva a donde vive el material' },
-  titulo: { label: 'Título', desc: 'Encabezado grande' },
+  titulo: { label: 'Título / subtítulo', desc: 'Encabezado: el tamaño se elige en Ajustes' },
   subtitulo: { label: 'Subtítulo', desc: 'Encabezado mediano' },
   parrafo: { label: 'Párrafo', desc: 'Texto normal' },
   destacado: { label: 'Destacado', desc: 'Frase de intro grande' },
   kicker: { label: 'Etiqueta con número', desc: 'Rótulo chico arriba de un título' },
   lista: { label: 'Lista de chequeo', desc: 'Ítems con tilde' },
   pasos: { label: 'Pasos (diagrama)', desc: 'Flujo con íconos' },
-  chat: { label: 'Ejemplo (chat)', desc: 'Burbujas de WhatsApp' },
+  chat: { label: 'Chat', desc: 'Ejemplo de chat, situación o plantilla de WhatsApp: se elige en Ajustes' },
   situacion: { label: 'Situación', desc: 'Tarjeta con etiqueta + respuesta' },
   nota: { label: 'Nota', desc: 'Recuadro con ícono' },
   advertencia: { label: 'Advertencia', desc: 'Aviso importante que no puede pasarse por alto' },
@@ -1808,6 +1815,46 @@ const BLOQUE_INFO = {
   plantilla: { label: 'Plantilla de WhatsApp', desc: 'Como la ve el cliente: texto, botones o carrusel' },
   html: { label: 'Diseño del sistema', desc: 'Bloque original' },
 };
+
+/* Chat: UN bloque, y en Ajustes se elige qué es (pedido del dueño, 24-sep):
+   ejemplo de chat, situación o plantilla de WhatsApp. Se convierte EN EL
+   LUGAR y el texto viaja: los mensajes de un chat pasan al cuerpo de la
+   plantilla y al revés. */
+function tipoChatSelector(bk) {
+  const w = document.createElement('div');
+  w.appendChild(lbl('Tipo'));
+  const row = document.createElement('div'); row.className = 'bk-row';
+  const aTexto = h => { const d = document.createElement('div'); d.innerHTML = (h || '').replace(/<br\s*\/?>/gi, '\n'); return (d.textContent || '').trim(); };
+  [['chat', 'Ejemplo de chat'], ['situacion', 'Situación'], ['plantilla', 'Plantilla de WhatsApp']].forEach(([t, nm]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = nm;
+    b.className = 'ctipo' + (bk.t === t ? ' sel' : '');
+    b.onclick = () => {
+      if (bk.t === t) return;
+      let msgs = (bk.t === 'chat' ? bk.items : bk.t === 'situacion' ? bk.mensajes : null) || [];
+      msgs = msgs.map(m => typeof m === 'string' ? { lado: 'out', html: m } : m);
+      if (bk.t === 'plantilla' && (bk.cuerpo || '').trim())
+        msgs = [{ lado: 'out', html: esc(bk.cuerpo).replace(/\n/g, '<br>') }];
+      let nuevo;
+      if (t === 'plantilla') {
+        nuevo = bloqueNuevo('plantilla');
+        nuevo.cuerpo = msgs.filter(m => m.lado !== 'in').map(m => aTexto(m.html)).filter(Boolean).join('\n\n');
+      } else if (t === 'situacion') {
+        nuevo = Object.assign(bloqueNuevo('situacion'), { mensajes: msgs.length ? msgs : [{ lado: 'out', html: '' }],
+                                                          titulo: (bk.label && bk.label !== 'Ejemplo') ? bk.label : '' });
+      } else {
+        nuevo = Object.assign(bloqueNuevo('chat'), { items: msgs.length ? msgs : [{ lado: 'out', html: '' }] });
+      }
+      const id = bk.id;
+      Object.keys(bk).forEach(k => { delete bk[k]; });
+      Object.assign(bk, nuevo);
+      if (id !== undefined) bk.id = id;
+      renderCanvas(); selectBlock(SEL);
+    };
+    row.appendChild(b);
+  });
+  w.appendChild(row);
+  return w;
+}
 
 function bloqueNuevo(t) {
   switch (t) {
@@ -2054,8 +2101,9 @@ const BLOQUE_MINI = {
   plantilla: '<rect x="11" y="3" width="18" height="21" rx="2.5" opacity=".18"/><rect x="13" y="5" width="14" height="8" rx="1.5" opacity=".5"/>' + rc(13, 15, 14, 2.5, .5) + '<rect x="13" y="19" width="14" height="4" rx="2"/>',
 };
 const sinTilde = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-// qué grupos dejó abiertos el usuario (se recuerda mientras edita)
-const GB_ABIERTOS = new Set(['Texto']);
+/* los grupos arrancan abiertos y se pliegan tocando su nombre (pedido del
+   dueño, 24-sep). Se recuerda mientras dura la sesión; buscando, se ven todos. */
+const GB_CERRADOS = new Set();
 
 function renderGbAdd() {
   const box = $('#gbAdd');
@@ -2073,8 +2121,16 @@ function renderGbAdd() {
     if (!vis.length) return;
     hay += vis.length;
     const g = document.createElement('div'); g.className = 'pal-grupo';
-    g.innerHTML = `<h5>${esc(grupo)} <span class="n">${vis.length}</span></h5>`;
+    const cerrado = !q && GB_CERRADOS.has(grupo);
+    g.classList.toggle('cerrado', cerrado);
+    g.innerHTML = `<h5><button type="button" class="pal-toggle" aria-expanded="${!cerrado}">` +
+      `<span class="pal-chev" aria-hidden="true">▾</span>${esc(grupo)}</button> <span class="n">${vis.length}</span></h5>`;
+    g.querySelector('.pal-toggle').onclick = () => {
+      if (GB_CERRADOS.has(grupo)) GB_CERRADOS.delete(grupo); else GB_CERRADOS.add(grupo);
+      renderGbAdd();
+    };
     const grid = document.createElement('div'); grid.className = 'pal-grid';
+    grid.hidden = cerrado;
     vis.forEach(t => {
       const inf = BLOQUE_INFO[t];
       const b = document.createElement('button');
@@ -2702,7 +2758,7 @@ function renderInspector() {
     box.appendChild(iconMini(bk, 'icono'));
   }
   else if (bk.t === 'titulo') {
-    box.appendChild(lbl('Nivel'));
+    box.appendChild(lbl('Tipo'));
     const row = document.createElement('div'); row.className = 'bk-row';
     [['h1', 'Título'], ['h2', 'Subtítulo']].forEach(([lv, nm]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = nm; b.className = 'ctipo' + ((bk.nivel || 'h1') === lv ? ' sel' : ''); b.onclick = () => { bk.nivel = lv; renderCanvas(); selectBlock(SEL); }; row.appendChild(b); });
     box.appendChild(row);
@@ -2712,9 +2768,9 @@ function renderInspector() {
   else if (bk.t === 'separador') { box.appendChild(lbl('Grosor de la línea')); const sel = document.createElement('select'); sel.innerHTML = '<option value="2">Fina (2px)</option><option value="4">Media (4px)</option><option value="6">Gruesa (6px)</option><option value="8">Extra gruesa (8px)</option>'; sel.value = String(bk.grosor || 4); sel.className = 'insp-sel'; sel.onchange = () => { bk.grosor = parseInt(sel.value, 10); renderCanvas(); selectBlock(SEL); }; box.appendChild(sel); }
   else if (bk.t === 'pasos') { box.appendChild(pasosInspector(bk)); }
   else if (bk.t === 'lista') { box.appendChild(listaInspector(bk)); }
-  else if (bk.t === 'chat') { box.appendChild(chatInspector(bk)); }
-  else if (bk.t === 'situacion') { box.appendChild(situacionInspector(bk)); }
-  else if (bk.t === 'plantilla') { box.appendChild(plantillaInspector(bk)); }
+  else if (bk.t === 'chat') { box.appendChild(tipoChatSelector(bk)); box.appendChild(chatInspector(bk)); }
+  else if (bk.t === 'situacion') { box.appendChild(tipoChatSelector(bk)); box.appendChild(situacionInspector(bk)); }
+  else if (bk.t === 'plantilla') { box.appendChild(tipoChatSelector(bk)); box.appendChild(plantillaInspector(bk)); }
   else if (bk.t === 'tabla') { box.appendChild(tablaInspector(bk)); }
   else if (bk.t === 'kpis') { box.appendChild(kpisInspector(bk)); }
   else if (bk.t === 'barras') { box.appendChild(barrasInspector(bk)); }

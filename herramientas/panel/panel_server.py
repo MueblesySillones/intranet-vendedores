@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 89
+VERSION = 90
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,23 +349,24 @@ VERSION = 89
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.33.2"
-VERSION_LABEL = "1.33.2 - actualizar ya no puede quedar en un circulo"
+VERSION_PUBLICA = "1.34.0"
+VERSION_LABEL = "1.34.0 - editor de modulos mas simple"
 VERSION_NOTES = (
-                 "ARREGLO: el circulo de actualizar y que vuelva a pedir la misma "
-                 "version. Cuando algun programa tenia abierta la carpeta del panel "
-                 "(el antivirus, el navegador), Windows no dejaba reemplazarla y el "
-                 "actualizador se rendia en silencio: se reabria la version vieja y "
-                 "volvia a pedir actualizar. Ahora, si no puede mover la carpeta, "
-                 "copia la version nueva encima, con respaldo por si algo sale mal. "
-                 "Y si aun asi no se pudo instalar, el panel lo dice con el motivo "
-                 "en vez de volver a pedir actualizar como si nada, y ofrece probar "
-                 "de nuevo o seguir por ahora.")
+                 "MEJORAS del editor de modulos, pedidas por el equipo: los ajustes "
+                 "del modulo quedan en lo justo (nombre, subtitulo, icono, color y "
+                 "disponibilidad); se saco la opcion Que es este modulo, que "
+                 "confundia. Titulo y subtitulo son un solo bloque y el tamano se "
+                 "elige en Ajustes. El bloque Chat reune el ejemplo de chat, la "
+                 "situacion y la plantilla de WhatsApp: se elige en Ajustes y el "
+                 "texto se conserva al cambiar. Se sacaron el bloque Destacado y el "
+                 "boton Pegar de Word o Excel. Los grupos de bloques se pueden "
+                 "plegar tocando su nombre. Los modulos y bloques que ya existian se "
+                 "siguen viendo igual.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["Actualizar ya no queda en un círculo: si Windows no deja reemplazar la carpeta del panel, se copia la versión nueva encima"]
-VERSION_MEJORAS = ["Si una actualización no se pudo instalar, el panel lo dice con el motivo y ofrece probar de nuevo"]
+VERSION_ARREGLOS = []
+VERSION_MEJORAS = ["Los ajustes del módulo quedan en lo justo: nombre, subtítulo, ícono, color y disponibilidad", "Título y subtítulo son un solo bloque: el tamaño se elige en Ajustes", "Un solo bloque Chat: ejemplo de chat, situación o plantilla de WhatsApp, se elige en Ajustes", "Se sacaron el bloque Destacado y el botón Pegar de Word o Excel", "Los grupos de bloques se pueden plegar"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

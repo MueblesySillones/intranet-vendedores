@@ -1019,3 +1019,10 @@ body > .sel2-pop{z-index:220}
 .forzar-upd .forzar-lista.mejoras h3{color:var(--ok,#5B7A5B)} .forzar-upd .forzar-lista.mejoras .ptito{background:var(--ok,#5B7A5B)}
 .forzar-upd .forzar-lista ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px;line-height:1.45}
 .forzar-upd .forzar-tx{color:var(--ink2);font-size:14.5px !important}
+
+/* ---- grupos de bloques plegables (24-sep-2026) ---- */
+.pal-grupo h5 .pal-toggle{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit}
+.pal-grupo h5 .pal-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.pal-grupo .pal-chev{display:inline-block;transition:transform .15s}
+.pal-grupo.cerrado .pal-chev{transform:rotate(-90deg)}
+@media (prefers-reduced-motion:reduce){.pal-grupo .pal-chev{transition:none}}
