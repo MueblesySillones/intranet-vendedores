@@ -1,18 +1,18 @@
 {
-  "version": 90,
-  "label": "1.34.0 - editor de modulos mas simple",
-  "notes": "MEJORAS del editor de modulos, pedidas por el equipo: los ajustes del modulo quedan en lo justo (nombre, subtitulo, icono, color y disponibilidad); se saco la opcion Que es este modulo, que confundia. Titulo y subtitulo son un solo bloque y el tamano se elige en Ajustes. El bloque Chat reune el ejemplo de chat, la situacion y la plantilla de WhatsApp: se elige en Ajustes y el texto se conserva al cambiar. Se sacaron el bloque Destacado y el boton Pegar de Word o Excel. Los grupos de bloques se pueden plegar tocando su nombre. Los modulos y bloques que ya existian se siguen viendo igual.",
-  "arreglos": [],
-  "mejoras": [
-    "Los ajustes del módulo quedan en lo justo: nombre, subtítulo, ícono, color y disponibilidad",
-    "Título y subtítulo son un solo bloque: el tamaño se elige en Ajustes",
-    "Un solo bloque Chat: ejemplo de chat, situación o plantilla de WhatsApp, se elige en Ajustes",
-    "Se sacaron el bloque Destacado y el botón Pegar de Word o Excel",
-    "Los grupos de bloques se pueden plegar"
+  "version": 91,
+  "label": "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados",
+  "notes": "ARREGLOS: el boton Actualizar ahora usa el mismo metodo que el archivo ACTUALIZAR PANEL MyS.bat, que anda siempre: baja la version, la verifica y la copia encima. La pantalla va mostrando en que paso esta. Si la descarga falla, el panel sigue abierto y dice por que. Los ajustes del bloque ya no vuelven arriba de todo cada vez que se toca una opcion. MEJORAS: los ajustes del bloque son mas compactos y ordenados; el tipo de bloque se elige en una barra de una sola fila.",
+  "arreglos": [
+    "El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima",
+    "Si la descarga falla, el panel sigue abierto y dice por qué",
+    "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"
   ],
-  "sha256": "37a39ddcb107ff7c00554898367a8c9b66ce033d93bf15c34b371baa045335cc",
-  "size": 20391232,
-  "url": "panel/PanelMyS-v90.zip",
+  "mejoras": [
+    "Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"
+  ],
+  "sha256": "32cc61d2b35fbca7ded9fb9de0444ad0d5fae152ce1d641c95735f261d868bd8",
+  "size": 20400849,
+  "url": "panel/PanelMyS-v91.zip",
   "historial": [
     {
       "version": 83,
@@ -64,6 +64,18 @@
       ],
       "mejoras": [
         "Si una actualización no se pudo instalar, el panel lo dice con el motivo y ofrece probar de nuevo"
+      ]
+    },
+    {
+      "version": 90,
+      "label": "1.34.0 - editor de modulos mas simple",
+      "arreglos": [],
+      "mejoras": [
+        "Los ajustes del módulo quedan en lo justo: nombre, subtítulo, ícono, color y disponibilidad",
+        "Título y subtítulo son un solo bloque: el tamaño se elige en Ajustes",
+        "Un solo bloque Chat: ejemplo de chat, situación o plantilla de WhatsApp, se elige en Ajustes",
+        "Se sacaron el bloque Destacado y el botón Pegar de Word o Excel",
+        "Los grupos de bloques se pueden plegar"
       ]
     }
   ]
