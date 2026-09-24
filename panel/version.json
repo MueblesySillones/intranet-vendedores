@@ -1,18 +1,14 @@
 {
-  "version": 91,
-  "label": "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados",
-  "notes": "ARREGLOS: el boton Actualizar ahora usa el mismo metodo que el archivo ACTUALIZAR PANEL MyS.bat, que anda siempre: baja la version, la verifica y la copia encima. La pantalla va mostrando en que paso esta. Si la descarga falla, el panel sigue abierto y dice por que. Los ajustes del bloque ya no vuelven arriba de todo cada vez que se toca una opcion. MEJORAS: los ajustes del bloque son mas compactos y ordenados; el tipo de bloque se elige en una barra de una sola fila.",
+  "version": 92,
+  "label": "1.35.1 - los modulos del sistema se pueden eliminar",
+  "notes": "ARREGLO: los modulos que vienen con el sistema (por ejemplo Reporte mini competencia) no se podian eliminar: la pantalla decia Modulo eliminado, pero el panel lo volvia a agregar oculto y al recargar seguia ahi. Ahora, si se borra con el boton Eliminar y se confirma, se borra de verdad. La proteccion sigue para un modulo que falte por accidente.",
   "arreglos": [
-    "El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima",
-    "Si la descarga falla, el panel sigue abierto y dice por qué",
-    "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"
+    "Los módulos que vienen con el sistema ahora se pueden eliminar (antes volvían a aparecer)"
   ],
-  "mejoras": [
-    "Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"
-  ],
-  "sha256": "32cc61d2b35fbca7ded9fb9de0444ad0d5fae152ce1d641c95735f261d868bd8",
-  "size": 20400849,
-  "url": "panel/PanelMyS-v91.zip",
+  "mejoras": [],
+  "sha256": "18861d68ff5cd9300bbe21af15739bfa91b9bd824e44295fe70d37551e255a46",
+  "size": 20401785,
+  "url": "panel/PanelMyS-v92.zip",
   "historial": [
     {
       "version": 83,
@@ -76,6 +72,18 @@
         "Un solo bloque Chat: ejemplo de chat, situación o plantilla de WhatsApp, se elige en Ajustes",
         "Se sacaron el bloque Destacado y el botón Pegar de Word o Excel",
         "Los grupos de bloques se pueden plegar"
+      ]
+    },
+    {
+      "version": 91,
+      "label": "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados",
+      "arreglos": [
+        "El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima",
+        "Si la descarga falla, el panel sigue abierto y dice por qué",
+        "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"
+      ],
+      "mejoras": [
+        "Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"
       ]
     }
   ]
