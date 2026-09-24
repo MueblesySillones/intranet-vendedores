@@ -5034,6 +5034,16 @@ function exigirActualizacion() {
   $('#forzarUpdErr').hidden = true;
   $('#forzarUpdLuego').hidden = true;
   const si = $('#forzarUpdSi'); si.disabled = false; si.textContent = 'Actualizar ahora';
+  /* el intento anterior NO se instaló: se dice, con el motivo, en vez de pedir
+     actualizar como si nada (era el círculo "actualizo y me vuelve a pedir") */
+  if (UPD_PENDIENTE.fallo_anterior) {
+    const e = $('#forzarUpdErr');
+    e.textContent = 'El intento anterior no se pudo instalar: ' + UPD_PENDIENTE.fallo_anterior +
+      '. Probá de nuevo. Si vuelve a pasar, reiniciá la computadora o usá el archivo «ACTUALIZAR PANEL MyS.bat».';
+    e.hidden = false;
+    $('#forzarUpdLuego').hidden = false;
+    si.textContent = 'Probar de nuevo';
+  }
   if (!m.classList.contains('on')) abrirModal(m);
   return true;
 }

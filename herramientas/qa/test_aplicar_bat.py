@@ -233,6 +233,42 @@ def caso_lock_fresco():
 check("lock fresco: no pisa el update en curso", caso_lock_fresco)
 
 
+# ------------------ 7. EL CIRCULO: la carpeta del programa esta tomada
+def caso_carpeta_tomada():
+    """23-sep-2026: "aprieto actualizar y me vuelve a pedir actualizar".
+    Un proceso parado ADENTRO de la carpeta del programa (el navegador que
+    heredo el directorio, un antivirus) hace que Windows no deje MOVERLA.
+    Antes el bat se rendia (FAIL_NOCHANGE), reabria la version vieja y el
+    panel volvia a pedir actualizar, para siempre. Ahora copia encima."""
+    root = armar_root()
+    inst = os.path.join(root, "PanelMyS")
+    tomador = subprocess.Popen(["cmd", "/c", "ping -n 300 127.0.0.1 >nul"], cwd=inst,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        time.sleep(1)
+        log = correr(root)
+        est = instalado(root)
+        if est is None:
+            raise AssertionError("QUEDO SIN PROGRAMA. log:\n" + log)
+        if est["exe"] != "exe NUEVO":
+            raise AssertionError("NO se actualizo (el circulo). log:\n" + log[-600:])
+        if not est["config"] or not est["proyecto"]:
+            raise AssertionError("perdio los archivos per-maquina: %s" % est)
+        if "copiado encima" not in log:
+            raise AssertionError("no uso la copia encima; log:\n" + log[-600:])
+        dll = open(os.path.join(inst, "_internal", "algo.dll"), encoding="utf-8").read()
+        if dll != "nuevo":
+            raise AssertionError("quedo el _internal viejo")
+        return "no puede moverla, copia encima y actualiza"
+    finally:
+        tomador.kill()
+        time.sleep(0.5)
+        shutil.rmtree(root, ignore_errors=True)
+
+
+check("carpeta del programa tomada: actualiza igual (sin el circulo)", caso_carpeta_tomada)
+
+
 ok = sum(1 for r in RES if r[0] == "PASS")
 print("\n%d/%d PASS" % (ok, len(RES)))
 sys.exit(1 if ok != len(RES) else 0)

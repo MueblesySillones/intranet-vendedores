@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 88
+VERSION = 89
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,22 +349,23 @@ VERSION = 88
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.33.1"
-VERSION_LABEL = "1.33.1 - al actualizar, ninguna pantalla queda en la version vieja"
+VERSION_PUBLICA = "1.33.2"
+VERSION_LABEL = "1.33.2 - actualizar ya no puede quedar en un circulo"
 VERSION_NOTES = (
-                 "ARREGLO: al actualizar, la pestana que quedaba abierta con la "
-                 "version anterior ahora se recarga sola, venga de la version que "
-                 "venga. Antes, si el reinicio era muy rapido, esa pestana no se "
-                 "enteraba y quedaba mostrando la version vieja y pidiendo "
-                 "actualizar otra vez, aunque la nueva ya estaba instalada. El "
-                 "programa nuevo, apenas arranca, le avisa a las pestanas de "
-                 "versiones anteriores que se esta reiniciando, y eso las hace "
-                 "recargar.")
+                 "ARREGLO: el circulo de actualizar y que vuelva a pedir la misma "
+                 "version. Cuando algun programa tenia abierta la carpeta del panel "
+                 "(el antivirus, el navegador), Windows no dejaba reemplazarla y el "
+                 "actualizador se rendia en silencio: se reabria la version vieja y "
+                 "volvia a pedir actualizar. Ahora, si no puede mover la carpeta, "
+                 "copia la version nueva encima, con respaldo por si algo sale mal. "
+                 "Y si aun asi no se pudo instalar, el panel lo dice con el motivo "
+                 "en vez de volver a pedir actualizar como si nada, y ofrece probar "
+                 "de nuevo o seguir por ahora.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["Al actualizar, la pantalla vieja se recarga sola con la versión nueva, en todas las computadoras"]
-VERSION_MEJORAS = ["Cada actualización borra lo que el navegador tenía guardado del panel, para que siempre se vea la versión nueva"]
+VERSION_ARREGLOS = ["Actualizar ya no queda en un círculo: si Windows no deja reemplazar la carpeta del panel, se copia la versión nueva encima"]
+VERSION_MEJORAS = ["Si una actualización no se pudo instalar, el panel lo dice con el motivo y ofrece probar de nuevo"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2547,6 +2548,7 @@ def chequear_update(timeout=8):
         return {"disponible": False, "error": "no pude consultar la version (%s)" % "; ".join(fallas), "local": VERSION}
     remota = int(data.get("version") or 0)
     return {
+        "fallo_anterior": estado_intento_update() if remota > VERSION else None,
         "disponible": remota > VERSION,
         "version": remota, "local": VERSION,
         "label": data.get("label", ""), "notes": data.get("notes", ""),
@@ -2559,6 +2561,76 @@ def chequear_update(timeout=8):
         "historial": [h for h in (data.get("historial") or [])
                       if isinstance(h, dict) and int(h.get("version") or 0) > VERSION],
     }
+
+
+# =====================================================================
+#  ¿EL ULTIMO INTENTO DE ACTUALIZAR ANDUVO? (23-sep-2026)
+# =====================================================================
+#  El circulo que vio el dueño: "me dice actualiza a la 1.32.0, aprieto
+#  actualizar y me vuelve a aparecer 1.32.0". Si la instalacion fallaba, se
+#  reabria el panel VIEJO sin decir nada, y el panel viejo volvia a pedir
+#  actualizar como si fuera la primera vez. Ahora, antes de actualizar, se
+#  anota a que version se iba; al volver a abrir, si seguimos por debajo, el
+#  intento FALLO y la pantalla lo dice con el motivo, en vez de repetir el pedido.
+def _archivo_intento():
+    return os.path.join(STATE_DIR, "update_intento.json") if STATE_DIR else ""
+
+
+def _anotar_intento_update(version):
+    p = _archivo_intento()
+    if not p:
+        return
+    try:
+        os.makedirs(STATE_DIR, exist_ok=True)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump({"a": int(version or 0), "desde": VERSION, "cuando": time.time()}, f)
+    except (OSError, ValueError, TypeError):
+        pass
+
+
+def _motivo_del_log():
+    """Lo que dijo aplicar.log en el ULTIMO intento, en castellano llano."""
+    try:
+        with open(os.path.join(UPDATE_DIR, "aplicar.log"), encoding="utf-8", errors="replace") as f:
+            txt = f.read()
+    except OSError:
+        return "no quedo registro del intento"
+    ult = txt[txt.rfind("] start pid="):] if "] start pid=" in txt else txt[-1500:]
+    bajo = ult.lower()
+    if "la copia encima fallo" in bajo:      # el ultimo recurso tambien fallo
+        return ("Windows no dejó copiar los archivos nuevos: algún programa los tenía "
+                "abiertos (a veces el antivirus)")
+    if "no pude mover" in bajo or "utilizado por otro proceso" in bajo or "acceso denegado" in bajo:
+        return ("Windows no dejó reemplazar la carpeta del programa: algún programa la "
+                "tenía abierta (a veces el antivirus o el navegador)")
+    if "new sin" in bajo:
+        return "la descarga quedó incompleta"
+    if "rollback" in bajo:
+        return "la versión nueva no arrancó bien y se volvió a la anterior"
+    if "no pude cerrar el panel viejo" in bajo:
+        return "el panel viejo no se pudo cerrar"
+    if "lock fresco" in bajo:
+        return "había otra actualización en curso"
+    return "la instalación no terminó"
+
+
+def estado_intento_update():
+    """None si no hubo intento pendiente o si anduvo; el motivo si fallo."""
+    p = _archivo_intento()
+    if not p or not os.path.isfile(p):
+        return None
+    try:
+        with open(p, encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if VERSION >= int(d.get("a") or 0):
+        try:
+            os.remove(p)          # anduvo: ya no hay nada que avisar
+        except OSError:
+            pass
+        return None
+    return _motivo_del_log()
 
 
 def _lanzar_aplicar():
@@ -2732,6 +2804,7 @@ def aplicar_update(dry=False, jid=None):
         # 7) lanzar el swap; el endpoint responde y programa el os._exit
         if jid:
             _job_set(jid, pct=97, msg="Instalando y reiniciando el panel…")
+        _anotar_intento_update(version_esp)
         _lanzar_aplicar()
         liberar = False   # el proceso se va a morir; no re-habilitamos el flag
         return {"ok": True, "aplicando": True, "version": version_esp}

@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.33.1"
-NUEVO_LABEL = "1.33.1 - al actualizar, ninguna pantalla queda en la version vieja"
-NUEVAS_NOTAS = ('ARREGLO: al actualizar, la pestana que quedaba abierta con la version anterior ahora se recarga sola, venga de la version que venga. Antes, si el reinicio era muy rapido, esa pestana no se enteraba y quedaba mostrando la version vieja y pidiendo actualizar otra vez, aunque la nueva ya estaba instalada. El programa nuevo, apenas arranca, le avisa a las pestanas de versiones anteriores que se esta reiniciando, y eso las hace recargar.')
+NUEVA_PUBLICA = "1.33.2"
+NUEVO_LABEL = "1.33.2 - actualizar ya no puede quedar en un circulo"
+NUEVAS_NOTAS = ('ARREGLO: el circulo de actualizar y que vuelva a pedir la misma version. Cuando algun programa tenia abierta la carpeta del panel (el antivirus, el navegador), Windows no dejaba reemplazarla y el actualizador se rendia en silencio: se reabria la version vieja y volvia a pedir actualizar. Ahora, si no puede mover la carpeta, copia la version nueva encima, con respaldo por si algo sale mal. Y si aun asi no se pudo instalar, el panel lo dice con el motivo en vez de volver a pedir actualizar como si nada, y ofrece probar de nuevo o seguir por ahora.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Al actualizar, la pantalla vieja se recarga sola con la versión nueva, en todas las computadoras"]
-NUEVAS_MEJORAS = ["Cada actualización borra lo que el navegador tenía guardado del panel, para que siempre se vea la versión nueva"]
+NUEVOS_ARREGLOS = ["Actualizar ya no queda en un círculo: si Windows no deja reemplazar la carpeta del panel, se copia la versión nueva encima"]
+NUEVAS_MEJORAS = ["Si una actualización no se pudo instalar, el panel lo dice con el motivo y ofrece probar de nuevo"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -316,6 +316,8 @@ subprocess.run(["git", "add", "--",
                 "herramientas/panel/SucursalAuto.iss",
                 "herramientas/panel/PanelMyS.iss",
                 "herramientas/panel/PanelMyS.spec",
+                "herramientas/panel/updater",       # aplicar.bat: el que instala las versiones
+                "herramientas/panel/rescate",       # ACTUALIZAR PANEL MyS.bat
                 "herramientas/panel/web3",
                 "herramientas/panel/publicar_web3.py",
                 "herramientas/.gitignore",

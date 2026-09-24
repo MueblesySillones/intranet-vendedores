@@ -103,7 +103,7 @@ set /a n=0
 move "%INSTALL%" "%OLD%" >> "%LOG%" 2>&1
 if errorlevel 1 (
   set /a n+=1
-  if !n! gtr 20 ( echo no pude mover install a old >> "%LOG%" & goto fail )
+  if !n! gtr 20 ( echo no pude mover install a old: copio encima >> "%LOG%" & goto copiar )
   ping -n 2 127.0.0.1 >nul
   goto mv1
 )
@@ -131,6 +131,27 @@ REM    cualquier rol conocido (central o colaborador), no solo colaborador.
 if not exist "%INSTALL%\panel_config.json" ( echo falta panel_config tras restaurar >> "%LOG%" & goto rollback )
 findstr /i "colaborador central" "%INSTALL%\panel_config.json" >nul || ( echo config sin rol conocido >> "%LOG%" & goto rollback )
 echo swap OK >> "%LOG%"
+goto relaunch
+
+:copiar
+REM 23-sep-2026. EL CIRCULO "actualizo y me vuelve a pedir actualizar":
+REM cuando algo tiene tomada la carpeta del programa (antivirus, el navegador,
+REM otro programa parado adentro), Windows no deja MOVERLA. Antes se hacia
+REM `goto fail`: se reabria la version VIEJA sin decir nada, el panel veia que
+REM seguia habiendo una version nueva y pedia actualizar otra vez, para siempre.
+REM Copiar ENCIMA si se puede aunque la carpeta este tomada (es lo mismo que
+REM hace ACTUALIZAR PANEL MyS.bat). Antes, un respaldo; si la copia falla, se
+REM restaura el respaldo y recien ahi se da por fallido.
+robocopy "%INSTALL%" "%OLD%" /MIR /R:2 /W:1 /NFL /NDL /NJH /NJS /NP >nul 2>&1
+if errorlevel 8 ( echo no pude respaldar para copiar encima >> "%LOG%" & goto fail )
+robocopy "%NEW%" "%INSTALL%" /MIR /XF panel_config.json proyecto.txt identity.json update_ok.marker /XD aprobaciones /R:15 /W:2 /NFL /NDL /NJH /NJS /NP >> "%LOG%" 2>&1
+if errorlevel 8 (
+  echo la copia encima fallo: restauro el respaldo >> "%LOG%"
+  robocopy "%OLD%" "%INSTALL%" /MIR /R:5 /W:2 /NFL /NDL /NJH /NJS /NP >nul 2>&1
+  goto fail
+)
+if not exist "%INSTALL%\PanelMyS.exe" ( echo install sin exe tras copiar >> "%LOG%" & robocopy "%OLD%" "%INSTALL%" /MIR /R:5 /W:2 /NFL /NDL /NJH /NJS /NP >nul 2>&1 & goto fail )
+echo swap OK (copiado encima) >> "%LOG%"
 goto relaunch
 
 :rollback
