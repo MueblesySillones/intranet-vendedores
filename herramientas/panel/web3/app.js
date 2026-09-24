@@ -21,6 +21,12 @@ function mensajeError(m, status) {
 }
 async function api(url, opts) {
   let r;
+  /* esta página es de la versión que está corriendo: el programa no le hace el
+     "reiniciando" que usa para despertar a las pestañas viejas (ver /api/config) */
+  if (String(url).indexOf('/api/config') === 0) {
+    opts = Object.assign({}, opts);
+    opts.headers = Object.assign({ 'X-Panel-Pagina': '1' }, opts.headers || {});
+  }
   try { r = await fetch(url, opts); }
   catch (e) {
     throw new Error('El panel no responde. Puede que se haya cerrado el programa: abrí de nuevo el Panel MyS y recargá esta página.');

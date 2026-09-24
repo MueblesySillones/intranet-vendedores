@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.33.0"
-NUEVO_LABEL = "1.33.0 - fotos y videos de la Cartelera, y la pantalla se recarga sola al actualizar"
-NUEVAS_NOTAS = ('ARREGLOS: en la Cartelera del panel las fotos se abren en grande y los videos se reproducen (antes era solo un dibujo). El visor de fotos del panel se cierra bien: antes quedaba tapando la pantalla. Despues de actualizar, la pantalla se recarga sola con la version nueva: antes podia quedar mostrando la anterior y pidiendo actualizar otra vez. MEJORAS: el cartel de actualizar dice que version llega y, en dos listas cortas, que arreglos y que mejoras trae. Una pestana que quedo abierta con una version vieja se recarga sola, sin perder lo que estas escribiendo.')
+NUEVA_PUBLICA = "1.33.1"
+NUEVO_LABEL = "1.33.1 - al actualizar, ninguna pantalla queda en la version vieja"
+NUEVAS_NOTAS = ('ARREGLO: al actualizar, la pestana que quedaba abierta con la version anterior ahora se recarga sola, venga de la version que venga. Antes, si el reinicio era muy rapido, esa pestana no se enteraba y quedaba mostrando la version vieja y pidiendo actualizar otra vez, aunque la nueva ya estaba instalada. El programa nuevo, apenas arranca, le avisa a las pestanas de versiones anteriores que se esta reiniciando, y eso las hace recargar.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Las fotos de la Cartelera del panel se abren en grande", "Los videos de la Cartelera del panel se reproducen", "El visor de fotos del panel se cierra bien (antes quedaba tapando la pantalla)", "Después de actualizar, la pantalla se recarga sola con la versión nueva"]
-NUEVAS_MEJORAS = ["El cartel de actualizar dice qué versión llega y qué trae", "Si una pestaña quedó abierta con una versión vieja, se recarga sola sin perder lo que estás escribiendo"]
+NUEVOS_ARREGLOS = ["Al actualizar, la pantalla vieja se recarga sola con la versión nueva, en todas las computadoras"]
+NUEVAS_MEJORAS = ["Cada actualización borra lo que el navegador tenía guardado del panel, para que siempre se vea la versión nueva"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

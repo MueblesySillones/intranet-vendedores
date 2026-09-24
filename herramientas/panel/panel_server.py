@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 87
+VERSION = 88
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,23 +349,22 @@ VERSION = 87
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.33.0"
-VERSION_LABEL = "1.33.0 - fotos y videos de la Cartelera, y la pantalla se recarga sola al actualizar"
+VERSION_PUBLICA = "1.33.1"
+VERSION_LABEL = "1.33.1 - al actualizar, ninguna pantalla queda en la version vieja"
 VERSION_NOTES = (
-                 "ARREGLOS: en la Cartelera del panel las fotos se abren en grande y "
-                 "los videos se reproducen (antes era solo un dibujo). El visor de "
-                 "fotos del panel se cierra bien: antes quedaba tapando la pantalla. "
-                 "Despues de actualizar, la pantalla se recarga sola con la version "
-                 "nueva: antes podia quedar mostrando la anterior y pidiendo "
-                 "actualizar otra vez. MEJORAS: el cartel de actualizar dice que "
-                 "version llega y, en dos listas cortas, que arreglos y que mejoras "
-                 "trae. Una pestana que quedo abierta con una version vieja se "
-                 "recarga sola, sin perder lo que estas escribiendo.")
+                 "ARREGLO: al actualizar, la pestana que quedaba abierta con la "
+                 "version anterior ahora se recarga sola, venga de la version que "
+                 "venga. Antes, si el reinicio era muy rapido, esa pestana no se "
+                 "enteraba y quedaba mostrando la version vieja y pidiendo "
+                 "actualizar otra vez, aunque la nueva ya estaba instalada. El "
+                 "programa nuevo, apenas arranca, le avisa a las pestanas de "
+                 "versiones anteriores que se esta reiniciando, y eso las hace "
+                 "recargar.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["Las fotos de la Cartelera del panel se abren en grande", "Los videos de la Cartelera del panel se reproducen", "El visor de fotos del panel se cierra bien (antes quedaba tapando la pantalla)", "Después de actualizar, la pantalla se recarga sola con la versión nueva"]
-VERSION_MEJORAS = ["El cartel de actualizar dice qué versión llega y qué trae", "Si una pestaña quedó abierta con una versión vieja, se recarga sola sin perder lo que estás escribiendo"]
+VERSION_ARREGLOS = ["Al actualizar, la pantalla vieja se recarga sola con la versión nueva, en todas las computadoras"]
+VERSION_MEJORAS = ["Cada actualización borra lo que el navegador tenía guardado del panel, para que siempre se vea la versión nueva"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -3032,6 +3031,27 @@ def validar_tutoriales(lista):
 #  PC. Medido en qa/test_publicar_fusion.py (caso 2), fallaba 1 de cada 2.
 #  Ahora cada lectura lleva una `version`; al guardar, si el disco ya no es esa
 #  version, se combina (fusion.py) contra lo que la pantalla habia cargado.
+_ARRANQUE = time.time()   # cuándo arrancó ESTE programa (ver /api/config)
+
+
+def _cache_por_limpiar():
+    """True la primera vez que se sirve la pantalla con ESTA version (y la anota)."""
+    if not STATE_DIR:
+        return False
+    marca = os.path.join(STATE_DIR, "cache_limpia_version.txt")
+    try:
+        with open(marca, encoding="utf-8") as f:
+            if f.read().strip() == str(VERSION):
+                return False
+    except OSError:
+        pass
+    try:
+        os.makedirs(STATE_DIR, exist_ok=True)
+        with open(marca, "w", encoding="utf-8") as f:
+            f.write(str(VERSION))
+    except OSError:
+        return False
+    return True
 _VERSIONES_VISTAS = collections.OrderedDict()   # huella -> partes (lo que se entrego)
 
 
@@ -3994,6 +4014,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Cache-Control", "no-store, must-revalidate")
+        # ⚠️ 23-sep-2026 (pedido del dueño: "si es por problemas de cache, cada
+        # actualizacion debe ayudar a corregirlo"). La PRIMERA vez que se abre
+        # una version nueva, se le ordena al navegador borrar TODO lo que tenga
+        # guardado de este panel (solo la cache: los borradores y preferencias
+        # de localStorage no se tocan). Una vez por version y por computadora.
+        if _cache_por_limpiar():
+            self.send_header("Clear-Site-Data", '"cache"')
         self.send_header("Content-Length", str(len(cuerpo)))
         self.end_headers()
         try:
@@ -4037,6 +4064,21 @@ class Handler(BaseHTTPRequestHandler):
             return self._servir_estatico(INTRANET, rel)
 
         if path == "/api/config":
+            # ⚠️ 23-sep-2026 (pedido del dueño: "que no vuelva a pasar en las otras
+            # computadoras"). Al actualizar, la pestaña que queda abierta es de la
+            # versión ANTERIOR y solo se recarga si ve al programa "caído" un
+            # momento. Si el reinicio pasa entre dos de sus consultas, no lo ve y
+            # queda para siempre en la versión vieja pidiendo actualizar. Esa
+            # pestaña corre código viejo, que no se puede arreglar desde acá; lo
+            # que sí se puede: durante los primeros segundos después de arrancar,
+            # a una página del navegador que NO es de esta versión se le contesta
+            # "reiniciando". Lo ve seguro (pregunta cada 2 s), y a la siguiente
+            # consulta se recarga sola con la versión nueva. Las páginas de esta
+            # versión mandan X-Panel-Pagina; las pruebas y guiones no son un
+            # navegador (no mandan Sec-Fetch-Dest): a ninguno de los dos le toca.
+            if (time.time() - _ARRANQUE < 8 and self.headers.get("Sec-Fetch-Dest")
+                    and not self.headers.get("X-Panel-Pagina")):
+                return self._json({"error": "el panel se esta reiniciando"}, 503)
             return self._json({
                 "rol": ROL, "es_central": ES_CENTRAL, "usuario": USUARIO,
                 "nombre_equipo": NOMBRE_EQUIPO,
