@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.35.0"
-NUEVO_LABEL = "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados"
-NUEVAS_NOTAS = ('ARREGLOS: el boton Actualizar ahora usa el mismo metodo que el archivo ACTUALIZAR PANEL MyS.bat, que anda siempre: baja la version, la verifica y la copia encima. La pantalla va mostrando en que paso esta. Si la descarga falla, el panel sigue abierto y dice por que. Los ajustes del bloque ya no vuelven arriba de todo cada vez que se toca una opcion. MEJORAS: los ajustes del bloque son mas compactos y ordenados; el tipo de bloque se elige en una barra de una sola fila.')
+NUEVA_PUBLICA = "1.35.1"
+NUEVO_LABEL = "1.35.1 - los modulos del sistema se pueden eliminar"
+NUEVAS_NOTAS = ('ARREGLO: los modulos que vienen con el sistema (por ejemplo Reporte mini competencia) no se podian eliminar: la pantalla decia Modulo eliminado, pero el panel lo volvia a agregar oculto y al recargar seguia ahi. Ahora, si se borra con el boton Eliminar y se confirma, se borra de verdad. La proteccion sigue para un modulo que falte por accidente.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima", "Si la descarga falla, el panel sigue abierto y dice por qué", "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"]
-NUEVAS_MEJORAS = ["Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"]
+NUEVOS_ARREGLOS = ["Los módulos que vienen con el sistema ahora se pueden eliminar (antes volvían a aparecer)"]
+NUEVAS_MEJORAS = []
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

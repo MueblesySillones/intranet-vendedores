@@ -487,6 +487,7 @@ async function pedirToken() {
 // ---------- rol: central vs colaborador (ambos publican DIRECTO via el cerebro) ----------
 let ES_CENTRAL = true;   // hasta que /api/config diga lo contrario
 let VERSION_PAGINA = null;   // la version del programa con la que se cargo ESTA pagina
+const MODULOS_A_ELIMINAR = new Set();   // borrados con el botón Eliminar, a avisar al guardar
 let MODO_CEREBRO = true; // publicacion directa: se ignora el estado de git local
 
 async function cargarConfig() {
@@ -946,8 +947,10 @@ function modCard(m, idx, pos) {
 async function persistModulos(msg, deQuien) {
   const r = await api('/api/modulos', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ modulos: MODULOS, ajustes: AJUSTES, version: VERSION_MODULOS })
+    body: JSON.stringify({ modulos: MODULOS, ajustes: AJUSTES, version: VERSION_MODULOS,
+                           eliminar: [...MODULOS_A_ELIMINAR] })
   });
+  MODULOS_A_ELIMINAR.clear();
   if (r.version) VERSION_MODULOS = r.version;
   if (r.ajustes) AJUSTES = r.ajustes;
   if (deQuien) marcarEditado(deQuien); else marcarOtroCambio();
@@ -4913,6 +4916,9 @@ $('#detDelete').onclick = async () => {
      lo anota persistModulos. Antes esto solo restaba, y borrar el único módulo
      tocado dejaba el botón en «Todo publicado» con el borrado sin subir. */
   editados.delete(det.key); guardarEditados();
+  /* un módulo del sistema se borra SOLO si se avisa: si no, el servidor lo
+     vuelve a agregar oculto, por si faltaba por accidente (24-sep) */
+  MODULOS_A_ELIMINAR.add(det.key);
   MODULOS.splice(detIdx, 1);
   try { await persistModulos('Módulo eliminado. Acordate de Publicar.'); mostrarDetalle(false); }
   catch (e) { toast(e.message, 'err'); }

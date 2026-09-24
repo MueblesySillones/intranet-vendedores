@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 91
+VERSION = 92
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,22 +349,20 @@ VERSION = 91
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.35.0"
-VERSION_LABEL = "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados"
+VERSION_PUBLICA = "1.35.1"
+VERSION_LABEL = "1.35.1 - los modulos del sistema se pueden eliminar"
 VERSION_NOTES = (
-                 "ARREGLOS: el boton Actualizar ahora usa el mismo metodo que el "
-                 "archivo ACTUALIZAR PANEL MyS.bat, que anda siempre: baja la "
-                 "version, la verifica y la copia encima. La pantalla va mostrando "
-                 "en que paso esta. Si la descarga falla, el panel sigue abierto y "
-                 "dice por que. Los ajustes del bloque ya no vuelven arriba de todo "
-                 "cada vez que se toca una opcion. MEJORAS: los ajustes del bloque "
-                 "son mas compactos y ordenados; el tipo de bloque se elige en una "
-                 "barra de una sola fila.")
+                 "ARREGLO: los modulos que vienen con el sistema (por ejemplo "
+                 "Reporte mini competencia) no se podian eliminar: la pantalla decia "
+                 "Modulo eliminado, pero el panel lo volvia a agregar oculto y al "
+                 "recargar seguia ahi. Ahora, si se borra con el boton Eliminar y se "
+                 "confirma, se borra de verdad. La proteccion sigue para un modulo "
+                 "que falte por accidente.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima", "Si la descarga falla, el panel sigue abierto y dice por qué", "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"]
-VERSION_MEJORAS = ["Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"]
+VERSION_ARREGLOS = ["Los módulos que vienen con el sistema ahora se pueden eliminar (antes volvían a aparecer)"]
+VERSION_MEJORAS = []
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -3494,8 +3492,9 @@ def slug(texto):
     return s or "modulo"
 
 
-def validar_modulos(lista):
-    """Sanea y valida la lista recibida del panel. Devuelve (lista_ok, error)."""
+def validar_modulos(lista, eliminar=None):
+    """Sanea y valida la lista recibida del panel. Devuelve (lista_ok, error).
+    `eliminar`: claves que la persona BORRO a proposito (boton Eliminar)."""
     if not isinstance(lista, list) or not lista:
         return None, "La lista de modulos esta vacia."
     previos = {m.get("key"): m for m in leer_modulos()}
@@ -3541,7 +3540,14 @@ def validar_modulos(lista):
             out["content"] = c     # contenido propio/reemplazado (permitido en cualquier módulo)
         salida.append(out)
     # asegurar que no se pierdan modulos builtin (su contenido vive en codigo)
-    faltan = [m for k, m in previos.items() if m.get("builtin") and k not in vistos]
+    # ⚠️ 24-sep-2026 (reportado por el dueño: "quise eliminar Reporte mini
+    # competencia y no se pudo"). Esta red volvia a agregar, OCULTO, cualquier
+    # modulo del sistema que faltara, aunque la persona lo hubiera borrado con
+    # el boton Eliminar: la pantalla decia "Modulo eliminado" y al recargar
+    # seguia ahi. La red sigue para lo que falte por accidente; lo que llega en
+    # `eliminar` (borrado a proposito, con confirmacion) se respeta.
+    eliminar = set(eliminar or [])
+    faltan = [m for k, m in previos.items() if m.get("builtin") and k not in vistos and k not in eliminar]
     salida.extend(faltan)  # se reanexan ocultos al final para no romper el sitio
     for m in faltan:
         m.setdefault("hidden", True)
@@ -4406,7 +4412,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._reorganizar()
             if path == "/api/modulos":
                 d = self._leer_json()
-                lista, err = validar_modulos(d.get("modulos"))
+                elim = [k for k in (d.get("eliminar") or []) if isinstance(k, str)]
+                lista, err = validar_modulos(d.get("modulos"), elim)
                 if err:
                     return self._json({"error": err}, 400)
                 aj = (validar_ajustes(d["ajustes"])
