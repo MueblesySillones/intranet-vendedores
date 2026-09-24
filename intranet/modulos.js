@@ -4409,16 +4409,6 @@ window.MODULES = [
       ],
       "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-lead\"><b>Programa de Embajadores MyS:</b> una propuesta exclusiva para <b>arquitectos y decoradores</b>.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/embajadores/Programa de Embajadores.jpg\" alt=\"Programa de Embajadores MyS · Exclusivo para arquitectos y decoradores\" loading=\"lazy\"><a class=\"dl-btn\" href=\"assets/embajadores/Programa de Embajadores.jpg\" download=\"Programa de Embajadores MyS · Exclusivo para arquitectos y d.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></figure></div><div class=\"db\" data-bi=\"2\"><p class=\"hint\">Tocá la imagen para verla en grande.</p></div>"
     }
-  },
-  {
-    "key": "competencia",
-    "title": "Reporte mini competencia",
-    "desc": "Qué está haciendo la competencia.",
-    "icon": "search",
-    "color": "--c-info",
-    "ready": false,
-    "builtin": true,
-    "hidden": true
   }
 ];
 /* Ajustes del sitio. novedad_horas = cuanto dura el cartel Nuevo. */
