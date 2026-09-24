@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.34.0"
-NUEVO_LABEL = "1.34.0 - editor de modulos mas simple"
-NUEVAS_NOTAS = ('MEJORAS del editor de modulos, pedidas por el equipo: los ajustes del modulo quedan en lo justo (nombre, subtitulo, icono, color y disponibilidad); se saco la opcion Que es este modulo, que confundia. Titulo y subtitulo son un solo bloque y el tamano se elige en Ajustes. El bloque Chat reune el ejemplo de chat, la situacion y la plantilla de WhatsApp: se elige en Ajustes y el texto se conserva al cambiar. Se sacaron el bloque Destacado y el boton Pegar de Word o Excel. Los grupos de bloques se pueden plegar tocando su nombre. Los modulos y bloques que ya existian se siguen viendo igual.')
+NUEVA_PUBLICA = "1.35.0"
+NUEVO_LABEL = "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados"
+NUEVAS_NOTAS = ('ARREGLOS: el boton Actualizar ahora usa el mismo metodo que el archivo ACTUALIZAR PANEL MyS.bat, que anda siempre: baja la version, la verifica y la copia encima. La pantalla va mostrando en que paso esta. Si la descarga falla, el panel sigue abierto y dice por que. Los ajustes del bloque ya no vuelven arriba de todo cada vez que se toca una opcion. MEJORAS: los ajustes del bloque son mas compactos y ordenados; el tipo de bloque se elige en una barra de una sola fila.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = []
-NUEVAS_MEJORAS = ["Los ajustes del módulo quedan en lo justo: nombre, subtítulo, ícono, color y disponibilidad", "Título y subtítulo son un solo bloque: el tamaño se elige en Ajustes", "Un solo bloque Chat: ejemplo de chat, situación o plantilla de WhatsApp, se elige en Ajustes", "Se sacaron el bloque Destacado y el botón Pegar de Word o Excel", "Los grupos de bloques se pueden plegar"]
+NUEVOS_ARREGLOS = ["El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima", "Si la descarga falla, el panel sigue abierto y dice por qué", "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"]
+NUEVAS_MEJORAS = ["Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

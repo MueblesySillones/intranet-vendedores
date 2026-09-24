@@ -1026,3 +1026,19 @@ body > .sel2-pop{z-index:220}
 .pal-grupo .pal-chev{display:inline-block;transition:transform .15s}
 .pal-grupo.cerrado .pal-chev{transform:rotate(-90deg)}
 @media (prefers-reduced-motion:reduce){.pal-grupo .pal-chev{transition:none}}
+
+/* ---- ajustes del bloque: más compactos y ordenados (24-sep-2026) ----
+   El dueño: los botones de "Tipo" eran enormes y se encimaban con lo de abajo.
+   El selector de tipo es una barra segmentada de una fila; las demás opciones
+   (categoría, formato, encabezado, botones…) bajan de tamaño; cada grupo de
+   opciones deja aire antes del rótulo siguiente. */
+.tipo-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;padding:3px;background:var(--bg,#F4F1EC);border:1px solid var(--line,#E4DFD6);border-radius:10px;margin:2px 0 16px}
+.tipo-seg .tipo-b{all:unset;box-sizing:border-box;text-align:center;padding:7px 6px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink2,#5B574F);cursor:pointer;line-height:1.2;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tipo-seg .tipo-b:hover{background:rgba(255,255,255,.7)}
+.tipo-seg .tipo-b.sel{background:#fff;color:var(--ink,#2C2A26);box-shadow:0 1px 3px rgba(44,42,38,.14)}
+.tipo-seg .tipo-b:focus-visible{outline:2px solid var(--accent,#7C6A55);outline-offset:1px}
+#gbInspector .ctipo{padding:6px 11px;font-size:13px;line-height:1.25;border-radius:8px}
+#gbInspector .ctipos,#gbInspector .bk-row{gap:6px}
+#gbInspector .bk-row{margin-bottom:10px}
+#gbInspector .bk-lbl{margin-top:12px}
+#gbInspector .bk-lbl:first-child{margin-top:0}

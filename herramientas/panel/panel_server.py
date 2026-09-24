@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 90
+VERSION = 91
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,24 +349,22 @@ VERSION = 90
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.34.0"
-VERSION_LABEL = "1.34.0 - editor de modulos mas simple"
+VERSION_PUBLICA = "1.35.0"
+VERSION_LABEL = "1.35.0 - actualizar con el mismo metodo del .bat y ajustes del bloque ordenados"
 VERSION_NOTES = (
-                 "MEJORAS del editor de modulos, pedidas por el equipo: los ajustes "
-                 "del modulo quedan en lo justo (nombre, subtitulo, icono, color y "
-                 "disponibilidad); se saco la opcion Que es este modulo, que "
-                 "confundia. Titulo y subtitulo son un solo bloque y el tamano se "
-                 "elige en Ajustes. El bloque Chat reune el ejemplo de chat, la "
-                 "situacion y la plantilla de WhatsApp: se elige en Ajustes y el "
-                 "texto se conserva al cambiar. Se sacaron el bloque Destacado y el "
-                 "boton Pegar de Word o Excel. Los grupos de bloques se pueden "
-                 "plegar tocando su nombre. Los modulos y bloques que ya existian se "
-                 "siguen viendo igual.")
+                 "ARREGLOS: el boton Actualizar ahora usa el mismo metodo que el "
+                 "archivo ACTUALIZAR PANEL MyS.bat, que anda siempre: baja la "
+                 "version, la verifica y la copia encima. La pantalla va mostrando "
+                 "en que paso esta. Si la descarga falla, el panel sigue abierto y "
+                 "dice por que. Los ajustes del bloque ya no vuelven arriba de todo "
+                 "cada vez que se toca una opcion. MEJORAS: los ajustes del bloque "
+                 "son mas compactos y ordenados; el tipo de bloque se elige en una "
+                 "barra de una sola fila.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = []
-VERSION_MEJORAS = ["Los ajustes del módulo quedan en lo justo: nombre, subtítulo, ícono, color y disponibilidad", "Título y subtítulo son un solo bloque: el tamaño se elige en Ajustes", "Un solo bloque Chat: ejemplo de chat, situación o plantilla de WhatsApp, se elige en Ajustes", "Se sacaron el bloque Destacado y el botón Pegar de Word o Excel", "Los grupos de bloques se pueden plegar"]
+VERSION_ARREGLOS = ["El botón Actualizar usa el mismo método que el archivo ACTUALIZAR PANEL MyS.bat: baja, verifica y copia encima", "Si la descarga falla, el panel sigue abierto y dice por qué", "Los ajustes del bloque ya no vuelven arriba de todo al tocar una opción"]
+VERSION_MEJORAS = ["Ajustes del bloque más compactos: el tipo se elige en una barra de una sola fila"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -2598,6 +2596,8 @@ def _motivo_del_log():
         return "no quedo registro del intento"
     ult = txt[txt.rfind("] start pid="):] if "] start pid=" in txt else txt[-1500:]
     bajo = ult.lower()
+    if "no se pudo actualizar:" in bajo:        # el actualizador de la v91 ya lo dice claro
+        return ult.split("NO SE PUDO ACTUALIZAR:", 1)[-1].strip().splitlines()[0]
     if "la copia encima fallo" in bajo:      # el ultimo recurso tambien fallo
         return ("Windows no dejó copiar los archivos nuevos: algún programa los tenía "
                 "abiertos (a veces el antivirus)")
@@ -2655,6 +2655,103 @@ def _lanzar_aplicar():
         subprocess.Popen(["cmd", "/c", bat, pid],
                          creationflags=NOWIN | NEWGRP, close_fds=True, cwd=sysroot,
                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+# =====================================================================
+#  ACTUALIZAR CON EL MISMO MECANISMO DEL .BAT (24-sep-2026, v91)
+# =====================================================================
+#  Pedido del dueño: "que el boton use la misma funcion que el .bat". En
+#  algunas computadoras el boton no llegaba ni a bajar la version, y el .bat
+#  (que baja con PowerShell, verifica y copia ENCIMA) andaba siempre. Ahora el
+#  boton lanza ese mismo script, escondido. El panel NO se cierra: el script lo
+#  cierra recien en el paso 4, con la version ya bajada y verificada. Si falla
+#  antes, el panel sigue abierto y la pantalla dice por que. El avance se lee
+#  de aplicar.log, donde el script anota cada paso.
+SCRIPT_UPDATE = os.path.join(RES_DIR, "rescate", "actualizar_ps.txt") if RES_DIR else ""
+_PASOS_PS = (("==> 1/5", 8, "Buscando la versión nueva…"),
+             ("==> 2/5", 25, "Bajando el programa (unos 20 MB)…"),
+             ("==> 3/5", 75, "Verificando y preparando la versión nueva…"),
+             ("==> 4/5", 90, "Instalando y reiniciando el panel…"),
+             ("==> 5/5", 96, "Abriendo el panel con la versión nueva…"))
+
+
+def aplicar_update_ps(jid=None):
+    """Lanza el actualizador del .bat y sigue su avance. Devuelve enseguida."""
+    global _UPDATE_EN_CURSO
+    if not (SCRIPT_UPDATE and os.path.isfile(SCRIPT_UPDATE) and UPDATE_DIR):
+        return None                                    # sin script: el camino de antes
+    # ⚠️ Solo sobre un programa INSTALADO de verdad. El script copia en ESPEJO
+    # (robocopy /MIR): corriendo desde el codigo fuente, su "carpeta del
+    # programa" seria herramientas/panel y la dejaria como el paquete, sin el
+    # fuente. Las pruebas pasan PMYS_INSTALL a una carpeta de mentira.
+    destino = os.environ.get("PMYS_INSTALL") or (EXE_DIR if getattr(sys, "frozen", False) else "")
+    if not destino or not os.path.isfile(os.path.join(destino, "PanelMyS.exe")):
+        return {"ok": False, "error": "esta copia del panel no es un programa instalado: no se actualiza sola"}
+    with _UPDATE_LOCK:
+        if _UPDATE_EN_CURSO:
+            return {"ok": False, "error": "ya hay una actualización en curso"}
+        _UPDATE_EN_CURSO = True
+    try:
+        info = chequear_update()
+        if not info.get("disponible"):
+            with _UPDATE_LOCK:
+                _UPDATE_EN_CURSO = False
+            return {"ok": False, "error": info.get("error") or "no hay actualización disponible"}
+        os.makedirs(UPDATE_DIR, exist_ok=True)
+        ps1 = os.path.join(UPDATE_DIR, "actualizar.ps1")
+        shutil.copy2(SCRIPT_UPDATE, ps1)
+        log = os.path.join(UPDATE_DIR, "aplicar.log")
+        with open(log, "a", encoding="utf-8") as f:
+            f.write("[%s] start pid=%d (actualizar.ps1, v%d -> v%s)\n" % (
+                datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"), os.getpid(),
+                VERSION, info.get("version")))
+        desde = os.path.getsize(log)
+        _anotar_intento_update(info.get("version"))
+        env = dict(os.environ, PMYS_INSTALL=destino, PMYS_LOG=log, PMYS_SITIO=WEB_PUBLICA,
+                   MYS_PANEL_PORT=str(PORT))
+        NOWIN, NEWGRP, BREAKAWAY = 0x08000000, 0x00000200, 0x01000000
+        cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ps1]
+        sysroot = os.environ.get("SystemRoot", r"C:\Windows")
+        try:
+            subprocess.Popen(cmd, creationflags=NOWIN | NEWGRP | BREAKAWAY, close_fds=True, cwd=sysroot,
+                             env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError:
+            subprocess.Popen(cmd, creationflags=NOWIN | NEWGRP, close_fds=True, cwd=sysroot,
+                             env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if jid:
+            _job_set(jid, pct=4, msg="Empezando…")
+            threading.Thread(target=_seguir_log_update, args=(jid, log, desde), daemon=True).start()
+        return {"ok": True, "siguiendo": True}
+    except Exception as e:  # noqa
+        with _UPDATE_LOCK:
+            _UPDATE_EN_CURSO = False
+        return {"ok": False, "error": _legible(e)}
+
+
+def _seguir_log_update(jid, log, desde):
+    """Pasa lo que el script anota en aplicar.log al trabajo que mira la pantalla."""
+    global _UPDATE_EN_CURSO
+    limite = time.time() + 20 * 60
+    while time.time() < limite:
+        time.sleep(0.7)
+        try:
+            with open(log, encoding="utf-8", errors="replace") as f:
+                f.seek(desde)
+                nuevo = f.read()
+        except OSError:
+            continue
+        for marca, pct, msg in _PASOS_PS:
+            if marca in nuevo:
+                _job_set(jid, pct=pct, msg=msg)
+        if "NO SE PUDO ACTUALIZAR:" in nuevo:
+            motivo = nuevo.split("NO SE PUDO ACTUALIZAR:", 1)[1].strip().splitlines()[0]
+            _job_set(jid, estado="error", error=motivo)
+            with _UPDATE_LOCK:
+                _UPDATE_EN_CURSO = False
+            return
+    _job_set(jid, estado="error", error="la actualización tardó demasiado; probá de nuevo")
+    with _UPDATE_LOCK:
+        _UPDATE_EN_CURSO = False
 
 
 def aplicar_update(dry=False, jid=None):
@@ -4384,7 +4481,13 @@ class Handler(BaseHTTPRequestHandler):
 
                 def _correr_update():
                     try:
-                        r = aplicar_update(jid=jid)
+                        # desde la v91, el mismo mecanismo del .bat; el de antes
+                        # queda de respaldo si el script no viajo en el paquete
+                        r = aplicar_update_ps(jid=jid)
+                        if r and r.get("siguiendo"):
+                            return          # el avance lo lleva _seguir_log_update
+                        if r is None:
+                            r = aplicar_update(jid=jid)
                     except Exception as e:  # noqa
                         _job_set(jid, estado="error", error=_legible(e))
                         return

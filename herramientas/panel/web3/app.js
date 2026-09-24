@@ -1823,11 +1823,12 @@ const BLOQUE_INFO = {
 function tipoChatSelector(bk) {
   const w = document.createElement('div');
   w.appendChild(lbl('Tipo'));
-  const row = document.createElement('div'); row.className = 'bk-row';
+  const row = document.createElement('div'); row.className = 'tipo-seg';
   const aTexto = h => { const d = document.createElement('div'); d.innerHTML = (h || '').replace(/<br\s*\/?>/gi, '\n'); return (d.textContent || '').trim(); };
-  [['chat', 'Ejemplo de chat'], ['situacion', 'Situación'], ['plantilla', 'Plantilla de WhatsApp']].forEach(([t, nm]) => {
+  [['chat', 'Chat'], ['situacion', 'Situación'], ['plantilla', 'Plantilla']].forEach(([t, nm]) => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = nm;
-    b.className = 'ctipo' + (bk.t === t ? ' sel' : '');
+    b.className = 'tipo-b' + (bk.t === t ? ' sel' : ''); b.setAttribute('aria-pressed', bk.t === t);
+    b.title = { chat: 'Ejemplo de chat', situacion: 'Situación con respuesta', plantilla: 'Plantilla de WhatsApp' }[t];
     b.onclick = () => {
       if (bk.t === t) return;
       let msgs = (bk.t === 'chat' ? bk.items : bk.t === 'situacion' ? bk.mensajes : null) || [];
@@ -2730,9 +2731,29 @@ function colorPicker(bk, prop, conDefault) {
 }
 
 // ---- inspector contextual (ajustes no-textuales del bloque) ----
+/* ⚠️ 24-sep-2026 (reportado por el dueño): cada opción que se tocaba en los
+   ajustes (p. ej. "Texto" o "Enlace" en la plantilla de WhatsApp) redibuja el
+   inspector entero; al vaciarse, el panel se achicaba y volvía ARRIBA DE TODO,
+   y había que scrollear de nuevo hasta donde estaba. Si se redibuja el MISMO
+   bloque, se vuelve al mismo lugar y sin la animación de "cambio de bloque". */
 function renderInspector() {
+  const sc = $('#gbSidebar');
+  const mismo = SEL != null && renderInspector._sel === SEL;
+  const arriba = sc ? sc.scrollTop : 0;
+  renderInspector._mismo = mismo;
+  if (sc && mismo) sc.style.minHeight = sc.scrollHeight + 'px';   // que no se achique en el medio
+  try { dibujarInspector(); }
+  finally {
+    renderInspector._sel = SEL;
+    if (sc) {
+      sc.style.minHeight = '';
+      if (mismo) { sc.scrollTop = arriba; requestAnimationFrame(() => { sc.scrollTop = arriba; }); }
+    }
+  }
+}
+function dibujarInspector() {
   const box = $('#gbInspector'), T = $('#gbInspTitle'); box.innerHTML = '';
-  reanimar(box, 'mov-cambio', 300);   // cambiar de bloque no debe ser un corte seco
+  if (!renderInspector._mismo) reanimar(box, 'mov-cambio', 300);   // cambiar de bloque no debe ser un corte seco
   if (SEL == null || !BLOQUES[SEL]) {
     if (T) { T.textContent = 'Bloque seleccionado'; T.classList.remove('activo'); }
     // el vacío tiene que decir la VERDAD: no es lo mismo "todavía no elegiste"
@@ -2759,8 +2780,8 @@ function renderInspector() {
   }
   else if (bk.t === 'titulo') {
     box.appendChild(lbl('Tipo'));
-    const row = document.createElement('div'); row.className = 'bk-row';
-    [['h1', 'Título'], ['h2', 'Subtítulo']].forEach(([lv, nm]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = nm; b.className = 'ctipo' + ((bk.nivel || 'h1') === lv ? ' sel' : ''); b.onclick = () => { bk.nivel = lv; renderCanvas(); selectBlock(SEL); }; row.appendChild(b); });
+    const row = document.createElement('div'); row.className = 'tipo-seg';
+    [['h1', 'Título'], ['h2', 'Subtítulo']].forEach(([lv, nm]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = nm; b.className = 'tipo-b' + ((bk.nivel || 'h1') === lv ? ' sel' : ''); b.setAttribute('aria-pressed', (bk.nivel || 'h1') === lv); b.onclick = () => { bk.nivel = lv; renderCanvas(); selectBlock(SEL); }; row.appendChild(b); });
     box.appendChild(row);
   }
   else if (bk.t === 'kicker') { box.appendChild(lbl('Número (opcional)')); const n = document.createElement('input'); n.type = 'text'; n.className = 'insp-input insp-num'; n.value = bk.n || ''; n.oninput = () => { bk.n = n.value; renderCanvas(); }; box.appendChild(n); }
@@ -5139,7 +5160,7 @@ function forzarUpdFallo(msg) {
   if (!UPD_PENDIENTE) return;
   const m = $('#forzarUpd'); if (!m) return;
   const e = $('#forzarUpdErr');
-  e.textContent = 'No se pudo actualizar: ' + (msg || 'probá de nuevo') + '. Probá otra vez; si sigue fallando, podés seguir por ahora y actualizar más tarde.';
+  e.textContent = 'No se pudo actualizar: ' + String(msg || 'probá de nuevo').replace(/[.\s]+$/, '') + '. Si sigue fallando, podés seguir por ahora y actualizar más tarde.';
   e.hidden = false;
   $('#forzarUpdLuego').hidden = false;
   const si = $('#forzarUpdSi'); si.disabled = false; si.textContent = 'Probar de nuevo';

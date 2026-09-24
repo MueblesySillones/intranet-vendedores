@@ -15,6 +15,7 @@ a = Analysis(
         ('web', 'web'),                     # el primero, ultima red de seguridad
         ('originales.json', '.'),           # HTML original de los modulos del sistema
         ('updater', 'updater'),             # aplicar.bat (swap del auto-update) + launcher
+        ('rescate/actualizar_ps.txt', 'rescate'),  # el MISMO actualizador del .bat: lo usa el boton (v91)
     ],
     # Se importan en tiempo de ejecucion (adentro de funciones, o desde un hilo),
     # asi que hay que nombrarlos: PyInstaller arma la lista leyendo el codigo y
