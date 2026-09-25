@@ -4444,23 +4444,5 @@ window.TUTORIALES = [
       }
     ],
     "creado": "2026-09-22"
-  },
-  {
-    "id": "tut_mubdbusm",
-    "titulo": "Prueba de video - ¿como editar modulos?",
-    "nota": "Grilla de imagenes",
-    "src": "assets/_tutoriales/tut_mubdbusm.mp4",
-    "duracion": 7,
-    "capitulos": [
-      {
-        "t": 1,
-        "texto": "¿Como cambiar?"
-      },
-      {
-        "t": 5,
-        "texto": "prueba pureb"
-      }
-    ],
-    "creado": "2026-09-21"
   }
 ];
