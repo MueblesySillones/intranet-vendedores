@@ -14,6 +14,32 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmuido8dded8f",
+          "titulo": "OBSEQUIO CLIENTES. LUNES FERIADO 28/9",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-26",
+          "etiqueta": "promo",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Este Lunes 28 feriado regalamos con cada compra una fragancia VENTI. \nLo pueden compartir a sus presupuestos y clientes mañana domingo! Para incentivar visitas al lunes 🤩\n\nIMPORTANTE ⚠️⚠️\nCuando regalen las fragancias el día Lunes 28 deben hacer el movimiento de stock correspondiente en FLEXXUS. Gracias.\n\nBuen finde, muchas ventas 🥰"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/muro_img_1790426430571.jpg",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Este Lunes 28 feriado regalamos con cada compra una fragancia VENTI. <br>Lo pueden compartir a sus presupuestos y clientes mañana domingo! Para incentivar visitas al lunes 🤩<br><br>IMPORTANTE ⚠️⚠️<br>Cuando regalen las fragancias el día Lunes 28 deben hacer el movimiento de stock correspondiente en FLEXXUS. Gracias.<br><br>Buen finde, muchas ventas 🥰</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790426430571.jpg\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmuecunnmost5",
           "titulo": "SILLA VIETNAM LAQUEADA WENGUE",
           "autor": "Marketing",
