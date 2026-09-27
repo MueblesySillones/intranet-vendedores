@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 92
+VERSION = 93
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,20 +349,19 @@ VERSION = 92
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.35.1"
-VERSION_LABEL = "1.35.1 - los modulos del sistema se pueden eliminar"
+VERSION_PUBLICA = "1.36.0"
+VERSION_LABEL = "1.36.0 - editor mas simple y listas que scrollean"
 VERSION_NOTES = (
-                 "ARREGLO: los modulos que vienen con el sistema (por ejemplo "
-                 "Reporte mini competencia) no se podian eliminar: la pantalla decia "
-                 "Modulo eliminado, pero el panel lo volvia a agregar oculto y al "
-                 "recargar seguia ahi. Ahora, si se borra con el boton Eliminar y se "
-                 "confirma, se borra de verdad. La proteccion sigue para un modulo "
-                 "que falte por accidente.")
+                 "ARREGLO: en Enviar al modulo, las listas para elegir el modulo y "
+                 "el bloque (por ejemplo Material descargable) se cerraban al usar "
+                 "la rueda del mouse; ahora scrollean. MEJORAS: se saco el bloque "
+                 "Web embebida; el bloque Video solo se sube (sin link de YouTube); "
+                 "el bloque Boton no acepta links de video.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["Los módulos que vienen con el sistema ahora se pueden eliminar (antes volvían a aparecer)"]
-VERSION_MEJORAS = []
+VERSION_ARREGLOS = ["En «Enviar al módulo», las listas del módulo y del bloque ya se pueden recorrer con la rueda del mouse"]
+VERSION_MEJORAS = ["Se sacó el bloque Web embebida", "El bloque Video ahora solo se sube (sin link de YouTube)", "El bloque Botón no acepta links de video"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

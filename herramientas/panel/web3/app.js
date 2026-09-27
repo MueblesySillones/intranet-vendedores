@@ -1762,7 +1762,9 @@ const GRUPOS_BLOQUE = {
   'Texto': ['titulo', 'parrafo', 'kicker'],
   'Listas y avisos': ['lista', 'pasos', 'nota', 'advertencia', 'chat'],
   /* la plantilla de WhatsApp vive adentro del bloque Chat (24-sep) */
-  'Fotos, videos y archivos': ['imagen', 'galeria', 'video', 'pdf', 'embed', 'boton'],
+  /* 26-sep-2026 (pedido del dueño): "Web embebida" se sacó del menú. Los
+     bloques viejos de ese tipo se siguen viendo y editando igual. */
+  'Fotos, videos y archivos': ['imagen', 'galeria', 'video', 'pdf', 'boton'],
   'Números y tablas': ['tabla', 'kpis', 'barras', 'podio', 'tarjetas'],
   'Separaciones': ['separador', 'espacio'],
   'Presentación': ['diapo'],
@@ -1779,7 +1781,7 @@ const ALIAS_BLOQUE = {
   tabla: 'excel planilla grilla filas columnas precios', kpis: 'numeros metricas cifras indicadores ventas',
   barras: 'grafico ranking comparar chart', podio: 'ranking top mejores primeros vendedores',
   tarjetas: 'grilla iconos conceptos beneficios', diapo: 'slide corte presentacion pantalla',
-  imagen: 'foto placa jpg png banner', video: 'mp4 youtube reel clip',
+  imagen: 'foto placa jpg png banner', video: 'mp4 reel clip filmacion',
   galeria: 'descargas placas material bajar archivos fotos', pdf: 'documento archivo folleto catalogo',
   embed: 'iframe web informe looker mapa', boton: 'link enlace url ir a',
   plantilla: 'whatsapp carrusel mensaje plantilla',
@@ -1810,7 +1812,7 @@ const BLOQUE_INFO = {
   tarjetas: { label: 'Tarjetas con ícono', desc: 'Ideas o conceptos en grilla' },
   diapo: { label: 'Nueva diapositiva', desc: 'Corta acá en modo presentación' },
   imagen: { label: 'Imagen', desc: 'Subí una foto' },
-  video: { label: 'Video', desc: 'Subí un video o pegá un link' },
+  video: { label: 'Video', desc: 'Subí un video' },
   galeria: { label: 'Placas para descargar', desc: 'Grilla de imágenes que el vendedor baja' },
   pdf: { label: 'PDF', desc: 'Documento: visor o tarjeta' },
   embed: { label: 'Web embebida', desc: 'Informe / catálogo' },
@@ -2816,7 +2818,21 @@ function dibujarInspector() {
   }
   else if (bk.t === 'boton') {
     box.appendChild(lbl('Dirección (URL)'));
-    box.appendChild(urlInput(bk, 'url', 'https://…'));
+    /* 26-sep-2026 (pedido del dueño): el botón no lleva a videos (YouTube,
+       Vimeo, un .mp4…). El video va en el bloque Video, subido. Si se pega
+       uno, se avisa y el botón no lo guarda. */
+    const ui = urlInput(bk, 'url', 'https://…');
+    const avVid = document.createElement('div'); avVid.className = 'fld-note';
+    avVid.style.color = 'var(--err)'; avVid.hidden = true;
+    avVid.textContent = 'El botón no puede llevar a un video. Para eso usá el bloque Video y subí el archivo.';
+    const chequear = () => {
+      const esVid = esLinkDeVideo(ui.value);
+      avVid.hidden = !esVid;
+      if (esVid && bk.url) { bk.url = ''; renderCanvas(); $('#gbDoc').querySelector(`.gb-block[data-i="${SEL}"]`)?.classList.add('is-selected'); }
+    };
+    ui.addEventListener('input', chequear);
+    box.appendChild(ui); box.appendChild(avVid);
+    chequear();
     const p = document.createElement('p'); p.className = 'fld-note'; p.style.margin = '6px 0 0';   // aire puntual bajo el input de URL; no amerita clase p.textContent = 'El texto del botón se edita en el documento.'; box.appendChild(p);
   }
   else if (bk.t === 'html') { const p = document.createElement('p'); p.className = 'fld-note'; p.textContent = 'Bloque de diseño del sistema. Podés moverlo o borrarlo, pero su contenido no se edita por bloques.'; box.appendChild(p); }
@@ -3101,6 +3117,13 @@ function arDe(bk) {
   return (bk.orient === 'vert') ? [9, 16] : [16, 9];
 }
 
+// ¿es un link a un video? (el bloque Botón no los acepta, 26-sep-2026)
+function esLinkDeVideo(url) {
+  const u = (url || '').trim().toLowerCase();
+  return /(youtube\.com|youtu\.be|vimeo\.com|tiktok\.com)/.test(u) ||
+         /\.(mp4|mov|webm|m4v|avi)(\?|#|$)/.test(u);
+}
+
 // convierte un link normal en su versión embebible
 function embedDeVideo(url) {
   const u = (url || '').trim();
@@ -3157,22 +3180,12 @@ function videoInspector(bk) {
   inp.onchange = () => { if (inp.files[0]) subirVideoBloque(bk, inp.files[0], estado, btn); inp.value = ''; };
   wrap.append(btn, inp, estado);
 
-  wrap.appendChild(lbl('…o pegá un link (YouTube, Vimeo, Drive)'));
-  const link = document.createElement('input'); link.type = 'text';
-  link.className = 'insp-input';   // 2D: decia 'insp-inp' (clase inexistente) y lo parchaba un cssText
-  link.placeholder = 'https://youtube.com/watch?v=…';
-  link.value = bk.url || '';
-  link.oninput = () => {
-    bk.url = link.value.trim();
-    if (bk.url) { bk.src = ''; pintarEstado(); btn.textContent = 'Subir video'; }
-    const e = embedDeVideo(bk.url);
-    if (bk.url && e.vert) { bk.orient = 'vert'; bk.ar = '9/16'; }
-    renderCanvas();
-  };
-  wrap.appendChild(link);
-  if (bk.url && !embedDeVideo(bk.url).ok) {
+  /* 26-sep-2026 (pedido del dueño): el video SOLO se sube; se sacó el campo
+     para pegar un link de YouTube / Vimeo / Drive. Un bloque viejo que ya
+     tenga link se sigue viendo, y subir un archivo lo reemplaza. */
+  if (bk.url && !bk.src) {
     const av = document.createElement('div'); av.className = 'fld-note';
-    av.style.color = 'var(--err)'; av.textContent = 'Ese link no parece válido.';
+    av.textContent = 'Este video está puesto con un link. Subí el archivo para reemplazarlo.';
     wrap.appendChild(av);
   }
 

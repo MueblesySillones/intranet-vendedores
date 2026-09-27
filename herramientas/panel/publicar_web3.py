@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.35.1"
-NUEVO_LABEL = "1.35.1 - los modulos del sistema se pueden eliminar"
-NUEVAS_NOTAS = ('ARREGLO: los modulos que vienen con el sistema (por ejemplo Reporte mini competencia) no se podian eliminar: la pantalla decia Modulo eliminado, pero el panel lo volvia a agregar oculto y al recargar seguia ahi. Ahora, si se borra con el boton Eliminar y se confirma, se borra de verdad. La proteccion sigue para un modulo que falte por accidente.')
+NUEVA_PUBLICA = "1.36.0"
+NUEVO_LABEL = "1.36.0 - editor mas simple y listas que scrollean"
+NUEVAS_NOTAS = ('ARREGLO: en Enviar al modulo, las listas para elegir el modulo y el bloque (por ejemplo Material descargable) se cerraban al usar la rueda del mouse; ahora scrollean. MEJORAS: se saco el bloque Web embebida; el bloque Video solo se sube (sin link de YouTube); el bloque Boton no acepta links de video.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Los módulos que vienen con el sistema ahora se pueden eliminar (antes volvían a aparecer)"]
-NUEVAS_MEJORAS = []
+NUEVOS_ARREGLOS = ["En «Enviar al módulo», las listas del módulo y del bloque ya se pueden recorrer con la rueda del mouse"]
+NUEVAS_MEJORAS = ["Se sacó el bloque Web embebida", "El bloque Video ahora solo se sube (sin link de YouTube)", "El bloque Botón no acepta links de video"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -46,7 +46,7 @@ NUEVO_CUERPO = ""
 
 # firma de los commits que arma este guion
 FIRMA = ("\n\nCo-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>\n"
-         "Claude-Session: https://claude.ai/code/session_01DzZ8bR4LLxi28RHRfjRJFj\n")
+         "Claude-Session: https://claude.ai/code/session_011FMKTasAQW4nNvDqP9ppkj\n")
 
 ARCHIVOS_WEB3 = ["index.html", "maqueta.css", "puente.css", "app.js", "muro.js",
                  "panel_datos.js", "panel_datos.css", "datos_puente.js",

@@ -1403,7 +1403,17 @@
   }
   /* si la pantalla se mueve debajo de una lista abierta, queda flotando en el
      aire: se cierra, que es lo que hace cualquier menú del sistema */
-  window.addEventListener('scroll', function () { if (ABIERTA) cerrarListas(); }, true);
+  /* ⚠️ 26-sep-2026 (reportado por el dueño): la escucha va en captura, así
+     que también le llega el scroll DE LA PROPIA LISTA. Rodar la rueda adentro
+     la cerraba: en «Enviar al módulo» no se podía llegar a los módulos ni a
+     los bloques de abajo (Material descargable). El scroll de adentro no
+     cuenta. */
+  window.addEventListener('scroll', function (ev) {
+    if (!ABIERTA) return;
+    var t = ev.target;
+    if (t && t.closest && t.closest('.sel2-pop')) return;
+    cerrarListas();
+  }, true);
   window.addEventListener('resize', function () { if (ABIERTA) cerrarListas(); });
 
   function lindoSelect(sel) {
