@@ -1,15 +1,15 @@
 {
-  "version": 94,
-  "label": "1.37.0 - tutoriales con varios videos",
-  "notes": "MEJORA: un tutorial puede tener varios videos, uno detras del otro, con una sola linea de tiempo. Se eligen varios al subirlo o se suman despues con + Sumar otro video; los capitulos cuentan sobre la linea entera y al terminar un video sigue el proximo. Los paneles viejos no pueden borrar esos videos extra al combinar.",
+  "version": 95,
+  "label": "1.38.0 - los Datos se comparten entre todas las computadoras",
+  "notes": "MEJORA: los reportes de la seccion Datos, a que sucursal va cada vendedor y los Excel conectados se comparten con todas las computadoras del panel, por el servidor privado del equipo (no por la intranet). Si el Excel cambia en la PC que lo conecto, a las demas les llega solo. Se sincroniza al abrir Datos y cada 2 minutos.",
   "arreglos": [],
   "mejoras": [
-    "Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo",
-    "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"
+    "Los reportes de Datos se ven en todas las computadoras, sin volver a cargarlos",
+    "Si se actualiza el Excel, a todas les llega la versión nueva"
   ],
-  "sha256": "a578aa42b37b6b0329a156c0f76f020fb67de009aae0484c20e5043229b2a915",
-  "size": 20406108,
-  "url": "panel/PanelMyS-v94.zip",
+  "sha256": "8ee414b3e8027a9c11a7ad574ec9b18521e082750f885cf8884dea97031f0887",
+  "size": 20421585,
+  "url": "panel/PanelMyS-v95.zip",
   "historial": [
     {
       "version": 83,
@@ -105,6 +105,15 @@
         "Se sacó el bloque Web embebida",
         "El bloque Video ahora solo se sube (sin link de YouTube)",
         "El bloque Botón no acepta links de video"
+      ]
+    },
+    {
+      "version": 94,
+      "label": "1.37.0 - tutoriales con varios videos",
+      "arreglos": [],
+      "mejoras": [
+        "Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo",
+        "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"
       ]
     }
   ]
