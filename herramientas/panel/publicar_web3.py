@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.39.0"
-NUEVO_LABEL = "1.39.0 - reportes por sucursal, patrones de clientes y lo recaudado"
-NUEVAS_NOTAS = ('MEJORAS en los reportes de Datos: se puede elegir una, varias o todas las sucursales; la comparacion muestra el numero del mes anterior; la sucursal muestra que parte de las derivaciones de la empresa recibio y su conversion; la tabla de vendedores sale ordenada por lo que recibio cada uno, con ventas y conversion; nueva lamina Como se comportan los clientes (patrones leyendo juntos los seguimientos y la respuesta final); lo recaudado del mes (columna Monto).')
+NUEVA_PUBLICA = "1.40.0"
+NUEVO_LABEL = "1.40.0 - de que lugares consultan"
+NUEVAS_NOTAS = ('MEJORA: nueva lamina De que lugares consultan: cuantas consultas llegaron de cada provincia, localidad o zona (Neuquen, La Plata, Zona Norte...) tal cual dice la columna Localidad, con derivadas y ventas; se elige mostrar otras provincias, Buenos Aires o las dos. ARREGLO: Rosario y Parana se contaban como Buenos Aires; ahora son interior (Santa Fe y Entre Rios).')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = []
-NUEVAS_MEJORAS = ["Reportes de una, varias o todas las sucursales", "Nueva lámina: cómo se comportan los clientes", "Lo recaudado del mes y el número del mes anterior a la vista", "La tabla de vendedores con ventas y conversión"]
+NUEVOS_ARREGLOS = ["Rosario y Paraná ahora cuentan como otras provincias (antes como Buenos Aires)"]
+NUEVAS_MEJORAS = ["Nueva lámina: de qué lugares consultan (provincias, localidades y zonas)"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 96
+VERSION = 97
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,22 +349,20 @@ VERSION = 96
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.39.0"
-VERSION_LABEL = "1.39.0 - reportes por sucursal, patrones de clientes y lo recaudado"
+VERSION_PUBLICA = "1.40.0"
+VERSION_LABEL = "1.40.0 - de que lugares consultan"
 VERSION_NOTES = (
-                 "MEJORAS en los reportes de Datos: se puede elegir una, varias o "
-                 "todas las sucursales; la comparacion muestra el numero del mes "
-                 "anterior; la sucursal muestra que parte de las derivaciones de la "
-                 "empresa recibio y su conversion; la tabla de vendedores sale "
-                 "ordenada por lo que recibio cada uno, con ventas y conversion; "
-                 "nueva lamina Como se comportan los clientes (patrones leyendo "
-                 "juntos los seguimientos y la respuesta final); lo recaudado del "
-                 "mes (columna Monto).")
+                 "MEJORA: nueva lamina De que lugares consultan: cuantas consultas "
+                 "llegaron de cada provincia, localidad o zona (Neuquen, La Plata, "
+                 "Zona Norte...) tal cual dice la columna Localidad, con derivadas y "
+                 "ventas; se elige mostrar otras provincias, Buenos Aires o las dos. "
+                 "ARREGLO: Rosario y Parana se contaban como Buenos Aires; ahora son "
+                 "interior (Santa Fe y Entre Rios).")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = []
-VERSION_MEJORAS = ["Reportes de una, varias o todas las sucursales", "Nueva lámina: cómo se comportan los clientes", "Lo recaudado del mes y el número del mes anterior a la vista", "La tabla de vendedores con ventas y conversión"]
+VERSION_ARREGLOS = ["Rosario y Paraná ahora cuentan como otras provincias (antes como Buenos Aires)"]
+VERSION_MEJORAS = ["Nueva lámina: de qué lugares consultan (provincias, localidades y zonas)"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""

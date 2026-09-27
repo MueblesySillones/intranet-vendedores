@@ -1435,6 +1435,19 @@
         }
       },
       {
+        t: '¿Qué lugares mostrar?',
+        /* solo si se marcó «De qué lugares consultan» (27-sep-2026) */
+        si: function () { return (BORRADOR.secciones || []).indexOf('localidades') >= 0; },
+        ayuda: 'Para la lámina «De qué lugares consultan». Con las dos salen dos ' +
+               'láminas: la lista junta sería demasiado larga.',
+        pinta: function () {
+          return grupo('repLug', OPCIONES.lugares || [], BORRADOR.lugares || 'ambas');
+        },
+        toma: function () {
+          BORRADOR.lugares = elegidoDe('repLug', 'ambas');
+        }
+      },
+      {
         t: '¿Contra qué lo comparás?',
         ayuda: 'Un total solo no dice si estuvo bien o mal. Con esto, el ' +
                'reporte abre diciendo qué cambió.',
@@ -1481,7 +1494,7 @@
           BORRADOR.nota = (document.getElementById('repNota').value || '').trim();
         }
       }
-    ];
+    ].filter(function (p) { return !p.si || p.si(); });
   }
 
   /* El último paso muestra lo que se contestó. Es la única forma de que
@@ -1534,6 +1547,7 @@
       comparar: op.comparar || 'anterior',
       detalle: op.detalle || '10',
       hoja: op.hoja || 'pantalla',
+      lugares: op.lugares || 'ambas',
       sucursal: op.sucursal || '',
       nota: op.nota || ''
     };
@@ -1636,6 +1650,7 @@
         comparar: BORRADOR.comparar,
         detalle: BORRADOR.detalle,
         hoja: BORRADOR.hoja,
+        lugares: BORRADOR.lugares || 'ambas',
         sucursal: BORRADOR.sucursal,
         nota: BORRADOR.nota
       }

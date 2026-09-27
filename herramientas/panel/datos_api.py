@@ -264,6 +264,8 @@ def opciones_posibles():
                   for k, t, d in deck.VISTAS],
         "hoja": [{"id": k, "titulo": t, "detalle": d}
                  for k, t, d in deck.HOJAS],
+        "lugares": [{"id": k, "titulo": t, "detalle": d}
+                    for k, t, d in deck.LUGARES],
         "con_lista": list(deck.CON_LISTA),
     }
 
@@ -360,6 +362,9 @@ def _limpiar_opciones(op, antes=None):
     # el tamaño de hoja del PDF. Los reportes de antes de que esto existiera no
     # lo tienen, y caen en «pantalla», que es como salian.
     hoja = str(op.get("hoja") or vieja.get("hoja") or "pantalla")
+    lugares = str(op.get("lugares") or vieja.get("lugares") or "ambas")
+    if lugares not in {k for k, _, _ in deck.LUGARES}:
+        lugares = "ambas"
     # ⚠️ La sucursal NO se valida contra una lista fija: los locales salen de
     # la planilla y el día que abra uno nuevo tiene que poder elegirse sin
     # tocar el código. Se limpia el texto y listo; una sucursal que no existe
@@ -419,6 +424,7 @@ def _limpiar_opciones(op, antes=None):
         "comparar": cmp_ if cmp_ in validos_cmp else "anterior",
         "vista": vis if vis in validos_vis else "barras",
         "hoja": hoja if hoja in validos_hoja else "pantalla",
+        "lugares": lugares,
         "sucursal": suc,
         "vistas": vistas,
         "fondos": fondos,
