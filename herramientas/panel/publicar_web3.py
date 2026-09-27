@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.40.0"
-NUEVO_LABEL = "1.40.0 - de que lugares consultan"
-NUEVAS_NOTAS = ('MEJORA: nueva lamina De que lugares consultan: cuantas consultas llegaron de cada provincia, localidad o zona (Neuquen, La Plata, Zona Norte...) tal cual dice la columna Localidad, con derivadas y ventas; se elige mostrar otras provincias, Buenos Aires o las dos. ARREGLO: Rosario y Parana se contaban como Buenos Aires; ahora son interior (Santa Fe y Entre Rios).')
+NUEVA_PUBLICA = "1.41.0"
+NUEVO_LABEL = "1.41.0 - por que anuncio llegaron"
+NUEVAS_NOTAS = ('MEJORA: nueva lamina Por que anuncio llegaron: agrupa el Origen en anuncios, web, mailing, redes sin pauta, influencers, sucursal, telefono, accion de marketing y otros medios, y detalla cada anuncio con consultas, derivadas y ventas. Todo origen nuevo que no sea de esa lista cuenta como anuncio.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Rosario y Paraná ahora cuentan como otras provincias (antes como Buenos Aires)"]
-NUEVAS_MEJORAS = ["Nueva lámina: de qué lugares consultan (provincias, localidades y zonas)"]
+NUEVOS_ARREGLOS = []
+NUEVAS_MEJORAS = ["Nueva lámina: por qué anuncio llegaron (anuncios, web, mailing… y cada anuncio)"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
