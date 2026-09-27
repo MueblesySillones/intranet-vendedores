@@ -1,16 +1,14 @@
 {
-  "version": 97,
-  "label": "1.40.0 - de que lugares consultan",
-  "notes": "MEJORA: nueva lamina De que lugares consultan: cuantas consultas llegaron de cada provincia, localidad o zona (Neuquen, La Plata, Zona Norte...) tal cual dice la columna Localidad, con derivadas y ventas; se elige mostrar otras provincias, Buenos Aires o las dos. ARREGLO: Rosario y Parana se contaban como Buenos Aires; ahora son interior (Santa Fe y Entre Rios).",
-  "arreglos": [
-    "Rosario y Paraná ahora cuentan como otras provincias (antes como Buenos Aires)"
-  ],
+  "version": 98,
+  "label": "1.41.0 - por que anuncio llegaron",
+  "notes": "MEJORA: nueva lamina Por que anuncio llegaron: agrupa el Origen en anuncios, web, mailing, redes sin pauta, influencers, sucursal, telefono, accion de marketing y otros medios, y detalla cada anuncio con consultas, derivadas y ventas. Todo origen nuevo que no sea de esa lista cuenta como anuncio.",
+  "arreglos": [],
   "mejoras": [
-    "Nueva lámina: de qué lugares consultan (provincias, localidades y zonas)"
+    "Nueva lámina: por qué anuncio llegaron (anuncios, web, mailing… y cada anuncio)"
   ],
-  "sha256": "ba8119436e9fff39731d7169a1d3d7130176c43f497c61e090caa5deb94645c0",
-  "size": 20435471,
-  "url": "panel/PanelMyS-v97.zip",
+  "sha256": "01a8f43a7fdd8203063e6db1dc5f4dd3632be73aac4d0a84922eb556f385cea5",
+  "size": 20439230,
+  "url": "panel/PanelMyS-v98.zip",
   "historial": [
     {
       "version": 83,
@@ -135,6 +133,16 @@
         "Nueva lámina: cómo se comportan los clientes",
         "Lo recaudado del mes y el número del mes anterior a la vista",
         "La tabla de vendedores con ventas y conversión"
+      ]
+    },
+    {
+      "version": 97,
+      "label": "1.40.0 - de que lugares consultan",
+      "arreglos": [
+        "Rosario y Paraná ahora cuentan como otras provincias (antes como Buenos Aires)"
+      ],
+      "mejoras": [
+        "Nueva lámina: de qué lugares consultan (provincias, localidades y zonas)"
       ]
     }
   ]
