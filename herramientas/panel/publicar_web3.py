@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.38.0"
-NUEVO_LABEL = "1.38.0 - los Datos se comparten entre todas las computadoras"
-NUEVAS_NOTAS = ('MEJORA: los reportes de la seccion Datos, a que sucursal va cada vendedor y los Excel conectados se comparten con todas las computadoras del panel, por el servidor privado del equipo (no por la intranet). Si el Excel cambia en la PC que lo conecto, a las demas les llega solo. Se sincroniza al abrir Datos y cada 2 minutos.')
+NUEVA_PUBLICA = "1.39.0"
+NUEVO_LABEL = "1.39.0 - reportes por sucursal, patrones de clientes y lo recaudado"
+NUEVAS_NOTAS = ('MEJORAS en los reportes de Datos: se puede elegir una, varias o todas las sucursales; la comparacion muestra el numero del mes anterior; la sucursal muestra que parte de las derivaciones de la empresa recibio y su conversion; la tabla de vendedores sale ordenada por lo que recibio cada uno, con ventas y conversion; nueva lamina Como se comportan los clientes (patrones leyendo juntos los seguimientos y la respuesta final); lo recaudado del mes (columna Monto).')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
@@ -35,7 +35,7 @@ NUEVAS_NOTAS = ('MEJORA: los reportes de la seccion Datos, a que sucursal va cad
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
 NUEVOS_ARREGLOS = []
-NUEVAS_MEJORAS = ["Los reportes de Datos se ven en todas las computadoras, sin volver a cargarlos", "Si se actualiza el Excel, a todas les llega la versión nueva"]
+NUEVAS_MEJORAS = ["Reportes de una, varias o todas las sucursales", "Nueva lámina: cómo se comportan los clientes", "Lo recaudado del mes y el número del mes anterior a la vista", "La tabla de vendedores con ventas y conversión"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

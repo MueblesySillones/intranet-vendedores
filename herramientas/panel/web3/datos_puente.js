@@ -1151,7 +1151,7 @@
     ];
     /* las barras por sucursal solo tienen sentido con TODAS: en el reporte de
        un local sería una sola barra al 100%, que no dice nada */
-    if (!m.sucursal && (m.sucursales || []).length > 1) {
+    if ((m.sucursales || []).length > 1) {
       bl.push({ t: 'barras', items: m.sucursales.map(function (x, i) {
         return { label: x.label, valor: x.valor,
                  color: COLOR_SUC[i % COLOR_SUC.length], chip: '', tono: 'gr' };
@@ -1242,6 +1242,12 @@
         '><span><b>' + esc(o.titulo) + '</b><i>' + esc(o.detalle) +
         '</i></span></label>';
     }).join('') + '</div>';
+  }
+
+  /* la sucursal de un reporte puede ser '', un texto o una lista */
+  function sucursalesDe(v) {
+    if (!v) return [];
+    return Array.isArray(v) ? v.slice() : [v];
   }
 
   function elegidoDe(id, porDefecto) {
@@ -1403,23 +1409,29 @@
       },
       {
         t: '¿De qué sucursal?',
-        ayuda: 'De todas, o de una sola. Si elegís una, el reporte cuenta lo ' +
-               'que recibió y cerró ESE local.',
+        /* 27-sep-2026 (pedido del usuario): una, VARIAS o todas. Sin ninguna
+           marcada es el reporte de toda la empresa. */
+        ayuda: 'Marcá una o varias. Sin ninguna marcada, el reporte es de toda ' +
+               'la empresa. Con varias, se comparan entre ellas.',
         pinta: function () {
-          var ops = [{ id: '', titulo: 'Todas las sucursales',
-                       detalle: 'El reporte de toda la empresa' }];
-          (SUCURSALES || []).forEach(function (x) {
-            ops.push({ id: x, titulo: x,
-                       detalle: 'Solo lo que recibió y cerró ' + x });
-          });
-          return grupo('repSuc', ops, BORRADOR.sucursal) +
+          var elegidas = sucursalesDe(BORRADOR.sucursal);
+          return '<div class="dt-inf-s" id="repSucs">' + (SUCURSALES || []).map(function (x) {
+            return '<label class="dt-inf-o"><input type="checkbox" value="' + esc(x) + '"' +
+              (elegidas.indexOf(x) >= 0 ? ' checked' : '') +
+              '><span><b>' + esc(x) + '</b><i>Lo que recibió y cerró ' + esc(x) +
+              '</i></span></label>';
+          }).join('') + '</div>' +
             '<p class="dt-chico">⚠️ Con una sucursal elegida, las <b>derivaciones ' +
             'y las ventas</b> son de ese local. Las <b>consultas</b> son las del ' +
             'período entero: una consulta que todavía no atendió nadie no es de ' +
             'ninguna sucursal, así que repartirlas sería inventar un número.</p>';
         },
         toma: function () {
-          BORRADOR.sucursal = elegidoDe('repSuc', '');
+          var out = [];
+          var cs = document.querySelectorAll('#repSucs input');
+          for (var i = 0; i < cs.length; i++) if (cs[i].checked) out.push(cs[i].value);
+          /* una sola va como texto, como siempre; varias, como lista */
+          BORRADOR.sucursal = out.length === 1 ? out[0] : (out.length ? out : '');
         }
       },
       {
@@ -1496,7 +1508,7 @@
       fila('Compara', cmp ? cmp.titulo : '—') +
       fila('Detalle', det ? det.titulo : '—') +
       fila('PDF', hoja ? hoja.titulo : '—') +
-      fila('Sucursal', BORRADOR.sucursal || 'todas');
+      fila('Sucursal', sucursalesDe(BORRADOR.sucursal).join(', ') || 'todas');
   }
 
   function fila(k, v) {

@@ -715,8 +715,10 @@ with sync_playwright() as pw:
             raise AssertionError("no todas las tarjetas tienen ×: %s" % antes)
         if antes["sola"]:
             raise AssertionError("dice «sola» con dos tarjetas")
-        d.evaluate("""() => document.querySelector(
-          '.slide[data-sec=embudo] .notas .nota .ed-nx').click()""")
+        d.evaluate("""() => {
+          const xs = [...document.querySelectorAll('.slide[data-sec=embudo] .notas .nota .ed-nx')];
+          xs.slice(0, xs.length - 1).forEach(x => x.click());
+        }""")
         d.wait_for_timeout(350)
         ahora = d.evaluate("""() => {
           const c = document.querySelector('.slide[data-sec=embudo] .notas');
@@ -731,9 +733,9 @@ with sync_playwright() as pw:
             raise AssertionError("no ofrece volver a mostrarla")
         if not ahora["sola"]:
             raise AssertionError("la que queda no se centró")
-        # se la devuelve: esta prueba no tiene que dejar el reporte cambiado
-        d.evaluate("""() => document.querySelector(
-          '.slide[data-sec=embudo] .notas .ed-nv').click()""")
+        # se las devuelve: esta prueba no tiene que dejar el reporte cambiado
+        d.evaluate("""() => document.querySelectorAll(
+          '.slide[data-sec=embudo] .notas .ed-nv').forEach(x => x.click())""")
         d.wait_for_timeout(300)
         return "sacada, la otra se centra, y vuelve con un click"
     check("una tarjeta se saca entera y la que queda se centra",
@@ -939,22 +941,29 @@ with sync_playwright() as pw:
         p.wait_for_selector("#repModal.on", state="visible", timeout=25000)
         p.wait_for_timeout(700)
         while not p.evaluate("""() => !!document.querySelector(
-                '#repCuerpo input[name=repSuc]')"""):
+                '#repCuerpo #repSucs input')"""):
             if p.evaluate("() => document.getElementById('repSiguiente').textContent"
                           ).find("Guardar") >= 0:
                 raise AssertionError("el asistente no pregunta por la sucursal")
             p.click("#repSiguiente"); p.wait_for_timeout(350)
         ops = p.eval_on_selector_all(
-            "#repCuerpo input[name=repSuc]", "ns => ns.map(x => x.value)")
-        if "" not in ops:
-            raise AssertionError("no se puede elegir «todas»: %s" % ops)
+            "#repCuerpo #repSucs input[type=checkbox]", "ns => ns.map(x => x.value)")
         if len(ops) < 3:
             raise AssertionError("no ofrece las sucursales de la planilla: %s" % ops)
+        # se pueden marcar varias a la vez (27-sep-2026)
+        n_marcadas = p.evaluate("""() => {
+          const cs = [...document.querySelectorAll('#repSucs input')];
+          cs[0].checked = true; cs[1].checked = true;
+          const n = cs.filter(c => c.checked).length;
+          cs[0].checked = false; cs[1].checked = false;
+          return n; }""")
+        if n_marcadas != 2:
+            raise AssertionError("no deja marcar dos sucursales")
         aviso = p.text_content("#repCuerpo") or ""
         if "no es de ninguna sucursal" not in aviso:
             raise AssertionError("no avisa que las consultas no se reparten")
         p.keyboard.press("Escape"); p.wait_for_timeout(600)
-        return "todas + %d sucursales, con la aclaración" % (len(ops) - 1)
+        return "%d sucursales para marcar (una, varias o ninguna = todas), con la aclaración" % len(ops)
     check("el asistente pregunta de qué sucursal es el reporte",
           la_pregunta_por_sucursal)
 

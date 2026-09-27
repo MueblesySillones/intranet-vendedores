@@ -364,8 +364,18 @@ def _limpiar_opciones(op, antes=None):
     # la planilla y el día que abra uno nuevo tiene que poder elegirse sin
     # tocar el código. Se limpia el texto y listo; una sucursal que no existe
     # da un reporte vacío, que es visible, y no un error escondido.
-    suc = str(op.get("sucursal") if "sucursal" in op
-              else vieja.get("sucursal") or "").strip()[:60]
+    # 27-sep-2026: también una LISTA (varias sucursales en un reporte). Una
+    # sola se guarda como texto, como siempre: los reportes viejos no cambian.
+    crudo = op.get("sucursal") if "sucursal" in op else vieja.get("sucursal")
+    if isinstance(crudo, (list, tuple)):
+        lista_s = []
+        for x in crudo[:12]:
+            x = str(x or "").strip()[:60]
+            if x and x not in lista_s:
+                lista_s.append(x)
+        suc = lista_s[0] if len(lista_s) == 1 else (lista_s or "")
+    else:
+        suc = str(crudo or "").strip()[:60]
 
     # las vistas por sección: solo las que son una lista, y solo valores validos
     vistas = dict(vieja.get("vistas") or {})
@@ -460,8 +470,18 @@ def informe_borrar(rep, iid):
 
 
 def _sucursal_de(informe):
-    """La sucursal a la que está recortado el reporte, o "" si es de todas."""
+    """La sucursal a la que está recortado el reporte: un texto, una lista
+    (varias sucursales) o "" si es de todas."""
     return ((informe or {}).get("opciones") or {}).get("sucursal") or ""
+
+
+def _sucursal_txt(foco):
+    """«Hudson», «Hudson y CABA», o "" — para títulos."""
+    if isinstance(foco, (list, tuple)):
+        f = [str(x) for x in foco if str(x).strip()]
+        return (" y ".join([", ".join(f[:-1]), f[-1]]) if len(f) > 1
+                else (f[0] if f else ""))
+    return foco or ""
 
 
 def _fecha_de(txt):
@@ -761,8 +781,11 @@ def metricas_de(rep, state_dir, informe=None):
     def conv(b):
         return b.get("ventas", 0) / float(max(1, b.get("derivaciones", 0)))
 
+    # 27-sep-2026 (pedido del usuario): de quien RECIBIÓ más a quien menos. La
+    # conversión va al lado pero no ordena: con 13 derivaciones y 2 ventas un
+    # vendedor saca 15% y encabezaba la tabla por encima de quien recibió 61.
     vs = sorted(d["vendedores"].items(),
-                key=lambda x: (-conv(x[1]), -x[1].get("ventas", 0), x[0]))
+                key=lambda x: (-x[1].get("derivaciones", 0), -x[1].get("ventas", 0), x[0]))
     podio = sorted(d["vendedores"].items(),
                    key=lambda x: (-x[1].get("ventas", 0), -conv(x[1]), x[0]))
     podio = [x for x in podio if x[1].get("ventas")][:4]
@@ -773,6 +796,19 @@ def metricas_de(rep, state_dir, informe=None):
                                 prev and prev.get("derivaciones"))
     cam_ven, tend_ven = _cambio(t["ventas"], prev and prev.get("ventas"))
     cam_con, tend_con = _cambio(t["consultas"], prev and prev.get("consultas"))
+    prev_d = (op.get("previo") or {}) if op.get("previo") else {}
+    tasa_prev = ((prev.get("ventas", 0) / float(prev["derivaciones"]))
+                 if prev and prev.get("derivaciones") else None)
+    cam_tasa = ("antes %s" % _pc(tasa_prev)) if tasa_prev is not None else ""
+    kpi_extra = [{"label": "Conversión", "valor": _pc(d["tasa_cierre"]),
+                  "pie": cam_tasa, "tend": ("up" if tasa_prev is None or d["tasa_cierre"] >= tasa_prev
+                                           else "down"), "lead": False}]
+    if d.get("monto_total"):
+        cam_m, tend_m = _cambio(d["monto_total"], prev_d.get("monto_total"))
+        kpi_extra.append({"label": "Recaudado" + (" (toda la empresa)" if foco else ""),
+                          "valor": "$" + "{:,}".format(int(d["monto_total"])).replace(",", "."),
+                          "pie": cam_m, "tend": tend_m, "lead": False})
+    foco = _sucursal_txt(foco)
     return {
         "ok": True,
         "titulo": ((informe or {}).get("nombre") or _periodo_txt(d) or
@@ -786,7 +822,7 @@ def metricas_de(rep, state_dir, informe=None):
              "pie": cam_ven, "tend": tend_ven, "lead": False},
             {"label": "Consultas", "valor": str(t["consultas"]),
              "pie": cam_con, "tend": tend_con, "lead": False},
-        ],
+        ] + kpi_extra,
         "sucursales": [{"label": n.upper(), "valor": str(b["derivaciones"])}
                        for n, b in sucs],
         "podio": [{"puesto": "%d°" % (i + 1), "nombre": v.upper(),
