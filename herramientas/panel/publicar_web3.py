@@ -25,9 +25,9 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.37.0"
-NUEVO_LABEL = "1.37.0 - tutoriales con varios videos"
-NUEVAS_NOTAS = ('MEJORA: un tutorial puede tener varios videos, uno detras del otro, con una sola linea de tiempo. Se eligen varios al subirlo o se suman despues con + Sumar otro video; los capitulos cuentan sobre la linea entera y al terminar un video sigue el proximo. Los paneles viejos no pueden borrar esos videos extra al combinar.')
+NUEVA_PUBLICA = "1.38.0"
+NUEVO_LABEL = "1.38.0 - los Datos se comparten entre todas las computadoras"
+NUEVAS_NOTAS = ('MEJORA: los reportes de la seccion Datos, a que sucursal va cada vendedor y los Excel conectados se comparten con todas las computadoras del panel, por el servidor privado del equipo (no por la intranet). Si el Excel cambia en la PC que lo conecto, a las demas les llega solo. Se sincroniza al abrir Datos y cada 2 minutos.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
@@ -35,7 +35,7 @@ NUEVAS_NOTAS = ('MEJORA: un tutorial puede tener varios videos, uno detras del o
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
 NUEVOS_ARREGLOS = []
-NUEVAS_MEJORAS = ["Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo", "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"]
+NUEVAS_MEJORAS = ["Los reportes de Datos se ven en todas las computadoras, sin volver a cargarlos", "Si se actualiza el Excel, a todas les llega la versión nueva"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -310,6 +310,8 @@ subprocess.run(["git", "add", "--",
                 "herramientas/panel/panel_server.py",
                 "herramientas/panel/datos_api.py",
                 "herramientas/panel/fusion.py",
+                "herramientas/panel/datos_sync.py",    # los Datos compartidos entre PCs
+                "herramientas/cerebro/src/worker.js",
                 "herramientas/panel/test_fusion.py",
                 "herramientas/panel/armar_instalador.py",
                 "herramientas/panel/subir_update.py",

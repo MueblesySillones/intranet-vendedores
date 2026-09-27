@@ -28,6 +28,7 @@ a = Analysis(
         'certifi',        # certificados propios: GitHub no verificaba en algunas PCs
         'clave_equipo',   # la genera publicar_web3.py; no esta en git
         'datos_api',
+        'datos_sync',     # los Datos compartidos entre computadoras (26-sep-2026)
         'datos', 'datos.analizador', 'datos.fuentes', 'datos.lecturas',
         'datos.reporte', 'datos.revisor',
         'datos.google_sheets', 'datos.google_cuenta', 'datos.google_link',

@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 94
+VERSION = 95
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,19 +349,20 @@ VERSION = 94
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.37.0"
-VERSION_LABEL = "1.37.0 - tutoriales con varios videos"
+VERSION_PUBLICA = "1.38.0"
+VERSION_LABEL = "1.38.0 - los Datos se comparten entre todas las computadoras"
 VERSION_NOTES = (
-                 "MEJORA: un tutorial puede tener varios videos, uno detras del "
-                 "otro, con una sola linea de tiempo. Se eligen varios al subirlo o "
-                 "se suman despues con + Sumar otro video; los capitulos cuentan "
-                 "sobre la linea entera y al terminar un video sigue el proximo. Los "
-                 "paneles viejos no pueden borrar esos videos extra al combinar.")
+                 "MEJORA: los reportes de la seccion Datos, a que sucursal va cada "
+                 "vendedor y los Excel conectados se comparten con todas las "
+                 "computadoras del panel, por el servidor privado del equipo (no por "
+                 "la intranet). Si el Excel cambia en la PC que lo conecto, a las "
+                 "demas les llega solo. Se sincroniza al abrir Datos y cada 2 "
+                 "minutos.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
 VERSION_ARREGLOS = []
-VERSION_MEJORAS = ["Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo", "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"]
+VERSION_MEJORAS = ["Los reportes de Datos se ven en todas las computadoras, sin volver a cargarlos", "Si se actualiza el Excel, a todas les llega la versión nueva"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -3588,6 +3589,41 @@ def validar_modulos(lista, eliminar=None):
 # =====================================================================
 #  HTTP handler
 # =====================================================================
+# ═══════════════════ DATOS COMPARTIDOS (26-sep-2026) ═══════════════════
+# Los reportes, el mapa de vendedores y los Excel conectados se comparten con
+# TODAS las computadoras a traves del cerebro. Ver datos_sync.py.
+try:
+    import datos_sync
+except Exception as _e:                    # noqa: sin esto Datos sigue, pero local
+    datos_sync = None
+    print("  (detalle tecnico) datos_sync no cargo: %s" % _e)
+
+_SINC = None
+
+
+def _sinc_habilitado():
+    if not CEREBRO_URL or not PUBLISH_TOKEN or datos_api is None:
+        return False
+    # ⚠️ Igual que publicar: un panel de PRUEBA (MYS_PANEL_STATE) no le habla al
+    # cerebro real, o las pruebas mezclarian sus reportes inventados con los
+    # de verdad de todas las computadoras.
+    if (os.environ.get("MYS_PANEL_STATE") and "mys-cerebro." in CEREBRO_URL
+            and os.environ.get("MYS_PUBLICAR_DE_VERDAD") != "1"):
+        return False
+    return True
+
+
+def sinc_datos():
+    """El sincronizador, o None si Datos no esta disponible."""
+    global _SINC
+    if _SINC is None and datos_sync is not None and datos_api is not None:
+        from datos import derivaciones as _dvv
+        _SINC = datos_sync.Sincronizador(
+            STATE_DIR, lambda: CEREBRO_URL, lambda: PUBLISH_TOKEN,
+            _sinc_habilitado, datos_api, _dvv._ruta_mapa)
+    return _SINC
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "PanelMyS/1.0"
 
@@ -3613,9 +3649,11 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     # ═══════════════════ SECCION DATOS ═══════════════════
-    # Todo lo de aca es LOCAL: lee una planilla de la maquina o de la cuenta de
-    # Drive de marketing, y devuelve numeros. Nada sale a internet, y lo que se
-    # publica a la intranet lo decide una persona, numero por numero.
+    # Lee una planilla de la maquina o de la cuenta de Drive de marketing, y
+    # devuelve numeros. Desde el 26-sep-2026 los reportes, el mapa de vendedores
+    # y los Excel conectados se COMPARTEN con las otras computadoras por el
+    # cerebro (datos_sync.py) — nunca por el repo, que es publico. Lo que se
+    # publica a la intranet lo sigue decidiendo una persona, numero por numero.
 
     def _datos_get(self, path, q):
         if datos_api is None:
@@ -3623,6 +3661,15 @@ class Handler(BaseHTTPRequestHandler):
         cfg = datos_api.cargar(STATE_DIR)
 
         if path == "/api/datos/estado":
+            # Al entrar a Datos se trae lo que cargaron las OTRAS computadoras
+            # antes de mostrar la lista. Con tope: si no hay internet, no se
+            # hace esperar mas de unos segundos (y no se reintenta enseguida).
+            sc = sinc_datos()
+            if sc and _sinc_habilitado():
+                u = sc.ultimo
+                if time.time() - max(u.get("ts") or 0, u.get("intento") or 0) > 15:
+                    sc.sincronizar(timeout=6)
+                cfg = datos_api.cargar(STATE_DIR)
             # la lista entera: cada reporte con su planilla y cuanto publica
             reps = []
             for r in cfg.get("reportes") or []:
@@ -3637,9 +3684,15 @@ class Handler(BaseHTTPRequestHandler):
                     "publica": bool(f.get("clase") == "publico"),
                     "publicados": len(r.get("publicados") or []),
                 })
+            compartido = None
+            if sc and _sinc_habilitado():
+                u = sc.ultimo
+                compartido = {"ok": u.get("ok"), "hace": (int(time.time() - u["ts"]) if u.get("ts") else None),
+                              "error": u.get("error") or ""}
             return self._json({
                 "reportes": reps,
                 "publicados_total": sum(x["publicados"] for x in reps),
+                "compartido": compartido,
             })
 
         if path == "/api/datos/google":
@@ -4435,8 +4488,23 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"ok": True, "job": jid, "mb": FFMPEG_MB})
             if path == "/api/borrar":
                 return self._borrar()
+            if path == "/api/datos/sincronizar":
+                # «Traer y compartir ahora», sin esperar la vuelta automatica
+                sc = sinc_datos()
+                if not sc or not _sinc_habilitado():
+                    return self._json({"ok": False, "error": "esta computadora no comparte los datos"})
+                return self._json(sc.sincronizar())
             if path.startswith("/api/datos/"):
-                return self._datos_post(path)
+                # ⚠️ Con el candado: la sincronizacion escribe datos.json en
+                # segundo plano, y sin esto podia caer entre el «leer» y el
+                # «guardar» de este pedido y uno de los dos cambios se perdia.
+                if datos_sync is None:
+                    return self._datos_post(path)
+                with datos_sync.CANDADO:
+                    resp = self._datos_post(path)
+                if sinc_datos():
+                    sinc_datos().pedir_pronto()      # que les llegue a las demas
+                return resp
             if path == "/api/reordenar":
                 return self._reordenar()
             if path == "/api/reorganizar":
@@ -5050,6 +5118,10 @@ def main():
     # La central escucha ademas las propuestas de los colaboradores (receptor).
     if ES_CENTRAL:
         arrancar_receptor_en_hilo()
+    # los Datos compartidos: al abrir y cada 2 minutos (sube un Excel que
+    # cambio, baja lo que cargaron las otras computadoras)
+    if sinc_datos():
+        sinc_datos().arrancar_ciclo(120)
     print("Panel abierto en %s (rol: %s)" % (url, ROL))
     _abrir_panel(url)
     try:

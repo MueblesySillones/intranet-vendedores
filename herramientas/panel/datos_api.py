@@ -136,6 +136,15 @@ def _leer_fuente(f):
     """La única puerta de lectura: Google o archivo, misma forma de respuesta."""
     if (f or {}).get("tipo") == "google":
         return _leer_google(f)
+    # un Excel conectado en OTRA computadora: se lee la copia compartida
+    # (datos_sync la baja del cerebro). La PC que lo conecto lee el original.
+    try:
+        import datos_sync
+        base = google_sheets.STATE_DIR if google_sheets else ""
+        if base:
+            f = datos_sync.fuente_para_leer(base, f)
+    except Exception:                      # noqa: sin copia, se lee como siempre
+        pass
     return fuentes.leer(f)
 
 

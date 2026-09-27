@@ -9,6 +9,9 @@
 //    GET  /health    -> ping (sin auth)
 //    POST /publish   -> publica un commit atómico (auth con token de usuario)
 //    GET  /audit     -> últimas publicaciones (auth)
+//    GET  /datos     -> los reportes de la sección Datos, compartidos (auth)
+//    POST /datos     -> guarda los reportes (auth, con la versión de la que parte)
+//    PUT/GET /datos/archivo/<sha256> -> una planilla subida desde una PC (auth)
 //
 //  Secretos (wrangler secret put):  GITHUB_TOKEN, PUBLISH_TOKENS
 //  Vars (wrangler.toml):            REPO_OWNER, REPO_NAME, REPO_BRANCH
@@ -68,6 +71,26 @@ export default {
         return new Response(await res.text(), { status: res.status, headers: { 'content-type': 'application/json' } });
       }
 
+      // --- Datos compartidos (26-sep-2026) ------------------------------
+      // Lo que una computadora conecta en la sección Datos (los reportes, a
+      // qué sucursal va cada vendedor y los Excel subidos desde la PC) lo
+      // tienen que ver TODAS, sin cargarlo de nuevo en cada una. Vive acá,
+      // en el almacenamiento privado del Durable Object, y NO en el repo:
+      // el repo es público y esto tiene nombres y números del equipo.
+      if (url.pathname === '/datos' || url.pathname.startsWith('/datos/archivo/')) {
+        const conCuerpo = request.method === 'POST' || request.method === 'PUT';
+        if (conCuerpo) {
+          const largo = parseInt(request.headers.get('content-length') || '0', 10);
+          if (largo > MAX_ARCHIVO_DATOS) return json({ ok: false, error: 'el archivo es demasiado grande' }, 413);
+        }
+        const res = await stub.fetch('https://brain' + url.pathname, {
+          method: request.method,
+          headers: { 'x-usuario': usuario },
+          body: conCuerpo ? await request.arrayBuffer() : undefined,
+        });
+        return new Response(res.body, { status: res.status, headers: res.headers });
+      }
+
       // El listado completo es solo para la central: una sucursal no tiene por
       // que ver el estado de las demas.
       if (url.pathname === '/estado') {
@@ -122,6 +145,14 @@ function eqConstante(a, b) {
   return r === 0;
 }
 
+const MAX_ARCHIVO_DATOS = 25 * 1024 * 1024;   // una planilla de 25 MB ya es enorme
+const PEDAZO = 1024 * 1024;                   // el almacenamiento guarda de a 2 MB como mucho
+
+async function sha256hex(buf) {
+  const h = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json' } });
 }
@@ -161,6 +192,8 @@ export class Brain {
       await this.state.storage.put('vivos', vivos);
       return json({ ok: true });
     }
+    if (url.pathname === '/datos') return this.datos(request);
+    if (url.pathname.startsWith('/datos/archivo/')) return this.archivo(request, url.pathname.slice(15));
     if (url.pathname === '/estado') {
       const vivos = (await this.state.storage.get('vivos')) || {};
       const log = (await this.state.storage.get('audit')) || [];
@@ -230,6 +263,87 @@ export class Brain {
       return { ok: false, status: patch.status, error: 'GitHub rechazó el push: ' + (await patch.text()) };
     }
     return { ok: false, error: 'conflicto persistente tras 5 intentos, probá de nuevo' };
+  }
+
+  /* ---- Datos compartidos ------------------------------------------------
+     Un solo documento con versión. Guardar exige decir de qué versión se
+     parte: si otra computadora guardó en el medio, se contesta 409 con lo
+     nuevo y el panel combina antes de volver a intentar. Así dos PCs que
+     guardan a la vez no se pisan. */
+  async datos(request) {
+    const vacio = { version: 0, ts: 0, por: '', reportes: [], vendedores: {} };
+    const actual = (await this.state.storage.get('datos:doc')) || vacio;
+    if (request.method === 'GET') return json({ ok: true, doc: actual });
+    if (request.method !== 'POST') return json({ ok: false, error: 'método no permitido' }, 405);
+    let d;
+    try { d = JSON.parse(new TextDecoder().decode(await request.arrayBuffer())); }
+    catch (e) { return json({ ok: false, error: 'no entendí lo que mandaste' }, 400); }
+    if ((d.base | 0) !== actual.version)
+      return json({ ok: false, conflicto: true, doc: actual }, 409);
+    const reportes = Array.isArray(d.reportes) ? d.reportes.slice(0, 40) : [];
+    const vendedores = (d.vendedores && typeof d.vendedores === 'object') ? d.vendedores : {};
+    const nuevo = { version: actual.version + 1, ts: Date.now(),
+                    por: request.headers.get('x-usuario') || '', reportes, vendedores };
+    if (JSON.stringify(nuevo).length > 1800000)
+      return json({ ok: false, error: 'los reportes ocupan demasiado' }, 413);
+    await this.state.storage.put('datos:doc', nuevo);
+    await this.barrerArchivos(reportes);
+    return json({ ok: true, doc: nuevo });
+  }
+
+  // Las planillas se guardan por su huella (sha256): la misma no se sube dos
+  // veces, y lo que se baja es exactamente lo que se subió.
+  async archivo(request, sha) {
+    if (!/^[0-9a-f]{64}$/.test(sha)) return json({ ok: false, error: 'huella inválida' }, 400);
+    const st = this.state.storage;
+    const meta = await st.get('datos:meta:' + sha);
+    if (request.method === 'GET') {
+      if (!meta) return json({ ok: false, error: 'no está' }, 404);
+      const claves = [];
+      for (let i = 0; i < meta.partes; i++) claves.push('datos:arch:' + sha + ':' + i);
+      const trozos = await st.get(claves);
+      const out = new Uint8Array(meta.size);
+      let pos = 0;
+      for (const k of claves) {
+        const t = trozos.get(k);
+        if (!t) return json({ ok: false, error: 'archivo incompleto' }, 500);
+        out.set(new Uint8Array(t), pos); pos += t.byteLength;
+      }
+      return new Response(out, { headers: { 'content-type': 'application/octet-stream' } });
+    }
+    if (request.method !== 'PUT') return json({ ok: false, error: 'método no permitido' }, 405);
+    if (meta) return json({ ok: true, ya: true });
+    const buf = await request.arrayBuffer();
+    if (!buf.byteLength || buf.byteLength > MAX_ARCHIVO_DATOS)
+      return json({ ok: false, error: 'tamaño inválido' }, 400);
+    if ((await sha256hex(buf)) !== sha)
+      return json({ ok: false, error: 'el archivo llegó dañado, probá de nuevo' }, 400);
+    const partes = Math.ceil(buf.byteLength / PEDAZO);
+    for (let i = 0; i < partes; i++) {
+      await st.put('datos:arch:' + sha + ':' + i, buf.slice(i * PEDAZO, (i + 1) * PEDAZO));
+    }
+    await st.put('datos:meta:' + sha, { size: buf.byteLength, partes, ts: Date.now() });
+    return json({ ok: true });
+  }
+
+  // Borra las planillas que ya no usa ningún reporte. Se les da un día de
+  // gracia: una PC sube el archivo ANTES de guardar el reporte que lo usa.
+  async barrerArchivos(reportes) {
+    const usadas = new Set();
+    for (const r of reportes) {
+      const c = r && r.fuente && r.fuente.compartido;
+      if (c && c.sha) usadas.add(c.sha);
+    }
+    const st = this.state.storage;
+    const metas = await st.list({ prefix: 'datos:meta:' });
+    const viejo = Date.now() - 24 * 3600 * 1000;
+    for (const [k, v] of metas) {
+      const sha = k.slice(11);
+      if (usadas.has(sha) || !v || v.ts > viejo) continue;
+      const claves = [k];
+      for (let i = 0; i < v.partes; i++) claves.push('datos:arch:' + sha + ':' + i);
+      await st.delete(claves);
+    }
   }
 
   async registrar(usuario, sha, mensaje) {

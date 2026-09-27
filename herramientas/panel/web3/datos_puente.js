@@ -65,9 +65,25 @@
   function traerLista() {
     return api('/api/datos/estado').then(function (r) {
       LISTA = (r && r.reportes) || [];
+      COMPARTIDO = (r && r.compartido) || null;
       contador(LISTA.length);
       return LISTA;
     });
+  }
+
+  /* 26-sep-2026: los reportes se comparten con TODAS las computadoras del
+     panel (ver datos_sync.py). Se dice, en una línea, si esta está al día. */
+  var COMPARTIDO = null;
+  function lineaCompartido() {
+    var c = COMPARTIDO;
+    if (!c) return '';
+    if (c.ok === false) {
+      return '<p class="dt-chico dt-comp">No se pudo compartir con las otras computadoras ' +
+        '(' + esc(c.error || 'sin conexión') + '). Se reintenta solo cada 2 minutos.</p>';
+    }
+    var h = c.hace;
+    var cuando = h == null ? '' : (h < 60 ? ' · al día' : ' · hace ' + Math.round(h / 60) + ' min');
+    return '<p class="dt-chico dt-comp">✓ Compartido con todas las computadoras del panel' + cuando + '</p>';
   }
 
   function pintarLista(mensaje) {
@@ -89,7 +105,7 @@
     RAIZ.innerHTML =
       '<div class="dt-cab"><h2>Datos</h2>' +
       '<p>Cada reporte tiene su planilla. El panel la lee, la entiende y arma ' +
-      'el tablero.</p></div>' +
+      'el tablero.</p>' + lineaCompartido() + '</div>' +
       (mensaje ? '<div class="dt-error">' + esc(mensaje) + '</div>' : '') +
       (filas ? '<div class="dt-reps">' + filas + '</div>'
              : '<div class="dt-nada">Todavía no hay ningún reporte.</div>') +
@@ -105,8 +121,9 @@
       '<input type="text" id="dtRuta" placeholder="Ruta del archivo .csv o .xlsx" autocomplete="off">' +
       '<button type="button" class="btn active" id="dtIr">Conectar</button>' +
       '</div>' +
-      '<p class="dt-chico">La planilla se lee desde acá y no se copia a ningún lado. ' +
-      'Los datos de clientes no salen de esta computadora.</p>' +
+      '<p class="dt-chico">La planilla se comparte con las demás computadoras del panel, ' +
+      'por el servidor privado del equipo: no se publica en la intranet. Si cambiás el ' +
+      'archivo, a las demás les llega solo.</p>' +
       '</div>' +
       '<div id="dtPanGoogle" hidden></div>' +
       '</div>';
