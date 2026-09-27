@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 93
+VERSION = 94
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,19 +349,19 @@ VERSION = 93
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.36.0"
-VERSION_LABEL = "1.36.0 - editor mas simple y listas que scrollean"
+VERSION_PUBLICA = "1.37.0"
+VERSION_LABEL = "1.37.0 - tutoriales con varios videos"
 VERSION_NOTES = (
-                 "ARREGLO: en Enviar al modulo, las listas para elegir el modulo y "
-                 "el bloque (por ejemplo Material descargable) se cerraban al usar "
-                 "la rueda del mouse; ahora scrollean. MEJORAS: se saco el bloque "
-                 "Web embebida; el bloque Video solo se sube (sin link de YouTube); "
-                 "el bloque Boton no acepta links de video.")
+                 "MEJORA: un tutorial puede tener varios videos, uno detras del "
+                 "otro, con una sola linea de tiempo. Se eligen varios al subirlo o "
+                 "se suman despues con + Sumar otro video; los capitulos cuentan "
+                 "sobre la linea entera y al terminar un video sigue el proximo. Los "
+                 "paneles viejos no pueden borrar esos videos extra al combinar.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["En «Enviar al módulo», las listas del módulo y del bloque ya se pueden recorrer con la rueda del mouse"]
-VERSION_MEJORAS = ["Se sacó el bloque Web embebida", "El bloque Video ahora solo se sube (sin link de YouTube)", "El bloque Botón no acepta links de video"]
+VERSION_ARREGLOS = []
+VERSION_MEJORAS = ["Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo", "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
@@ -3175,7 +3175,21 @@ def validar_tutoriales(lista):
             dur = max(0, int(float(t.get("duracion", 0))))
         except (TypeError, ValueError):
             dur = 0
-        out.append({
+        # 26-sep-2026 (pedido del dueño): un tutorial puede tener VARIOS
+        # videos, uno detras del otro, con UNA sola linea de tiempo. `src` y
+        # `duracion` siguen siendo el primero (asi los tutoriales viejos no
+        # cambian) y `mas` son los que siguen. Los minutos de los capitulos
+        # cuentan sobre la linea entera, no sobre cada video.
+        mas = []
+        for x in (t.get("mas") or [])[:30]:
+            if not isinstance(x, dict) or not str(x.get("src") or "").strip():
+                continue
+            try:
+                dx = max(0, int(float(x.get("duracion", 0))))
+            except (TypeError, ValueError):
+                dx = 0
+            mas.append({"src": str(x.get("src"))[:200], "duracion": dx})
+        item = {
             "id": clave,
             "titulo": titulo,
             "nota": str(t.get("nota") or "").strip()[:400],
@@ -3183,8 +3197,26 @@ def validar_tutoriales(lista):
             "duracion": dur,
             "capitulos": caps,
             "creado": str(t.get("creado") or "")[:10],
-        })
+        }
+        # la clave queda aunque la lista este vacia: asi se distingue «le
+        # quitaron los videos extra» de «lo reescribio un panel viejo que no
+        # conoce `mas`» (ver fusion._reparar_videos_de_tutoriales)
+        if isinstance(t.get("mas"), list):
+            item["mas"] = mas
+        out.append(item)
     return out
+
+
+def videos_de_tutoriales(lista):
+    """Todos los videos que usan los tutoriales (el primero y los que siguen)."""
+    usados = set()
+    for t in lista or []:
+        if t.get("src"):
+            usados.add(t["src"])
+        for x in t.get("mas") or []:
+            if x.get("src"):
+                usados.add(x["src"])
+    return usados
 
 
 # =====================================================================
@@ -4384,7 +4416,7 @@ class Handler(BaseHTTPRequestHandler):
                 # los videos que dejaron de estar referenciados se borran: un
                 # mp4 de 16 MB huerfano se publica igual y se clona en cada
                 # build para siempre
-                usados = {t["src"] for t in limpios if t.get("src")}
+                usados = videos_de_tutoriales(limpios)
                 # ⚠️ Guardar tutoriales reescribe TODO modulos.js. Si por lo que
                 # sea los modulos se leyeran vacios, este guardado borraria la
                 # intranet entera sin decir nada. Antes de escribir, se

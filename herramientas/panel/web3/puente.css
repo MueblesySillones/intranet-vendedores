@@ -817,6 +817,17 @@ main.lienzo{padding:0; max-width:none; margin:0}
   border-radius:3px; overflow:hidden}
 #tutRaiz .tut-seg.on{background:rgba(255,255,255,.42)}
 #tutRaiz .tut-seg i{display:block; width:0; height:100%; background:var(--accent)}
+/* 26-sep: donde empieza otro video del mismo tutorial, la ranura es más ancha */
+#tutRaiz .tut-seg.corte{margin-left:5px; box-shadow:-3px 0 0 rgba(255,255,255,.55)}
+#tutRaiz .tut-vid-h{display:flex; align-items:center; gap:8px; margin:10px 0 2px; padding:4px 8px;
+  font-size:var(--t-nano); font-weight:700; letter-spacing:.3px; text-transform:uppercase;
+  color:var(--ink3); cursor:pointer; border-radius:var(--r-sm)}
+#tutRaiz .tut-vid-h:first-child{margin-top:0}
+#tutRaiz .tut-vid-h:hover{color:var(--ink)}
+#tutRaiz .tut-vid-h.on{color:var(--accent)}
+#tutRaiz .tut-quitar-vid{margin-left:auto; border:0; background:none; color:var(--ink3);
+  font-size:16px; line-height:1; cursor:pointer; padding:0 4px; border-radius:var(--r-sm)}
+#tutRaiz .tut-quitar-vid:hover{color:var(--err); background:var(--panel)}
 /* los controles propios. El navegador trae los suyos, pero con ellos quedaban
    DOS barras de progreso una arriba de la otra: la suya y la de capitulos. */
 #tutRaiz .tut-ctrl{display:flex; align-items:center; gap:11px; margin-top:8px;

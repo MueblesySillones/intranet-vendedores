@@ -25,17 +25,17 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.36.0"
-NUEVO_LABEL = "1.36.0 - editor mas simple y listas que scrollean"
-NUEVAS_NOTAS = ('ARREGLO: en Enviar al modulo, las listas para elegir el modulo y el bloque (por ejemplo Material descargable) se cerraban al usar la rueda del mouse; ahora scrollean. MEJORAS: se saco el bloque Web embebida; el bloque Video solo se sube (sin link de YouTube); el bloque Boton no acepta links de video.')
+NUEVA_PUBLICA = "1.37.0"
+NUEVO_LABEL = "1.37.0 - tutoriales con varios videos"
+NUEVAS_NOTAS = ('MEJORA: un tutorial puede tener varios videos, uno detras del otro, con una sola linea de tiempo. Se eligen varios al subirlo o se suman despues con + Sumar otro video; los capitulos cuentan sobre la linea entera y al terminar un video sigue el proximo. Los paneles viejos no pueden borrar esos videos extra al combinar.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["En «Enviar al módulo», las listas del módulo y del bloque ya se pueden recorrer con la rueda del mouse"]
-NUEVAS_MEJORAS = ["Se sacó el bloque Web embebida", "El bloque Video ahora solo se sube (sin link de YouTube)", "El bloque Botón no acepta links de video"]
+NUEVOS_ARREGLOS = []
+NUEVAS_MEJORAS = ["Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo", "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

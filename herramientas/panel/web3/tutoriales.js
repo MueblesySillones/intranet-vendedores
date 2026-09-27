@@ -38,6 +38,73 @@
   var BUSCA = '';        // lo que se escribió en la lupa (ya normalizado)
   var CAPS = [];         // los capítulos mientras se editan (el borrador)
   var CARGADO = false;
+  var PARTE = 0;         // cuál de los videos del tutorial está cargado
+
+  /* ───────────── VARIOS VIDEOS, UNA SOLA LÍNEA ─────────────
+     26-sep-2026, pedido del dueño: «tengo tres videos que explican los
+     módulos y no quiero tres tarjetas: que todo esté dentro de una y se
+     puedan ir agregando videos a la línea de tiempo».
+     Un tutorial tiene su video (`src`) y los que le siguen (`mas`). Se
+     reproducen uno detrás del otro y la línea de tiempo es UNA: los minutos
+     de los capítulos cuentan sobre el total, así que el capítulo del segundo
+     video de 3 minutos, si el primero dura 5, está en el 8:00. Por eso la
+     lupa, «Marcar acá» y saltar a un capítulo siguen hablando en minutos
+     de la línea entera, y el reproductor traduce a «qué video y qué segundo». */
+  function partes(t) {
+    var l = t ? [{ src: t.src, duracion: t.duracion || 0 }].concat(t.mas || []) : [];
+    var v = video();
+    var desde = 0;
+    return l.map(function (x, i) {
+      var d = x.duracion || 0;
+      /* el que está cargado sabe su duración exacta aunque no se haya guardado */
+      if (i === PARTE && t && t.id === ABIERTO && v && isFinite(v.duration) && v.duration > 0) {
+        d = v.duration;
+      }
+      var o = { src: x.src, duracion: d, desde: desde, i: i };
+      desde += d;
+      return o;
+    });
+  }
+
+  function durDe(t) {
+    return partes(t).reduce(function (a, x) { return a + x.duracion; }, 0);
+  }
+
+  /* el segundo de la línea ENTERA en el que se está */
+  function ahora() {
+    var v = video();
+    var p = partes(elDe(ABIERTO))[PARTE];
+    return (p ? p.desde : 0) + ((v && v.currentTime) || 0);
+  }
+
+  function cargarParte(i, local, seguir) {
+    var v = video(), t = elDe(ABIERTO);
+    var ps = partes(t);
+    if (!v || !ps[i]) return;
+    PARTE = i;
+    v.src = url(ps[i].src);
+    v.addEventListener('loadedmetadata', function () {
+      v.currentTime = Math.max(0, local || 0);
+      if (seguir) v.play().catch(function () {});
+      alCorrer();
+    }, { once: true });
+    pintarCaps();
+  }
+
+  /* ir a un minuto de la línea ENTERA: si cae en otro video, se cambia */
+  function irA(seg, tocar) {
+    var v = video();
+    var ps = partes(elDe(ABIERTO));
+    if (!v || !ps.length) return;
+    var i = ps.length - 1;
+    for (var k = 0; k < ps.length; k++) {
+      if (seg < ps[k].desde + ps[k].duracion) { i = k; break; }
+    }
+    var local = Math.max(0, seg - ps[i].desde);
+    if (i !== PARTE) { cargarParte(i, local, tocar || !v.paused); return; }
+    var poner = function () { v.currentTime = local; if (tocar) v.play().catch(function () {}); alCorrer(); };
+    if (v.readyState >= 1) poner(); else v.addEventListener('loadedmetadata', poner, { once: true });
+  }
 
   function esc(t) {
     return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) {
@@ -205,6 +272,7 @@
 
   function tarjeta(t) {
     var n = (t.capitulos || []).length;
+    var nv = 1 + (t.mas || []).length;
     /* los tramos que coinciden con lo buscado: se entra directo al minuto */
     var hits = capsQueCoinciden(t, BUSCA).slice(0, 4).map(function (c) {
       return '<button type="button" class="tut-hit" data-ver-tut="' + esc(t.id) +
@@ -214,7 +282,8 @@
     return '<article class="tut-c" data-tut="' + esc(t.id) + '">' +
       (central() ? '<button type="button" class="tut-x" data-borrar-tut="' + esc(t.id) +
         '" title="Quitar este tutorial">×</button>' : '') +
-      '<div class="tut-cp">' + esc(reloj(t.duracion)) +
+      '<div class="tut-cp">' + esc(reloj(durDe(t))) +
+        (nv > 1 ? ' · ' + nv + ' videos' : '') +
         (n ? ' · ' + n + (n === 1 ? ' capítulo' : ' capítulos') : '') + '</div>' +
       '<h4 class="tut-cn">' + esc(t.titulo) + '</h4>' +
       (t.nota ? '<p class="tut-cd">' + esc(t.nota) + '</p>' : '') +
@@ -269,6 +338,7 @@
     var r = raiz();
     var puede = central();
     CAPS = (t.capitulos || []).map(function (c) { return { t: c.t, texto: c.texto }; });
+    PARTE = 0;
     /* 22-sep, pedido del usuario: el video a un costado y al lado la línea de
        temas, como en las plataformas de cursos. El reproductor y la línea de
        capítulos son los MISMOS de antes (misma caja, mismos controles, misma
@@ -307,6 +377,10 @@
       '</div>' +
       '<div class="tut-bajo">' +
         (puede ? '<button type="button" class="btn" id="tutEditar">✎ Editar capítulos</button>' +
+                 '<button type="button" class="btn" id="tutSumar">+ Sumar otro video</button>' +
+                 '<input type="file" id="tutSumarArch" hidden multiple ' +
+                   'accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm">' +
+                 '<span class="dt-chico" id="tutSumarPaso" hidden></span>' +
                  '<button type="button" class="btn active" id="tutGuardar" hidden>Guardar capítulos</button>' +
                  '<button type="button" class="btn" id="tutCancelar" hidden>Cancelar</button>' +
                  '<button type="button" class="btn" id="tutMarcar" hidden>+ Marcar acá</button>' : '') +
@@ -337,6 +411,13 @@
       };
       document.getElementById('tutGuardar').onclick = guardarCaps;
       document.getElementById('tutMarcar').onclick = marcarAca;
+      var arch = document.getElementById('tutSumarArch');
+      document.getElementById('tutSumar').onclick = function () { arch.click(); };
+      arch.onchange = function () {
+        var fs = [].slice.call(arch.files || []);
+        arch.value = '';
+        if (fs.length) sumarVideos(fs);
+      };
     }
     engancharVideo(t);
     pintarCaps();
@@ -354,7 +435,7 @@
         return '<button type="button" class="tut-otro" data-ver-tut="' + esc(x.id) + '">' +
           '<span class="tut-num">' + (i + 1) + '</span>' +
           '<span class="tut-otro-tx"><b>' + esc(x.titulo) + '</b>' +
-          '<i>' + esc(reloj(x.duracion)) + (n ? ' · ' + n + (n === 1 ? ' tema' : ' temas') : '') +
+          '<i>' + esc(reloj(durDe(x))) + (n ? ' · ' + n + (n === 1 ? ' tema' : ' temas') : '') +
           '</i></span></button>';
       }).join('') + '</div>';
   }
@@ -365,16 +446,30 @@
     v.addEventListener('loadedmetadata', function () {
       dibujarLinea();
       var d = document.getElementById('tutDur');
-      if (d) d.textContent = reloj(v.duration);
+      if (d) d.textContent = reloj(durDe(elDe(ABIERTO)));
       /* la duración se guarda la primera vez que alguien lo abre: así la lista
-         la puede mostrar sin tener que bajar cada video */
-      if (central() && !t.duracion && isFinite(v.duration) && v.duration > 0) {
-        var copia = LISTA.map(function (x) {
-          return x.id === t.id
-            ? Object.assign({}, x, { duracion: Math.round(v.duration) }) : x;
+         la puede mostrar sin tener que bajar cada video. Vale para cada uno de
+         los videos del tutorial. */
+      var tt = elDe(ABIERTO);
+      if (!tt || !central() || !isFinite(v.duration) || v.duration <= 0) return;
+      var seg = Math.round(v.duration);
+      var copia = null;
+      if (PARTE === 0 && !tt.duracion) {
+        copia = Object.assign({}, tt, { duracion: seg });
+      } else if (PARTE > 0 && tt.mas && tt.mas[PARTE - 1] && !tt.mas[PARTE - 1].duracion) {
+        var mas = tt.mas.map(function (x, i) {
+          return i === PARTE - 1 ? Object.assign({}, x, { duracion: seg }) : x;
         });
-        guardar(copia).catch(function () {});
+        copia = Object.assign({}, tt, { mas: mas });
       }
+      if (copia) {
+        guardar(LISTA.map(function (x) { return x.id === tt.id ? copia : x; })).catch(function () {});
+      }
+    });
+    /* al terminar un video, sigue el próximo: la línea es una sola */
+    v.addEventListener('ended', function () {
+      var ps = partes(elDe(ABIERTO));
+      if (PARTE < ps.length - 1) cargarParte(PARTE + 1, 0, true);
     });
     v.addEventListener('timeupdate', alCorrer);
     v.addEventListener('seeked', alCorrer);
@@ -410,8 +505,8 @@
       return;
     }
     if (ev.key === ' ' || ev.key === 'k') { ev.preventDefault(); alternar(); }
-    else if (ev.key === 'ArrowRight') { ev.preventDefault(); v.currentTime += 5; }
-    else if (ev.key === 'ArrowLeft') { ev.preventDefault(); v.currentTime -= 5; }
+    else if (ev.key === 'ArrowRight') { ev.preventDefault(); irA(ahora() + 5); }
+    else if (ev.key === 'ArrowLeft') { ev.preventDefault(); irA(Math.max(0, ahora() - 5)); }
   });
 
   /* ───────────── la línea de tiempo ─────────────
@@ -419,19 +514,38 @@
      tramo es lo que dura ese capítulo: de un vistazo se ve cuánto ocupa cada
      tema, que es justo lo que se quiere de una línea de tiempo. */
   function tramos() {
-    var v = video();
-    var dur = (v && isFinite(v.duration) && v.duration) ||
-              (elDe(ABIERTO) || {}).duracion || 0;
-    var caps = (EDIT ? CAPS : ((elDe(ABIERTO) || {}).capitulos || []))
+    var t = elDe(ABIERTO) || {};
+    var ps = partes(t);
+    var dur = durDe(t);
+    var caps = (EDIT ? CAPS : (t.capitulos || []))
       .slice().sort(function (a, b) { return a.t - b.t; });
     if (!dur) return { dur: 0, lista: [] };
-    var puntos = caps.filter(function (c) { return c.t < dur; });
+    var puntos = caps.filter(function (c) { return c.t < dur; })
+      .map(function (c) { return { t: c.t, texto: c.texto, ct: c.t }; });
     if (!puntos.length || puntos[0].t > 0) {
-      puntos = [{ t: 0, texto: '' }].concat(puntos);
+      puntos = [{ t: 0, texto: '', ct: null }].concat(puntos);
+    }
+    /* donde empieza cada video la línea también se corta, aunque ahí no haya
+       capítulo: el tramo sigue siendo del capítulo que venía */
+    var cortes = {};
+    ps.slice(1).forEach(function (x) {
+      if (x.desde <= 0 || x.desde >= dur) return;
+      cortes[Math.round(x.desde * 1000)] = true;
+      if (!puntos.some(function (c) { return Math.abs(c.t - x.desde) < 0.001; })) {
+        puntos.push({ t: x.desde, texto: null, ct: null });
+      }
+    });
+    puntos.sort(function (a, b) { return a.t - b.t; });
+    for (var k = 0; k < puntos.length; k++) {
+      if (puntos[k].texto === null) {
+        puntos[k].texto = k ? puntos[k - 1].texto : '';
+        puntos[k].ct = k ? puntos[k - 1].ct : null;
+      }
     }
     var lista = puntos.map(function (c, i) {
       var fin = (i + 1 < puntos.length) ? puntos[i + 1].t : dur;
-      return { desde: c.t, hasta: fin, texto: c.texto, i: i };
+      return { desde: c.t, hasta: fin, texto: c.texto, ct: c.ct, i: i,
+               corte: !!cortes[Math.round(c.t * 1000)] };
     });
     return { dur: dur, lista: lista };
   }
@@ -443,16 +557,28 @@
     if (!d.dur) { caja.innerHTML = '<div class="tut-seg" style="flex-grow:1"><i></i></div>'; return; }
     caja.innerHTML = d.lista.map(function (s) {
       var largo = Math.max(0.5, s.hasta - s.desde);
-      return '<div class="tut-seg" style="flex-grow:' + largo + '" data-t="' + s.desde +
+      return '<div class="tut-seg' + (s.corte ? ' corte' : '') + '" style="flex-grow:' + largo + '" data-t="' + s.desde +
         '"' + (s.texto ? ' title="' + esc(reloj(s.desde) + ' · ' + s.texto) + '"' : '') +
         '><i></i></div>';
     }).join('');
     caja.onclick = function (ev) {
-      var v = video();
-      if (!v || !isFinite(v.duration)) return;
+      var tot = durDe(elDe(ABIERTO));
+      if (!tot) return;
+      /* Se busca el TRAMO tocado y se reparte adentro de él: entre tramo y
+         tramo hay una ranura, y una regla de tres sobre el ancho entero se
+         corre un poco en una línea con muchos cortes. */
+      var seg = ev.target.closest && ev.target.closest('.tut-seg');
+      var d = tramos();
+      var i = seg ? Array.prototype.indexOf.call(caja.children, seg) : -1;
+      if (i >= 0 && d.lista[i]) {
+        var r1 = seg.getBoundingClientRect();
+        var f1 = Math.min(1, Math.max(0, (ev.clientX - r1.left) / r1.width));
+        irA(d.lista[i].desde + f1 * (d.lista[i].hasta - d.lista[i].desde));
+        return;
+      }
       var r = caja.getBoundingClientRect();
       var f = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width));
-      v.currentTime = f * v.duration;
+      irA(f * tot);
     };
     alCorrer();
   }
@@ -461,30 +587,30 @@
     var v = video();
     if (!v) return;
     var d = tramos();
-    var ahora = v.currentTime || 0;
+    var ya = ahora();
     var caja = document.getElementById('tutBarra');
     if (caja) {
       var segs = caja.querySelectorAll('.tut-seg');
       for (var i = 0; i < segs.length && i < d.lista.length; i++) {
         var s = d.lista[i];
         var largo = Math.max(0.001, s.hasta - s.desde);
-        var parte = Math.min(1, Math.max(0, (ahora - s.desde) / largo));
+        var parte = Math.min(1, Math.max(0, (ya - s.desde) / largo));
         segs[i].firstChild.style.width = (parte * 100) + '%';
-        segs[i].classList.toggle('on', ahora >= s.desde && ahora < s.hasta);
+        segs[i].classList.toggle('on', ya >= s.desde && ya < s.hasta);
       }
     }
     var t = document.getElementById('tutAhora');
-    if (t) t.textContent = reloj(ahora);
+    if (t) t.textContent = reloj(ya);
     var cual = null;
     for (var j = 0; j < d.lista.length; j++) {
-      if (ahora >= d.lista[j].desde) cual = d.lista[j];
+      if (ya >= d.lista[j].desde) cual = d.lista[j];
     }
     var b = document.getElementById('tutCapAhora');
     if (b) b.textContent = (cual && cual.texto) || '';
     var filas = document.querySelectorAll('#tutCaps .tut-cap');
     for (var k = 0; k < filas.length; k++) {
       filas[k].classList.toggle('on',
-        cual != null && parseInt(filas[k].dataset.t, 10) === cual.desde);
+        cual != null && cual.ct != null && parseInt(filas[k].dataset.t, 10) === cual.ct);
     }
   }
 
@@ -494,14 +620,38 @@
     if (!caja) return;
     var caps = (EDIT ? CAPS : ((elDe(ABIERTO) || {}).capitulos || []))
       .slice().sort(function (a, b) { return a.t - b.t; });
+    var ps = partes(elDe(ABIERTO));
+    /* con más de un video, la lista se agrupa: «Video 2 · desde 5:12» */
+    var cab = function (x) {
+      return '<div class="tut-vid-h' + (x.i === PARTE ? ' on' : '') + '" data-parte="' + x.i + '">' +
+        '<span>Video ' + (x.i + 1) + ' · desde ' + esc(reloj(x.desde)) + '</span>' +
+        (central() && !EDIT
+          ? '<button type="button" class="tut-quitar-vid" data-quitar-parte="' + x.i +
+            '" title="Quitar este video del tutorial">×</button>' : '') +
+        '</div>';
+    };
+    var puestos = 0;
+    var antes = function (tt) {
+      if (ps.length < 2) return '';
+      var h = '';
+      while (puestos < ps.length && (puestos === 0 || ps[puestos].desde <= tt)) {
+        h += cab(ps[puestos]); puestos++;
+      }
+      return h;
+    };
     if (!caps.length) {
-      caja.innerHTML = '<p class="dt-chico">' +
+      /* sin capítulos igual se listan los videos: es la forma de ir directo
+         al segundo para marcarle los suyos */
+      caja.innerHTML = antes(Infinity) + '<p class="dt-chico">' +
         (EDIT
           ? 'Todavía no hay capítulos. Poné el video donde empieza un tema y apretá <b>+ Marcar acá</b>.'
           : 'Este tutorial todavía no tiene capítulos marcados.') + '</p>';
       return;
     }
     caja.innerHTML = caps.map(function (c, i) {
+      return antes(c.t) + fila(c, i);
+    }).join('') + antes(Infinity);
+    function fila(c, i) {
       if (EDIT) {
         return '<div class="tut-cap edit" data-t="' + c.t + '" data-i="' + i + '">' +
           '<input class="tut-t" value="' + esc(reloj(c.t)) + '" data-campo="t" ' +
@@ -514,7 +664,7 @@
       return '<button type="button" class="tut-cap" data-t="' + c.t + '">' +
         '<span class="tut-t">' + esc(reloj(c.t)) + '</span>' +
         '<span class="tut-x2">' + esc(c.texto) + '</span></button>';
-    }).join('');
+    }
     if (EDIT) engancharEdicion(caja);
     var cuenta = document.getElementById('tutCuenta');
     if (cuenta) cuenta.textContent = caps.length;   /* al marcar uno nuevo, el número sube */
@@ -556,8 +706,10 @@
       var e = document.getElementById(id);
       if (e) e.hidden = !v;
     });
-    var e = document.getElementById('tutEditar');
-    if (e) e.hidden = v;
+    ['tutEditar', 'tutSumar'].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (e) e.hidden = v;
+    });
     pintarCaps();
     dibujarLinea();
     if (v) {
@@ -568,7 +720,7 @@
   function marcarAca() {
     var v = video();
     if (!v) return;
-    var seg = Math.floor(v.currentTime || 0);
+    var seg = Math.floor(ahora());
     if (CAPS.some(function (c) { return c.t === seg; })) {
       aviso('Ya hay un capítulo en ' + reloj(seg), 'err');
       return;
@@ -593,8 +745,7 @@
     }
     /* 23-sep-2026 (auditoría): se aceptaba un capítulo en 5:00 de un video de
        0:29; nunca se marcaba y quedaba como fantasma en la lista y la lupa. */
-    var v = video();
-    var dur = (v && isFinite(v.duration) && v.duration) || t.duracion || 0;
+    var dur = durDe(t);
     if (dur > 0) {
       var fuera = CAPS.filter(function (c) { return c.t >= dur; });
       if (fuera.length) {
@@ -679,10 +830,100 @@
     });
   }
 
+  /* Sube UN video y devuelve {src, duracion}. Lo usan «Subir un tutorial»
+     y «Sumar otro video». */
+  function subirArchivo(file, andando) {
+    var clave = 'tut-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    var fd = new FormData();
+    fd.append('key', clave);
+    fd.append('file', file);
+    var duracion = 0;
+    return medir(file).then(function (d) {
+      duracion = d;
+      return window.api('/api/upload-tutorial', { method: 'POST', body: fd });
+    }).then(function (r) {
+      if (r && r.falta_ffmpeg) {
+        throw new Error('Este video hay que convertirlo y falta el compresor. ' +
+          'Entrá a un módulo con video y aceptá bajarlo, o subí un mp4 más liviano.');
+      }
+      if (r && r.error) throw new Error(r.error);
+      if (r && r.job) {
+        andando('Achicando el video… 0%');
+        return window.esperarJob(r.job, function (j) {
+          andando('Achicando el video… ' + (j.pct || 0) + '%');
+        }).then(function (j) { return j.src; });
+      }
+      return r.src;
+    }).then(function (src) { return { src: src, duracion: duracion }; });
+  }
+
+  /* varios archivos, en fila: uno por vez para no ahogar la compu */
+  function subirVarios(files, andando) {
+    var hechos = [];
+    return files.reduce(function (cadena, f, i) {
+      return cadena.then(function () {
+        var pre = files.length > 1 ? 'Video ' + (i + 1) + ' de ' + files.length + ': ' : '';
+        andando(pre + 'Subiendo…');
+        return subirArchivo(f, function (x) { andando(pre + x); })
+          .then(function (x) { hechos.push(x); });
+      });
+    }, Promise.resolve()).then(function () { return hechos; });
+  }
+
+  function sumarVideos(files) {
+    var t = elDe(ABIERTO);
+    if (!t) return;
+    if (window.exigirActualizacion && window.exigirActualizacion()) return;
+    var btn = document.getElementById('tutSumar');
+    var paso = document.getElementById('tutSumarPaso');
+    var andando = function (x) { if (paso) { paso.textContent = x || ''; paso.hidden = !x; } };
+    if (btn) btn.disabled = true;
+    subirVarios(files, andando).then(function (nuevos) {
+      andando('Guardando…');
+      var fresco = elDe(t.id) || t;
+      var copia = Object.assign({}, fresco, { mas: (fresco.mas || []).concat(nuevos) });
+      return guardar(LISTA.map(function (x) { return x.id === t.id ? copia : x; }),
+        nuevos.length === 1 ? 'Video sumado al final del tutorial'
+                            : nuevos.length + ' videos sumados al final del tutorial');
+    }).then(function () {
+      andando('');
+      pintar();
+    }).catch(function (e) {
+      andando('');
+      if (btn) btn.disabled = false;
+      aviso(e.message || 'No se pudo subir el video', 'err');
+    });
+  }
+
+  /* Quitar uno de los videos: se van con él sus capítulos, y los de los
+     videos que siguen se corren para atrás lo que duraba. */
+  function quitarParte(i) {
+    var t = elDe(ABIERTO);
+    var ps = partes(t);
+    if (!t || !ps[i] || ps.length < 2) return;
+    var p = ps[i];
+    var dentro = function (c) { return c.t >= p.desde && c.t < p.desde + p.duracion; };
+    var suyos = (t.capitulos || []).filter(dentro).length;
+    if (!window.confirm('¿Quitar el video ' + (i + 1) + ' de este tutorial?' +
+        (suyos ? ' Se quitan también sus ' + suyos + (suyos === 1 ? ' capítulo.' : ' capítulos.') : ''))) return;
+    var caps = (t.capitulos || []).filter(function (c) { return !dentro(c); }).map(function (c) {
+      return c.t >= p.desde + p.duracion ? { t: Math.round(c.t - p.duracion), texto: c.texto } : c;
+    });
+    var lista = [{ src: t.src, duracion: t.duracion || 0 }].concat(t.mas || []);
+    lista.splice(i, 1);
+    var copia = Object.assign({}, t, {
+      src: lista[0].src, duracion: lista[0].duracion, mas: lista.slice(1), capitulos: caps
+    });
+    guardar(LISTA.map(function (x) { return x.id === t.id ? copia : x; }), 'Video quitado')
+      .then(pintar)
+      .catch(function (e) { aviso(e.message || 'No se pudo quitar', 'err'); });
+  }
+
   function subir() {
     var titulo = (document.getElementById('tutTitulo').value || '').trim();
     var nota = (document.getElementById('tutNota').value || '').trim();
-    var file = (document.getElementById('tutArchivo').files || [])[0];
+    var files = [].slice.call(document.getElementById('tutArchivo').files || []);
+    var file = files[0];
     var mal = document.getElementById('tutSubirMal');
     var paso = document.getElementById('tutSubirPaso');
     var decir = function (t) {
@@ -699,33 +940,15 @@
     andando('Subiendo el video…');
 
     var clave = 'tut-' + Date.now().toString(36);
-    var fd = new FormData();
-    fd.append('key', clave);
-    fd.append('file', file);
-    var duracion = 0;
-    medir(file).then(function (d) {
-      duracion = d;
-      return window.api('/api/upload-tutorial', { method: 'POST', body: fd });
-    }).then(function (r) {
-      if (r && r.falta_ffmpeg) {
-        throw new Error('Este video hay que convertirlo y falta el compresor. ' +
-          'Entrá a un módulo con video y aceptá bajarlo, o subí un mp4 más liviano.');
-      }
-      if (r && r.error) throw new Error(r.error);
-      if (r && r.job) {
-        andando('Achicando el video… 0%');
-        return window.esperarJob(r.job, function (j) {
-          andando('Achicando el video… ' + (j.pct || 0) + '%');
-        }).then(function (j) { return j.src; });
-      }
-      return r.src;
-    }).then(function (src) {
+    subirVarios(files, andando).then(function (vids) {
       andando('Guardando…');
+      var src = vids[0].src;
       var nuevo = {
         id: clave, titulo: titulo, nota: nota, src: src,
-        duracion: duracion, capitulos: [],
+        duracion: vids[0].duracion, capitulos: [],
         creado: new Date().toISOString().slice(0, 10)
       };
+      if (vids.length > 1) nuevo.mas = vids.slice(1);
       return guardar([nuevo].concat(LISTA), 'Tutorial subido').then(function (l) {
         return { lista: l, src: src };
       });
@@ -753,12 +976,7 @@
     var ver = ev.target.closest('[data-ver-tut]');
     if (ver && ver.dataset.t) {          /* resultado de la lupa: entra al minuto */
       ABIERTO = ver.getAttribute('data-ver-tut'); EDIT = false; pintar();
-      var seg = parseInt(ver.dataset.t, 10) || 0;
-      var vv = video();
-      if (vv) {
-        var ir = function () { vv.currentTime = seg; vv.play().catch(function () {}); };
-        if (vv.readyState >= 1) ir(); else vv.addEventListener('loadedmetadata', ir, { once: true });
-      }
+      irA(parseInt(ver.dataset.t, 10) || 0, true);
       return;
     }
     if (ver && r.contains(ver)) {
@@ -776,8 +994,15 @@
     }
     var cap = ev.target.closest('.tut-cap:not(.edit)');
     if (cap && r.contains(cap)) {
-      var v = video();
-      if (v) { v.currentTime = parseInt(cap.dataset.t, 10) || 0; v.play().catch(function () {}); }
+      irA(parseInt(cap.dataset.t, 10) || 0, true);
+      return;
+    }
+    var qp = ev.target.closest('[data-quitar-parte]');
+    if (qp && r.contains(qp)) { quitarParte(parseInt(qp.dataset.quitarParte, 10)); return; }
+    var hv = ev.target.closest('.tut-vid-h[data-parte]');
+    if (hv && r.contains(hv)) {
+      var pp = partes(elDe(ABIERTO))[parseInt(hv.dataset.parte, 10)];
+      if (pp) irA(pp.desde, true);
       return;
     }
   });

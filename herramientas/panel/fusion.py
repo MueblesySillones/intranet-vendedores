@@ -300,11 +300,36 @@ def _fusionar_ajustes(b, l, r, informe):
     return out
 
 
+def _reparar_videos_de_tutoriales(local, referencia):
+    """26-sep-2026: desde la v94 un tutorial puede tener varios videos (`mas`).
+    Un panel de antes no conoce esa clave y, al ponerse al dia, reescribe el
+    tutorial SIN ella: si despues publicara, borraria los videos extra del
+    sitio. Si el tutorial local no tiene `mas` y el de referencia (la base, o lo
+    publicado) si, con el mismo primer video, eso lo hizo un panel viejo: se
+    recuperan. Quitar videos a proposito desde la version nueva deja `mas: []`
+    (la clave presente), asi que no se confunde con esto."""
+    if not referencia:
+        return local
+    ref = {t.get("id"): t for t in referencia.get("tutoriales") or [] if isinstance(t, dict)}
+    arreglados = []
+    for t in local.get("tutoriales") or []:
+        r = ref.get(t.get("id")) if isinstance(t, dict) else None
+        if (r and "mas" not in t and r.get("mas")
+                and t.get("src") == r.get("src")):
+            t = dict(t)
+            t["mas"] = r["mas"]
+        arreglados.append(t)
+    out = dict(local)
+    out["tutoriales"] = arreglados
+    return out
+
+
 def fusionar(base, local, remota):
     """Fusiona tres `partes()`. base puede ser None (union).
     Devuelve (partes_fusionadas, informe_dict)."""
     inf = Informe()
     hay = base is not None
+    local = _reparar_videos_de_tutoriales(local, base if hay else remota)
     mods = _fusionar_lista(base["modulos"] if hay else None, local["modulos"],
                            remota["modulos"], "key", inf, "", _fusionar_modulo)
     aj = _fusionar_ajustes(base["ajustes"] if hay else None, local["ajustes"],
