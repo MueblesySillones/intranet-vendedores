@@ -1,15 +1,17 @@
 {
-  "version": 95,
-  "label": "1.38.0 - los Datos se comparten entre todas las computadoras",
-  "notes": "MEJORA: los reportes de la seccion Datos, a que sucursal va cada vendedor y los Excel conectados se comparten con todas las computadoras del panel, por el servidor privado del equipo (no por la intranet). Si el Excel cambia en la PC que lo conecto, a las demas les llega solo. Se sincroniza al abrir Datos y cada 2 minutos.",
+  "version": 96,
+  "label": "1.39.0 - reportes por sucursal, patrones de clientes y lo recaudado",
+  "notes": "MEJORAS en los reportes de Datos: se puede elegir una, varias o todas las sucursales; la comparacion muestra el numero del mes anterior; la sucursal muestra que parte de las derivaciones de la empresa recibio y su conversion; la tabla de vendedores sale ordenada por lo que recibio cada uno, con ventas y conversion; nueva lamina Como se comportan los clientes (patrones leyendo juntos los seguimientos y la respuesta final); lo recaudado del mes (columna Monto).",
   "arreglos": [],
   "mejoras": [
-    "Los reportes de Datos se ven en todas las computadoras, sin volver a cargarlos",
-    "Si se actualiza el Excel, a todas les llega la versión nueva"
+    "Reportes de una, varias o todas las sucursales",
+    "Nueva lámina: cómo se comportan los clientes",
+    "Lo recaudado del mes y el número del mes anterior a la vista",
+    "La tabla de vendedores con ventas y conversión"
   ],
-  "sha256": "8ee414b3e8027a9c11a7ad574ec9b18521e082750f885cf8884dea97031f0887",
-  "size": 20421585,
-  "url": "panel/PanelMyS-v95.zip",
+  "sha256": "729374e1b9960d26c9c5f069fbda81d06a37956eab38f0ecca257f57c1821314",
+  "size": 20430924,
+  "url": "panel/PanelMyS-v96.zip",
   "historial": [
     {
       "version": 83,
@@ -114,6 +116,15 @@
       "mejoras": [
         "Un tutorial puede tener varios videos seguidos, con una sola línea de tiempo",
         "Botón «+ Sumar otro video» para agregar videos a un tutorial que ya existe"
+      ]
+    },
+    {
+      "version": 95,
+      "label": "1.38.0 - los Datos se comparten entre todas las computadoras",
+      "arreglos": [],
+      "mejoras": [
+        "Los reportes de Datos se ven en todas las computadoras, sin volver a cargarlos",
+        "Si se actualiza el Excel, a todas les llega la versión nueva"
       ]
     }
   ]
