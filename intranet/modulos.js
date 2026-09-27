@@ -14,26 +14,6 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
-          "id": "dmuj2nkmk3faa",
-          "titulo": "prueba",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-26",
-          "etiqueta": "",
-          "fijado": true,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "prueba prueba"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">prueba prueba</p></div>"
-        },
-        {
           "id": "dmuido8dded8f",
           "titulo": "OBSEQUIO CLIENTES. LUNES FERIADO 28/9",
           "autor": "Marketing",
@@ -464,6 +444,27 @@ window.MODULES = [
         }
       ],
       "papelera": [
+        {
+          "id": "dmuj2nkmk3faa",
+          "titulo": "prueba",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-26",
+          "etiqueta": "",
+          "fijado": true,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "prueba prueba"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">prueba prueba</p></div>",
+          "borradoEl": "2026-09-26"
+        },
         {
           "id": "dmuirkkw4gad6",
           "titulo": "prueba",
