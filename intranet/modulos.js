@@ -4462,6 +4462,102 @@ window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administració
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
 window.TUTORIALES = [
   {
+    "id": "tut_mun2v4e6",
+    "titulo": "MÓDULO",
+    "nota": "",
+    "src": "assets/_tutoriales/tut_mun2v4e69zw.mp4",
+    "duracion": 64,
+    "capitulos": [
+      {
+        "t": 0,
+        "texto": "¿Cómo crear módulo?"
+      },
+      {
+        "t": 37,
+        "texto": "Bloque de texto y Subtitulos"
+      },
+      {
+        "t": 55,
+        "texto": "Bloque de etiqueta con número"
+      },
+      {
+        "t": 64,
+        "texto": "Bloque de lista de chequeo"
+      },
+      {
+        "t": 84,
+        "texto": "Bloque de Diagrama"
+      },
+      {
+        "t": 110,
+        "texto": "Bloque de Nota"
+      },
+      {
+        "t": 118,
+        "texto": "Bloque Advertencia"
+      },
+      {
+        "t": 126,
+        "texto": "Bloque de Chat"
+      },
+      {
+        "t": 180,
+        "texto": "Eliminar un Bloque"
+      },
+      {
+        "t": 190,
+        "texto": "Bloque de imagenes, Video y PDF"
+      },
+      {
+        "t": 203,
+        "texto": "Bloque placa de descargas"
+      },
+      {
+        "t": 228,
+        "texto": "Bloque de botón"
+      },
+      {
+        "t": 235,
+        "texto": "Bloque de tabla"
+      },
+      {
+        "t": 266,
+        "texto": "Bloque de tarjeta de número"
+      },
+      {
+        "t": 277,
+        "texto": "Bloque Barra comparativa"
+      },
+      {
+        "t": 297,
+        "texto": "Bloque de Podio"
+      },
+      {
+        "t": 317,
+        "texto": "Bloque de tarjeta con icono"
+      },
+      {
+        "t": 327,
+        "texto": "Bloque de separaciones"
+      },
+      {
+        "t": 355,
+        "texto": "Publicar un Módulo"
+      }
+    ],
+    "creado": "2026-09-29",
+    "mas": [
+      {
+        "src": "assets/_tutoriales/tut_mun2vegw1o4.mp4",
+        "duracion": 126
+      },
+      {
+        "src": "assets/_tutoriales/tut_mun2vvelfnm.mp4",
+        "duracion": 176
+      }
+    ]
+  },
+  {
     "id": "tut_mumud9wr",
     "titulo": "DATOS INSTAGRAM - Data Studio",
     "nota": "",
