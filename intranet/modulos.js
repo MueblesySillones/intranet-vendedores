@@ -445,6 +445,48 @@ window.MODULES = [
       ],
       "papelera": [
         {
+          "id": "dmuj2nkmk3faa",
+          "titulo": "prueba",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-26",
+          "etiqueta": "",
+          "fijado": true,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "prueba prueba"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">prueba prueba</p></div>",
+          "borradoEl": "2026-09-26"
+        },
+        {
+          "id": "dmuirkkw4gad6",
+          "titulo": "prueba",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-26",
+          "etiqueta": "",
+          "fijado": true,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "subtitulos."
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">subtitulos.</p></div>",
+          "borradoEl": "2026-09-26"
+        },
+        {
           "id": "dmud5obvi62oe",
           "titulo": "prueba",
           "autor": "Marketing",
@@ -4399,6 +4441,15 @@ window.MODULES = [
 window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administración", "Dirección", "Tapicería", "Depósito y Entregas"]};
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
 window.TUTORIALES = [
+  {
+    "id": "tut_mumud9wr",
+    "titulo": "DATOS INSTAGRAM - Data Studio",
+    "nota": "",
+    "src": "assets/_tutoriales/tut_mumud9wr8dv.mp4",
+    "duracion": 64,
+    "capitulos": [],
+    "creado": "2026-09-29"
+  },
   {
     "id": "tut_mud76s9t",
     "titulo": "PUBLICACIONES",
