@@ -25,17 +25,18 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.41.0"
-NUEVO_LABEL = "1.41.0 - por que anuncio llegaron"
-NUEVAS_NOTAS = ('MEJORA: nueva lamina Por que anuncio llegaron: agrupa el Origen en anuncios, web, mailing, redes sin pauta, influencers, sucursal, telefono, accion de marketing y otros medios, y detalla cada anuncio con consultas, derivadas y ventas. Todo origen nuevo que no sea de esa lista cuenta como anuncio.')
+NUEVA_PUBLICA = "1.42.0"
+NUEVO_LABEL = "1.42.0 - tutoriales largos y reportes que se explican"
+NUEVAS_NOTAS = ('ARREGLO: un video de mas de 200 MB en Tutoriales terminaba en El panel no responde. Ahora un tutorial acepta hasta 3 GB: si es largo se comprime y se corta en partes de 3 minutos que se ven una detras de otra, hasta unos 150 minutos. MEJORA: Crear un reporte explica cada paso, y las laminas van agrupadas por tema con un Sirve para en cada una.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = []
-NUEVAS_MEJORAS = ["Nueva lámina: por qué anuncio llegaron (anuncios, web, mailing… y cada anuncio)"]
+NUEVOS_ARREGLOS = ["Subir un video largo a Tutoriales ya no deja el panel sin responder"]
+NUEVAS_MEJORAS = ["Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos",
+                  "Crear un reporte explica para qué sirve cada paso y cada lámina"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
