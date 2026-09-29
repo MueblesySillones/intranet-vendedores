@@ -24,6 +24,8 @@ memoria-diseno/
 *.bat
 # excepcion: el actualizador SI es codigo fuente y tiene que viajar en el repo
 !herramientas/panel/updater/aplicar.bat
+# y el de rescate que se baja del sitio: lo usan las PCs que no pueden actualizar (29-sep)
+!panel/ACTUALIZAR-PANEL-MyS.bat
 # el lanzador tambien es codigo fuente: viaja en el instalador y decide con que
 # directorio de trabajo arranca el panel. Estuvo sin versionar hasta el 19-sep.
 !herramientas/panel/updater/PanelMyS_run.bat

@@ -85,6 +85,10 @@ Cada una de éstas costó un bug en producción. Leelas antes de tocar nada.
 7. **No hay detección por `userAgent` en ningún lado, y está bien así.** El código
    pregunta por capacidad (`navigator.canShare`), no por marca de teléfono. No
    introduzcas sniffing de `userAgent`: el iPad moderno se reporta como Mac.
+8. **`herramientas/panel/datos/` (los reportes) vivió sólo en la PC central hasta
+   el 29-sep-2026.** Desde la v100 `publicar_web3.py` la sube con cada release y
+   frena si falta o no carga. Un panel compilado sin ella abre igual, pero sin
+   reportes, y se lo bajan todas las sucursales.
 
 ---
 
@@ -113,11 +117,14 @@ canal interno.
 
 Para trabajar con un agente de IA hace falta un `.mcp.json` con los servidores MCP
 oficiales de GitHub, Vercel y Supabase. **No está en este repositorio a propósito.**
-Lo genera el Panel de administración: *Ajustes → Kit de recuperación*, que produce un
-archivo cifrado con contraseña. Adentro viene la configuración lista para copiar, más
-el inventario de accesos.
+Lo genera el Panel de administración: *Configuración → Para desarrolladores* (antes se
+llamaba «Kit de recuperación»). Es un `.html` que se abre con doble clic, **sin
+contraseña**, y lleva escrita la clave de publicación: tratalo como una contraseña.
+Adentro viene la configuración lista para copiar, el inventario de accesos y el paso
+a paso para seguir desde otra computadora (también en
+`herramientas/GUIA-OTRA-COMPUTADORA.md`, sin la clave).
 
-Pedile ese kit a quien administre el panel. Los servidores MCP no llevan credenciales
+Pedile ese archivo a quien administre el panel. Los servidores MCP no llevan credenciales
 —cada quien se autentica con su propia cuenta—, pero para que devuelvan algo tu cuenta
 tiene que estar invitada antes a la organización de GitHub, al equipo de Vercel y a la
 organización de Supabase.

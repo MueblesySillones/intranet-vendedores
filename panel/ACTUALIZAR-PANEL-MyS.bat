@@ -1,0 +1,150 @@
+@echo off
+title Actualizar el Panel MyS
+REM Actualiza el Panel MyS a la ultima version publicada, sin depender del panel viejo.
+REM Baja panel/version.json + el zip del sitio, verifica el sha256, copia encima de la
+REM instalacion (sin tocar panel_config.json, proyecto.txt, identity.json ni aprobaciones),
+REM lo vuelve a abrir y confirma la version. 23-sep-2026.
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$l = Get-Content -LiteralPath '%~f0'; $i = [array]::IndexOf($l, '#PS#'); iex ($l[($i+1)..($l.Length-1)] -join [char]10)"
+echo.
+pause
+exit /b
+#PS#
+$ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$SITIO   = if ($env:PMYS_SITIO) { $env:PMYS_SITIO.TrimEnd('/') } else { 'https://intranet-vendedores.vercel.app' }
+$INSTALL = if ($env:PMYS_INSTALL) { $env:PMYS_INSTALL } else { Join-Path $env:LOCALAPPDATA 'PanelMyS' }
+$PUERTO  = if ($env:MYS_PANEL_PORT) { $env:MYS_PANEL_PORT } else { '8124' }
+# Lanzado DESDE EL PANEL (boton Actualizar, desde la v91): cada paso se anota en
+# aplicar.log, que el panel va leyendo para mostrar el avance en pantalla.
+$LOG = $env:PMYS_LOG
+function Anotar($t) { if ($LOG) { try { Add-Content -LiteralPath $LOG -Value $t -Encoding UTF8 } catch {} } }
+# la carpeta temporal con su nombre COMPLETO: con un usuario con espacios, Windows la da
+# abreviada (C:\Users\REDES1~1) y borrar ahi falla y cortaba todo antes del final
+$TMP = (Get-Item -LiteralPath $env:TEMP).FullName
+function Borrar($p) { try { if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction Stop } } catch {} }
+function Paso($t) { Anotar "==> $t"; Write-Host ''; Write-Host "==> $t" -ForegroundColor Cyan }
+function Mal($t)  { Anotar "NO SE PUDO ACTUALIZAR: $t"
+                    Write-Host ''; Write-Host '  ================================================' -ForegroundColor Red
+                    Write-Host "  NO SE PUDO ACTUALIZAR: $t" -ForegroundColor Red
+                    Write-Host '  ================================================' -ForegroundColor Red; exit 1 }
+function VersionCorriendo {
+  try { return (Invoke-RestMethod "http://127.0.0.1:$PUERTO/api/config" -TimeoutSec 3) } catch { return $null }
+}
+
+Write-Host ''
+Write-Host '  ACTUALIZAR EL PANEL MyS A LA ULTIMA VERSION' -ForegroundColor Yellow
+Write-Host '  Baja la version del sitio, la instala y vuelve a abrir el panel.'
+Write-Host '  La configuracion y la clave de esta computadora NO se tocan.'
+
+if (-not (Test-Path (Join-Path $INSTALL 'PanelMyS.exe'))) {
+  Mal "no encuentro el Panel MyS instalado en $INSTALL. En una computadora nueva hay que usar el instalador."
+}
+$antes = VersionCorriendo
+
+Paso '1/5  Buscando la ultima version en internet'
+try { $v = Invoke-RestMethod "$SITIO/panel/version.json?nc=$(Get-Random)" -TimeoutSec 30 }
+catch { Mal 'no hay conexion a internet, o el sitio no responde. Revisa internet y proba de nuevo.' }
+Write-Host "  La ultima es la $($v.label)"
+if ($antes) { Write-Host "  Esta computadora tiene la $($antes.version_label)" }
+
+Paso '2/5  Bajando el programa (unos 20 MB)'
+$zip = Join-Path $TMP 'PanelMyS-actualizar.zip'
+try { Invoke-WebRequest "$SITIO/$($v.url)" -OutFile $zip -UseBasicParsing -TimeoutSec 900 }
+catch { Mal 'se corto la descarga. Revisa internet y proba de nuevo.' }
+if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLower() -ne ([string]$v.sha256).ToLower()) {
+  Mal 'el archivo llego incompleto o danado. Proba de nuevo.'
+}
+Write-Host '  Descargado y verificado.'
+
+Paso '3/5  Preparando la version nueva'
+$nuevo = Join-Path $TMP 'PanelMyS-nuevo'
+Borrar $nuevo
+Expand-Archive -LiteralPath $zip -DestinationPath $nuevo -Force
+if (-not (Test-Path (Join-Path $nuevo 'PanelMyS.exe'))) { Mal 'el paquete bajado no trae el programa.' }
+
+Paso '4/5  Cerrando el panel e instalando'
+# solo el panel de ESTA carpeta, ningun otro programa. Por CIM y no solo por
+# Get-Process: a un panel abierto con otros permisos Get-Process le devuelve la
+# ruta vacia, no se lo cerraba y dejaba sus archivos tomados (codigo 11).
+$cerrar = @(Get-CimInstance Win32_Process -Filter "Name='PanelMyS.exe'" -ErrorAction SilentlyContinue |
+  Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($INSTALL, [StringComparison]::OrdinalIgnoreCase) } |
+  ForEach-Object { $_.ProcessId })
+$cerrar += @(Get-Process -Name PanelMyS -ErrorAction SilentlyContinue |
+  Where-Object { $_.Path -and $_.Path.StartsWith($INSTALL, [StringComparison]::OrdinalIgnoreCase) } |
+  ForEach-Object { $_.Id })
+foreach ($id in ($cerrar | Sort-Object -Unique)) {
+  try { Stop-Process -Id $id -Force -ErrorAction Stop } catch { try { & taskkill.exe /F /PID $id | Out-Null } catch {} }
+}
+# esperar a que se cierren DE VERDAD (antes era un sleep fijo de 3 segundos)
+for ($i = 0; $i -lt 20; $i++) {
+  if ($cerrar.Count -eq 0 -or -not (Get-Process -Id $cerrar -ErrorAction SilentlyContinue)) { break }
+  Start-Sleep -Seconds 1
+}
+Start-Sleep -Seconds 2
+# restos de una actualizacion anterior (ver Reemplazar, abajo): ya nadie los usa
+Get-ChildItem -LiteralPath $INSTALL -Recurse -Force -Filter '*.pmys-viejo' -ErrorAction SilentlyContinue |
+  ForEach-Object { try { Remove-Item -LiteralPath $_.FullName -Force -ErrorAction Stop } catch {} }
+$resp = "$INSTALL" + '_antes_de_actualizar'
+robocopy "$INSTALL" "$resp" /MIR /R:2 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null
+# se COPIA encima (no se mueve la carpeta): aunque el navegador la tenga tomada, se puede.
+# lo propio de esta computadora no se toca: config, clave, identidad, proyecto, aprobaciones
+$robolog = Join-Path $TMP 'PanelMyS-robocopy.log'
+robocopy "$nuevo" "$INSTALL" /MIR /XF panel_config.json proyecto.txt identity.json update_ok.marker '*.pmys-viejo' /XD aprobaciones /R:5 /W:2 /NFL /NDL /NJH /NJS /NP "/LOG:$robolog" | Out-Null
+$rc = $LASTEXITCODE
+if ($rc -ge 8) {
+  # 29-sep-2026: "codigo 11" = robocopy no pudo pisar algun archivo porque algo
+  # lo tenia abierto (antivirus, un proceso colgado). Reiniciar lo arreglaba,
+  # pero no se puede pedir eso cada vez. Windows NO deja pisar un archivo en
+  # uso, pero SI deja cambiarle el nombre: se lo renombra a *.pmys-viejo, se
+  # pone el nuevo en su lugar, y el viejo lo borra la proxima actualizacion.
+  Anotar "robocopy dio ${rc}: reemplazo archivo por archivo"
+  if (Test-Path -LiteralPath $robolog) { Get-Content -LiteralPath $robolog -Tail 15 | ForEach-Object { Anotar "  $_" } }
+  $base = (Get-Item -LiteralPath $nuevo).FullName.TrimEnd('\')
+  $noVan = @('panel_config.json', 'proyecto.txt', 'identity.json', 'update_ok.marker')
+  $fallan = @()
+  foreach ($f in (Get-ChildItem -LiteralPath $base -Recurse -File -Force)) {
+    if ($noVan -contains $f.Name) { continue }
+    $rel = $f.FullName.Substring($base.Length + 1)
+    if ($rel -like 'aprobaciones\*') { continue }
+    $dst = Join-Path $INSTALL $rel
+    if ((Test-Path -LiteralPath $dst) -and ((Get-Item -LiteralPath $dst).Length -eq $f.Length) -and
+        ((Get-FileHash -LiteralPath $dst).Hash -eq (Get-FileHash -LiteralPath $f.FullName).Hash)) { continue }
+    try {
+      New-Item -ItemType Directory -Force -Path (Split-Path -Parent $dst) | Out-Null
+      Copy-Item -LiteralPath $f.FullName -Destination $dst -Force -ErrorAction Stop
+    } catch {
+      try {
+        Rename-Item -LiteralPath $dst -NewName ($f.Name + '.' + (Get-Random) + '.pmys-viejo') -Force -ErrorAction Stop
+        Copy-Item -LiteralPath $f.FullName -Destination $dst -Force -ErrorAction Stop
+        Anotar "  renombrado y reemplazado: $rel"
+      } catch { $fallan += $rel; Anotar "  NO se pudo reemplazar: $rel" }
+    }
+  }
+  if ($fallan.Count -eq 0) { $rc = 1 }
+}
+if ($rc -ge 8) {
+  robocopy "$resp" "$INSTALL" /MIR /R:5 /W:2 /NFL /NDL /NJH /NJS /NP | Out-Null
+  Start-Process -FilePath (Join-Path $INSTALL 'PanelMyS.exe') -WorkingDirectory $env:SystemRoot
+  Mal "Windows no dejo reemplazar algunos archivos (codigo $rc). Se dejo la version anterior. Reinicia la computadora y proba de nuevo."
+}
+
+Paso '5/5  Abriendo el panel con la version nueva'
+Start-Process -FilePath (Join-Path $INSTALL 'PanelMyS.exe') -WorkingDirectory $env:SystemRoot
+$ok = $null
+for ($i = 0; $i -lt 60; $i++) {
+  Start-Sleep -Seconds 1
+  $c = VersionCorriendo
+  if ($c -and [int]$c.version -eq [int]$v.version) { $ok = $c; break }
+}
+if (-not $ok) { Mal 'el panel nuevo no respondio. Abrilo a mano desde su icono; si no abre, avisale a quien mantiene el sistema.' }
+Borrar $zip
+Borrar $nuevo
+Write-Host ''
+Write-Host '  ================================================' -ForegroundColor Green
+Anotar "swap OK (actualizar.ps1) -> v$($ok.version)"
+Write-Host "  LISTO: el panel quedo en la $($ok.version_label)" -ForegroundColor Green
+Write-Host '  ================================================' -ForegroundColor Green
+Write-Host ''
+Write-Host '  Si en el navegador quedo abierta una pestana vieja del panel, cerrala:'
+Write-Host '  la nueva ya se abrio sola.'
+exit 0

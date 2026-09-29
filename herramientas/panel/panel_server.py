@@ -657,6 +657,122 @@ def _mcp_para_desarrollador():
     }
 
 
+def _otra_pc():
+    """El paso a paso COMPLETO para seguir desde otra computadora: publicar
+    contenido y publicar versiones nuevas del panel. Pedido del dueno (29-sep):
+    si la central se pierde, con este archivo y su cuenta de GitHub tiene que
+    poder seguir sin preguntarle a nadie. Los comandos van enteros, listos para
+    copiar: quien lo lea no programa.
+
+    <CLAVE> lo reemplaza el visor por la clave de publicacion (que ya viaja en
+    el archivo), asi la linea de clave-equipo.iss sale lista para pegar."""
+    r = _repo_del_cerebro()
+    url = "https://github.com/%s/%s" % (r["owner"], r["repo"])
+    return [
+        {"titulo": "1. Lo que hay que tener antes",
+         "pasos": [
+             "Este archivo (trae la clave de publicacion).",
+             "Una cuenta de GitHub invitada a la organizacion %s con permiso de escritura. "
+             "Si no la tenes, la pide el dueno de la organizacion en github.com/%s -> People -> Invite."
+             % (r["owner"], r["owner"]),
+             "Una computadora con Windows 10 u 11 y internet.",
+         ]},
+        {"titulo": "2. Instalar los programas (una sola vez)",
+         "pasos": [
+             "Git: bajalo de git-scm.com e instalalo con todas las opciones como vienen.",
+             "Python 3.12: bajalo de python.org. En la primera pantalla del instalador MARCA "
+             "'Add python.exe to PATH' antes de apretar Install. Si no, nada de lo que sigue anda.",
+             "Cerra y volve a abrir el cmd despues de instalar, y escribi los comandos de abajo.",
+             "Opcional, solo para armar los instaladores de las sucursales: Inno Setup 6 (jrsoftware.org).",
+             "Opcional, solo para tocar el cerebro (el Worker de Cloudflare): Node.js (nodejs.org).",
+         ],
+         "comandos": "python --version\n"
+                     "git --version\n"
+                     "pip install pyinstaller pillow certifi openpyxl"},
+        {"titulo": "3. Bajar el proyecto",
+         "pasos": [
+             "Abri el cmd (tecla Windows, escribi cmd, Enter) y pega esto.",
+             "La primera vez que subas algo, Git abre una ventana para entrar con tu cuenta de GitHub.",
+             "El proyecto queda en Documentos\\intranet-vendedores. En la central vieja la carpeta "
+             "se llamaba distinto; el nombre no importa.",
+         ],
+         "comandos": "cd %%USERPROFILE%%\\Documents\n"
+                     "git clone %s\n"
+                     "cd intranet-vendedores\n"
+                     "git config user.name \"Tu nombre\"\n"
+                     "git config user.email \"tu-correo-de-github@ejemplo.com\"" % url},
+        {"titulo": "4. Poner la clave",
+         "pasos": [
+             "Dentro de la carpeta del proyecto, anda a herramientas\\panel.",
+             "Crea un archivo de texto llamado clave-equipo.iss (ojo: que no quede clave-equipo.iss.txt; "
+             "en el Explorador activa Vista -> Extensiones de nombre de archivo).",
+             "Adentro pega esta unica linea y guarda. NUNCA lo subas a GitHub: ya esta excluido.",
+         ],
+         "comandos": "#define PubKey \"<CLAVE>\""},
+        {"titulo": "5. Publicar contenido (publicaciones, modulos, tutoriales)",
+         "pasos": [
+             "Instala el panel con 'Instalar Panel MyS.exe' y elegi Central. Si no tenes el "
+             "instalador, armalo con el paso 7.",
+             "Cuando el panel pregunte por la carpeta del proyecto, elegi la del paso 3.",
+             "Si pide la clave de publicacion, pega la que esta arriba en este archivo.",
+             "Desde ahi se publica como siempre, con el boton Publicar.",
+         ]},
+        {"titulo": "6. Publicar una version nueva del panel",
+         "pasos": [
+             "Esto es cuando se cambio el codigo del panel (por ejemplo, un arreglo que hizo Claude).",
+             "Primero traete los cambios. Si Claude los dejo en una rama, te dice el nombre: "
+             "va en lugar de NOMBRE-DE-LA-RAMA. Si ya estan en main, salteate esa linea.",
+             "Despues corre publicar_web3.py. Tarda unos minutos: sube el numero de version, compila, "
+             "prueba el programa y lo publica. Si frena en algun paso, no publico nada: lee lo que dice.",
+             "Antes de correrlo, en publicar_web3.py (arriba de todo) tienen que estar los textos de "
+             "ESTA version: NUEVA_PUBLICA, NUEVO_LABEL, NUEVAS_NOTAS, NUEVOS_ARREGLOS y NUEVAS_MEJORAS. "
+             "Si son los de la anterior, el guion frena. Claude los deja cargados cuando hace el cambio.",
+             "Cuando termina, las sucursales ven el cartel 'Debes actualizar'. La computadora "
+             "que publico no necesita actualizar.",
+         ],
+         "comandos": "cd %USERPROFILE%\\Documents\\intranet-vendedores\n"
+                     "git checkout main\n"
+                     "git pull\n"
+                     "git merge --ff-only origin/NOMBRE-DE-LA-RAMA\n"
+                     "cd herramientas\\panel\n"
+                     "python publicar_web3.py"},
+        {"titulo": "7. Armar los instaladores (sucursal nueva o PC nueva)",
+         "pasos": [
+             "publicar_web3.py ya los arma solo al final si esta instalado Inno Setup 6.",
+             "Si hace falta armarlos aparte, corre esto. Quedan en el Escritorio, carpeta "
+             "Proyecto Intranet\\Panel MyS.",
+             "El de sucursal usa la clave de Tailscale para unirse a la red: se genera en "
+             "login.tailscale.com -> Settings -> Keys si hace falta una nueva.",
+         ],
+         "comandos": "cd %USERPROFILE%\\Documents\\intranet-vendedores\\herramientas\\panel\n"
+                     "python armar_instalador.py"},
+        {"titulo": "8. Si hay que tocar el cerebro (casi nunca)",
+         "pasos": [
+             "El cerebro es el programa en Cloudflare que publica al sitio. Solo se toca si cambia "
+             "herramientas\\cerebro\\src\\worker.js.",
+             "Hace falta Node.js y la cuenta de Cloudflare del negocio. El primer comando abre el "
+             "navegador para entrar.",
+         ],
+         "comandos": "cd %USERPROFILE%\\Documents\\intranet-vendedores\\herramientas\\cerebro\n"
+                     "npx wrangler login\n"
+                     "npx wrangler deploy"},
+        {"titulo": "9. Si algo sale mal",
+         "pasos": [
+             "'not a git repository': el cmd no esta parado en la carpeta del proyecto. Hace el cd del paso 6.",
+             "'There is no tracking information': escribi  git branch --set-upstream-to=origin/main main  "
+             "y volve a hacer git pull.",
+             "'Your local changes would be overwritten': hay cambios sin guardar en esa computadora. "
+             "Guardalos aparte con  git stash push -u  y segui. No se borran.",
+             "'falta clave-equipo.iss' o 'el cerebro rechaza la clave': revisa el paso 4.",
+             "'falta la carpeta datos/': el proyecto esta viejo. Hace git pull.",
+             "'los reportes no cargan': falta una libreria. El mensaje dice cual: pip install <esa>.",
+             "'NO SE PUDO ACTUALIZAR ... (codigo 11)' en una PC con la v99 o anterior: baja y abri "
+             "intranet-vendedores.vercel.app/panel/ACTUALIZAR-PANEL-MyS.bat (doble clic). Desde la v100 no pasa mas.",
+             "Para cualquier otra cosa: abri Claude, conecta el repositorio y pegale el mensaje de error.",
+         ]},
+    ]
+
+
 def kit_recuperacion():
     """Junta TODO lo necesario para recuperar el control del sistema si esta
     computadora se pierde. El panel no puede fabricar credenciales de GitHub ni
@@ -728,6 +844,7 @@ def kit_recuperacion():
              "si_lo_perdes": "La seccion Datos deja de actualizarse. El resto del sistema sigue andando."},
         ],
         "mcp": _mcp_para_desarrollador(),
+        "otra_pc": _otra_pc(),
         "pasos": [
             "1. Consegui acceso a la cuenta de Cloudflare: es la que manda sobre como se publica.",
             "2. Verifica que el cerebro responda: abri <CEREBRO>/health en el navegador.",
@@ -736,6 +853,7 @@ def kit_recuperacion():
             "5. Clona el repositorio en esa PC y apunta el panel a esa carpeta.",
             "6. Pega la clave de publicacion (esta mas arriba en este mismo kit) cuando el panel te la pida.",
             "7. Desde ahi ya podes publicar y actualizar como antes.",
+            "8. El paso a paso completo, con los comandos listos para copiar, esta en la seccion 'Seguir desde otra computadora' de este mismo archivo.",
         ],
         "avisos": [
             "ESTE ARCHIVO LLEVA LA CLAVE DE PUBLICACION ESCRITA. Tratalo como una contrasena.",
@@ -2799,6 +2917,20 @@ def aplicar_update_ps(jid=None):
         os.makedirs(UPDATE_DIR, exist_ok=True)
         ps1 = os.path.join(UPDATE_DIR, "actualizar.ps1")
         shutil.copy2(SCRIPT_UPDATE, ps1)
+        # 29-sep-2026: el actualizador que corre es el de la version INSTALADA.
+        # Un arreglo al actualizador (el "codigo 11") no le llegaba justo a las
+        # PCs que no podian actualizar. Se usa el del sitio, que sale con cada
+        # release; si no baja o no parece el script, queda el de adentro.
+        try:
+            req = urllib.request.Request(WEB_PUBLICA + "/panel/actualizar_ps.txt?nc=%d" % int(time.time()),
+                                         headers={"User-Agent": "PanelMyS/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                fresco = r.read()
+            if b"ACTUALIZAR EL PANEL MyS" in fresco and b"Paso '4/5" in fresco and len(fresco) < 200000:
+                with open(ps1, "wb") as f:
+                    f.write(fresco)
+        except Exception:  # noqa: sin internet o sin archivo: el de adentro anda
+            pass
         log = os.path.join(UPDATE_DIR, "aplicar.log")
         with open(log, "a", encoding="utf-8") as f:
             f.write("[%s] start pid=%d (actualizar.ps1, v%d -> v%s)\n" % (

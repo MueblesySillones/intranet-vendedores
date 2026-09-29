@@ -25,18 +25,18 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.42.0"
-NUEVO_LABEL = "1.42.0 - tutoriales largos y reportes que se explican"
-NUEVAS_NOTAS = ('ARREGLO: un video de mas de 200 MB en Tutoriales terminaba en El panel no responde. Ahora un tutorial acepta hasta 3 GB: si es largo se comprime y se corta en partes de 3 minutos que se ven una detras de otra, hasta unos 150 minutos. MEJORA: Crear un reporte explica cada paso, y las laminas van agrupadas por tema con un Sirve para en cada una.')
+NUEVA_PUBLICA = "1.43.0"
+NUEVO_LABEL = "1.43.0 - actualizar sin reiniciar, y todo para otra computadora"
+NUEVAS_NOTAS = ('ARREGLO: actualizar el panel fallaba con Windows no dejo reemplazar algunos archivos (codigo 11) y habia que reiniciar. Ahora cierra bien el panel viejo y, si un archivo sigue tomado, lo reemplaza igual. MEJORA: el archivo Para desarrolladores ahora trae el paso a paso completo para seguir desde otra computadora si esta se pierde: que instalar, como bajar el proyecto, donde va la clave y como publicar contenido y versiones nuevas del panel. El codigo de los reportes, que vivia solo en la computadora central, ahora queda guardado en GitHub con cada version.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Subir un video largo a Tutoriales ya no deja el panel sin responder"]
-NUEVAS_MEJORAS = ["Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos",
-                  "Crear un reporte explica para qué sirve cada paso y cada lámina"]
+NUEVOS_ARREGLOS = ["Actualizar ya no falla con \"Windows no dejó reemplazar algunos archivos (código 11)\""]
+NUEVAS_MEJORAS = ["Para desarrolladores trae el paso a paso para seguir desde otra computadora",
+                  "El código de los reportes queda guardado en GitHub, no solo en esta computadora"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
@@ -102,6 +102,32 @@ spec = io.open(os.path.join(aqui, "PanelMyS.spec"), encoding="utf-8").read()
 if "('web3', 'web3')" not in spec:
     morir("PanelMyS.spec no empaqueta web3 (falta ('web3','web3') en datas)")
 print("    ok: el .spec lo empaqueta")
+
+# datos/ es el backend de la seccion Datos (los reportes). Hasta el 29-sep-2026
+# NO estaba en git: vivia solo en la PC central. Compilado sin ella, el panel
+# abre igual (el import esta atras de un try) pero sin reportes, y se lo baja
+# cada sucursal. Por eso: tiene que estar entera, y desde ahora viaja al repo.
+_mod_datos = re.findall(r"'datos\.(\w+)'", spec)
+_faltan = [m for m in _mod_datos if not os.path.isfile(os.path.join(aqui, "datos", m + ".py"))]
+if not os.path.isfile(os.path.join(aqui, "datos", "__init__.py")) or _faltan:
+    morir("falta la carpeta datos/ (o partes: %s). Es el backend de los reportes y "
+          "hasta el 29-sep vivia solo en la PC central: copiala de ahi o de "
+          "GitHub antes de publicar." % (", ".join(_faltan) or "__init__.py"))
+for _f in os.listdir(os.path.join(aqui, "datos")):
+    _p = os.path.join(aqui, "datos", _f)
+    if _f.endswith(".py") and "-----BEGIN" in io.open(_p, encoding="utf-8", errors="replace").read():
+        morir("datos/%s tiene una clave privada escrita: no puede ir al repo publico" % _f)
+print("    ok: datos/ completo (%d modulos)" % len(_mod_datos))
+# Que CARGUE, no solo que este: en una PC nueva le puede faltar una libreria
+# (openpyxl, por ejemplo) y PyInstaller compila igual, sin avisar.
+r = subprocess.run([sys.executable, "-c", "import datos_api"], cwd=aqui,
+                   capture_output=True, text=True)
+if r.returncode != 0:
+    _ult = ((r.stderr or "").strip().splitlines() or ["?"])[-1]
+    _lib = re.search(r"No module named '([\w.]+)'", _ult)
+    morir("los reportes no cargan en esta computadora: %s%s" % (
+        _ult, ("\n  Instalala con:  pip install %s" % _lib.group(1).split(".")[0]) if _lib else ""))
+print("    ok: los reportes cargan")
 
 ps = os.path.join(aqui, "panel_server.py")
 src = io.open(ps, encoding="utf-8").read()
@@ -293,6 +319,16 @@ finally:
 
 # ---------------------------------------------------------------- 7. publicar
 paso(7, "Publicando")
+# El actualizador tambien va al sitio: los paneles instalados lo bajan de ahi
+# (desde la v100), asi un arreglo al actualizador llega aunque la PC no pueda
+# actualizar. Y el .bat de rescate, para las que tienen uno viejo (v99 o antes).
+shutil.copy2(os.path.join(aqui, "rescate", "actualizar_ps.txt"),
+             os.path.join(repo_raiz, "panel", "actualizar_ps.txt"))
+r = subprocess.run([sys.executable, os.path.join(aqui, "rescate", "armar_bat.py"),
+                    os.path.join(repo_raiz, "panel", "ACTUALIZAR-PANEL-MyS.bat")],
+                   capture_output=True, text=True)
+if r.returncode != 0:
+    print(r.stderr[-800:]); morir("no se pudo armar el .bat de rescate")
 subprocess.run(["git", "add", "panel"], cwd=repo_raiz, check=True)
 # El titulo sale del label, sin repetir el numero de version que ya va
 # adelante: "1.6.0 - el reporte se arma preguntando" -> "el reporte se arma...".
@@ -312,6 +348,7 @@ subprocess.run(["git", "add", "--",
                 "herramientas/panel/datos_api.py",
                 "herramientas/panel/fusion.py",
                 "herramientas/panel/datos_sync.py",    # los Datos compartidos entre PCs
+                "herramientas/panel/datos/*.py",       # el backend de los reportes (29-sep)
                 "herramientas/cerebro/src/worker.js",
                 "herramientas/panel/test_fusion.py",
                 "herramientas/panel/armar_instalador.py",
