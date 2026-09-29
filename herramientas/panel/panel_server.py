@@ -419,6 +419,17 @@ MAX_VIDEO_SUBIDA = 200 * 1024 * 1024
 # Objetivo al comprimir: bien por debajo del tope, para que entre siempre.
 OBJETIVO_VIDEO = 12 * 1024 * 1024
 
+# ---- tutoriales largos (29-sep-2026) ----------------------------------
+# Una capacitacion de una hora pesa 600 MB o mas y NO entra en un video de
+# 16 MB por mas que se la comprima. Pero un tutorial ya puede tener varios
+# videos seguidos con UNA linea de tiempo (`mas`, v94): entonces se recibe
+# entero y se corta en partes de pocos minutos, cada una bajo MAX_VIDEO.
+# Cada parte se publica en su propio lote, asi el Worker nunca carga mas de una.
+MAX_TUTORIAL_SUBIDA = 3 * 1024 * 1024 * 1024
+PARTE_SEG = 180                  # 3 minutos por parte: ~460 kbps de video a 720p
+MAX_PARTES = 31                  # el primero + los 30 `mas` que acepta validar_tutoriales
+PISO_VIDEO_BPS = 250_000         # por debajo de esto un tutorial no se lee
+
 
 def firma_video(data):
     """Reconoce el contenedor por su firma. Devuelve 'mp4' | 'webm' | None.
@@ -953,8 +964,19 @@ def _comprimir(jid, origen, destino, objetivo=OBJETIVO_VIDEO):
             cmd += ["-b:v", str(vb), "-maxrate", str(int(vb * 1.5)), "-bufsize", str(vb * 3)]
         cmd.append(destino)
 
-        p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
-                             creationflags=CREATE_NO_WINDOW)
+        _correr_ffmpeg(jid, cmd, dur)
+        if not os.path.isfile(destino) or os.path.getsize(destino) == 0:
+            raise ValueError("no se genero el archivo")
+        return True, ""
+    except Exception as e:      # noqa
+        return False, _legible(e)
+
+
+def _correr_ffmpeg(jid, cmd, dur):
+    """Corre ffmpeg y va pasando el % al job. Levanta ValueError si falla."""
+    p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+                         creationflags=CREATE_NO_WINDOW)
+    try:
         cola = b""
         while True:
             trozo = p.stderr.read1(4096)
@@ -970,17 +992,96 @@ def _comprimir(jid, origen, destino, objetivo=OBJETIVO_VIDEO):
         p = None
         if rc != 0:
             raise ValueError("ffmpeg termino con error %d" % rc)
-        if not os.path.isfile(destino) or os.path.getsize(destino) == 0:
-            raise ValueError("no se genero el archivo")
-        return True, ""
-    except Exception as e:      # noqa
-        return False, _legible(e)
     finally:
         if p is not None:
             try:
                 p.kill()
             except OSError:
                 pass
+
+
+def _plan_partes(dur):
+    """(segundos por parte, bps de video) para cortar `dur` segundos en partes
+    que entren en MAX_VIDEO. None si ni en MAX_PARTES partes entra legible."""
+    seg = max(PARTE_SEG, int(dur / MAX_PARTES) + 1)
+    vb = int(OBJETIVO_VIDEO * 8 / seg) - 96000
+    if vb < PISO_VIDEO_BPS:
+        return None
+    return seg, min(vb, 2_500_000)
+
+
+def _libre_en_disco():
+    """Bytes libres donde se reciben los videos (0 = no se sabe)."""
+    d = STATE_DIR
+    while d and not os.path.isdir(d):        # la carpeta se crea con la primera subida
+        padre = os.path.dirname(d)
+        d = "" if padre == d else padre
+    try:
+        return shutil.disk_usage(d).free if d else 0
+    except OSError:
+        return 0
+
+
+def max_minutos_tutorial():
+    """Lo mas largo que _plan_partes() acepta (~150 min con los topes de hoy)."""
+    seg = OBJETIVO_VIDEO * 8 / float(PISO_VIDEO_BPS + 96000)
+    return int(seg * MAX_PARTES / 60)
+
+
+def _comprimir_en_partes(jid, origen, carpeta, prefijo):
+    """Reencoda a 720p/h264 y corta en partes de _plan_partes() segundos, en UNA
+    sola pasada: el segment muxer corta en los keyframes que se fuerzan justo en
+    cada limite. Devuelve (rutas_en_orden, "") o ([], motivo).
+
+    El tope de cada parte lo asegura el VBV: con maxrate 1,25x y bufsize 2x, en
+    3 minutos el peor caso es ~15,3 MB contando el audio. Igual se mide despues."""
+    try:
+        exe = ffmpeg_local()
+        if not exe:
+            raise ValueError("falta el compresor")
+        dur = duracion_video(exe, origen)
+        if dur <= 0:
+            raise ValueError("no se pudo medir cuanto dura el video")
+        plan = _plan_partes(dur)
+        if not plan:
+            raise ValueError("dura %d minutos y lo maximo para un tutorial son %d. "
+                             "Partilo en dos tutoriales." % (dur // 60, max_minutos_tutorial()))
+        seg, vb = plan
+        n = int(dur // seg) + (1 if dur % seg > 1 else 0)
+        _job_set(jid, msg="Comprimiendo y cortando en %d partes…" % max(n, 1))
+        patron = os.path.join(carpeta, prefijo + "_%03d.mp4")
+        cmd = [exe, "-y", "-hide_banner", "-loglevel", "error", "-stats", "-i", origen,
+               # solo el primer video y el primer audio: los .mov de celular traen
+               # pistas de datos que el mp4 segmentado no acepta
+               "-map", "0:v:0", "-map", "0:a:0?",
+               "-vf", ("scale=w='min(1280,iw)':h='min(1280,ih)'"
+                       ":force_original_aspect_ratio=decrease:force_divisible_by=2"),
+               "-c:v", "libx264", "-preset", "veryfast", "-profile:v", "high",
+               "-pix_fmt", "yuv420p",
+               "-b:v", str(vb), "-maxrate", str(int(vb * 1.25)), "-bufsize", str(vb * 2),
+               "-force_key_frames", "expr:gte(t,n_forced*%d)" % seg,
+               "-c:a", "aac", "-b:a", "96k", "-ac", "2",
+               "-f", "segment", "-segment_time", str(seg), "-reset_timestamps", "1",
+               "-segment_format", "mp4",
+               "-segment_format_options", "movflags=+faststart",
+               patron]
+        _correr_ffmpeg(jid, cmd, dur)
+        rutas = sorted(os.path.join(carpeta, x) for x in os.listdir(carpeta)
+                       if x.startswith(prefijo + "_") and x.endswith(".mp4"))
+        # una cola de menos de un segundo no es una parte: es el redondeo del corte
+        if len(rutas) > 1 and duracion_video(exe, rutas[-1]) < 1:
+            os.remove(rutas.pop())
+        if not rutas:
+            raise ValueError("no se genero ninguna parte")
+        if len(rutas) > MAX_PARTES:
+            raise ValueError("salieron %d partes y el maximo son %d" % (len(rutas), MAX_PARTES))
+        for r in rutas:
+            if os.path.getsize(r) > MAX_VIDEO:
+                raise ValueError("una parte quedo en %.1f MB y el tope es %d MB"
+                                 % (os.path.getsize(r) / 1048576.0, MAX_VIDEO // 1048576))
+        return rutas, ""
+    except Exception as e:      # noqa
+        return [], _legible(e)
 
 # rutas que NUNCA deben publicarse (gate de seguridad del boton Publicar)
 PREFIJOS_PROHIBIDOS = ("datos/", "herramientas/", "memoria-diseno/", ".claude/")
@@ -4373,6 +4474,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({
                 "compresor": bool(ffmpeg_local()), "mb_descarga": FFMPEG_MB,
                 "max": MAX_VIDEO, "max_subida": MAX_VIDEO_SUBIDA,
+                "max_tutorial": MAX_TUTORIAL_SUBIDA,
+                "max_minutos_tutorial": max_minutos_tutorial(),
+                "libre": _libre_en_disco(),
             })
         if path == "/api/job":
             q = parse_qs(u.query)
@@ -4458,7 +4562,8 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/upload-video":
                 return self._upload_video()
             if path == "/api/upload-tutorial":
-                return self._upload_video(TUT_ASSETS, "_tutoriales")
+                return self._upload_video(TUT_ASSETS, "_tutoriales",
+                                          limite=MAX_TUTORIAL_SUBIDA, partir=True)
             if path == "/api/tutoriales":
                 d = self._leer_json()
                 lista = d.get("tutoriales")
@@ -4839,7 +4944,8 @@ class Handler(BaseHTTPRequestHandler):
             return None, "", "no vino ningun archivo"
         return campos, nombre, ""
 
-    def _upload_video(self, carpeta=None, subcarpeta="_modulos"):
+    def _upload_video(self, carpeta=None, subcarpeta="_modulos",
+                      limite=MAX_VIDEO_SUBIDA, partir=False):
         """Sube UN video -> assets/<subcarpeta>/<key>.mp4.
 
         Sirve para el contenido de un modulo y para un tutorial: es el mismo
@@ -4847,6 +4953,9 @@ class Handler(BaseHTTPRequestHandler):
         dos veces significaria que un dia uno de los dos acepte un video que el
         otro rechaza. Si pesa mas del tope publicable, lo comprime en un hilo y
         devuelve un job.
+
+        Con `partir` (tutoriales) acepta hasta `limite` y, si el video es largo,
+        el job termina con `partes`: [{src, duracion}] en orden, una por archivo.
         """
         if not STATE_DIR:
             return self._json({"error": "no hay carpeta de trabajo"}, 500)
@@ -4856,7 +4965,18 @@ class Handler(BaseHTTPRequestHandler):
         # nombre unico: dos subidas a la vez no se pueden pisar el temporal
         marca = base64.b16encode(os.urandom(4)).decode("ascii").lower()
         tmp = os.path.join(STATE_DIR, "subida_%s.tmp" % marca)
-        campos, _nombre, err = self._multipart_a_disco(MAX_VIDEO_SUBIDA, tmp)
+        # el cuerpo crudo + el video sacado de adentro + lo comprimido: ~2,2x
+        try:
+            pedido = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            pedido = 0
+        libre = _libre_en_disco()
+        if pedido and libre and pedido <= limite and libre < pedido * 2.2:
+            self.close_connection = True
+            return self._json({"error": "no hay lugar en el disco para recibir este video: "
+                                        "hacen falta %d MB libres y hay %d MB"
+                                        % (pedido * 2.2 // 1048576, libre // 1048576)}, 507)
+        campos, _nombre, err = self._multipart_a_disco(limite, tmp)
         if err:
             self._borrar_tmp(tmp)
             return self._json({"error": err}, 400)
@@ -4879,7 +4999,7 @@ class Handler(BaseHTTPRequestHandler):
         # ¿se puede publicar tal cual? Manda el CODEC, no solo el peso.
         apto, porque = video_apto(tmp, peso)
 
-        # ya entra: se guarda tal cual
+        # ya entra: se guarda tal cual (un tutorial de hasta 16 MB tambien)
         if apto and (campos or {}).get("forzar") != "1":
             self._limpiar_videos_previos(key, carpeta)
             try:
@@ -4897,6 +5017,33 @@ class Handler(BaseHTTPRequestHandler):
                                "error": "Para convertir este video necesito el compresor."}, 200)
 
         jid = _job_nuevo("video")
+
+        def tarea_partes():
+            trabajo = os.path.join(STATE_DIR, "partes_%s" % marca)
+            try:
+                os.makedirs(trabajo, exist_ok=True)
+                rutas, motivo = _comprimir_en_partes(jid, tmp, trabajo, "p")
+                if not rutas:
+                    _job_set(jid, estado="error", error="No se pudo preparar el video: %s" % motivo)
+                    return
+                exe = ffmpeg_local()
+                partes, total = [], 0
+                for i, r in enumerate(rutas):
+                    nombre = key if i == 0 else "%s_p%02d" % (key, i + 1)
+                    self._limpiar_videos_previos(nombre, carpeta)
+                    total += os.path.getsize(r)
+                    dur = int(round(duracion_video(exe, r))) if exe else 0
+                    shutil.move(r, os.path.join(carpeta, nombre + ".mp4"))
+                    partes.append({"src": "assets/%s/%s.mp4" % (subcarpeta, nombre),
+                                   "duracion": dur})
+                _job_set(jid, estado="listo", pct=100, src=partes[0]["src"], partes=partes,
+                         info="%.1f MB -> %d partes, %.1f MB en total"
+                              % (peso / 1048576.0, len(partes), total / 1048576.0))
+            except OSError as e:
+                _job_set(jid, estado="error", error="No se pudo guardar el video: %s" % _legible(e))
+            finally:
+                self._borrar_tmp(tmp)
+                shutil.rmtree(trabajo, ignore_errors=True)
 
         def tarea():
             salida = os.path.join(STATE_DIR, "comprimido_%s_%s.mp4" % (key, marca))
@@ -4922,7 +5069,13 @@ class Handler(BaseHTTPRequestHandler):
                 self._borrar_tmp(tmp)
                 self._borrar_tmp(salida)
 
-        threading.Thread(target=tarea, daemon=True).start()
+        def elegir():
+            # un tutorial corto se comprime entero, igual que el video de un modulo
+            exe = ffmpeg_local()
+            d = duracion_video(exe, tmp) if exe else 0
+            (tarea if 0 < d <= PARTE_SEG else tarea_partes)()
+
+        threading.Thread(target=elegir if partir else tarea, daemon=True).start()
         return self._json({"ok": True, "job": jid, "peso": peso})
 
     @staticmethod

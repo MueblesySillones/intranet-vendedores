@@ -830,16 +830,41 @@
     });
   }
 
-  /* Sube UN video y devuelve {src, duracion}. Lo usan «Subir un tutorial»
-     y «Sumar otro video». */
+  /* Un tutorial es el primer video + hasta 30 `mas` (validar_tutoriales). */
+  var MAX_PARTES = 31;
+  var mbDe = function (b) { return Math.round(b / 1048576); };
+
+  /* ⚠️ El tamaño se mira ANTES de mandar. Si el programa rechaza un video
+     por grande, corta la conexión sin leerlo y el navegador solo dice «El
+     panel no responde» (pasó el 29-sep con una capacitación de 600 MB). */
+  function revisarTamano(file) {
+    return window.api('/api/video-capacidad').then(function (cap) {
+      var tope = cap.max_tutorial || cap.max_subida || 0;
+      if (tope && file.size > tope) {
+        throw new Error('«' + file.name + '» pesa ' + mbDe(file.size) + ' MB y lo máximo para un ' +
+          'tutorial son ' + mbDe(tope) + ' MB. Partilo en dos antes de subirlo.');
+      }
+      if (cap.libre && file.size * 2.2 > cap.libre) {
+        throw new Error('No hay lugar en el disco para «' + file.name + '»: hacen falta ' +
+          mbDe(file.size * 2.2) + ' MB libres y hay ' + mbDe(cap.libre) + ' MB. Liberá espacio y probá de nuevo.');
+      }
+    }, function () { /* un panel viejo sin este dato: que decida el servidor */ });
+  }
+
+  /* Sube UN archivo y devuelve una LISTA de {src, duracion}: un video largo
+     vuelve cortado en partes de pocos minutos que se ven una detrás de la otra.
+     Lo usan «Subir un tutorial» y «Sumar otro video». */
   function subirArchivo(file, andando) {
     var clave = 'tut-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
     var fd = new FormData();
     fd.append('key', clave);
     fd.append('file', file);
     var duracion = 0;
-    return medir(file).then(function (d) {
+    return revisarTamano(file).then(function () {
+      return medir(file);
+    }).then(function (d) {
       duracion = d;
+      if (file.size > 200 * 1048576) andando('Pasando el video al panel (' + mbDe(file.size) + ' MB)…');
       return window.api('/api/upload-tutorial', { method: 'POST', body: fd });
     }).then(function (r) {
       if (r && r.falta_ffmpeg) {
@@ -850,11 +875,14 @@
       if (r && r.job) {
         andando('Achicando el video… 0%');
         return window.esperarJob(r.job, function (j) {
-          andando('Achicando el video… ' + (j.pct || 0) + '%');
-        }).then(function (j) { return j.src; });
+          andando((j.msg || 'Achicando el video…') + ' ' + (j.pct || 0) + '%' +
+            (file.size > 200 * 1048576 ? ' — un video largo tarda, no cierres el panel' : ''));
+        }).then(function (j) {
+          return (j.partes && j.partes.length) ? j.partes : [{ src: j.src, duracion: duracion }];
+        });
       }
-      return r.src;
-    }).then(function (src) { return { src: src, duracion: duracion }; });
+      return [{ src: r.src, duracion: duracion }];
+    });
   }
 
   /* varios archivos, en fila: uno por vez para no ahogar la compu */
@@ -865,9 +893,16 @@
         var pre = files.length > 1 ? 'Video ' + (i + 1) + ' de ' + files.length + ': ' : '';
         andando(pre + 'Subiendo…');
         return subirArchivo(f, function (x) { andando(pre + x); })
-          .then(function (x) { hechos.push(x); });
+          .then(function (x) { hechos = hechos.concat(x); });
       });
     }, Promise.resolve()).then(function () { return hechos; });
+  }
+
+  function revisarPartes(total) {
+    if (total > MAX_PARTES) {
+      throw new Error('El tutorial quedaría con ' + total + ' partes y el máximo son ' + MAX_PARTES +
+        '. Subí el resto como otro tutorial.');
+    }
   }
 
   function sumarVideos(files) {
@@ -881,6 +916,7 @@
     subirVarios(files, andando).then(function (nuevos) {
       andando('Guardando…');
       var fresco = elDe(t.id) || t;
+      revisarPartes(1 + (fresco.mas || []).length + nuevos.length);
       var copia = Object.assign({}, fresco, { mas: (fresco.mas || []).concat(nuevos) });
       return guardar(LISTA.map(function (x) { return x.id === t.id ? copia : x; }),
         nuevos.length === 1 ? 'Video sumado al final del tutorial'
@@ -942,6 +978,7 @@
     var clave = 'tut-' + Date.now().toString(36);
     subirVarios(files, andando).then(function (vids) {
       andando('Guardando…');
+      revisarPartes(vids.length);
       var src = vids[0].src;
       var nuevo = {
         id: clave, titulo: titulo, nota: nota, src: src,
