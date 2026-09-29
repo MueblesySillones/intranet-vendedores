@@ -261,6 +261,15 @@ with zipfile.ZipFile(zp) as z:
     if malos:
         morir("se colaron archivos per-maquina en el zip: %s" % malos)
     print("    ok: sin archivos per-maquina")
+    # 29-sep-2026: la v99 salio SIN los reportes (datos/ se habia guardado
+    # aparte con git stash -u) y ningun chequeo lo vio. El exe lleva la lista de
+    # modulos empaquetados: cada datos.* del .spec tiene que figurar.
+    _exe = [n for n in nombres if n.endswith("PanelMyS.exe")]
+    _bin = z.read(_exe[0]) if _exe else b""
+    _sin = [m for m in _mod_datos if ("datos." + m).encode() not in _bin]
+    if _sin:
+        morir("el programa compilado NO trae los reportes (faltan: %s)" % ", ".join(_sin))
+    print("    ok: trae los reportes (%d modulos)" % len(_mod_datos))
 dec = json.load(io.open(vj, encoding="utf-8"))
 sha = hashlib.sha256(io.open(zp, "rb").read()).hexdigest()
 if sha != dec["sha256"] or os.path.getsize(zp) != dec["size"]:
