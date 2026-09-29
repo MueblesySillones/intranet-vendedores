@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 99
+VERSION = 100
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,20 +349,23 @@ VERSION = 99
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.42.0"
-VERSION_LABEL = "1.42.0 - tutoriales largos y reportes que se explican"
+VERSION_PUBLICA = "1.43.0"
+VERSION_LABEL = "1.43.0 - actualizar sin reiniciar, y todo para otra computadora"
 VERSION_NOTES = (
-                 "ARREGLO: un video de mas de 200 MB en Tutoriales terminaba en El "
-                 "panel no responde. Ahora un tutorial acepta hasta 3 GB: si es "
-                 "largo se comprime y se corta en partes de 3 minutos que se ven una "
-                 "detras de otra, hasta unos 150 minutos. MEJORA: Crear un reporte "
-                 "explica cada paso, y las laminas van agrupadas por tema con un "
-                 "Sirve para en cada una.")
+                 "ARREGLO: actualizar el panel fallaba con Windows no dejo "
+                 "reemplazar algunos archivos (codigo 11) y habia que reiniciar. "
+                 "Ahora cierra bien el panel viejo y, si un archivo sigue tomado, lo "
+                 "reemplaza igual. MEJORA: el archivo Para desarrolladores ahora "
+                 "trae el paso a paso completo para seguir desde otra computadora si "
+                 "esta se pierde: que instalar, como bajar el proyecto, donde va la "
+                 "clave y como publicar contenido y versiones nuevas del panel. El "
+                 "codigo de los reportes, que vivia solo en la computadora central, "
+                 "ahora queda guardado en GitHub con cada version.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["Subir un video largo a Tutoriales ya no deja el panel sin responder"]
-VERSION_MEJORAS = ["Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos", "Crear un reporte explica para qué sirve cada paso y cada lámina"]
+VERSION_ARREGLOS = ["Actualizar ya no falla con \"Windows no dejó reemplazar algunos archivos (código 11)\""]
+VERSION_MEJORAS = ["Para desarrolladores trae el paso a paso para seguir desde otra computadora", "El código de los reportes queda guardado en GitHub, no solo en esta computadora"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
