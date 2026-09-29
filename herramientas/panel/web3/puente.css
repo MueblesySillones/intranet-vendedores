@@ -752,6 +752,16 @@ main.lienzo{padding:0; max-width:none; margin:0}
 .rep-p .dt-inf-o b{font-size:var(--t-mini); font-weight:650; color:var(--ink)}
 .rep-p .dt-inf-o i{font-style:normal; font-size:var(--t-nano); color:var(--ink3);
   line-height:1.4}
+/* «Sirve para…»: lo que distingue una opción de la de al lado (29-sep) */
+.rep-p .dt-inf-o em{font-style:normal; margin-top:3px; font-size:var(--t-nano);
+  line-height:1.35; color:var(--ink2); font-weight:550}
+/* las láminas agrupadas por tema, cada grupo con su título */
+.rep-g + .rep-g{margin-top:16px}
+.rep-gh{display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; margin:0 0 7px}
+.rep-gh b{font-size:var(--t-nano); font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink)}
+.rep-gh span{flex:1 1 200px; font-size:var(--t-nano); color:var(--ink3)}
+.rep-p .rep-gh .rep-gb{margin-left:auto; padding:2px 9px; font-size:var(--t-nano)}
 .rep-mal{margin-top:12px; padding:9px 12px; font-size:var(--t-mini);
   color:#8E3A2C; background:rgba(181,80,63,.09);
   border:1px solid rgba(181,80,63,.28); border-radius:var(--r-sm)}

@@ -1239,9 +1239,42 @@
     return '<div class="dt-inf-r">' + (opciones || []).map(function (o) {
       return '<label class="dt-inf-o"><input type="radio" name="' + id + '" ' +
         'value="' + esc(o.id) + '"' + (o.id === elegido ? ' checked' : '') +
-        '><span><b>' + esc(o.titulo) + '</b><i>' + esc(o.detalle) +
-        '</i></span></label>';
+        '>' + textoOpcion(o) + '</label>';
     }).join('') + '</div>';
+  }
+
+  /* Título, qué muestra y —si el servidor lo manda— para qué sirve.
+     (29-sep-2026) «Que se entienda para qué es cada pregunta»: con la
+     descripción sola, «De qué campaña vienen» y «Por qué canal entran» se
+     leían como lo mismo. El «para qué» es lo que las distingue. */
+  function textoOpcion(o) {
+    return '<span><b>' + esc(o.titulo) + '</b><i>' + esc(o.detalle) + '</i>' +
+      (o.para ? '<em>Sirve para: ' + esc(o.para.charAt(0).toLowerCase() + o.para.slice(1)) + '</em>' : '') +
+      '</span>';
+  }
+
+  /* Las láminas agrupadas por tema. Un panel viejo del lado del servidor no
+     manda grupos: entonces van todas juntas, como antes. */
+  function laminasAgrupadas() {
+    var tarjeta = function (s) {
+      return '<label class="dt-inf-o"><input type="checkbox" value="' + esc(s.id) + '"' +
+        (BORRADOR.secciones.indexOf(s.id) >= 0 ? ' checked' : '') + '>' +
+        textoOpcion(s) + '</label>';
+    };
+    var grupos = OPCIONES.grupos || [];
+    if (!grupos.length) {
+      return '<div class="dt-inf-s">' + SECCIONES.map(tarjeta).join('') + '</div>';
+    }
+    return grupos.map(function (g) {
+      var suyas = SECCIONES.filter(function (s) { return (s.grupo || 'otras') === g.id; });
+      if (!suyas.length) return '';
+      return '<div class="rep-g"><div class="rep-gh"><b>' + esc(g.titulo) + '</b>' +
+        (g.detalle ? '<span>' + esc(g.detalle) + '</span>' : '') +
+        '<button type="button" class="dt-at rep-gb" data-grupo="' + esc(g.id) + '">' +
+        'Marcar este grupo</button></div>' +
+        '<div class="dt-inf-s" data-grupo="' + esc(g.id) + '">' +
+        suyas.map(tarjeta).join('') + '</div></div>';
+    }).join('');
   }
 
   /* la sucursal de un reporte puede ser '', un texto o una lista */
@@ -1291,8 +1324,9 @@
     return [
       {
         t: '¿Cómo se va a llamar?',
-        ayuda: 'Es el nombre que vas a ver en la lista y el que sale en la ' +
-               'portada del reporte.',
+        ayuda: 'Es el nombre con el que lo vas a encontrar en la lista de ' +
+               'reportes, y el que sale en la portada. Conviene que diga el ' +
+               'período, y la sucursal si es de una sola: «Agosto 2026 — Hudson».',
         pinta: function () {
           return '<input type="text" id="repNombre" maxlength="80" value="' +
             esc(BORRADOR.nombre) + '" placeholder="Ej: Agosto 2026">';
@@ -1305,9 +1339,11 @@
         }
       },
       {
-        t: '¿De qué período?',
-        ayuda: 'Se cuentan las consultas cargadas entre esas dos fechas, los ' +
-               'dos días incluidos.',
+        t: '¿De qué fechas?',
+        ayuda: 'Se cuentan las consultas cargadas entre esas dos fechas, las ' +
+               'dos incluidas. Las filas de la planilla sin fecha quedan afuera, ' +
+               'porque no se puede saber de qué período son. Los números no quedan fijos: ' +
+               'se recalculan con la planilla cada vez que lo abrís.',
         pinta: function () {
           return '<div class="dt-inf-fe">' +
             '<label>Desde<input type="date" id="repDesde" value="' + esc(BORRADOR.desde) + '"></label>' +
@@ -1356,9 +1392,12 @@
         }
       },
       {
-        t: '¿Qué querés medir?',
-        ayuda: 'Cada cosa que marques es una lámina del reporte. Después podés ' +
-               'crear otro con otras.',
+        t: '¿Qué querés que muestre?',
+        ayuda: 'Cada cosa que marques es una lámina del reporte. Están ' +
+               'agrupadas por tema: si el reporte es para una ' +
+               'reunión de ventas, alcanza con el primer grupo y el del equipo. ' +
+               'La portada y la lámina final (lo que los datos no permiten ' +
+               'afirmar) van siempre.',
         pinta: function () {
           /* los botones de marcar van ARRIBA: abajo de quince opciones con
              scroll quedaban fuera de la pantalla, o sea que no existían */
@@ -1366,14 +1405,7 @@
             '<button type="button" class="dt-at" data-marca="todas">Marcar todas</button>' +
             '<button type="button" class="dt-at" data-marca="ninguna">Desmarcar todas</button>' +
             '<span class="dt-inf-cu" id="repCuenta"></span>' +
-          '</div>' +
-          '<div class="dt-inf-s">' + SECCIONES.map(function (s) {
-            return '<label class="dt-inf-o"><input type="checkbox" value="' +
-              esc(s.id) + '"' +
-              (BORRADOR.secciones.indexOf(s.id) >= 0 ? ' checked' : '') +
-              '><span><b>' + esc(s.titulo) + '</b><i>' + esc(s.detalle) +
-              '</i></span></label>';
-          }).join('') + '</div>';
+          '</div>' + laminasAgrupadas();
         },
         arma: function () {
           var cs = document.querySelectorAll('#repCuerpo .dt-inf-s input');
@@ -1384,7 +1416,7 @@
             if (e) e.textContent = n + ' de ' + cs.length + ' marcadas';
           };
           for (var j = 0; j < cs.length; j++) cs[j].onchange = cuenta;
-          var bts = document.querySelectorAll('#repCuerpo .dt-at');
+          var bts = document.querySelectorAll('#repCuerpo .dt-at[data-marca]');
           for (var i = 0; i < bts.length; i++) {
             bts[i].onclick = (function (b) {
               return function () {
@@ -1393,6 +1425,20 @@
                 cuenta();
               };
             }(bts[i]));
+          }
+          /* «Marcar este grupo»: si ya estaban todas marcadas, las desmarca */
+          var gbs = document.querySelectorAll('#repCuerpo .rep-gb');
+          for (var g = 0; g < gbs.length; g++) {
+            gbs[g].onclick = (function (b) {
+              return function () {
+                var ins = document.querySelectorAll('#repCuerpo .dt-inf-s[data-grupo="' +
+                  b.getAttribute('data-grupo') + '"] input');
+                var todas = true, k;
+                for (k = 0; k < ins.length; k++) if (!ins[k].checked) todas = false;
+                for (k = 0; k < ins.length; k++) ins[k].checked = !todas;
+                cuenta();
+              };
+            }(gbs[g]));
           }
           cuenta();
         },
@@ -1411,8 +1457,10 @@
         t: '¿De qué sucursal?',
         /* 27-sep-2026 (pedido del usuario): una, VARIAS o todas. Sin ninguna
            marcada es el reporte de toda la empresa. */
-        ayuda: 'Marcá una o varias. Sin ninguna marcada, el reporte es de toda ' +
-               'la empresa. Con varias, se comparan entre ellas.',
+        ayuda: 'Sin ninguna marcada, el reporte es de toda la empresa. Marcá una ' +
+               'para el reporte de ese local, o varias para verlas juntas. La ' +
+               'sucursal sale del vendedor que atendió, no de la columna ' +
+               'Sucursal de la planilla.',
         pinta: function () {
           var elegidas = sucursalesDe(BORRADOR.sucursal);
           return '<div class="dt-inf-s" id="repSucs">' + (SUCURSALES || []).map(function (x) {
@@ -1424,7 +1472,8 @@
             '<p class="dt-chico">⚠️ Con una sucursal elegida, las <b>derivaciones ' +
             'y las ventas</b> son de ese local. Las <b>consultas</b> son las del ' +
             'período entero: una consulta que todavía no atendió nadie no es de ' +
-            'ninguna sucursal, así que repartirlas sería inventar un número.</p>';
+            'ninguna sucursal, así que repartirlas sería inventar un número. Lo ' +
+            '<b>recaudado</b> es de toda la empresa: la planilla no lo separa por local.</p>';
         },
         toma: function () {
           var out = [];
@@ -1438,8 +1487,9 @@
         t: '¿Qué lugares mostrar?',
         /* solo si se marcó «De qué lugares consultan» (27-sep-2026) */
         si: function () { return (BORRADOR.secciones || []).indexOf('localidades') >= 0; },
-        ayuda: 'Para la lámina «De qué lugares consultan». Con las dos salen dos ' +
-               'láminas: la lista junta sería demasiado larga.',
+        ayuda: 'Este paso aparece porque marcaste «De qué lugares consultan». Esa ' +
+               'lámina muestra la lista completa, sin cortar, para que puedas ' +
+               'buscar un lugar puntual. Elegí qué parte del mapa te interesa.',
         pinta: function () {
           return grupo('repLug', OPCIONES.lugares || [], BORRADOR.lugares || 'ambas');
         },
@@ -1449,8 +1499,9 @@
       },
       {
         t: '¿Contra qué lo comparás?',
-        ayuda: 'Un total solo no dice si estuvo bien o mal. Con esto, el ' +
-               'reporte abre diciendo qué cambió.',
+        ayuda: 'Un número solo no dice si estuvo bien o mal. Con una comparación, ' +
+               'el embudo muestra al pie de cada número cuánto subió o bajó, y ' +
+               'el reporte abre diciendo qué cambió.',
         pinta: function () {
           return grupo('repCmp', OPCIONES.comparar || [], BORRADOR.comparar);
         },
@@ -1459,8 +1510,10 @@
         }
       },
       {
-        t: '¿Cuánto detalle en las listas?',
-        ayuda: 'Cuántos entran en cada ranking: productos, campañas, vendedores.',
+        t: '¿Qué tan largas las listas?',
+        ayuda: 'Cuántos renglones entran en cada ranking: productos, campañas, ' +
+               'vendedores, provincias… Los números son los mismos; solo cambia ' +
+               'cuántos se muestran. «De qué lugares consultan» va siempre completa.',
         pinta: function () {
           return grupo('repDet', OPCIONES.detalle || [], BORRADOR.detalle);
         },
@@ -1469,9 +1522,9 @@
         }
       },
       {
-        t: '¿Cómo sale el PDF?',
-        ayuda: 'El reporte se ve en 16:9 como una presentación. Si lo vas a ' +
-               'imprimir o mandar por mail, conviene una hoja A4.',
+        t: '¿Para qué lo vas a usar?',
+        ayuda: 'Define el tamaño de la hoja cuando lo bajes en PDF. Si después ' +
+               'lo necesitás de otra forma, editás el reporte y cambiás solo esto.',
         pinta: function () {
           return grupo('repHoja', OPCIONES.hoja || [], BORRADOR.hoja);
         },
@@ -1481,8 +1534,9 @@
       },
       {
         t: '¿Querés aclarar algo en la portada?',
-        ayuda: 'Opcional. Una línea que se lee al abrir: para quién es, o qué ' +
-               'hay que tener en cuenta.',
+        ayuda: 'Opcional. Una línea en la portada: para quién es o qué hay que ' +
+               'tener en cuenta al leerlo. Abajo tenés el resumen de lo que ' +
+               'elegiste: si algo no va, volvé con «Atrás».',
         pinta: function () {
           return '<input type="text" id="repNota" maxlength="280" value="' +
             esc(BORRADOR.nota) + '" ' +

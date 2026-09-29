@@ -244,9 +244,170 @@ def buscar_informe(rep, iid):
     return None
 
 
+# ─── Cómo se explica cada cosa en «Crear un reporte» (29-sep-2026) ─────────
+# Pedido del usuario: «que se entienda para qué es cada pregunta». Con 19
+# láminas, varias sonaban a lo mismo —campaña, anuncio y canal; zona,
+# provincias y «a quién le toca lo de lejos»— y la descripción de algunas había
+# quedado vieja (el ranking de vendedores ya muestra ventas y cierre, no solo
+# derivaciones). Acá va, por lámina: qué muestra, PARA QUÉ sirve y en qué grupo
+# del formulario cae.
+#
+# ⚠️ Es un agregado, no un reemplazo: una lámina que no esté acá sale con los
+# textos de deck.SECCIONES y en el grupo «Otras». Así una lámina nueva sigue
+# apareciendo sola en el formulario, que es la regla de siempre.
+GRUPOS_FORMULARIO = (
+    ("periodo", "Cómo salió el período",
+     "El resumen: cuánto entró, cuánto se derivó y cuánto se vendió"),
+    ("equipo", "El equipo y los locales",
+     "Cómo se repartió el trabajo y quién cerró"),
+    ("marketing", "Qué piden y de dónde vienen",
+     "Productos, campañas y anuncios: para decidir dónde poner la pauta"),
+    ("lugares", "Desde dónde escriben",
+     "Localidades, provincias y si el cliente es de la zona del vendedor"),
+    ("perdidas", "Por qué no se vende",
+     "Qué pasa con los que no compraron"),
+    ("otras", "Otras", ""),
+)
+
+TEXTOS_SECCIONES = {
+    # id: (título, qué muestra, para qué sirve, grupo)
+    "embudo": (
+        "El embudo",
+        "Consultas, derivadas, sin derivar y vendidas, con cuánto subió o bajó cada una",
+        "Ver de un vistazo cómo salió el período", "periodo"),
+    "meses": (
+        "Mes a mes",
+        "Las derivaciones de cada mes del período (hasta los últimos seis) y cuál fue el mejor",
+        "Ver la tendencia. Elegí un período de varios meses: con uno solo sale una barra",
+        "periodo"),
+    "ritmo": (
+        "El ritmo de la semana",
+        "Consultas y derivaciones por día de la semana, y el promedio por día con movimiento",
+        "Encontrar los días en que entran consultas y no se llegan a derivar", "periodo"),
+    "sucursales": (
+        "Por sucursal",
+        "Las derivaciones de cada local, según la sucursal del vendedor que las recibió",
+        "Comparar locales entre sí", "equipo"),
+    "vendedores": (
+        "Por vendedor",
+        "Cuántas derivaciones recibió cada uno, con sus ventas y su porcentaje de cierre al lado",
+        "Ver cómo se repartió el trabajo. Se ordena por cantidad, no por cierre", "equipo"),
+    "podio": (
+        "Los que más cerraron",
+        "Los cuatro con más ventas, con su conversión al lado",
+        "Reconocer y felicitar al equipo", "equipo"),
+    "template": (
+        "Seguimiento enviado",
+        "Quién manda la plantilla de seguimiento a los clientes",
+        "Controlar que se haga el seguimiento. Mide conducta, no ventas", "equipo"),
+    "productos": (
+        "Qué productos consultan",
+        "Los productos más preguntados, de mayor a menor",
+        "Saber qué está pidiendo la gente", "marketing"),
+    "origenes": (
+        "De qué campaña vienen",
+        "La campaña anotada en cada consulta, y cuántas no tienen ninguna cargada",
+        "Saber qué campaña trae más consultas", "marketing"),
+    "anuncios": (
+        "Por qué tipo de anuncio llegaron",
+        "Agrupa las campañas en anuncios pagos, web, mailing, redes sin pauta, "
+        "influencers, sucursal, teléfono… y detalla cada anuncio con consultas, "
+        "derivadas y ventas",
+        "Ver si la pauta paga trae ventas y no solo consultas", "marketing"),
+    "prod_origen": (
+        "Qué campaña trae cada producto",
+        "El cruce: para cada producto, de qué campaña vienen sus consultas",
+        "Decidir en qué campaña conviene anunciar cada producto", "marketing"),
+    "medios": (
+        "Por qué canal entran",
+        "Por dónde escribió el cliente: MyS, MV, Meta, TikTok",
+        "Saber qué canal hay que atender más", "marketing"),
+    "localidades": (
+        "De qué lugares consultan",
+        "La lista completa de localidades y provincias, con cuántas consultas llegó de cada una",
+        "Buscar un lugar puntual (Neuquén, La Plata…). En el paso siguiente elegís cuáles",
+        "lugares"),
+    "provincias": (
+        "De qué provincias escriben",
+        "El interior del país, provincia por provincia, con derivaciones y ventas",
+        "Ver qué provincias traen consultas y cuáles cierran", "lugares"),
+    "zonas": (
+        "De la zona o de lejos",
+        "Si lo que atiende cada vendedor es de la zona de su local o de lejos, y cuánto cierra cada cosa",
+        "Entender por qué algunos cierran menos: lo de lejos casi no se vende", "lugares"),
+    "reparto": (
+        "A quién le toca lo de lejos",
+        "Qué vendedores reciben más consultas del interior, de cuántas provincias y qué parte de su trabajo es",
+        "Mirarlo antes de comparar conversiones entre vendedores", "lugares"),
+    "precio": (
+        "El cuello de botella del precio",
+        "De los clientes que recibieron el precio, cuántos dejaron de responder",
+        "Ver en qué paso se cae la venta", "perdidas"),
+    "patrones": (
+        "Cómo se comportan los clientes",
+        "Cada cliente que no compró, en un patrón: recibió el precio y se calló, "
+        "prometió pasar, fuera de presupuesto, nunca respondió…",
+        "Entender las reacciones para ajustar el seguimiento", "perdidas"),
+    "motivos": (
+        "Por qué se pierden",
+        "Los motivos anotados en la Respuesta Final de los que no compraron, del más común al menos",
+        "Saber qué objeción aparece más", "perdidas"),
+}
+
+# Las opciones de las demás preguntas. Lo mismo: lo que no esté acá sale como
+# viene de deck. ⚠️ Los títulos de «comparar» se leen en minúscula en la
+# tarjeta de cada reporte («contra el período anterior»): empiezan con
+# «Contra» a propósito.
+TEXTOS_OPCIONES = {
+    "comparar": {
+        "anterior": ("Contra el período anterior",
+                     "Agosto contra julio; una semana contra la de antes. Cada número "
+                     "del embudo muestra cuánto subió o bajó"),
+        "ano": ("Contra el año pasado",
+                "Agosto 2026 contra agosto 2025. Sirve para temporadas, si la planilla "
+                "ya tenía datos hace un año"),
+        "nada": ("Sin comparación",
+                 "Solo los números de este período, sin «subió» ni «bajó»"),
+    },
+    "detalle": {
+        "5": ("Los 5 primeros", "Corto y al grano: para mostrar en una reunión"),
+        "10": ("Los 10 primeros", "Lo habitual: los principales sin que se haga largo"),
+        "todos": ("La lista larga",
+                  "Hasta 48 por lista, para revisar a fondo. Lo que no entra en una "
+                  "lámina sigue en la próxima"),
+    },
+    "hoja": {
+        "pantalla": ("Pantalla 16:9",
+                     "Como una presentación: para proyectar en una reunión o verlo en la compu"),
+        "a4h": ("Hoja A4 acostada",
+                "Para imprimir: entra derecha en cualquier impresora"),
+        "a4v": ("Hoja A4 parada",
+                "Para mandar por mail o archivar. Deja más aire arriba y abajo"),
+    },
+    "lugares": {
+        "ambas": ("Las dos",
+                  "Dos láminas: una con las otras provincias y otra con Buenos Aires"),
+        "provincias": ("Solo otras provincias",
+                       "Neuquén, Córdoba, Rosario… todo lo que llega de fuera de Buenos Aires"),
+        "buenos_aires": ("Solo Buenos Aires",
+                         "La Plata, Quilmes, Zona Norte, Pinamar… la provincia y CABA"),
+    },
+}
+
+
+def _opcion(cual, k, t, d):
+    tt, dd = TEXTOS_OPCIONES.get(cual, {}).get(k, (t, d))
+    return {"id": k, "titulo": tt, "detalle": dd}
+
+
 def secciones_posibles():
-    """Las preguntas del formulario: qué puede llevar un reporte."""
-    return [{"id": k, "titulo": t, "detalle": det} for k, t, det in deck.SECCIONES]
+    """Las preguntas del formulario: qué puede llevar un reporte, en el orden
+    del reporte, con su explicación y el grupo en el que se muestra."""
+    out = []
+    for k, t, det in deck.SECCIONES:
+        tt, dd, para, grupo = TEXTOS_SECCIONES.get(k, (t, det, "", "otras"))
+        out.append({"id": k, "titulo": tt, "detalle": dd, "para": para, "grupo": grupo})
+    return out
 
 
 def opciones_posibles():
@@ -256,17 +417,14 @@ def opciones_posibles():
     haya una forma más de comparar, aparece sola en el formulario.
     """
     return {
-        "detalle": [{"id": k, "titulo": t, "detalle": d}
-                    for k, t, d in deck.DETALLES],
-        "comparar": [{"id": k, "titulo": t, "detalle": d}
-                     for k, t, d in deck.COMPARACIONES],
+        "detalle": [_opcion("detalle", k, t, d) for k, t, d in deck.DETALLES],
+        "comparar": [_opcion("comparar", k, t, d) for k, t, d in deck.COMPARACIONES],
         "vista": [{"id": k, "titulo": t, "detalle": d}
                   for k, t, d in deck.VISTAS],
-        "hoja": [{"id": k, "titulo": t, "detalle": d}
-                 for k, t, d in deck.HOJAS],
-        "lugares": [{"id": k, "titulo": t, "detalle": d}
-                    for k, t, d in deck.LUGARES],
+        "hoja": [_opcion("hoja", k, t, d) for k, t, d in deck.HOJAS],
+        "lugares": [_opcion("lugares", k, t, d) for k, t, d in deck.LUGARES],
         "con_lista": list(deck.CON_LISTA),
+        "grupos": [{"id": k, "titulo": t, "detalle": d} for k, t, d in GRUPOS_FORMULARIO],
     }
 
 
