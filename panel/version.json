@@ -1,14 +1,17 @@
 {
-  "version": 98,
-  "label": "1.41.0 - por que anuncio llegaron",
-  "notes": "MEJORA: nueva lamina Por que anuncio llegaron: agrupa el Origen en anuncios, web, mailing, redes sin pauta, influencers, sucursal, telefono, accion de marketing y otros medios, y detalla cada anuncio con consultas, derivadas y ventas. Todo origen nuevo que no sea de esa lista cuenta como anuncio.",
-  "arreglos": [],
-  "mejoras": [
-    "Nueva lámina: por qué anuncio llegaron (anuncios, web, mailing… y cada anuncio)"
+  "version": 99,
+  "label": "1.42.0 - tutoriales largos y reportes que se explican",
+  "notes": "ARREGLO: un video de mas de 200 MB en Tutoriales terminaba en El panel no responde. Ahora un tutorial acepta hasta 3 GB: si es largo se comprime y se corta en partes de 3 minutos que se ven una detras de otra, hasta unos 150 minutos. MEJORA: Crear un reporte explica cada paso, y las laminas van agrupadas por tema con un Sirve para en cada una.",
+  "arreglos": [
+    "Subir un video largo a Tutoriales ya no deja el panel sin responder"
   ],
-  "sha256": "01a8f43a7fdd8203063e6db1dc5f4dd3632be73aac4d0a84922eb556f385cea5",
-  "size": 20439230,
-  "url": "panel/PanelMyS-v98.zip",
+  "mejoras": [
+    "Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos",
+    "Crear un reporte explica para qué sirve cada paso y cada lámina"
+  ],
+  "sha256": "db0d471e55ddd0f9782c11921b855aa2375ce1a1dc0d1259139a797834fc1bdd",
+  "size": 15768648,
+  "url": "panel/PanelMyS-v99.zip",
   "historial": [
     {
       "version": 83,
@@ -143,6 +146,14 @@
       ],
       "mejoras": [
         "Nueva lámina: de qué lugares consultan (provincias, localidades y zonas)"
+      ]
+    },
+    {
+      "version": 98,
+      "label": "1.41.0 - por que anuncio llegaron",
+      "arreglos": [],
+      "mejoras": [
+        "Nueva lámina: por qué anuncio llegaron (anuncios, web, mailing… y cada anuncio)"
       ]
     }
   ]
