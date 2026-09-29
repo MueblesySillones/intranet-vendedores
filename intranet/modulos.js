@@ -4462,6 +4462,34 @@ window.AJUSTES = {"novedad_horas": 24, "sectores": ["Marketing", "Administració
 /* Tutoriales del panel: el video y su linea de tiempo con capitulos. */
 window.TUTORIALES = [
   {
+    "id": "tut_mun4wtk5",
+    "titulo": "Crear reportes",
+    "nota": "",
+    "src": "assets/_tutoriales/tut_mun4wtk5fw2.mp4",
+    "duracion": 207,
+    "capitulos": [
+      {
+        "t": 0,
+        "texto": "Pantalla Reportes"
+      },
+      {
+        "t": 91,
+        "texto": "Enviar reporte a vista de vendedores"
+      },
+      {
+        "t": 104,
+        "texto": "Generar reporte"
+      }
+    ],
+    "creado": "2026-09-29",
+    "mas": [
+      {
+        "src": "assets/_tutoriales/tut_mun54nbm6ms.mp4",
+        "duracion": 25
+      }
+    ]
+  },
+  {
     "id": "tut_mun2v4e6",
     "titulo": "MÓDULO",
     "nota": "",
