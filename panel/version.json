@@ -1,17 +1,17 @@
 {
-  "version": 99,
-  "label": "1.42.0 - tutoriales largos y reportes que se explican",
-  "notes": "ARREGLO: un video de mas de 200 MB en Tutoriales terminaba en El panel no responde. Ahora un tutorial acepta hasta 3 GB: si es largo se comprime y se corta en partes de 3 minutos que se ven una detras de otra, hasta unos 150 minutos. MEJORA: Crear un reporte explica cada paso, y las laminas van agrupadas por tema con un Sirve para en cada una.",
+  "version": 100,
+  "label": "1.43.0 - actualizar sin reiniciar, y todo para otra computadora",
+  "notes": "ARREGLO: actualizar el panel fallaba con Windows no dejo reemplazar algunos archivos (codigo 11) y habia que reiniciar. Ahora cierra bien el panel viejo y, si un archivo sigue tomado, lo reemplaza igual. MEJORA: el archivo Para desarrolladores ahora trae el paso a paso completo para seguir desde otra computadora si esta se pierde: que instalar, como bajar el proyecto, donde va la clave y como publicar contenido y versiones nuevas del panel. El codigo de los reportes, que vivia solo en la computadora central, ahora queda guardado en GitHub con cada version.",
   "arreglos": [
-    "Subir un video largo a Tutoriales ya no deja el panel sin responder"
+    "Actualizar ya no falla con \"Windows no dejó reemplazar algunos archivos (código 11)\""
   ],
   "mejoras": [
-    "Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos",
-    "Crear un reporte explica para qué sirve cada paso y cada lámina"
+    "Para desarrolladores trae el paso a paso para seguir desde otra computadora",
+    "El código de los reportes queda guardado en GitHub, no solo en esta computadora"
   ],
-  "sha256": "db0d471e55ddd0f9782c11921b855aa2375ce1a1dc0d1259139a797834fc1bdd",
-  "size": 15768648,
-  "url": "panel/PanelMyS-v99.zip",
+  "sha256": "050db7e4328c970fd03ffed6956738c106ff01df2254f33430d4c2ea213765ac",
+  "size": 20308752,
+  "url": "panel/PanelMyS-v100.zip",
   "historial": [
     {
       "version": 83,
@@ -154,6 +154,17 @@
       "arreglos": [],
       "mejoras": [
         "Nueva lámina: por qué anuncio llegaron (anuncios, web, mailing… y cada anuncio)"
+      ]
+    },
+    {
+      "version": 99,
+      "label": "1.42.0 - tutoriales largos y reportes que se explican",
+      "arreglos": [
+        "Subir un video largo a Tutoriales ya no deja el panel sin responder"
+      ],
+      "mejoras": [
+        "Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos",
+        "Crear un reporte explica para qué sirve cada paso y cada lámina"
       ]
     }
   ]
