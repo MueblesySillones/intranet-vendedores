@@ -172,8 +172,11 @@ def _barra(prop, color, ancho=None):
 TOPE_FILAS = 8
 
 
-def _ranking(items, color, ancho_nombre=3600):
-    """items = [(nombre, valor_texto, proporción, apostilla)]"""
+def _ranking(items, color, ancho_nombre=3600, cabecera=None):
+    """items = [(nombre, valor_texto, proporción, apostilla)]
+
+    `cabecera` = (columna, unidad): los títulos de la lista, los mismos que la
+    vista tabla del deck. Se editan en pantalla y tienen que salir acá."""
     if not items:
         return ""
     # ⚠️ El recorte lo hace `_lamina_partes`, que sabe repartir en varias hojas.
@@ -183,6 +186,17 @@ def _ranking(items, color, ancho_nombre=3600):
     a_val = 2400
     a_bar = ANCHO - a_nom - a_val
     filas = []
+    col, uni = cabecera or ("", "")
+    if isinstance(uni, (list, tuple)):          # varias columnas de valor
+        uni = " · ".join(str(x) for x in uni if str(x).strip())
+    if str(col).strip() or str(uni).strip():
+        filas.append(
+            "<w:trPr><w:tblHeader/><w:cantSplit/></w:trPr>" +
+            _celda(a_nom, _par(_run(col, 16, True, GRIS, mayus=True, espaciado=30),
+                               despues=0), margen=60) +
+            _celda(a_bar, _par(""), margen=60) +
+            _celda(a_val, _par(_run(uni, 16, True, GRIS, mayus=True, espaciado=30),
+                               despues=0), margen=60))
     for nom, val, prop, nota in items:
         barra = _barra(prop, color, a_bar - 240)
         filas.append(
@@ -261,8 +275,12 @@ def _portada(d, titulo, nota=None):
 
     if per and per.strip().lower() == str(titulo).strip().lower():
         per = ""
-    dentro = (_par(_run("Muebles y Sillones", 18, True, "C9C2B8",
-                        mayus=True, espaciado=60), despues=200) +
+    # el rótulo sale del deck: si se editó o se sacó en pantalla, igual acá
+    vis, _ = deck.grabar(deck._portada, d, titulo, nota)
+    rotulo = vis.get("portada.kicker", "Muebles y Sillones")
+    dentro = ((_par(_run(rotulo, 18, True, "C9C2B8",
+                         mayus=True, espaciado=60), despues=200)
+               if str(rotulo).strip() else "") +
               _par(_run(titulo, 60, True, "FFFFFF"), despues=120, interlinea=240) +
               _par(_run(per, 24, color="C9C2B8"),
                    despues=0 if not nota else 180) +
@@ -308,6 +326,17 @@ def _lamina_embudo(d, op=None):
         texto = cambio[0].replace("▲", "+").replace("▼", "−")
         return (fijo + " · " + texto) if fijo else texto
 
+    # Los rótulos, los pies y las notas salen del deck, con lo editado y lo
+    # sacado ya aplicado. Acá solo se suma lo que el Word dice de más.
+    vis, nts = deck.grabar(deck._embudo, d, op)
+
+    def rot(k, defecto):
+        return vis.get("embudo.%s" % k, defecto)
+
+    def con_pie(k, extra):
+        pie = vis.get("embudo.%s.pie" % k, "")
+        return " · ".join(x for x in (str(pie).strip(), extra) if x)
+
     foco = d.get("sucursal_foco") or ""
     if foco:
         # el embudo de una sucursal (igual que en el deck): las consultas son
@@ -315,33 +344,33 @@ def _lamina_embudo(d, op=None):
         empresa = d.get("derivaciones_empresa") or t["derivaciones"]
         otras = t.get("de_otra_sucursal", 0)
         pasos = [
-            ("Consultas que entraron", _mil(t["consultas"]), 1.0,
-             apostilla("toda la empresa", t["consultas"], prev and prev["consultas"], True), TINTA),
-            ("Derivadas a " + foco, _mil(t["derivaciones"]),
+            (rot("c1", "Consultas que entraron"), _mil(t["consultas"]), 1.0,
+             apostilla(con_pie("c1", ""), t["consultas"], prev and prev["consultas"], True), TINTA),
+            (rot("c2", "Derivadas a " + foco), _mil(t["derivaciones"]),
              t["derivaciones"] / float(t["consultas"] or 1),
-             apostilla(_pct(t["derivaciones"] / float(empresa or 1), 0) + " de las de la empresa",
+             apostilla(con_pie("c2", _pct(t["derivaciones"] / float(empresa or 1), 0) + " de las de la empresa"),
                        t["derivaciones"], prev and prev["derivaciones"], True), AZUL),
-            ("Fueron a otra sucursal", _mil(otras), otras / float(t["consultas"] or 1),
-             "las atendió otro local", BORDO),
-            ("Ventas de " + foco, _mil(t["ventas"]), t["ventas"] / float(t["consultas"] or 1),
-             apostilla(_pct(d["tasa_cierre"]) + " de conversión",
+            (rot("c3", "Fueron a otra sucursal"), _mil(otras), otras / float(t["consultas"] or 1),
+             con_pie("c3", ""), BORDO),
+            (rot("c4", "Ventas de " + foco), _mil(t["ventas"]), t["ventas"] / float(t["consultas"] or 1),
+             apostilla(con_pie("c4", _pct(d["tasa_cierre"]) + " de conversión"),
                        t["ventas"], prev and prev["ventas"], True), VERDE),
         ]
     else:
         pasos = None
     pasos = pasos or [
-        ("Consultas que entraron", _mil(t["consultas"]), 1.0,
-         apostilla("", t["consultas"], prev and prev["consultas"], True), TINTA),
-        ("Llegaron a un vendedor", _mil(t["derivaciones"]),
+        (rot("c1", "Consultas que entraron"), _mil(t["consultas"]), 1.0,
+         apostilla(con_pie("c1", ""), t["consultas"], prev and prev["consultas"], True), TINTA),
+        (rot("c2", "Llegaron a un vendedor"), _mil(t["derivaciones"]),
          t["derivaciones"] / float(t["consultas"] or 1),
-         apostilla(_pct(d["tasa_derivacion"], 0) + " del total",
+         apostilla(con_pie("c2", _pct(d["tasa_derivacion"], 0) + " del total"),
                    t["derivaciones"], prev and prev["derivaciones"], True), AZUL),
-        ("Nunca llegaron a nadie", _mil(sin_derivar),
+        (rot("c3", "Nunca llegaron a nadie"), _mil(sin_derivar),
          sin_derivar / float(t["consultas"] or 1),
-         apostilla("se perdieron antes", sin_derivar, sin_antes, False), BORDO),
-        ("Terminaron en venta", _mil(t["ventas"]),
+         apostilla(con_pie("c3", ""), sin_derivar, sin_antes, False), BORDO),
+        (rot("c4", "Terminaron en venta"), _mil(t["ventas"]),
          t["ventas"] / float(t["consultas"] or 1),
-         apostilla(_pct(d["tasa_cierre"]) + " de las derivadas",
+         apostilla(con_pie("c4", _pct(d["tasa_cierre"]) + " de las derivadas"),
                    t["ventas"], prev and prev["ventas"], True), VERDE),
     ]
     filas = []
@@ -359,18 +388,8 @@ def _lamina_embudo(d, op=None):
                                  "Cada consulta que entra, hasta dónde llegó"),
                         AZUL) +
             _tabla(filas, [a_nom, a_bar, a_val]) + "<w:p/>" +
-            _cierre(((("%s recibió %s y cerró %s: una conversión del %s."
-                        % (foco, _mil(t["derivaciones"]) + " derivaciones",
-                           _mil(t["ventas"]) + " ventas", _pct(d["tasa_cierre"])))
-                      if foco else
-                      ("El %s de las consultas llega a un vendedor y el %s "
-                       "termina en venta. Antes de llegar a alguien se pierden "
-                       "%s consultas."
-                       % (_pct(d["tasa_derivacion"], 0),
-                          _pct(t["ventas"] / float(t["consultas"] or 1)),
-                          _mil(sin_derivar))))
-                     + ((" " + deck.nota_monto(d, op)[1]) if deck.nota_monto(d, op) else "")),
-                    AZUL))
+            # las mismas tarjetas de abajo que en pantalla, con lo editado
+            _notas(nts, AZUL))
 
 
 def _lamina_meses(d):
@@ -390,11 +409,14 @@ def _lamina_meses(d):
                     _mes_largo(ult[-2]), "+" if dif >= 0 else "", _pct(dif, 0)))
     else:
         frase = ""
+    vis, nts = deck.grabar(deck._por_mes, d)
     return (_encabezado(deck.txt("meses.kicker", "Mes a mes"),
                         deck.txt("meses.titulo", "Derivaciones por mes"),
-                        "Derivaciones por mes; abajo, las consultas que "
-                        "entraron", AZUL) +
-            _ranking(items, AZUL) + "<w:p/>" + _cierre(frase, AZUL))
+                        vis.get("meses.bajada",
+                                "Derivaciones por mes; abajo, las consultas que "
+                                "entraron"), AZUL) +
+            _ranking(items, AZUL) + "<w:p/>" +
+            (_notas(nts, AZUL) if nts else _cierre(frase, AZUL)))
 
 
 def _lamina_sucursales(d):
@@ -412,11 +434,15 @@ def _lamina_sucursales(d):
                  "no figuran en ningún local."
                  % (_mil(sum(d["sin_ubicar"].values())),
                     ", ".join(_nombre(x) for x in sorted(d["sin_ubicar"])[:4])))
+    vis, nts = deck.grabar(deck._por_sucursal, d)
     return (_encabezado(deck.txt("sucursales.kicker", "Sucursales"),
                         deck.txt("sucursales.titulo",
                                  "Cómo se reparten las derivaciones"),
-                        "Derivaciones por local, de mayor a menor", AZUL) +
-            _ranking(items, AZUL) + "<w:p/>" + _cierre(frase, AZUL))
+                        vis.get("sucursales.bajada",
+                                "Derivaciones por local, de mayor a menor"), AZUL) +
+            _ranking(items, AZUL, cabecera=(vis.get("sucursales.columna", "Sucursal"),
+                                            "Derivaciones")) + "<w:p/>" +
+            (_notas(nts, AZUL) if nts else _cierre(frase, AZUL)))
 
 
 def _lamina_partes(p, ancho_nombre=5200):
@@ -449,7 +475,8 @@ def _lamina_partes(p, ancho_nombre=5200):
                                         i + 1, len(paginas))
         hojas.append(
             _encabezado(kicker, p["titulo"], p["bajada"], color) +
-            _ranking(items, color, ancho_nombre=ancho_nombre) + "<w:p/>" +
+            _ranking(items, color, ancho_nombre=ancho_nombre,
+                     cabecera=(p.get("columna", ""), p.get("unidad", ""))) + "<w:p/>" +
             (_notas(p["lineas"], color) if ultima else ""))
     return _salto().join(hojas)
 
@@ -460,18 +487,22 @@ def _lamina_precio(d):
         return ""
     prop = t["precio"] / float(t["derivaciones"] or 1)
     ventas_prop = t["ventas"] / float(t["precio"] or 1)
-    items = [("Recibieron precio", _mil(t["precio"]), 1.0, ""),
+    vis, nts = deck.grabar(deck._precio, d)
+    items = [(vis.get("precio.c1", "Recibieron precio"), _mil(t["precio"]), 1.0,
+              vis.get("precio.c1.pie", "")),
              ("Terminaron comprando", _mil(t["ventas"]), ventas_prop, "")]
+    cierre_precio = ("A %s consultas derivadas se les pasó precio (%s de las "
+                    "derivadas) y compraron %s: %s. Ahí está el cuello."
+                    % (_mil(t["precio"]), _pct(prop, 0), _mil(t["ventas"]),
+                       _pct(ventas_prop)))
     return (_encabezado(deck.txt("precio.kicker", "El cuello de botella"),
                         deck.txt("precio.titulo",
                                  "Qué pasa después de mandar el precio"),
-                        "De los que ya saben cuánto sale, cuántos compran",
+                        vis.get("precio.bajada",
+                                "De los que ya saben cuánto sale, cuántos compran"),
                         BORDO) +
             _ranking(items, BORDO) + "<w:p/>" +
-            _cierre("A %s consultas derivadas se les pasó precio (%s de las "
-                    "derivadas) y compraron %s: %s. Ahí está el cuello."
-                    % (_mil(t["precio"]), _pct(prop, 0), _mil(t["ventas"]),
-                       _pct(ventas_prop)), BORDO))
+            (_notas(nts, BORDO) if nts else _cierre(cierre_precio, BORDO)))
 
 
 def _lamina_limites(d):
@@ -500,12 +531,19 @@ def _lamina_limites(d):
     lineas.append("Una venta es una fila con «Realizó la compra» en Respuesta "
                   "Final. Si no se carga, no se cuenta.")
     lineas.append("Este reporte no incluye ningún dato de clientes.")
-    cuerpo = "".join(_par([_run("— ", 21, color=GRIS), _run(l, 21)], despues=140)
-                     for l in lineas)
+    # Las notas de la pantalla, con lo editado y lo sacado. Si el deck no
+    # dibujó ninguna, quedan las líneas de siempre.
+    vis, nts = deck.grabar(deck._honestidad, d)
+    if nts:
+        cuerpo = _notas(nts, GRIS, tope=4)
+    else:
+        cuerpo = "".join(_par([_run("— ", 21, color=GRIS), _run(l, 21)], despues=140)
+                         for l in lineas)
     return (_encabezado(deck.txt("limites.kicker", "Los límites"),
                         deck.txt("limites.titulo",
                                  "Lo que estos datos NO permiten afirmar"),
-                        "Para leerlo sabiendo qué hay atrás", GRIS) + cuerpo)
+                        vis.get("limites.bajada", "Para leerlo sabiendo qué hay atrás"),
+                        GRIS) + cuerpo)
 
 
 # ───────────────────────────── el documento ─────────────────────────────
@@ -542,6 +580,9 @@ def _armar(d, titulo, secciones, opciones):
             "Cuántas consultas recibió cada uno, con lo que cerró al lado",
             "El equipo", "derivaciones", cuantos=n,
             clave="vendedores", con_ventas=True), ancho_nombre=5200))
+    # el podio estaba en la pantalla y en el PDF pero no en el Word (30-sep)
+    if quiere("podio"):
+        laminas.append(_lamina_partes(deck.partes_podio(d), ancho_nombre=5200))
     if quiere("productos"):
         laminas.append(_lamina_partes(deck.partes_productos(d, n),
                                       ancho_nombre=6800))

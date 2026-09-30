@@ -27,7 +27,7 @@ import io, os, re, subprocess, sys, json, zipfile, hashlib
 NUEVA_VERSION = None          # se calcula: la publicada + 1
 NUEVA_PUBLICA = "1.44.0"
 NUEVO_LABEL = "1.44.0 - editar el reporte se guarda, y se pueden sacar laminas"
-NUEVAS_NOTAS = ('ARREGLO: al editar un reporte, lo que se habia sacado volvia a aparecer en el siguiente guardado. ARREGLO: el PDF podia salir sin las ediciones recien guardadas. MEJORA: en el editor del reporte cada lamina tiene Sacar esta lamina, y hay un boton para volver a mostrar lo que se saco.')
+NUEVAS_NOTAS = ('ARREGLO: al editar un reporte, lo que se habia sacado volvia a aparecer en el siguiente guardado. ARREGLO: el PDF podia salir sin las ediciones recien guardadas. ARREGLO: el Word no llevaba 37 de los textos que se editan (recuadros del embudo, notas, bajadas, titulos de columna) ni la lamina del podio de ventas. MEJORA: en el editor del reporte cada lamina tiene Sacar esta lamina, y hay un boton para volver a mostrar lo que se saco.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
@@ -35,7 +35,7 @@ NUEVAS_NOTAS = ('ARREGLO: al editar un reporte, lo que se habia sacado volvia a 
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
 NUEVOS_ARREGLOS = ["Lo que sacás al editar un reporte ya no vuelve a aparecer al guardar de nuevo",
-                    "El PDF del reporte sale siempre con las ediciones guardadas"]
+                    "El PDF y el Word del reporte salen siempre con todas las ediciones guardadas"]
 NUEVAS_MEJORAS = ["Editando un reporte, cada lámina tiene «Sacar esta lámina»",
                   "Botón para volver a mostrar lo que se sacó del reporte"]
 

@@ -200,6 +200,43 @@ class Textos:
         return valor
 
 
+class Grabador(Textos):
+    """Textos que además anotan qué salió de cada clave.
+
+    Lo usa el Word: arma la lámina del deck (el HTML se tira) y se queda con
+    los textos finales —con lo editado y lo sacado ya aplicado— y con las
+    notas tal como se dibujaron. Así el Word no tiene una copia propia de los
+    textos que se pueda desfasar de la pantalla: pasaba, y 37 de 113 textos
+    editados no llegaban al Word (30-sep-2026).
+    """
+    def __init__(self, over=None, ocultos=None):
+        Textos.__init__(self, over, ocultos)
+        self.visto = {}
+
+    def __call__(self, clave, defecto):
+        valor = Textos.__call__(self, clave, defecto)
+        self.visto[clave] = str(valor)
+        return valor
+
+
+def grabar(fn, *args, **kw):
+    """Corre una lámina del deck y devuelve (textos, notas) de lo que dibujó.
+
+    textos = {clave: texto final}; notas = [(titulo, texto), ...] de cada
+    llamada a notas(), en orden. Tiene que correr adentro de un contexto de
+    textos ya puesto (el del Word): usa sus ediciones."""
+    antes = getattr(_CTX, "textos", None)
+    g = Grabador(getattr(antes, "over", None), getattr(antes, "ocultos", None))
+    _CTX.textos = g
+    _CTX.notas_grabadas = []
+    try:
+        fn(*args, **kw)
+        return g.visto, _CTX.notas_grabadas
+    finally:
+        _CTX.textos = antes
+        _CTX.notas_grabadas = None
+
+
 def txt(clave, defecto):
     """El texto `clave`, con lo que el usuario haya puesto encima.
 
@@ -499,10 +536,13 @@ def notas(items):
     renglones adentro se lee mal—.
     """
     out = []
+    grabadas = getattr(_CTX, "notas_grabadas", None)
     for t, x in items:
         hay_t, hay_x = str(t).strip(), str(x).strip()
         if not hay_t and not hay_x:
             continue
+        if grabadas is not None:
+            grabadas.append((str(t), str(x)))
         base = _base_de(t, x)
         out.append('<div class="nota"%s>%s%s</div>'
                    % ((' data-nota="%s"' % base) if base else "",
