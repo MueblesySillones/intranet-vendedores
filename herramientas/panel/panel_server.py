@@ -341,7 +341,7 @@ DIAS_PAPELERA = 15
 # VERSION es un entero MONOTONICO: SUBIR en CADA release del programa (si no, el
 # cache del bundle en la central puede quedar stale y las sucursales no ven el update).
 # La central anuncia su VERSION; cada sucursal compara contra la suya (este exe).
-VERSION = 102
+VERSION = 103
 # --- Version PUBLICA: la que se muestra en pantalla ---------------------------
 # Es texto libre y NO se compara con nada. Va aparte de VERSION a proposito:
 # VERSION tiene que seguir siendo un entero que sube, porque el auto-update hace
@@ -349,19 +349,19 @@ VERSION = 102
 # 1.2.2 < 25, asi que ninguna sucursal volveria a ver una actualizacion nunca.
 # Para el equipo: subir VERSION_PUBLICA cuando el cambio se nota; VERSION sube
 # SIEMPRE, en cada release, aunque el cambio sea invisible.
-VERSION_PUBLICA = "1.45.0"
-VERSION_LABEL = "1.45.0 - eliminar hojas, deshacer, y guardar sin volver al principio"
+VERSION_PUBLICA = "1.45.1"
+VERSION_LABEL = "1.45.1 - la hoja de los limites tambien se puede eliminar"
 VERSION_NOTES = (
-                 "MEJORA: en el reporte, boton Eliminar esta hoja arriba (con o sin "
-                 "editar). MEJORA: Deshacer vuelve atras el ultimo cambio mientras "
-                 "se edita, y Deshacer lo guardado vuelve a como estaba antes de "
-                 "guardar. ARREGLO: al guardar la edicion el reporte volvia a la "
-                 "primera hoja; ahora queda en la hoja donde se estaba.")
+                 "MEJORA: la ultima hoja del reporte (lo que estos datos no permiten "
+                 "afirmar) se puede eliminar como las demas, y se vuelve a poner con "
+                 "Volver a mostrar lo sacado. ARREGLO: sobre esa hoja oscura, los "
+                 "botones Editando y Siguiente no se veian. ARREGLO: el contador de "
+                 "hojas podia decir 15 / 14.")
 # Lo que el cartel de "Debés actualizar" muestra en dos listas (23-sep-2026,
 # pedido del dueño): ARREGLOS = errores corregidos, MEJORAS = funciones nuevas.
 # Frases cortas. Las escribe publicar_web3.py (NUEVOS_ARREGLOS / NUEVAS_MEJORAS).
-VERSION_ARREGLOS = ["Al guardar la edición del reporte te quedás en la misma hoja, no vuelve al principio"]
-VERSION_MEJORAS = ["Botón «Eliminar esta hoja» arriba del reporte", "«Deshacer» mientras editás, y «Deshacer lo guardado»"]
+VERSION_ARREGLOS = ["Sobre las hojas oscuras del reporte los botones se ven bien", "El contador de hojas del reporte cuenta bien el total"]
+VERSION_MEJORAS = ["La hoja «Lo que estos datos no permiten afirmar» también se puede eliminar"]
 
 # Carpetas del auto-update (FUERA del arbol de instalacion que el swap reemplaza).
 UPDATE_DIR = os.path.join(os.path.dirname(EXE_DIR), "PanelMyS_update") if EXE_DIR else ""
