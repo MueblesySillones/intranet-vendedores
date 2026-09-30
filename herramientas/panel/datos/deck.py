@@ -2184,7 +2184,8 @@ def armar(d, titulo="Reporte de derivaciones", secciones=None, opciones=None):
                      # para volver exactamente a como estaba
                      "textos": dict(op.get("textos") or {}),
                      "vistas": dict(op.get("vistas") or {}),
-                     "fondos": dict(op.get("fondos") or {})}
+                     "fondos": dict(op.get("fondos") or {}),
+                     "sin_limites": bool(op.get("sin_limites"))}
     try:
         return _armar(d, titulo, quiere, n, v, op)
     finally:
@@ -2230,7 +2231,8 @@ def _armar(d, titulo, quiere, n, v, op):
         _precio(d) if quiere("precio") else "",
         pintar(partes_patrones(d), v("patrones")) if quiere("patrones") else "",
         pintar(partes_motivos(d), v("motivos")) if quiere("motivos") else "",
-        _honestidad(d),
+        # se puede eliminar desde el editor, como cualquier otra hoja (30-sep)
+        "" if op.get("sin_limites") else _honestidad(d),
     ]
     partes = [p for p in partes if p]
     return _PAGINA % {
@@ -2467,6 +2469,8 @@ body.con-editor #pista{display:none}
 #ed button:disabled{opacity:.45;cursor:default}
 #ed button.rojo{border-color:#B5503F;color:#B5503F}
 #ed button.rojo:hover{background:#B5503F;color:#fff}
+body.sobre-oscuro #ed button.on,body.sobre-oscuro #nav button:last-child{
+  box-shadow:0 0 0 1px rgba(255,255,255,.6)}
 #ed .pt{font-size:15px;line-height:1}
 body.editando .ed-t{outline:1px dashed rgba(44,110,138,.55);outline-offset:3px;
   border-radius:3px;cursor:text;transition:background .12s ease}
@@ -2556,7 +2560,7 @@ _PAGINA = """<!doctype html>
 <body>
 <div id="barra"></div>
 <div class="deck" id="deck">%(slides)s</div>
-<div id="contador"><span id="ahora">1</span> / %(total)d</div>
+<div id="contador"><span id="ahora">1</span> / <span id="total">%(total)d</span></div>
 <div id="pista">← → para pasar · F pantalla completa · Ctrl+P para PDF</div>
 <div id="ed" hidden>
   <button type="button" id="edPdf"><span class="pt">&#8681;</span>Descargar PDF</button>
@@ -2599,7 +2603,7 @@ var EDINF = %(edinfo)s;
 /* cómo estaba guardado al abrir: es lo que vuelve con «Deshacer lo guardado» */
 var GUARDADO = JSON.parse(JSON.stringify(EDINF));
 /* «Deshacer»: una foto del estado antes de cada cambio, y se vuelve a la última */
-var HIST = [], FOTO_PEND = null;
+var HIST = [], FOTO_PEND = null, PONER_LIM = false;
 
 function edTextos() { return document.querySelectorAll('.ed-t[data-txt]'); }
 
@@ -2631,7 +2635,7 @@ function edPrender(v) {
   document.getElementById('edPdf').hidden = v;
   document.getElementById('edDeshGuardado').hidden = v || !edPrevio();
   edBotonDeshacer();
-  var nOc = (EDINF.ocultos || []).length;
+  var nOc = (EDINF.ocultos || []).length + (EDINF.sin_limites ? 1 : 0);
   document.getElementById('edVolver').hidden = !(v && nOc);
   document.getElementById('edVolver').textContent =
     'Volver a mostrar lo sacado (' + nOc + ')';
@@ -2811,12 +2815,14 @@ function edVistas(v) {
           for (var h = 0; h < hermanas.length; h++) {
             hermanas[h].classList.toggle('dark', cual === 'oscuro');
           }
+          document.body.classList.toggle('sobre-oscuro',
+            SLIDES[actual].classList.contains('dark'));
         }));
       /* Sacar la lámina entera. La portada y los límites no: la portada dice
          de qué período habla y los límites lo que el reporte no puede afirmar.
          Sacarla la marca y recién se va al guardar; hasta entonces se puede
          volver atrás. Una lista larga son varias láminas: se van todas. */
-      if (sec !== 'portada' && sec !== 'limites') edBotonSacar(caja, sec, hermanas);
+      if (sec !== 'portada') edBotonSacar(caja, sec, hermanas);
       sl.appendChild(caja);
     }(secs[i]));
   }
@@ -2936,8 +2942,11 @@ function edGuardar() {
   var cuerpo = { id: ED.id, informe: ED.inf,
                  opciones: { textos: ts, vistas: VISTAS, fondos: FONDOS,
                              ocultos: Object.keys(FUERA) } };
+  /* la hoja de los límites no es una sección que se mide: va aparte */
+  if (SACADAS.limites) cuerpo.opciones.sin_limites = true;
+  if (PONER_LIM) cuerpo.opciones.sin_limites = false;
   /* las láminas sacadas: el reporte deja de medir esa sección */
-  if (Object.keys(SACADAS).length) {
+  if (Object.keys(SACADAS).filter(function (k) { return k !== 'limites'; }).length) {
     var quedan = (EDINF.secciones || []).filter(function (k) { return !SACADAS[k]; });
     if (!quedan.length) {
       edDecir('Tiene que quedar al menos una lámina además de la portada.', true);
@@ -2991,7 +3000,8 @@ function edDeshacerGuardado() {
     body: JSON.stringify({ id: ED.id, informe: ED.inf, secciones: p.secciones,
                            opciones: { textos: p.textos || {}, vistas: p.vistas || {},
                                        fondos: p.fondos || {},
-                                       ocultos: p.ocultos || [], reemplazar: true } })
+                                       ocultos: p.ocultos || [],
+                                       sin_limites: !!p.sin_limites, reemplazar: true } })
   }).then(function (r) { return r.json(); }).then(function (j) {
     if (j && j.error) throw new Error(j.error);
     try { sessionStorage.removeItem('deck-previo-' + ED.inf); } catch (e) {}
@@ -3062,7 +3072,7 @@ document.addEventListener('input', function (ev) {
 function edHojaActual() {
   var s = SLIDES[actual];
   var sec = (s && s.dataset.sec) || '';
-  return (sec === 'portada' || sec === 'limites') ? '' : sec;
+  return sec === 'portada' ? '' : sec;
 }
 function edHojaPintar() {
   var b = document.getElementById('edHoja');
@@ -3080,6 +3090,16 @@ function edHojaClick() {
     return;
   }
   var n = document.querySelectorAll('.slide[data-sec="' + sec + '"]').length;
+  if (sec === 'limites') {
+    if (!window.confirm('¿Eliminar esta hoja del reporte?\\n\\nSe puede volver a poner con ' +
+                        '«Volver a mostrar lo sacado» al editar.')) return;
+    edMandar({ id: ED.id, informe: ED.inf, opciones: { sin_limites: true } })
+      .then(edRecargar)
+      .catch(function (err) {
+        edDecir('No pude eliminarla: ' + (err.message || 'probá de nuevo') + '.', true);
+      });
+    return;
+  }
   var quedan = (EDINF.secciones || []).filter(function (k) { return k !== sec; });
   if (!quedan.length) {
     edDecir('Tiene que quedar al menos una hoja además de la portada.', true);
@@ -3133,6 +3153,7 @@ if (ED.id && ED.inf) {
     /* se sacan de la lista y se guarda: vuelven a dibujarse */
     (EDINF.ocultos || []).forEach(function (k) { delete FUERA[k]; });
     EDINF.ocultos = [];
+    PONER_LIM = !!EDINF.sin_limites;       // y la hoja de los límites, si se había eliminado
     edGuardar();
   };
   document.getElementById('edNo').onclick = function () { edRecargar(); };
@@ -3148,8 +3169,13 @@ function ir(n){
   actual = Math.max(0, Math.min(TOTAL - 1, n));
   for (var i = 0; i < TOTAL; i++) SLIDES[i].classList.toggle('active', i === actual);
   document.getElementById('ahora').textContent = actual + 1;
+  /* el total se cuenta en la página: una lista larga ocupa varias hojas y
+     el número que venía del servidor contaba secciones, no hojas («15 / 14») */
+  document.getElementById('total').textContent = TOTAL;
   document.getElementById('barra').style.width = (100 * (actual + 1) / TOTAL) + '%%';
   edHojaPintar();
+  /* sobre una hoja oscura, los botones negros de arriba y abajo se perdían */
+  document.body.classList.toggle('sobre-oscuro', SLIDES[actual].classList.contains('dark'));
 }
 function mover(d){ ir(actual + d); }
 document.addEventListener('keydown', function (ev) {

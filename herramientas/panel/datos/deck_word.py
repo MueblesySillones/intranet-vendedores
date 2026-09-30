@@ -623,7 +623,8 @@ def _armar(d, titulo, secciones, opciones):
     if quiere("motivos"):
         laminas.append(_lamina_partes(deck.partes_motivos(d),
                                       ancho_nombre=6800))
-    laminas.append(_lamina_limites(d))
+    if not op.get("sin_limites"):
+        laminas.append(_lamina_limites(d))
     return _salto().join(x for x in laminas if x)
 
 

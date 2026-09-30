@@ -25,18 +25,18 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.45.0"
-NUEVO_LABEL = "1.45.0 - eliminar hojas, deshacer, y guardar sin volver al principio"
-NUEVAS_NOTAS = ('MEJORA: en el reporte, boton Eliminar esta hoja arriba (con o sin editar). MEJORA: Deshacer vuelve atras el ultimo cambio mientras se edita, y Deshacer lo guardado vuelve a como estaba antes de guardar. ARREGLO: al guardar la edicion el reporte volvia a la primera hoja; ahora queda en la hoja donde se estaba.')
+NUEVA_PUBLICA = "1.45.1"
+NUEVO_LABEL = "1.45.1 - la hoja de los limites tambien se puede eliminar"
+NUEVAS_NOTAS = ('MEJORA: la ultima hoja del reporte (lo que estos datos no permiten afirmar) se puede eliminar como las demas, y se vuelve a poner con Volver a mostrar lo sacado. ARREGLO: sobre esa hoja oscura, los botones Editando y Siguiente no se veian. ARREGLO: el contador de hojas podia decir 15 / 14.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Al guardar la edición del reporte te quedás en la misma hoja, no vuelve al principio"]
-NUEVAS_MEJORAS = ["Botón «Eliminar esta hoja» arriba del reporte",
-                  "«Deshacer» mientras editás, y «Deshacer lo guardado»"]
+NUEVOS_ARREGLOS = ["Sobre las hojas oscuras del reporte los botones se ven bien",
+                    "El contador de hojas del reporte cuenta bien el total"]
+NUEVAS_MEJORAS = ["La hoja «Lo que estos datos no permiten afirmar» también se puede eliminar"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

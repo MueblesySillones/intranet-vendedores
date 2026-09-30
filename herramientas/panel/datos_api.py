@@ -592,6 +592,9 @@ def _limpiar_opciones(op, antes=None):
         "fondos": fondos,
         "textos": textos,
         "ocultos": ocultos,
+        # la hoja de los límites, eliminada desde el editor
+        "sin_limites": (bool(op.get("sin_limites")) if "sin_limites" in op
+                        else bool(vieja.get("sin_limites"))),
         "nota": str(op.get("nota") if "nota" in op
                     else (vieja.get("nota") or ""))[:280],
     }
