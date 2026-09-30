@@ -1,18 +1,17 @@
 {
-  "version": 101,
-  "label": "1.44.0 - editar el reporte se guarda, y se pueden sacar laminas",
-  "notes": "ARREGLO: al editar un reporte, lo que se habia sacado volvia a aparecer en el siguiente guardado. ARREGLO: el PDF podia salir sin las ediciones recien guardadas. ARREGLO: el Word no llevaba 37 de los textos que se editan (recuadros del embudo, notas, bajadas, titulos de columna) ni la lamina del podio de ventas. MEJORA: en el editor del reporte cada lamina tiene Sacar esta lamina, y hay un boton para volver a mostrar lo que se saco.",
+  "version": 102,
+  "label": "1.45.0 - eliminar hojas, deshacer, y guardar sin volver al principio",
+  "notes": "MEJORA: en el reporte, boton Eliminar esta hoja arriba (con o sin editar). MEJORA: Deshacer vuelve atras el ultimo cambio mientras se edita, y Deshacer lo guardado vuelve a como estaba antes de guardar. ARREGLO: al guardar la edicion el reporte volvia a la primera hoja; ahora queda en la hoja donde se estaba.",
   "arreglos": [
-    "Lo que sacás al editar un reporte ya no vuelve a aparecer al guardar de nuevo",
-    "El PDF y el Word del reporte salen siempre con todas las ediciones guardadas"
+    "Al guardar la edición del reporte te quedás en la misma hoja, no vuelve al principio"
   ],
   "mejoras": [
-    "Editando un reporte, cada lámina tiene «Sacar esta lámina»",
-    "Botón para volver a mostrar lo que se sacó del reporte"
+    "Botón «Eliminar esta hoja» arriba del reporte",
+    "«Deshacer» mientras editás, y «Deshacer lo guardado»"
   ],
-  "sha256": "cab197501c8fadbe978ffd8513df3d0b50070b6806ca277896d5b711c58ce9fa",
-  "size": 20312206,
-  "url": "panel/PanelMyS-v101.zip",
+  "sha256": "d131d3377d2899d9c363d37c99fab92a3efa2990651e6c92da2e446ba7d7a361",
+  "size": 20314977,
+  "url": "panel/PanelMyS-v102.zip",
   "historial": [
     {
       "version": 83,
@@ -177,6 +176,18 @@
       "mejoras": [
         "Para desarrolladores trae el paso a paso para seguir desde otra computadora",
         "El código de los reportes queda guardado en GitHub, no solo en esta computadora"
+      ]
+    },
+    {
+      "version": 101,
+      "label": "1.44.0 - editar el reporte se guarda, y se pueden sacar laminas",
+      "arreglos": [
+        "Lo que sacás al editar un reporte ya no vuelve a aparecer al guardar de nuevo",
+        "El PDF y el Word del reporte salen siempre con todas las ediciones guardadas"
+      ],
+      "mejoras": [
+        "Editando un reporte, cada lámina tiene «Sacar esta lámina»",
+        "Botón para volver a mostrar lo que se sacó del reporte"
       ]
     }
   ]
