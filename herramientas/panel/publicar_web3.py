@@ -25,19 +25,18 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.44.0"
-NUEVO_LABEL = "1.44.0 - editar el reporte se guarda, y se pueden sacar laminas"
-NUEVAS_NOTAS = ('ARREGLO: al editar un reporte, lo que se habia sacado volvia a aparecer en el siguiente guardado. ARREGLO: el PDF podia salir sin las ediciones recien guardadas. ARREGLO: el Word no llevaba 37 de los textos que se editan (recuadros del embudo, notas, bajadas, titulos de columna) ni la lamina del podio de ventas. MEJORA: en el editor del reporte cada lamina tiene Sacar esta lamina, y hay un boton para volver a mostrar lo que se saco.')
+NUEVA_PUBLICA = "1.45.0"
+NUEVO_LABEL = "1.45.0 - eliminar hojas, deshacer, y guardar sin volver al principio"
+NUEVAS_NOTAS = ('MEJORA: en el reporte, boton Eliminar esta hoja arriba (con o sin editar). MEJORA: Deshacer vuelve atras el ultimo cambio mientras se edita, y Deshacer lo guardado vuelve a como estaba antes de guardar. ARREGLO: al guardar la edicion el reporte volvia a la primera hoja; ahora queda en la hoja donde se estaba.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Lo que sacás al editar un reporte ya no vuelve a aparecer al guardar de nuevo",
-                    "El PDF y el Word del reporte salen siempre con todas las ediciones guardadas"]
-NUEVAS_MEJORAS = ["Editando un reporte, cada lámina tiene «Sacar esta lámina»",
-                  "Botón para volver a mostrar lo que se sacó del reporte"]
+NUEVOS_ARREGLOS = ["Al guardar la edición del reporte te quedás en la misma hoja, no vuelve al principio"]
+NUEVAS_MEJORAS = ["Botón «Eliminar esta hoja» arriba del reporte",
+                  "«Deshacer» mientras editás, y «Deshacer lo guardado»"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que

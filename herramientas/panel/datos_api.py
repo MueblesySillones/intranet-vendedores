@@ -510,6 +510,10 @@ def _limpiar_opciones(op, antes=None):
     """
     op = op if isinstance(op, dict) else {}
     vieja = antes if isinstance(antes, dict) else {}
+    # «Deshacer lo guardado» manda el estado anterior ENTERO: los textos, las
+    # vistas y los fondos se reemplazan en vez de sumarse a lo que había (si
+    # no, lo que se agregó en el guardado a deshacer quedaría puesto).
+    reemplazar = bool(op.get("reemplazar"))
     validos_det = {k for k, _, _ in deck.DETALLES}
     validos_cmp = {k for k, _, _ in deck.COMPARACIONES}
     validos_vis = {k for k, _, _ in deck.VISTAS}
@@ -541,7 +545,7 @@ def _limpiar_opciones(op, antes=None):
         suc = str(crudo or "").strip()[:60]
 
     # las vistas por sección: solo las que son una lista, y solo valores validos
-    vistas = dict(vieja.get("vistas") or {})
+    vistas = {} if reemplazar else dict(vieja.get("vistas") or {})
     vistas.update(op.get("vistas") if isinstance(op.get("vistas"), dict) else {})
     vistas = {k: v for k, v in vistas.items()
               if k in deck.CON_LISTA and v in validos_vis}
@@ -550,7 +554,7 @@ def _limpiar_opciones(op, antes=None):
     # sección —el embudo y los límites no son listas y también se pintan—,
     # pero solo esos dos valores: un color suelto rompería el contraste que
     # el deck ya tiene resuelto para las dos variantes.
-    fondos = dict(vieja.get("fondos") or {})
+    fondos = {} if reemplazar else dict(vieja.get("fondos") or {})
     fondos.update(op.get("fondos") if isinstance(op.get("fondos"), dict) else {})
     validas_sec = set(deck.TODAS) | {"portada", "limites"}
     fondos = {str(k): v for k, v in fondos.items()
@@ -559,7 +563,7 @@ def _limpiar_opciones(op, antes=None):
     # los textos reescritos. Un texto vacio BORRA el de encima y devuelve el de
     # fabrica: es la unica forma de arrepentirse sin tener que acordarse del
     # original.
-    textos = dict(vieja.get("textos") or {})
+    textos = {} if reemplazar else dict(vieja.get("textos") or {})
     nuevos = op.get("textos") if isinstance(op.get("textos"), dict) else {}
     for k, v in nuevos.items():
         k = str(k)[:80]

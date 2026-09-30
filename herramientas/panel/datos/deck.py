@@ -2179,7 +2179,12 @@ def armar(d, titulo="Reporte de derivaciones", secciones=None, opciones=None):
     # lo de antes volvía a aparecer (30-sep-2026).
     op = dict(op)
     op["_edinfo"] = {"secciones": [k for k in TODAS if quiere(k)],
-                     "ocultos": sorted(str(k) for k in (op.get("ocultos") or []))}
+                     "ocultos": sorted(str(k) for k in (op.get("ocultos") or [])),
+                     # lo guardado entero: «Deshacer lo guardado» lo necesita
+                     # para volver exactamente a como estaba
+                     "textos": dict(op.get("textos") or {}),
+                     "vistas": dict(op.get("vistas") or {}),
+                     "fondos": dict(op.get("fondos") or {})}
     try:
         return _armar(d, titulo, quiere, n, v, op)
     finally:
@@ -2459,6 +2464,9 @@ body.con-editor #pista{display:none}
 #ed button:hover{border-color:var(--ink3);color:var(--ink)}
 #ed button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 #ed button[hidden]{display:none}
+#ed button:disabled{opacity:.45;cursor:default}
+#ed button.rojo{border-color:#B5503F;color:#B5503F}
+#ed button.rojo:hover{background:#B5503F;color:#fff}
 #ed .pt{font-size:15px;line-height:1}
 body.editando .ed-t{outline:1px dashed rgba(44,110,138,.55);outline-offset:3px;
   border-radius:3px;cursor:text;transition:background .12s ease}
@@ -2552,7 +2560,10 @@ _PAGINA = """<!doctype html>
 <div id="pista">← → para pasar · F pantalla completa · Ctrl+P para PDF</div>
 <div id="ed" hidden>
   <button type="button" id="edPdf"><span class="pt">&#8681;</span>Descargar PDF</button>
+  <button type="button" id="edDeshGuardado" hidden><span class="pt">&#8630;</span>Deshacer lo guardado</button>
+  <button type="button" id="edHoja" class="rojo" hidden>Eliminar esta hoja</button>
   <button type="button" id="edBtn"><span class="pt">&#9998;</span>Editar</button>
+  <button type="button" id="edDeshacer" hidden disabled><span class="pt">&#8630;</span>Deshacer</button>
   <button type="button" id="edVolver" hidden>Volver a mostrar lo sacado</button>
   <button type="button" id="edOk" hidden>Guardar edición</button>
   <button type="button" id="edNo" hidden>Cancelar</button>
@@ -2585,6 +2596,10 @@ var EDIT = false, ORIG = {}, VISTAS = {}, FUERA = {}, FONDOS = {}, SACADAS = {};
    de antes volvía a aparecer (30-sep-2026). */
 var EDINF = %(edinfo)s;
 (EDINF.ocultos || []).forEach(function (k) { FUERA[k] = true; });
+/* cómo estaba guardado al abrir: es lo que vuelve con «Deshacer lo guardado» */
+var GUARDADO = JSON.parse(JSON.stringify(EDINF));
+/* «Deshacer»: una foto del estado antes de cada cambio, y se vuelve a la última */
+var HIST = [], FOTO_PEND = null;
 
 function edTextos() { return document.querySelectorAll('.ed-t[data-txt]'); }
 
@@ -2614,6 +2629,8 @@ function edPrender(v) {
      arma el servidor con lo ultimo guardado—, asi que el boton se esconde
      hasta guardar o cancelar */
   document.getElementById('edPdf').hidden = v;
+  document.getElementById('edDeshGuardado').hidden = v || !edPrevio();
+  edBotonDeshacer();
   var nOc = (EDINF.ocultos || []).length;
   document.getElementById('edVolver').hidden = !(v && nOc);
   document.getElementById('edVolver').textContent =
@@ -2632,12 +2649,14 @@ function edPrender(v) {
     edDecir('Tocá cualquier texto y escribí encima, o sacalo con la <b>×</b>. ' +
             'La <b>×</b> de la esquina saca la tarjeta entera. Arriba a la ' +
             'derecha de cada lámina elegís <b>cómo se ve la lista</b> y si el ' +
-            '<b>fondo</b> va claro u oscuro, o la <b>sacás entera</b>. Los <b>números no se editan</b>: ' +
+            '<b>fondo</b> va claro u oscuro. <b>Eliminar esta hoja</b> la saca entera, y ' +
+            '<b>Deshacer</b> vuelve atrás el último cambio. Los <b>números no se editan</b>: ' +
             'se calculan solos cada vez que abrís el reporte.');
   } else {
     document.getElementById('edAviso').hidden = true;
   }
   edVistas(v);
+  edHojaPintar();
 }
 
 /* La × de cada texto. Sacar no borra: el texto queda tachado y con un botón
@@ -2657,6 +2676,7 @@ function edEquis(v) {
       x.textContent = '\u00D7';
       x.onclick = function (ev) {
         ev.preventDefault(); ev.stopPropagation();
+        edMarca();
         FUERA[k] = true; edPintarFuera(n, true);
       };
       n.insertAdjacentElement('afterend', x);
@@ -2678,6 +2698,7 @@ function edPintarFuera(n, fuera) {
   b.textContent = 'Volver a mostrar';
   b.onclick = function (ev) {
     ev.preventDefault(); ev.stopPropagation();
+    edMarca();
     delete FUERA[k]; edPintarFuera(n, false);
   };
   n.insertAdjacentElement('afterend', b);
@@ -2715,11 +2736,11 @@ function edNotas(v) {
       x.type = 'button'; x.className = 'ed-nx';
       x.title = 'Sacar esta tarjeta del reporte';
       x.textContent = '\u00D7';
-      x.onclick = function (ev) { ev.preventDefault(); poner(true); };
+      x.onclick = function (ev) { ev.preventDefault(); edMarca(); poner(true); };
       volver.type = 'button'; volver.className = 'ed-nv';
       volver.textContent = 'Volver a mostrar';
       volver.hidden = true;
-      volver.onclick = function (ev) { ev.preventDefault(); poner(false); };
+      volver.onclick = function (ev) { ev.preventDefault(); edMarca(); poner(false); };
       n.appendChild(x); n.appendChild(volver);
       // una tarjeta que ya venía sacada arranca tachada
       var todas = claves.length && claves.every(function (k) { return FUERA[k]; });
@@ -2806,20 +2827,25 @@ function edBotonSacar(caja, sec, hermanas) {
   b.type = 'button'; b.className = 'ed-sacar';
   var pintar = function () {
     var fuera = !!SACADAS[sec];
-    b.textContent = fuera ? 'Volver a poner la lámina' : 'Sacar esta lámina';
+    b.textContent = fuera ? 'Volver a poner esta hoja' : 'Eliminar esta hoja';
     b.classList.toggle('on', fuera);
     for (var h = 0; h < hermanas.length; h++) hermanas[h].classList.toggle('sacada', fuera);
   };
   b.onclick = function (ev) {
     ev.preventDefault();
+    edMarca();
     if (SACADAS[sec]) { delete SACADAS[sec]; } else { SACADAS[sec] = true; }
     /* el mismo botón está en cada lámina de la sección: se pintan todos */
     var bs = document.querySelectorAll('.slide[data-sec="' + sec + '"] .ed-sacar');
     for (var j = 0; j < bs.length; j++) bs[j]._pintar();
     if (SACADAS[sec]) {
-      edDecir('Esta lámina se va a sacar del reporte cuando guardes. ' +
-              'Para traerla de vuelta después: «Cambiar qué mide».');
+      edDecir((hermanas.length > 1
+               ? 'Esta lista ocupa ' + hermanas.length + ' hojas: se eliminan todas '
+               : 'Esta hoja se elimina ') +
+              'cuando aprietes <b>Guardar edición</b>. Hasta entonces, ' +
+              '<b>Deshacer</b> la trae de vuelta.');
     }
+    edHojaPintar();
   };
   b._pintar = pintar;
   var fila = document.createElement('div');
@@ -2841,6 +2867,7 @@ function edFila(rotulo, opciones, puesto, alElegir) {
     b.type = 'button'; b.textContent = par[1];
     if (puesto === par[0]) b.className = 'on';
     b.onclick = function () {
+      edMarca();
       var bs = fila.querySelectorAll('button');
       for (var j = 0; j < bs.length; j++) bs[j].className = '';
       b.className = 'on';
@@ -2919,20 +2946,181 @@ function edGuardar() {
     cuerpo.secciones = quedan;
   }
   ok.disabled = true; ok.textContent = 'Guardando…';
-  fetch('/api/datos/informe-editar', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(cuerpo)
-  }).then(function (r) { return r.json(); }).then(function (j) {
-    if (j && j.error) throw new Error(j.error);
+  edMandar(cuerpo).then(function () {
     /* se recarga a propósito: el reporte se arma en el servidor, así que lo
        que se ve después de guardar es EXACTAMENTE lo que se va a bajar en PDF
        o en Word. Sin esto, la pantalla y el archivo podrían no coincidir. */
-    location.reload();
+    edRecargar();
   }).catch(function (err) {
     ok.disabled = false; ok.textContent = 'Guardar edición';
     edDecir('No pude guardar: ' + (err.message || 'probá de nuevo') + '.', true);
   });
   return hubo;
+}
+
+/* Manda un cambio y guarda antes cómo estaba, para «Deshacer lo guardado». */
+function edMandar(cuerpo) {
+  try {
+    sessionStorage.setItem('deck-previo-' + ED.inf, JSON.stringify(GUARDADO));
+  } catch (e) { /* sin sessionStorage no hay «deshacer lo guardado»: guarda igual */ }
+  return fetch('/api/datos/informe-editar', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo)
+  }).then(function (r) { return r.json(); }).then(function (j) {
+    if (j && j.error) throw new Error(j.error);
+    return j;
+  });
+}
+
+function edPrevio() {
+  try {
+    var t = sessionStorage.getItem('deck-previo-' + ED.inf);
+    return t ? JSON.parse(t) : null;
+  } catch (e) { return null; }
+}
+
+/* Vuelve a como estaba antes del último guardado. Se manda el estado entero
+   con `reemplazar`: si solo se sumara, lo agregado en ese guardado quedaría. */
+function edDeshacerGuardado() {
+  var p = edPrevio();
+  if (!p) return;
+  var b = document.getElementById('edDeshGuardado');
+  b.disabled = true;
+  fetch('/api/datos/informe-editar', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: ED.id, informe: ED.inf, secciones: p.secciones,
+                           opciones: { textos: p.textos || {}, vistas: p.vistas || {},
+                                       fondos: p.fondos || {},
+                                       ocultos: p.ocultos || [], reemplazar: true } })
+  }).then(function (r) { return r.json(); }).then(function (j) {
+    if (j && j.error) throw new Error(j.error);
+    try { sessionStorage.removeItem('deck-previo-' + ED.inf); } catch (e) {}
+    edRecargar();
+  }).catch(function (err) {
+    b.disabled = false;
+    edDecir('No pude deshacer: ' + (err.message || 'probá de nuevo') + '.', true);
+  });
+}
+
+/* ── Deshacer, de a un paso ── */
+function edFoto() {
+  var t = [], ns = edTextos(), i;
+  for (i = 0; i < ns.length; i++) t.push(ns[i].textContent);
+  var c = function (x) { return JSON.parse(JSON.stringify(x)); };
+  return { t: t, fuera: c(FUERA), vistas: c(VISTAS), fondos: c(FONDOS), sacadas: c(SACADAS) };
+}
+function edMarca() {
+  HIST.push(edFoto());
+  if (HIST.length > 80) HIST.shift();
+  edBotonDeshacer();
+}
+function edBotonDeshacer() {
+  var b = document.getElementById('edDeshacer');
+  b.hidden = !EDIT;
+  b.disabled = !HIST.length;
+}
+/* pone en pantalla lo que dicen VISTAS, FONDOS y SACADAS */
+function edAplicar() {
+  var sls = document.querySelectorAll('.slide[data-sec]'), i, m;
+  for (i = 0; i < sls.length; i++) {
+    var sec = sls[i].dataset.sec;
+    if (sec in FONDOS) sls[i].classList.toggle('dark', FONDOS[sec] === 'oscuro');
+    if (sec in VISTAS) {
+      var vs = sls[i].querySelectorAll('.lista-v');
+      for (m = 0; m < vs.length; m++) vs[m].hidden = vs[m].dataset.vista !== VISTAS[sec];
+    }
+    sls[i].classList.toggle('sacada', !!SACADAS[sec]);
+  }
+}
+function edDeshacer() {
+  var f = HIST.pop();
+  if (!f) return;
+  var ns = edTextos(), i;
+  for (i = 0; i < ns.length; i++) {
+    if (i < f.t.length) ns[i].textContent = f.t[i];
+    ns[i].classList.remove('fuera');
+    ns[i].contentEditable = 'true';
+  }
+  FUERA = f.fuera; VISTAS = f.vistas; FONDOS = f.fondos; SACADAS = f.sacadas;
+  edAplicar();
+  edEquis(true); edNotas(true); edVistas(true);
+  edBotonDeshacer(); edHojaPintar();
+}
+/* escribir en un texto: una foto al empezar, no una por letra */
+document.addEventListener('focusin', function (ev) {
+  if (EDIT && ev.target.classList && ev.target.classList.contains('ed-t')) FOTO_PEND = edFoto();
+});
+document.addEventListener('input', function (ev) {
+  if (EDIT && FOTO_PEND && ev.target.classList && ev.target.classList.contains('ed-t')) {
+    HIST.push(FOTO_PEND); FOTO_PEND = null; edBotonDeshacer();
+  }
+});
+
+/* ── Eliminar la hoja que se está mirando ──
+   Editando, la marca (se va al guardar, y Deshacer la trae). Sin editar,
+   pregunta y la saca en el acto. La portada y los límites no se eliminan. */
+function edHojaActual() {
+  var s = SLIDES[actual];
+  var sec = (s && s.dataset.sec) || '';
+  return (sec === 'portada' || sec === 'limites') ? '' : sec;
+}
+function edHojaPintar() {
+  var b = document.getElementById('edHoja');
+  if (!b || !(ED.id && ED.inf) || typeof SLIDES === 'undefined') return;
+  var sec = edHojaActual();
+  b.hidden = !sec;
+  b.textContent = (EDIT && SACADAS[sec]) ? 'Volver a poner esta hoja' : 'Eliminar esta hoja';
+}
+function edHojaClick() {
+  var sec = edHojaActual();
+  if (!sec) return;
+  if (EDIT) {
+    var bs = SLIDES[actual].querySelector('.ed-sacar');
+    if (bs) bs.click();
+    return;
+  }
+  var n = document.querySelectorAll('.slide[data-sec="' + sec + '"]').length;
+  var quedan = (EDINF.secciones || []).filter(function (k) { return k !== sec; });
+  if (!quedan.length) {
+    edDecir('Tiene que quedar al menos una hoja además de la portada.', true);
+    return;
+  }
+  if (!window.confirm((n > 1 ? '¿Eliminar esta lista del reporte? Ocupa ' + n + ' hojas.'
+                             : '¿Eliminar esta hoja del reporte?') +
+                      '\\n\\nSe puede volver atrás con «Deshacer lo guardado».')) return;
+  var b = document.getElementById('edHoja');
+  b.disabled = true;
+  edMandar({ id: ED.id, informe: ED.inf, opciones: {}, secciones: quedan })
+    .then(edRecargar)
+    .catch(function (err) {
+      b.disabled = false;
+      edDecir('No pude eliminarla: ' + (err.message || 'probá de nuevo') + '.', true);
+    });
+}
+
+/* ── Volver a la misma hoja después de guardar ──
+   La recarga arrancaba siempre en la portada. Se anota dónde estaba (la
+   sección y qué hoja de ella) y se vuelve ahí; si esa hoja ya no está
+   (se eliminó), se queda en la que ocupó su lugar. */
+function edRecargar() {
+  var s = SLIDES[actual], sec = (s && s.dataset.sec) || '';
+  var hs = document.querySelectorAll('.slide[data-sec="' + sec + '"]');
+  var k = Array.prototype.indexOf.call(hs, s);
+  try {
+    history.replaceState(null, '', location.pathname + location.search +
+                         '#l=' + actual + '&s=' + encodeURIComponent(sec) + '&k=' + k);
+  } catch (e) {}
+  location.reload();
+}
+function edLugarGuardado() {
+  var h = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+  if (!h.has('l')) return 0;
+  var sec = h.get('s') || '', k = parseInt(h.get('k') || '0', 10) || 0;
+  var hs = sec ? document.querySelectorAll('.slide[data-sec="' + sec + '"]') : [];
+  if (hs.length) {
+    return Array.prototype.indexOf.call(SLIDES, hs[Math.min(k, hs.length - 1)]);
+  }
+  return parseInt(h.get('l'), 10) || 0;
 }
 
 if (ED.id && ED.inf) {
@@ -2947,7 +3135,11 @@ if (ED.id && ED.inf) {
     EDINF.ocultos = [];
     edGuardar();
   };
-  document.getElementById('edNo').onclick = function () { location.reload(); };
+  document.getElementById('edNo').onclick = function () { edRecargar(); };
+  document.getElementById('edDeshacer').onclick = edDeshacer;
+  document.getElementById('edHoja').onclick = edHojaClick;
+  document.getElementById('edDeshGuardado').onclick = edDeshacerGuardado;
+  document.getElementById('edDeshGuardado').hidden = !edPrevio();
 }
 
 var SLIDES = document.querySelectorAll('.slide');
@@ -2957,6 +3149,7 @@ function ir(n){
   for (var i = 0; i < TOTAL; i++) SLIDES[i].classList.toggle('active', i === actual);
   document.getElementById('ahora').textContent = actual + 1;
   document.getElementById('barra').style.width = (100 * (actual + 1) / TOTAL) + '%%';
+  edHojaPintar();
 }
 function mover(d){ ir(actual + d); }
 document.addEventListener('keydown', function (ev) {
@@ -2984,6 +3177,6 @@ document.addEventListener('touchend', function (ev) {
   if (Math.abs(dx) > 55) mover(dx < 0 ? 1 : -1);
   x0 = null;
 });
-ir(0);
+ir((ED.id && ED.inf) ? edLugarGuardado() : 0);
 </script>
 </body></html>"""
