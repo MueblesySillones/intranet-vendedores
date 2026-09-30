@@ -95,26 +95,6 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><div class=\"dl-section\"><div class=\"gallery\"><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/muro_gal_1790176218484.jpg\" alt=\"WhatsApp Image 2026-09-23 at 11.57.08 (1)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/muro_gal_1790176218484.jpg','WhatsApp Image 2026-09-23 at 11.57.08 (1)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-09-23 at 11.57.08 (1)</div><a class=\"dl-btn\" href=\"assets/_modulos/muro_gal_1790176218484.jpg\" download=\"WhatsApp Image 2026-09-23 at 11.57.08 (1).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/muro_gal_1790176218586.jpg\" alt=\"WhatsApp Image 2026-09-23 at 11.57.08\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/muro_gal_1790176218586.jpg','WhatsApp Image 2026-09-23 at 11.57.08')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-09-23 at 11.57.08</div><a class=\"dl-btn\" href=\"assets/_modulos/muro_gal_1790176218586.jpg\" download=\"WhatsApp Image 2026-09-23 at 11.57.08.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div></div></div>"
         },
         {
-          "id": "dmue7vcfb078m",
-          "titulo": "RECUERDEN PORFAVOR 📣",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-23",
-          "etiqueta": "importante",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "Revisar sus contactos en el Chatbot 🤖\nEstamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento."
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Revisar sus contactos en el Chatbot 🤖<br>Estamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento.</p></div>"
-        },
-        {
           "id": "dmucviejubsyw",
           "titulo": "SILLÓN TORINO NUEVO",
           "autor": "Marketing",
@@ -444,6 +424,27 @@ window.MODULES = [
         }
       ],
       "papelera": [
+        {
+          "id": "dmue7vcfb078m",
+          "titulo": "RECUERDEN PORFAVOR 📣",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-09-23",
+          "etiqueta": "importante",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Revisar sus contactos en el Chatbot 🤖\nEstamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento."
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Revisar sus contactos en el Chatbot 🤖<br>Estamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento.</p></div>",
+          "borradoEl": "2026-09-30"
+        },
         {
           "id": "dmuj2nkmk3faa",
           "titulo": "prueba",
@@ -4461,13 +4462,7 @@ window.TUTORIALES = [
         "texto": "Generar reporte"
       }
     ],
-    "creado": "2026-09-29",
-    "mas": [
-      {
-        "src": "assets/_tutoriales/tut_mun54nbm6ms.mp4",
-        "duracion": 25
-      }
-    ]
+    "creado": "2026-09-29"
   },
   {
     "id": "tut_mun2v4e6",
@@ -4553,17 +4548,7 @@ window.TUTORIALES = [
         "texto": "Publicar un Módulo"
       }
     ],
-    "creado": "2026-09-29",
-    "mas": [
-      {
-        "src": "assets/_tutoriales/tut_mun2vegw1o4.mp4",
-        "duracion": 126
-      },
-      {
-        "src": "assets/_tutoriales/tut_mun2vvelfnm.mp4",
-        "duracion": 176
-      }
-    ]
+    "creado": "2026-09-29"
   },
   {
     "id": "tut_mumud9wr",
