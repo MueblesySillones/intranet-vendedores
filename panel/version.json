@@ -1,17 +1,18 @@
 {
-  "version": 100,
-  "label": "1.43.0 - actualizar sin reiniciar, y todo para otra computadora",
-  "notes": "ARREGLO: actualizar el panel fallaba con Windows no dejo reemplazar algunos archivos (codigo 11) y habia que reiniciar. Ahora cierra bien el panel viejo y, si un archivo sigue tomado, lo reemplaza igual. MEJORA: el archivo Para desarrolladores ahora trae el paso a paso completo para seguir desde otra computadora si esta se pierde: que instalar, como bajar el proyecto, donde va la clave y como publicar contenido y versiones nuevas del panel. El codigo de los reportes, que vivia solo en la computadora central, ahora queda guardado en GitHub con cada version.",
+  "version": 101,
+  "label": "1.44.0 - editar el reporte se guarda, y se pueden sacar laminas",
+  "notes": "ARREGLO: al editar un reporte, lo que se habia sacado volvia a aparecer en el siguiente guardado. ARREGLO: el PDF podia salir sin las ediciones recien guardadas. ARREGLO: el Word no llevaba 37 de los textos que se editan (recuadros del embudo, notas, bajadas, titulos de columna) ni la lamina del podio de ventas. MEJORA: en el editor del reporte cada lamina tiene Sacar esta lamina, y hay un boton para volver a mostrar lo que se saco.",
   "arreglos": [
-    "Actualizar ya no falla con \"Windows no dejó reemplazar algunos archivos (código 11)\""
+    "Lo que sacás al editar un reporte ya no vuelve a aparecer al guardar de nuevo",
+    "El PDF y el Word del reporte salen siempre con todas las ediciones guardadas"
   ],
   "mejoras": [
-    "Para desarrolladores trae el paso a paso para seguir desde otra computadora",
-    "El código de los reportes queda guardado en GitHub, no solo en esta computadora"
+    "Editando un reporte, cada lámina tiene «Sacar esta lámina»",
+    "Botón para volver a mostrar lo que se sacó del reporte"
   ],
-  "sha256": "050db7e4328c970fd03ffed6956738c106ff01df2254f33430d4c2ea213765ac",
-  "size": 20308752,
-  "url": "panel/PanelMyS-v100.zip",
+  "sha256": "cab197501c8fadbe978ffd8513df3d0b50070b6806ca277896d5b711c58ce9fa",
+  "size": 20312206,
+  "url": "panel/PanelMyS-v101.zip",
   "historial": [
     {
       "version": 83,
@@ -165,6 +166,17 @@
       "mejoras": [
         "Tutoriales de hasta 3 GB (unos 150 minutos): los videos largos se cortan en partes solos",
         "Crear un reporte explica para qué sirve cada paso y cada lámina"
+      ]
+    },
+    {
+      "version": 100,
+      "label": "1.43.0 - actualizar sin reiniciar, y todo para otra computadora",
+      "arreglos": [
+        "Actualizar ya no falla con \"Windows no dejó reemplazar algunos archivos (código 11)\""
+      ],
+      "mejoras": [
+        "Para desarrolladores trae el paso a paso para seguir desde otra computadora",
+        "El código de los reportes queda guardado en GitHub, no solo en esta computadora"
       ]
     }
   ]
