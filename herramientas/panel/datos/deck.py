@@ -26,6 +26,7 @@ LA REGLA QUE MANDA EN TODO ESTE ARCHIVO
   templates); la venta se muestra como resultado del equipo.
 """
 import datetime
+import json
 import threading
 from xml.sax.saxutils import escape
 
@@ -2132,6 +2133,13 @@ def armar(d, titulo="Reporte de derivaciones", secciones=None, opciones=None):
     _CTX.textos = Textos(op.get("textos"), op.get("ocultos"))
     # el fondo elegido para cada lámina: {"embudo": "oscuro", ...}
     _CTX.fondos = {k: str(x) for k, x in (op.get("fondos") or {}).items()}
+    # Lo que la página de edición necesita saber y no puede ver en pantalla:
+    # los textos que ya se sacaron (no se dibujan) y las láminas que lleva el
+    # reporte. Sin esto, cada guardado mandaba solo lo sacado en ESA vuelta y
+    # lo de antes volvía a aparecer (30-sep-2026).
+    op = dict(op)
+    op["_edinfo"] = {"secciones": [k for k in TODAS if quiere(k)],
+                     "ocultos": sorted(str(k) for k in (op.get("ocultos") or []))}
     try:
         return _armar(d, titulo, quiere, n, v, op)
     finally:
@@ -2184,6 +2192,8 @@ def _armar(d, titulo, quiere, n, v, op):
         "titulo": e(titulo),
         "slides": "".join(partes),
         "total": len(partes),
+        "edinfo": json.dumps(op.get("_edinfo") or {},
+                             ensure_ascii=False).replace("<", "\\u003c"),
         # la hoja va al final del CSS para poder pisar el @media print de
         # arriba sin repetir toda la hoja de estilos
         "css": _CSS + css_hoja(op.get("hoja")),
@@ -2433,6 +2443,10 @@ body.editando .ed-t:focus{outline:2px solid #2C6E8A;background:rgba(44,110,138,.
   font-size:13px;line-height:1;color:var(--ink3);cursor:pointer;z-index:8}
 .ed-nx:hover{background:#B5503F;border-color:#B5503F;color:#fff}
 .nota.fuera{opacity:.45}
+/* una lámina marcada para sacar: se ve apagada hasta guardar */
+.slide.sacada .slide-inner{opacity:.28;filter:grayscale(1)}
+.ed-v button.ed-sacar{border-color:#B5503F;color:#B5503F}
+.ed-v button.ed-sacar.on{background:#B5503F;color:#fff}
 .nota.fuera .nt,.nota.fuera .nx{text-decoration:line-through}
 .ed-nv{position:absolute;top:9px;right:10px;padding:2px 9px;
   border:1px dashed var(--ink3);background:var(--surface);border-radius:999px;
@@ -2499,6 +2513,7 @@ _PAGINA = """<!doctype html>
 <div id="ed" hidden>
   <button type="button" id="edPdf"><span class="pt">&#8681;</span>Descargar PDF</button>
   <button type="button" id="edBtn"><span class="pt">&#9998;</span>Editar</button>
+  <button type="button" id="edVolver" hidden>Volver a mostrar lo sacado</button>
   <button type="button" id="edOk" hidden>Guardar edición</button>
   <button type="button" id="edNo" hidden>Cancelar</button>
 </div>
@@ -2523,7 +2538,13 @@ var ED = (function () {
   var q = new URLSearchParams(location.search);
   return { id: q.get('id') || '', inf: q.get('informe') || '' };
 }());
-var EDIT = false, ORIG = {}, VISTAS = {}, FUERA = {}, FONDOS = {};
+var EDIT = false, ORIG = {}, VISTAS = {}, FUERA = {}, FONDOS = {}, SACADAS = {};
+/* Lo que ya estaba sacado NO se dibuja, así que la página no lo puede ver: el
+   servidor se lo pasa. Arranca adentro de FUERA para que el próximo guardado
+   lo mande de nuevo; antes se mandaba solo lo sacado en esa vuelta y todo lo
+   de antes volvía a aparecer (30-sep-2026). */
+var EDINF = %(edinfo)s;
+(EDINF.ocultos || []).forEach(function (k) { FUERA[k] = true; });
 
 function edTextos() { return document.querySelectorAll('.ed-t[data-txt]'); }
 
@@ -2553,6 +2574,10 @@ function edPrender(v) {
      arma el servidor con lo ultimo guardado—, asi que el boton se esconde
      hasta guardar o cancelar */
   document.getElementById('edPdf').hidden = v;
+  var nOc = (EDINF.ocultos || []).length;
+  document.getElementById('edVolver').hidden = !(v && nOc);
+  document.getElementById('edVolver').textContent =
+    'Volver a mostrar lo sacado (' + nOc + ')';
   document.getElementById('edBtn').innerHTML = v
     ? '<span class="pt">&#9998;</span>Editando'
     : '<span class="pt">&#9998;</span>Editar';
@@ -2567,7 +2592,7 @@ function edPrender(v) {
     edDecir('Tocá cualquier texto y escribí encima, o sacalo con la <b>×</b>. ' +
             'La <b>×</b> de la esquina saca la tarjeta entera. Arriba a la ' +
             'derecha de cada lámina elegís <b>cómo se ve la lista</b> y si el ' +
-            '<b>fondo</b> va claro u oscuro. Los <b>números no se editan</b>: ' +
+            '<b>fondo</b> va claro u oscuro, o la <b>sacás entera</b>. Los <b>números no se editan</b>: ' +
             'se calculan solos cada vez que abrís el reporte.');
   } else {
     document.getElementById('edAviso').hidden = true;
@@ -2726,9 +2751,42 @@ function edVistas(v) {
             hermanas[h].classList.toggle('dark', cual === 'oscuro');
           }
         }));
+      /* Sacar la lámina entera. La portada y los límites no: la portada dice
+         de qué período habla y los límites lo que el reporte no puede afirmar.
+         Sacarla la marca y recién se va al guardar; hasta entonces se puede
+         volver atrás. Una lista larga son varias láminas: se van todas. */
+      if (sec !== 'portada' && sec !== 'limites') edBotonSacar(caja, sec, hermanas);
       sl.appendChild(caja);
     }(secs[i]));
   }
+}
+
+function edBotonSacar(caja, sec, hermanas) {
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'ed-sacar';
+  var pintar = function () {
+    var fuera = !!SACADAS[sec];
+    b.textContent = fuera ? 'Volver a poner la lámina' : 'Sacar esta lámina';
+    b.classList.toggle('on', fuera);
+    for (var h = 0; h < hermanas.length; h++) hermanas[h].classList.toggle('sacada', fuera);
+  };
+  b.onclick = function (ev) {
+    ev.preventDefault();
+    if (SACADAS[sec]) { delete SACADAS[sec]; } else { SACADAS[sec] = true; }
+    /* el mismo botón está en cada lámina de la sección: se pintan todos */
+    var bs = document.querySelectorAll('.slide[data-sec="' + sec + '"] .ed-sacar');
+    for (var j = 0; j < bs.length; j++) bs[j]._pintar();
+    if (SACADAS[sec]) {
+      edDecir('Esta lámina se va a sacar del reporte cuando guardes. ' +
+              'Para traerla de vuelta después: «Cambiar qué mide».');
+    }
+  };
+  b._pintar = pintar;
+  var fila = document.createElement('div');
+  fila.className = 'ed-fila';
+  fila.appendChild(b);
+  caja.appendChild(fila);
+  pintar();
 }
 
 /* Una fila de botones que se excluyen entre sí. */
@@ -2808,13 +2866,22 @@ function edGuardar() {
     if (v !== (ORIG[k] || '').replace(/\\s+/g, ' ').trim()) { ts[k] = v; hubo = true; }
   }
   var ok = document.getElementById('edOk');
+  var cuerpo = { id: ED.id, informe: ED.inf,
+                 opciones: { textos: ts, vistas: VISTAS, fondos: FONDOS,
+                             ocultos: Object.keys(FUERA) } };
+  /* las láminas sacadas: el reporte deja de medir esa sección */
+  if (Object.keys(SACADAS).length) {
+    var quedan = (EDINF.secciones || []).filter(function (k) { return !SACADAS[k]; });
+    if (!quedan.length) {
+      edDecir('Tiene que quedar al menos una lámina además de la portada.', true);
+      return false;
+    }
+    cuerpo.secciones = quedan;
+  }
   ok.disabled = true; ok.textContent = 'Guardando…';
   fetch('/api/datos/informe-editar', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: ED.id, informe: ED.inf,
-                           opciones: { textos: ts, vistas: VISTAS,
-                                       fondos: FONDOS,
-                                       ocultos: Object.keys(FUERA) } })
+    body: JSON.stringify(cuerpo)
   }).then(function (r) { return r.json(); }).then(function (j) {
     if (j && j.error) throw new Error(j.error);
     /* se recarga a propósito: el reporte se arma en el servidor, así que lo
@@ -2834,6 +2901,12 @@ if (ED.id && ED.inf) {
   document.getElementById('edPdf').onclick = edPdf;
   document.getElementById('edBtn').onclick = function () { edPrender(!EDIT); };
   document.getElementById('edOk').onclick = edGuardar;
+  document.getElementById('edVolver').onclick = function () {
+    /* se sacan de la lista y se guarda: vuelven a dibujarse */
+    (EDINF.ocultos || []).forEach(function (k) { delete FUERA[k]; });
+    EDINF.ocultos = [];
+    edGuardar();
+  };
   document.getElementById('edNo').onclick = function () { location.reload(); };
 }
 

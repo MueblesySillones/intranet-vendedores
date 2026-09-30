@@ -115,6 +115,11 @@ def desde_html(html, ruta_pdf, espera_ms=9000, timeout=120):
     tmp = tempfile.mkdtemp(prefix="mys_pdf_")
     fuente = os.path.join(tmp, "reporte.html")
     perfil = os.path.join(tmp, "perfil")
+    # ⚠️ Se imprime a un archivo NUEVO y recién después se lo pone en su lugar.
+    # Antes se imprimía directo encima de `ruta_pdf` y se miraba si existía:
+    # si el navegador fallaba, quedaba el PDF de la vez anterior y se lo
+    # entregaba como nuevo — sin las ediciones recién guardadas (30-sep-2026).
+    salida = os.path.join(tmp, "reporte.pdf")
     try:
         with open(fuente, "w", encoding="utf-8") as f:
             f.write(html)
@@ -133,7 +138,7 @@ def desde_html(html, ruta_pdf, espera_ms=9000, timeout=120):
             # Chromium ignora en silencio el que no conoce
             "--no-pdf-header-footer",
             "--print-to-pdf-no-header",
-            "--print-to-pdf=" + ruta_pdf,
+            "--print-to-pdf=" + salida,
             _url_de(fuente),
         ]
         try:
@@ -143,10 +148,18 @@ def desde_html(html, ruta_pdf, espera_ms=9000, timeout=120):
             return None, ("El navegador tardó demasiado en armar el PDF. "
                           "Probá de nuevo, o abrilo con «Ver reporte».")
         # Edge/Chrome devuelven 0 y escriben el archivo; si no está, algo pasó
-        if not os.path.isfile(ruta_pdf) or os.path.getsize(ruta_pdf) < 1000:
+        if not os.path.isfile(salida) or os.path.getsize(salida) < 1000:
             detalle = (r.stderr or b"").decode("utf-8", "replace").strip()
             detalle = detalle.split("\n")[-1][:180] if detalle else ""
             return None, ("El navegador no pudo armar el PDF. %s" % detalle).strip()
+        try:
+            shutil.move(salida, ruta_pdf)
+        except OSError:
+            # el de la vez anterior sigue abierto en algún lado: va con otro
+            # nombre, pero va el NUEVO
+            base, ext = os.path.splitext(ruta_pdf)
+            ruta_pdf = "%s %s%s" % (base, time.strftime("%H%M%S"), ext)
+            shutil.move(salida, ruta_pdf)
         return ruta_pdf, None
     finally:
         # el perfil temporal puede quedar tomado un instante despues de salir

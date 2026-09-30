@@ -25,18 +25,19 @@ Uso, parado en herramientas/panel del proyecto real:
 import io, os, re, subprocess, sys, json, zipfile, hashlib
 
 NUEVA_VERSION = None          # se calcula: la publicada + 1
-NUEVA_PUBLICA = "1.43.0"
-NUEVO_LABEL = "1.43.0 - actualizar sin reiniciar, y todo para otra computadora"
-NUEVAS_NOTAS = ('ARREGLO: actualizar el panel fallaba con Windows no dejo reemplazar algunos archivos (codigo 11) y habia que reiniciar. Ahora cierra bien el panel viejo y, si un archivo sigue tomado, lo reemplaza igual. MEJORA: el archivo Para desarrolladores ahora trae el paso a paso completo para seguir desde otra computadora si esta se pierde: que instalar, como bajar el proyecto, donde va la clave y como publicar contenido y versiones nuevas del panel. El codigo de los reportes, que vivia solo en la computadora central, ahora queda guardado en GitHub con cada version.')
+NUEVA_PUBLICA = "1.44.0"
+NUEVO_LABEL = "1.44.0 - editar el reporte se guarda, y se pueden sacar laminas"
+NUEVAS_NOTAS = ('ARREGLO: al editar un reporte, lo que se habia sacado volvia a aparecer en el siguiente guardado. ARREGLO: el PDF podia salir sin las ediciones recien guardadas. MEJORA: en el editor del reporte cada lamina tiene Sacar esta lamina, y hay un boton para volver a mostrar lo que se saco.')
 
 # ⚠️ Lo que ve la persona en el cartel "Debés actualizar", en DOS listas
 # (pedido del dueño, 23-sep): ARREGLOS = errores que se corrigieron,
 # MEJORAS = funciones nuevas o que cambian. Frases CORTAS, en castellano llano,
 # sin términos técnicos. Si las dos quedan vacías o iguales a las de la versión
 # anterior, el guion frena: el cartel mostraría lo de otra versión.
-NUEVOS_ARREGLOS = ["Actualizar ya no falla con \"Windows no dejó reemplazar algunos archivos (código 11)\""]
-NUEVAS_MEJORAS = ["Para desarrolladores trae el paso a paso para seguir desde otra computadora",
-                  "El código de los reportes queda guardado en GitHub, no solo en esta computadora"]
+NUEVOS_ARREGLOS = ["Lo que sacás al editar un reporte ya no vuelve a aparecer al guardar de nuevo",
+                    "El PDF del reporte sale siempre con las ediciones guardadas"]
+NUEVAS_MEJORAS = ["Editando un reporte, cada lámina tiene «Sacar esta lámina»",
+                  "Botón para volver a mostrar lo que se sacó del reporte"]
 
 # El cuerpo del commit del release. Vacio = se usa NUEVAS_NOTAS, que ya
 # describe esta version. Antes esto era un texto fijo mas abajo y habia que
