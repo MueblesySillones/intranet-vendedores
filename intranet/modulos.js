@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmuvbt2hh6k99",
+          "titulo": "COMUNICADO GERENCIA",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-05",
+          "etiqueta": "anuncio",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Necesitamos que al momento de vender sillas chequeen previamente el stock de bastidores en flexxus , Daniel Ferrara confirma que el stock visible está ok, así que primero recurran a esa información , además de favorecernos porque evitamos el gasto de mandar a hacer también tenemos la posibilidad de entregar más rápido al cliente . \nUsen la herramienta 💪🏼"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Necesitamos que al momento de vender sillas chequeen previamente el stock de bastidores en flexxus , Daniel Ferrara confirma que el stock visible está ok, así que primero recurran a esa información , además de favorecernos porque evitamos el gasto de mandar a hacer también tenemos la posibilidad de entregar más rápido al cliente . <br>Usen la herramienta 💪🏼</p></div>"
+        },
+        {
           "id": "dmuido8dded8f",
           "titulo": "OBSEQUIO CLIENTES. LUNES FERIADO 28/9",
           "autor": "Marketing",
