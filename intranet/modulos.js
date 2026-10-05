@@ -14,6 +14,70 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmuvo33nu6yj1",
+          "titulo": "Plantillas con productos separados por categorías. 👇",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-05",
+          "etiqueta": "equipo",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sillones_esquineros_x8gi.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sillones_01_m76g.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sillones_02_yzlf.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sillones_individuales_01_kcch.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sillones_individuales_02_9wev.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sillas_bdxb.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/mesas_01_6ab1.jpg",
+              "alt": "",
+              "tam": "md"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/mesas_02_vis8.jpg",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sillones_esquineros_x8gi.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sillones_01_m76g.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"2\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sillones_02_yzlf.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"3\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sillones_individuales_01_kcch.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"4\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sillones_individuales_02_9wev.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"5\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sillas_bdxb.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"6\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/mesas_01_6ab1.jpg\" alt=\"\" loading=\"lazy\"></figure></div><div class=\"db\" data-bi=\"7\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/mesas_02_vis8.jpg\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmuvifrwf1ap9",
           "titulo": "NUEVA PROMO GALICIA SÁBADOS.",
           "autor": "Marketing",
