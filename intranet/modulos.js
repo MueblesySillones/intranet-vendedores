@@ -14,6 +14,40 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmuvifrwf1ap9",
+          "titulo": "NUEVA PROMO GALICIA SÁBADOS.",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-05",
+          "etiqueta": "promo",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "galeria",
+              "titulo": "",
+              "items": [
+                {
+                  "src": "assets/_modulos/redes_galicia_02_9m14.jpg",
+                  "nombre": "redes galicia-02"
+                },
+                {
+                  "src": "assets/_modulos/redes_galicia_03_t5uq.jpg",
+                  "nombre": "redes galicia-03"
+                },
+                {
+                  "src": "assets/_modulos/redes_bancarias_historias_3yfm.jpg",
+                  "nombre": "REDES_Bancarias Historias"
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><div class=\"dl-section\"><div class=\"gallery\"><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/redes_galicia_02_9m14.jpg\" alt=\"redes galicia-02\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/redes_galicia_02_9m14.jpg','redes galicia-02')\"><div class=\"gmeta\"><div class=\"gtitle\">redes galicia-02</div><a class=\"dl-btn\" href=\"assets/_modulos/redes_galicia_02_9m14.jpg\" download=\"redes galicia-02.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/redes_galicia_03_t5uq.jpg\" alt=\"redes galicia-03\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/redes_galicia_03_t5uq.jpg','redes galicia-03')\"><div class=\"gmeta\"><div class=\"gtitle\">redes galicia-03</div><a class=\"dl-btn\" href=\"assets/_modulos/redes_galicia_03_t5uq.jpg\" download=\"redes galicia-03.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/redes_bancarias_historias_3yfm.jpg\" alt=\"REDES_Bancarias Historias\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/redes_bancarias_historias_3yfm.jpg','REDES_Bancarias Historias')\"><div class=\"gmeta\"><div class=\"gtitle\">REDES_Bancarias Historias</div><a class=\"dl-btn\" href=\"assets/_modulos/redes_bancarias_historias_3yfm.jpg\" download=\"REDES_Bancarias Historias.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div></div></div>"
+        },
+        {
           "id": "dmuvbt2hh6k99",
           "titulo": "COMUNICADO GERENCIA",
           "autor": "Marketing",
