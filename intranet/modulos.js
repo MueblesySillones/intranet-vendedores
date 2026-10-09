@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmv1ajdjh01i6",
+          "titulo": "SE DIÓ DE BAJA LA PROMO DE 24 CUOTAS con recargo.",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-09",
+          "etiqueta": "anuncio",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Hola a todos!!! Súper importante!!! \n\nSe modificó la promo de 24 cuotas con interés. *Ya no está disponible, dejar de ofrecer esta opción. \nEntre hoy vamos y el martes próximo vamos a estar modificando todo los diseños digitales y físicos en las sucursales: \n- FLYERS FÍSICOS / PLOTTERS EN VIDRIERA / PLACAS DE PANTALLAS /ETC. \n\n*18 CUOTAS CON 19% DE RECARGO SIGUE VIGENTE* \nGracias!!!"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Hola a todos!!! Súper importante!!! <br><br>Se modificó la promo de 24 cuotas con interés. *Ya no está disponible, dejar de ofrecer esta opción. <br>Entre hoy vamos y el martes próximo vamos a estar modificando todo los diseños digitales y físicos en las sucursales: <br>- FLYERS FÍSICOS / PLOTTERS EN VIDRIERA / PLACAS DE PANTALLAS /ETC. <br><br>*18 CUOTAS CON 19% DE RECARGO SIGUE VIGENTE* <br>Gracias!!!</p></div>"
+        },
+        {
           "id": "dmuvo33nu6yj1",
           "titulo": "Plantillas con productos separados por categorías. 👇",
           "autor": "Marketing",
@@ -604,71 +624,6 @@ window.MODULES = [
           ],
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">subtitulos.</p></div>",
           "borradoEl": "2026-09-26"
-        },
-        {
-          "id": "dmud5obvi62oe",
-          "titulo": "prueba",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-22",
-          "etiqueta": "",
-          "fijado": true,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "prueba prueba"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">prueba prueba</p></div>",
-          "borradoEl": "2026-09-22"
-        },
-        {
-          "id": "dmud40skd6tpa",
-          "titulo": "imagen",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-22",
-          "etiqueta": "",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "imagen",
-              "src": "assets/_modulos/muro_img_1790107872073.png",
-              "alt": "",
-              "tam": "md"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/muro_img_1790107872073.png\" alt=\"\" loading=\"lazy\"></figure></div>",
-          "borradoEl": "2026-09-22"
-        },
-        {
-          "id": "dmud3xd2e1vyg",
-          "titulo": "prueba",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-22",
-          "etiqueta": "",
-          "fijado": true,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "prueba prueba"
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">prueba prueba</p></div>",
-          "borradoEl": "2026-09-22"
         }
       ]
     }
