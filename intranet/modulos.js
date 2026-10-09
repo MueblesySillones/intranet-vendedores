@@ -14,6 +14,28 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmv1ewg6rf91o",
+          "titulo": "PROMOCIONES BANCARIAS ACTUALIZADA 9/10.",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-09",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/bancos_general_nuevo_mkps.jpg",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/bancos_general_nuevo_mkps.jpg\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmv1bk8t9efml",
           "titulo": "BASES Y CONDICIONES (NO SUBIR A NINGÚN LADO)",
           "autor": "Marketing",
