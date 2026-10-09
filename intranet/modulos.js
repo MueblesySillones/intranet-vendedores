@@ -14,6 +14,32 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmv1bk8t9efml",
+          "titulo": "BASES Y CONDICIONES (NO SUBIR A NINGÚN LADO)",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-09",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Esto es a modo informativo para los vendedores."
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/bases_y_condiciones_no_subir_a_ningun_la_ga4h.jpg",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Esto es a modo informativo para los vendedores.</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/bases_y_condiciones_no_subir_a_ningun_la_ga4h.jpg\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmv1bj8gl1txn",
           "titulo": "*SALE LAQUEADOS DE STOCK* COLOR BLANCO Y WENGUE",
           "autor": "Marketing",
