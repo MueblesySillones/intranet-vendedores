@@ -14,6 +14,32 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmv1bj8gl1txn",
+          "titulo": "*SALE LAQUEADOS DE STOCK* COLOR BLANCO Y WENGUE",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-09",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "ARRANCA EL SALE DE LAQUEADOS COLOR BLANCO Y WENGUE \nLas condiciones son: \n- hasta 40% de descuento cash mlt!\n- hasta 20% de descuento transferencia a cuenta Mys banco galicia!\n- 6 cuotas sin interés por mercado pago para cualquier tarjeta bancarizada ➕ 10% de descuento!\n------------------\nSÓLO MUEBLES DE STOCK. \n--------------------\n👉Por favor etiquetar en la sucursal con los carteles de SALE todos los productos que tengan descuento"
+            },
+            {
+              "t": "imagen",
+              "src": "assets/_modulos/sale_laqueados_de_stock_color_blanco_y_w_s9pj.jpg",
+              "alt": "",
+              "tam": "md"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">ARRANCA EL SALE DE LAQUEADOS COLOR BLANCO Y WENGUE <br>Las condiciones son: <br>- hasta 40% de descuento cash mlt!<br>- hasta 20% de descuento transferencia a cuenta Mys banco galicia!<br>- 6 cuotas sin interés por mercado pago para cualquier tarjeta bancarizada ➕ 10% de descuento!<br>------------------<br>SÓLO MUEBLES DE STOCK. <br>--------------------<br>👉Por favor etiquetar en la sucursal con los carteles de SALE todos los productos que tengan descuento</p></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-img tam-md\"><img src=\"assets/_modulos/sale_laqueados_de_stock_color_blanco_y_w_s9pj.jpg\" alt=\"\" loading=\"lazy\"></figure></div>"
+        },
+        {
           "id": "dmv1ajdjh01i6",
           "titulo": "SE DIÓ DE BAJA LA PROMO DE 24 CUOTAS con recargo.",
           "autor": "Marketing",
