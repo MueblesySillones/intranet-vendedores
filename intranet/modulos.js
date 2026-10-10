@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmv2kboe35jt9",
+          "titulo": "INFO INTERNA | COMUNIDAD ARQUITECTOS Y DECORADORES",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-10",
+          "etiqueta": "importante",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "COMUNIDAD DE ARQUITECTOS Y DECORADORES – MUEBLES Y SILLONES\n\nQueremos compartir con todo el equipo de ventas la información sobre nuestro Programa de Beneficios para Arquitectos, Decoradores e Interioristas, para que puedan comunicar correctamente la propuesta a los profesionales interesados en formar parte de nuestra comunidad.\nNuestro objetivo es que los profesionales nos elijan como aliados y puedan acercar a sus clientes a nuestros locales, brindándoles asesoramiento, variedad de productos y soluciones para sus proyectos.\n\n¿QUÉ BENEFICIOS OFRECEMOS A LOS PROFESIONALES? 🌟🌟\n\n- Comisión del 5% sobre el total de la venta, sin incluir IVA, o 8% en orden de compra, también calculado sobre el importe sin IVA.\n- Beneficios exclusivos: acceso a charlas, workshops, capacitaciones y regalos especiales para los integrantes de nuestra comunidad.\n- Invitaciones a eventos exclusivos destinados a profesionales del diseño, la decoración y la arquitectura.\n- Networking y nuevas oportunidades: posibilidad de ampliar su red de contactos, generar vínculos profesionales y potenciar su cartera de clientes.\n\nIMPORTANTE PARA EL EQUIPO DE VENTAS\n\nEs fundamental que todos conozcan estos beneficios y puedan transmitirlos de manera clara y precisa a los arquitectos, decoradores e interioristas que visiten nuestros locales o consulten por nuestros productos. \n\nEs importante entender que esta iniciativa es una inversión estratégica de la empresa,  cuyo objetivo es acercarnos a un público premium, alineado con nuestro perfil de cliente ideal. (Es un gancho importantísimo para acercarnos a nuestro público y a sus hogares) \n\n¡Contamos con ustedes para dar a conocer esta propuesta y seguir haciendo crecer nuestra comunidad de profesionales! 💪\n\nhttps://mueblesysillones.com.ar/exclusivo-arquitectos-y-decoradores/"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">COMUNIDAD DE ARQUITECTOS Y DECORADORES – MUEBLES Y SILLONES<br><br>Queremos compartir con todo el equipo de ventas la información sobre nuestro Programa de Beneficios para Arquitectos, Decoradores e Interioristas, para que puedan comunicar correctamente la propuesta a los profesionales interesados en formar parte de nuestra comunidad.<br>Nuestro objetivo es que los profesionales nos elijan como aliados y puedan acercar a sus clientes a nuestros locales, brindándoles asesoramiento, variedad de productos y soluciones para sus proyectos.<br><br>¿QUÉ BENEFICIOS OFRECEMOS A LOS PROFESIONALES? 🌟🌟<br><br>- Comisión del 5% sobre el total de la venta, sin incluir IVA, o 8% en orden de compra, también calculado sobre el importe sin IVA.<br>- Beneficios exclusivos: acceso a charlas, workshops, capacitaciones y regalos especiales para los integrantes de nuestra comunidad.<br>- Invitaciones a eventos exclusivos destinados a profesionales del diseño, la decoración y la arquitectura.<br>- Networking y nuevas oportunidades: posibilidad de ampliar su red de contactos, generar vínculos profesionales y potenciar su cartera de clientes.<br><br>IMPORTANTE PARA EL EQUIPO DE VENTAS<br><br>Es fundamental que todos conozcan estos beneficios y puedan transmitirlos de manera clara y precisa a los arquitectos, decoradores e interioristas que visiten nuestros locales o consulten por nuestros productos. <br><br>Es importante entender que esta iniciativa es una inversión estratégica de la empresa,  cuyo objetivo es acercarnos a un público premium, alineado con nuestro perfil de cliente ideal. (Es un gancho importantísimo para acercarnos a nuestro público y a sus hogares) <br><br>¡Contamos con ustedes para dar a conocer esta propuesta y seguir haciendo crecer nuestra comunidad de profesionales! 💪<br><br>https://mueblesysillones.com.ar/exclusivo-arquitectos-y-decoradores/</p></div>"
+        },
+        {
           "id": "dmv1ewg6rf91o",
           "titulo": "PROMOCIONES BANCARIAS ACTUALIZADA 9/10.",
           "autor": "Marketing",
