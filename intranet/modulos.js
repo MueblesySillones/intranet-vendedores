@@ -14,6 +14,26 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmv9wvduecraj",
+          "titulo": "ACTIVAR GARANTÍA | LINK",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-15",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "https://mueblesysillones.com.ar/activar-garantia/"
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">https://mueblesysillones.com.ar/activar-garantia/</p></div>"
+        },
+        {
           "id": "dmv2kboe35jt9",
           "titulo": "INFO INTERNA | COMUNIDAD ARQUITECTOS Y DECORADORES",
           "autor": "Marketing",
@@ -662,29 +682,7 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>"
         }
       ],
-      "papelera": [
-        {
-          "id": "dmue7vcfb078m",
-          "titulo": "RECUERDEN PORFAVOR 📣",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-09-23",
-          "etiqueta": "importante",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "Revisar sus contactos en el Chatbot 🤖\nEstamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento."
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Revisar sus contactos en el Chatbot 🤖<br>Estamos viendo varias respuestas de clientes sin responder. Clientes que le siguieron la conversación y también que le respondieron al seguimiento.</p></div>",
-          "borradoEl": "2026-09-30"
-        }
-      ]
+      "papelera": []
     }
   },
   {
