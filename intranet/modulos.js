@@ -60,60 +60,6 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Sucursal Pilar</p></div><div class=\"db\" data-bi=\"1\"><div class=\"dl-section\"><div class=\"gallery\"><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_ambientes_nuevas_1ezl.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.14\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_ambientes_nuevas_1ezl.jpg','WhatsApp Image 2026-10-15 at 10.17.14')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.14</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_ambientes_nuevas_1ezl.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.14.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_ambientes_nuevas_pjnp.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.15 (1)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_ambientes_nuevas_pjnp.jpg','WhatsApp Image 2026-10-15 at 10.17.15 (1)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.15 (1)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_ambientes_nuevas_pjnp.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.15 (1).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_ambientes_nuevas_qo8w.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.15 (3)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_ambientes_nuevas_qo8w.jpg','WhatsApp Image 2026-10-15 at 10.17.15 (3)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.15 (3)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_ambientes_nuevas_qo8w.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.15 (3).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_ambientes_nuevas_1yfx.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.15\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_ambientes_nuevas_1yfx.jpg','WhatsApp Image 2026-10-15 at 10.17.15')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.15</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_ambientes_nuevas_1yfx.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.15.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_ambientes_nuevas_wmiw.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.16 (4)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_ambientes_nuevas_wmiw.jpg','WhatsApp Image 2026-10-15 at 10.17.16 (4)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.16 (4)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_ambientes_nuevas_wmiw.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.16 (4).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div></div></div>"
         },
         {
-          "id": "dmvbh2ss7758d",
-          "titulo": "FOTOS DE AMBIENTES NUEVAS",
-          "autor": "Marketing",
-          "sucursal": "",
-          "fecha": "2026-10-16",
-          "etiqueta": "",
-          "fijado": false,
-          "confirmar": false,
-          "vence": "",
-          "archivado": false,
-          "archivar": "",
-          "bloques": [
-            {
-              "t": "parrafo",
-              "texto": "Sucursal Pilar."
-            },
-            {
-              "t": "galeria",
-              "titulo": "",
-              "items": [
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.18 (1)"
-                },
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.16.41"
-                },
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.16.47"
-                },
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.16.55"
-                },
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.01"
-                },
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.02 (1)"
-                },
-                {
-                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg",
-                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.14 (2)"
-                }
-              ]
-            }
-          ],
-          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Sucursal Pilar.</p></div><div class=\"db\" data-bi=\"1\"><div class=\"dl-section\"><div class=\"gallery\"><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.18 (1)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg','WhatsApp Image 2026-10-15 at 10.17.18 (1)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.18 (1)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.18 (1).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.16.41\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg','WhatsApp Image 2026-10-15 at 10.16.41')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.16.41</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.16.41.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.16.47\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg','WhatsApp Image 2026-10-15 at 10.16.47')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.16.47</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.16.47.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.16.55\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg','WhatsApp Image 2026-10-15 at 10.16.55')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.16.55</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.16.55.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.01\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg','WhatsApp Image 2026-10-15 at 10.17.01')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.01</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.01.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.02 (1)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg','WhatsApp Image 2026-10-15 at 10.17.02 (1)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.02 (1)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.02 (1).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.14 (2)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg','WhatsApp Image 2026-10-15 at 10.17.14 (2)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.14 (2)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.14 (2).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div></div></div>"
-        },
-        {
           "id": "dmvbgyi5kyim5",
           "titulo": "FOTOS DE AMBIENTES NUEVAS",
           "autor": "Marketing",
@@ -832,7 +778,63 @@ window.MODULES = [
           "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Les contamos que agregamos una nueva actualización en la intranet: desde hoy, al entrar van a encontrar en primer lugar una cartelera de novedades, datos importantes, actualizaciones y temas relevantes. <br><br>Lo que cambia es que ahora, además, hay un lugar donde mirar qué hay de nuevo sin tener que entrar módulo por módulo a  revisar.<br>  <br>   ✓ Lo nuevo aparece primero. Cada vez que publiquemos algo, lo vas a ver acá apenas entres.<br>   ✓ Lo importante queda fijado arriba, para que no se pierda entre las publicaciones más nuevas.<br>   ✓ Los módulos de siempre siguen estando. Material descargable, Normas de WhatsApp, el Manual de derivaciones: están todos en Módulos.</p></div>"
         }
       ],
-      "papelera": []
+      "papelera": [
+        {
+          "id": "dmvbh2ss7758d",
+          "titulo": "FOTOS DE AMBIENTES NUEVAS",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-10-16",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Sucursal Pilar."
+            },
+            {
+              "t": "galeria",
+              "titulo": "",
+              "items": [
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.18 (1)"
+                },
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.16.41"
+                },
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.16.47"
+                },
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.16.55"
+                },
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.01"
+                },
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.02 (1)"
+                },
+                {
+                  "src": "assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg",
+                  "nombre": "WhatsApp Image 2026-10-15 at 10.17.14 (2)"
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Sucursal Pilar.</p></div><div class=\"db\" data-bi=\"1\"><div class=\"dl-section\"><div class=\"gallery\"><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.18 (1)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg','WhatsApp Image 2026-10-15 at 10.17.18 (1)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.18 (1)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_4yj2.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.18 (1).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.16.41\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg','WhatsApp Image 2026-10-15 at 10.16.41')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.16.41</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_r4ig.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.16.41.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.16.47\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg','WhatsApp Image 2026-10-15 at 10.16.47')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.16.47</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_wb5v.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.16.47.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.16.55\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg','WhatsApp Image 2026-10-15 at 10.16.55')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.16.55</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_uefd.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.16.55.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.01\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg','WhatsApp Image 2026-10-15 at 10.17.01')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.01</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_q14x.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.01.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.02 (1)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg','WhatsApp Image 2026-10-15 at 10.17.02 (1)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.02 (1)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_nova.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.02 (1).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg\" alt=\"WhatsApp Image 2026-10-15 at 10.17.14 (2)\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg','WhatsApp Image 2026-10-15 at 10.17.14 (2)')\"><div class=\"gmeta\"><div class=\"gtitle\">WhatsApp Image 2026-10-15 at 10.17.14 (2)</div><a class=\"dl-btn\" href=\"assets/_modulos/fotos_de_ambientes_nuevas_bgnd.jpg\" download=\"WhatsApp Image 2026-10-15 at 10.17.14 (2).jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div></div></div>",
+          "borradoEl": "2026-10-16"
+        }
+      ]
     }
   },
   {
