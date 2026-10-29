@@ -2069,6 +2069,730 @@ window.MODULES = [
       "palabra": "reporte",
       "docs": [
         {
+          "id": "dmvtjf1gmlo11",
+          "titulo": "SEPTIEMBRE 2026",
+          "etiqueta": "",
+          "archivado": false,
+          "presentacion": false,
+          "bloques": [
+            {
+              "t": "titulo",
+              "nivel": "h1",
+              "html": "Derivaciones de CABA, Canning, Hudson, Norcenter, PILAR y Pilar"
+            },
+            {
+              "t": "kpis",
+              "items": [
+                {
+                  "label": "Derivaciones totales",
+                  "valor": "520",
+                  "pie": "+10,9% vs período anterior",
+                  "tend": "up",
+                  "lead": true
+                },
+                {
+                  "label": "Ventas",
+                  "valor": "14",
+                  "pie": "+55,6% vs período anterior",
+                  "tend": "up",
+                  "lead": false
+                },
+                {
+                  "label": "Consultas",
+                  "valor": "1314",
+                  "pie": "-15,8% vs período anterior",
+                  "tend": "down",
+                  "lead": false
+                },
+                {
+                  "label": "Conversión",
+                  "valor": "2,69%",
+                  "pie": "antes 1,92%",
+                  "tend": "up",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "barras",
+              "items": [
+                {
+                  "label": "CABA",
+                  "valor": "151",
+                  "color": "--c-hudson",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "HUDSON",
+                  "valor": "138",
+                  "color": "--c-caba",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "CANNING",
+                  "valor": "85",
+                  "color": "--c-canning",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "PILAR",
+                  "valor": "81",
+                  "color": "--c-hudson",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "NORCENTER",
+                  "valor": "63",
+                  "color": "--c-caba",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "PILAR",
+                  "valor": "2",
+                  "color": "--c-canning",
+                  "chip": "",
+                  "tono": "gr"
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "RANKING DE VENTAS"
+            },
+            {
+              "t": "podio",
+              "items": [
+                {
+                  "puesto": "1°",
+                  "nombre": "VIVIANA",
+                  "suc": "CABA",
+                  "valor": "4",
+                  "vlabel": "ventas",
+                  "extra": "conv. 5,80%",
+                  "lead": true
+                },
+                {
+                  "puesto": "2°",
+                  "nombre": "WALTER",
+                  "suc": "HUDSON",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 100%",
+                  "lead": false
+                },
+                {
+                  "puesto": "3°",
+                  "nombre": "ROSANA",
+                  "suc": "HUDSON",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 9,09%",
+                  "lead": false
+                },
+                {
+                  "puesto": "4°",
+                  "nombre": "MARIA MARTA",
+                  "suc": "CANNING",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 7,69%",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "TABLA DE VENDEDORES"
+            },
+            {
+              "t": "tabla",
+              "orden": true,
+              "buscar": false,
+              "cols": [
+                {
+                  "h": "Concepto",
+                  "num": false
+                },
+                {
+                  "h": "Derivaciones",
+                  "num": true
+                },
+                {
+                  "h": "ventas",
+                  "num": true
+                },
+                {
+                  "h": "conversión",
+                  "num": true
+                }
+              ],
+              "filas": [
+                {
+                  "celdas": [
+                    "YESICA",
+                    "83",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "VIVIANA",
+                    "69",
+                    "4",
+                    "5,80%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "AGUSTINA",
+                    "64",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GRISELDA",
+                    "46",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "FLOR",
+                    "31",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MATIAS",
+                    "29",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIA MARTA",
+                    "26",
+                    "2",
+                    "7,69%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GONZALO",
+                    "26",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARCELO",
+                    "24",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ROSANA",
+                    "22",
+                    "2",
+                    "9,09%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "CAROLINA",
+                    "20",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIO",
+                    "17",
+                    "1",
+                    "5,88%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ALEXA",
+                    "15",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MALENA",
+                    "13",
+                    "1",
+                    "7,69%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "JOAN",
+                    "12",
+                    "1",
+                    "8,33%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "DORA",
+                    "10",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MAURICIO",
+                    "9",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "WALTER",
+                    "2",
+                    "2",
+                    "100%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ADRIANA",
+                    "2",
+                    "1",
+                    "50%"
+                  ],
+                  "destaque": ""
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><div class=\"m-h\">Derivaciones de CABA, Canning, Hudson, Norcenter, PILAR y Pilar</div></div><div class=\"db\" data-bi=\"1\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">520</div>\n      <div class=\"kt t-up\">▲ +10,9% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">14</div>\n      <div class=\"kt t-up\">▲ +55,6% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Consultas</div>\n      <div class=\"kv\">1314</div>\n      <div class=\"kt t-down\">▼ -15,8% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Conversión</div>\n      <div class=\"kv\">2,69%</div>\n      <div class=\"kt t-up\">▲ antes 1,92%</div>\n    </div></div></div><div class=\"db\" data-bi=\"2\"><div style=\"height:30px\"></div></div><div class=\"db\" data-bi=\"3\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-hudson)\"><span class=\"bn\">151</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:91%;background:var(--c-caba)\"><span class=\"bn\">138</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:56%;background:var(--c-canning)\"><span class=\"bn\">85</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">PILAR</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:54%;background:var(--c-hudson)\"><span class=\"bn\">81</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:42%;background:var(--c-caba)\"><span class=\"bn\">63</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">PILAR</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:6%;background:var(--c-canning)\"><span class=\"bn\">2</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\" data-bi=\"4\"><div style=\"height:30px\"></div></div><div class=\"db\" data-bi=\"5\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\" data-bi=\"6\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\" data-bi=\"7\"><div class=\"m-podio\">\n    <div class=\"pod lead\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">VIVIANA</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">4</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 5,80%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">WALTER</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 100%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">ROSANA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 9,09%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">MARIA MARTA</div>\n      <div class=\"suc\">CANNING</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 7,69%</div>\n    </div></div></div><div class=\"db\" data-bi=\"8\"><div style=\"height:30px\"></div></div><div class=\"db\" data-bi=\"9\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\" data-bi=\"10\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\" data-bi=\"11\"><div class=\"m-tablaw\"><div class=\"tb-pista\">↕ Tocá un título para ordenar</div><div class=\"m-tabla\"><table><thead><tr><th class=\"ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">Concepto<span class=\"th-c\" aria-hidden=\"true\"></span></button></th><th class=\"num ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">Derivaciones<span class=\"th-c\" aria-hidden=\"true\"></span></button></th><th class=\"num ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">ventas<span class=\"th-c\" aria-hidden=\"true\"></span></button></th><th class=\"num ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">conversión<span class=\"th-c\" aria-hidden=\"true\"></span></button></th></tr></thead><tbody><tr><td>YESICA</td><td class=\"num\">83</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>VIVIANA</td><td class=\"num\">69</td><td class=\"num\">4</td><td class=\"num\">5,80%</td></tr><tr><td>AGUSTINA</td><td class=\"num\">64</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GRISELDA</td><td class=\"num\">46</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>FLOR</td><td class=\"num\">31</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MATIAS</td><td class=\"num\">29</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARIA MARTA</td><td class=\"num\">26</td><td class=\"num\">2</td><td class=\"num\">7,69%</td></tr><tr><td>GONZALO</td><td class=\"num\">26</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARCELO</td><td class=\"num\">24</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">22</td><td class=\"num\">2</td><td class=\"num\">9,09%</td></tr><tr><td>CAROLINA</td><td class=\"num\">20</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARIO</td><td class=\"num\">17</td><td class=\"num\">1</td><td class=\"num\">5,88%</td></tr><tr><td>ALEXA</td><td class=\"num\">15</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">13</td><td class=\"num\">1</td><td class=\"num\">7,69%</td></tr><tr><td>JOAN</td><td class=\"num\">12</td><td class=\"num\">1</td><td class=\"num\">8,33%</td></tr><tr><td>DORA</td><td class=\"num\">10</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MAURICIO</td><td class=\"num\">9</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>WALTER</td><td class=\"num\">2</td><td class=\"num\">2</td><td class=\"num\">100%</td></tr><tr><td>ADRIANA</td><td class=\"num\">2</td><td class=\"num\">1</td><td class=\"num\">50%</td></tr></tbody></table></div><div class=\"tb-nada\" hidden>No hay filas que coincidan con la búsqueda.</div></div></div>"
+        },
+        {
+          "id": "dmvtjapn6i10l",
+          "titulo": "SEPTIEMBRE 2026",
+          "etiqueta": "",
+          "archivado": false,
+          "presentacion": false,
+          "bloques": [
+            {
+              "t": "titulo",
+              "nivel": "h1",
+              "html": "Derivaciones de CABA, Canning, Hudson, Norcenter, PILAR y Pilar"
+            },
+            {
+              "t": "kpis",
+              "items": [
+                {
+                  "label": "Derivaciones totales",
+                  "valor": "520",
+                  "pie": "+10,9% vs período anterior",
+                  "tend": "up",
+                  "lead": true
+                },
+                {
+                  "label": "Ventas",
+                  "valor": "14",
+                  "pie": "+55,6% vs período anterior",
+                  "tend": "up",
+                  "lead": false
+                },
+                {
+                  "label": "Consultas",
+                  "valor": "1314",
+                  "pie": "-15,8% vs período anterior",
+                  "tend": "down",
+                  "lead": false
+                },
+                {
+                  "label": "Conversión",
+                  "valor": "2,69%",
+                  "pie": "antes 1,92%",
+                  "tend": "up",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "barras",
+              "items": [
+                {
+                  "label": "CABA",
+                  "valor": "151",
+                  "color": "--c-hudson",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "HUDSON",
+                  "valor": "138",
+                  "color": "--c-caba",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "CANNING",
+                  "valor": "85",
+                  "color": "--c-canning",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "PILAR",
+                  "valor": "81",
+                  "color": "--c-hudson",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "NORCENTER",
+                  "valor": "63",
+                  "color": "--c-caba",
+                  "chip": "",
+                  "tono": "gr"
+                },
+                {
+                  "label": "PILAR",
+                  "valor": "2",
+                  "color": "--c-canning",
+                  "chip": "",
+                  "tono": "gr"
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "RANKING DE VENTAS"
+            },
+            {
+              "t": "podio",
+              "items": [
+                {
+                  "puesto": "1°",
+                  "nombre": "VIVIANA",
+                  "suc": "CABA",
+                  "valor": "4",
+                  "vlabel": "ventas",
+                  "extra": "conv. 5,80%",
+                  "lead": true
+                },
+                {
+                  "puesto": "2°",
+                  "nombre": "WALTER",
+                  "suc": "HUDSON",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 100%",
+                  "lead": false
+                },
+                {
+                  "puesto": "3°",
+                  "nombre": "ROSANA",
+                  "suc": "HUDSON",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 9,09%",
+                  "lead": false
+                },
+                {
+                  "puesto": "4°",
+                  "nombre": "MARIA MARTA",
+                  "suc": "CANNING",
+                  "valor": "2",
+                  "vlabel": "ventas",
+                  "extra": "conv. 7,69%",
+                  "lead": false
+                }
+              ]
+            },
+            {
+              "t": "espacio",
+              "alto": "md"
+            },
+            {
+              "t": "separador",
+              "grosor": 4
+            },
+            {
+              "t": "titulo",
+              "nivel": "h2",
+              "html": "TABLA DE VENDEDORES"
+            },
+            {
+              "t": "tabla",
+              "orden": true,
+              "buscar": false,
+              "cols": [
+                {
+                  "h": "Concepto",
+                  "num": false
+                },
+                {
+                  "h": "Derivaciones",
+                  "num": true
+                },
+                {
+                  "h": "ventas",
+                  "num": true
+                },
+                {
+                  "h": "conversión",
+                  "num": true
+                }
+              ],
+              "filas": [
+                {
+                  "celdas": [
+                    "YESICA",
+                    "83",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "VIVIANA",
+                    "69",
+                    "4",
+                    "5,80%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "AGUSTINA",
+                    "64",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GRISELDA",
+                    "46",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "FLOR",
+                    "31",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MATIAS",
+                    "29",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIA MARTA",
+                    "26",
+                    "2",
+                    "7,69%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "GONZALO",
+                    "26",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARCELO",
+                    "24",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ROSANA",
+                    "22",
+                    "2",
+                    "9,09%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "CAROLINA",
+                    "20",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MARIO",
+                    "17",
+                    "1",
+                    "5,88%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ALEXA",
+                    "15",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MALENA",
+                    "13",
+                    "1",
+                    "7,69%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "JOAN",
+                    "12",
+                    "1",
+                    "8,33%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "DORA",
+                    "10",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "MAURICIO",
+                    "9",
+                    "0",
+                    "0%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "WALTER",
+                    "2",
+                    "2",
+                    "100%"
+                  ],
+                  "destaque": ""
+                },
+                {
+                  "celdas": [
+                    "ADRIANA",
+                    "2",
+                    "1",
+                    "50%"
+                  ],
+                  "destaque": ""
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><div class=\"m-h\">Derivaciones de CABA, Canning, Hudson, Norcenter, PILAR y Pilar</div></div><div class=\"db\" data-bi=\"1\"><div class=\"m-kpis\">\n    <div class=\"kpi lead\">\n      <div class=\"kl\">Derivaciones totales</div>\n      <div class=\"kv\">520</div>\n      <div class=\"kt t-up\">▲ +10,9% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Ventas</div>\n      <div class=\"kv\">14</div>\n      <div class=\"kt t-up\">▲ +55,6% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Consultas</div>\n      <div class=\"kv\">1314</div>\n      <div class=\"kt t-down\">▼ -15,8% vs período anterior</div>\n    </div>\n    <div class=\"kpi\">\n      <div class=\"kl\">Conversión</div>\n      <div class=\"kv\">2,69%</div>\n      <div class=\"kt t-up\">▲ antes 1,92%</div>\n    </div></div></div><div class=\"db\" data-bi=\"2\"><div style=\"height:30px\"></div></div><div class=\"db\" data-bi=\"3\"><div class=\"m-barras\"><div class=\"ba\">\n      <div class=\"bl\">CABA</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:100%;background:var(--c-hudson)\"><span class=\"bn\">151</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">HUDSON</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:91%;background:var(--c-caba)\"><span class=\"bn\">138</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">CANNING</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:56%;background:var(--c-canning)\"><span class=\"bn\">85</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">PILAR</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:54%;background:var(--c-hudson)\"><span class=\"bn\">81</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">NORCENTER</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:42%;background:var(--c-caba)\"><span class=\"bn\">63</span></div></div>\n      <div class=\"br\"></div>\n    </div><div class=\"ba\">\n      <div class=\"bl\">PILAR</div>\n      <div class=\"bt\"><div class=\"bf\" style=\"width:6%;background:var(--c-canning)\"><span class=\"bn\">2</span></div></div>\n      <div class=\"br\"></div>\n    </div></div></div><div class=\"db\" data-bi=\"4\"><div style=\"height:30px\"></div></div><div class=\"db\" data-bi=\"5\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\" data-bi=\"6\"><div class=\"m-h2\">RANKING DE VENTAS</div></div><div class=\"db\" data-bi=\"7\"><div class=\"m-podio\">\n    <div class=\"pod lead\">\n      <div class=\"rank\">1°</div>\n      <div class=\"name\">VIVIANA</div>\n      <div class=\"suc\">CABA</div>\n      <div class=\"sales\">4</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 5,80%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">2°</div>\n      <div class=\"name\">WALTER</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 100%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">3°</div>\n      <div class=\"name\">ROSANA</div>\n      <div class=\"suc\">HUDSON</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 9,09%</div>\n    </div>\n    <div class=\"pod\">\n      <div class=\"rank\">4°</div>\n      <div class=\"name\">MARIA MARTA</div>\n      <div class=\"suc\">CANNING</div>\n      <div class=\"sales\">2</div>\n      <div class=\"slbl\">ventas</div>\n      <div class=\"cv\">conv. 7,69%</div>\n    </div></div></div><div class=\"db\" data-bi=\"8\"><div style=\"height:30px\"></div></div><div class=\"db\" data-bi=\"9\"><div class=\"m-sep\" style=\"height:4px\"></div></div><div class=\"db\" data-bi=\"10\"><div class=\"m-h2\">TABLA DE VENDEDORES</div></div><div class=\"db\" data-bi=\"11\"><div class=\"m-tablaw\"><div class=\"tb-pista\">↕ Tocá un título para ordenar</div><div class=\"m-tabla\"><table><thead><tr><th class=\"ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">Concepto<span class=\"th-c\" aria-hidden=\"true\"></span></button></th><th class=\"num ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">Derivaciones<span class=\"th-c\" aria-hidden=\"true\"></span></button></th><th class=\"num ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">ventas<span class=\"th-c\" aria-hidden=\"true\"></span></button></th><th class=\"num ord\" aria-sort=\"none\"><button type=\"button\" class=\"th-b\">conversión<span class=\"th-c\" aria-hidden=\"true\"></span></button></th></tr></thead><tbody><tr><td>YESICA</td><td class=\"num\">83</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>VIVIANA</td><td class=\"num\">69</td><td class=\"num\">4</td><td class=\"num\">5,80%</td></tr><tr><td>AGUSTINA</td><td class=\"num\">64</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>GRISELDA</td><td class=\"num\">46</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>FLOR</td><td class=\"num\">31</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MATIAS</td><td class=\"num\">29</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARIA MARTA</td><td class=\"num\">26</td><td class=\"num\">2</td><td class=\"num\">7,69%</td></tr><tr><td>GONZALO</td><td class=\"num\">26</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARCELO</td><td class=\"num\">24</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>ROSANA</td><td class=\"num\">22</td><td class=\"num\">2</td><td class=\"num\">9,09%</td></tr><tr><td>CAROLINA</td><td class=\"num\">20</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MARIO</td><td class=\"num\">17</td><td class=\"num\">1</td><td class=\"num\">5,88%</td></tr><tr><td>ALEXA</td><td class=\"num\">15</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MALENA</td><td class=\"num\">13</td><td class=\"num\">1</td><td class=\"num\">7,69%</td></tr><tr><td>JOAN</td><td class=\"num\">12</td><td class=\"num\">1</td><td class=\"num\">8,33%</td></tr><tr><td>DORA</td><td class=\"num\">10</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>MAURICIO</td><td class=\"num\">9</td><td class=\"num\">0</td><td class=\"num\">0%</td></tr><tr><td>WALTER</td><td class=\"num\">2</td><td class=\"num\">2</td><td class=\"num\">100%</td></tr><tr><td>ADRIANA</td><td class=\"num\">2</td><td class=\"num\">1</td><td class=\"num\">50%</td></tr></tbody></table></div><div class=\"tb-nada\" hidden>No hay filas que coincidan con la búsqueda.</div></div></div>"
+        },
+        {
           "id": "dmtsz4qf1wkr6",
           "titulo": "AGOSTO 2026",
           "etiqueta": "",
