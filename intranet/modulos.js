@@ -14,6 +14,31 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmvzdgnbncn2n",
+          "titulo": "SOFÁ CAMA MILO | VIDEO",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-11-02",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "video",
+              "src": "assets/_modulos/cartelera_c2oo.mp4",
+              "tam": "md",
+              "poster": "assets/_modulos/cartelera_f1th.jpg",
+              "orient": "vert",
+              "ar": "576/1024",
+              "medido": true
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-video vert tam-md\" data-med=\"1\" style=\"--arw:576;--arh:1024\"><div class=\"v-box\"><video src=\"assets/_modulos/cartelera_c2oo.mp4\" controls preload=\"metadata\" playsinline poster=\"assets/_modulos/cartelera_f1th.jpg\"></video></div></figure></div>"
+        },
+        {
           "id": "dmvzdft4ld8wp",
           "titulo": "NUEVAS FECHAS COSTA ATLÁNTICA | SERVICIO DE ENTREGAS",
           "autor": "Marketing",
