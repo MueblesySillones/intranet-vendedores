@@ -34,9 +34,18 @@ window.MODULES = [
               "orient": "vert",
               "ar": "576/1024",
               "medido": true
+            },
+            {
+              "t": "video",
+              "src": "assets/_modulos/sofa_cama_milo_2_rmhg.mp4",
+              "tam": "md",
+              "orient": "vert",
+              "ar": "720/1280",
+              "medido": true,
+              "poster": "assets/_modulos/sofa_cama_milo_video_4rps.jpg"
             }
           ],
-          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-video vert tam-md\" data-med=\"1\" style=\"--arw:576;--arh:1024\"><div class=\"v-box\"><video src=\"assets/_modulos/cartelera_c2oo.mp4\" controls preload=\"metadata\" playsinline poster=\"assets/_modulos/cartelera_f1th.jpg\"></video></div></figure></div>"
+          "html": "<div class=\"db\" data-bi=\"0\"><figure class=\"m-video vert tam-md\" data-med=\"1\" style=\"--arw:576;--arh:1024\"><div class=\"v-box\"><video src=\"assets/_modulos/cartelera_c2oo.mp4\" controls preload=\"metadata\" playsinline poster=\"assets/_modulos/cartelera_f1th.jpg\"></video></div></figure></div><div class=\"db\" data-bi=\"1\"><figure class=\"m-video vert tam-md\" data-med=\"1\" style=\"--arw:720;--arh:1280\"><div class=\"v-box\"><video src=\"assets/_modulos/sofa_cama_milo_2_rmhg.mp4\" controls preload=\"metadata\" playsinline poster=\"assets/_modulos/sofa_cama_milo_video_4rps.jpg\"></video></div></figure></div>"
         },
         {
           "id": "dmvzdft4ld8wp",
