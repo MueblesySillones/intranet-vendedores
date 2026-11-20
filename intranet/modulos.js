@@ -14,6 +14,40 @@ window.MODULES = [
       "tipo": "cartelera",
       "docs": [
         {
+          "id": "dmwpape0ujfhf",
+          "titulo": "SET ANIVERSARIO MYS",
+          "autor": "Marketing",
+          "sucursal": "",
+          "fecha": "2026-11-20",
+          "etiqueta": "",
+          "fijado": false,
+          "confirmar": false,
+          "vence": "",
+          "archivado": false,
+          "archivar": "",
+          "bloques": [
+            {
+              "t": "parrafo",
+              "texto": "Les envió fotos de como debe quedar el SET de aroma VENTI exclusivo aniversario exhibido en los escritorios. \n\nAdemás dando fin a DISCONTINUOS (a nivel comunicación) debemos exhibir todos los carteles a3 y a4 juntos a los muebles destacados por el Aniversario. \n\nLes envío las fotos de los carteles, por favor coloquen estos carteles en donde estan los ambientes armados con el sillón mallorca / mesa mora / etc. \nRecuerden compartir todo lo que subamos en nuestro canal de comunicación interna!! Nos ayuda mucho para difundir nuestro ANIVERSARIO numero 66. \n\nGracias!!"
+            },
+            {
+              "t": "galeria",
+              "titulo": "",
+              "items": [
+                {
+                  "src": "assets/_modulos/f_7ecb_4b6f_ad00_1306d8e9e431_m8qo.jpg",
+                  "nombre": "f7911355-7ecb-4b6f-ad00-1306d8e9e431"
+                },
+                {
+                  "src": "assets/_modulos/set_aniversario_mys_7g7u.jpg",
+                  "nombre": "d918b940-c12e-4f79-b4b5-a358ae477e03"
+                }
+              ]
+            }
+          ],
+          "html": "<div class=\"db\" data-bi=\"0\"><p class=\"m-p\">Les envió fotos de como debe quedar el SET de aroma VENTI exclusivo aniversario exhibido en los escritorios. <br><br>Además dando fin a DISCONTINUOS (a nivel comunicación) debemos exhibir todos los carteles a3 y a4 juntos a los muebles destacados por el Aniversario. <br><br>Les envío las fotos de los carteles, por favor coloquen estos carteles en donde estan los ambientes armados con el sillón mallorca / mesa mora / etc. <br>Recuerden compartir todo lo que subamos en nuestro canal de comunicación interna!! Nos ayuda mucho para difundir nuestro ANIVERSARIO numero 66. <br><br>Gracias!!</p></div><div class=\"db\" data-bi=\"1\"><div class=\"dl-section\"><div class=\"gallery\"><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/f_7ecb_4b6f_ad00_1306d8e9e431_m8qo.jpg\" alt=\"f7911355-7ecb-4b6f-ad00-1306d8e9e431\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/f_7ecb_4b6f_ad00_1306d8e9e431_m8qo.jpg','f7911355-7ecb-4b6f-ad00-1306d8e9e431')\"><div class=\"gmeta\"><div class=\"gtitle\">f7911355-7ecb-4b6f-ad00-1306d8e9e431</div><a class=\"dl-btn\" href=\"assets/_modulos/f_7ecb_4b6f_ad00_1306d8e9e431_m8qo.jpg\" download=\"f7911355-7ecb-4b6f-ad00-1306d8e9e431.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div><div class=\"gcard\"><img class=\"gimg\" src=\"assets/_modulos/set_aniversario_mys_7g7u.jpg\" alt=\"d918b940-c12e-4f79-b4b5-a358ae477e03\" loading=\"lazy\" onclick=\"openLightbox('assets/_modulos/set_aniversario_mys_7g7u.jpg','d918b940-c12e-4f79-b4b5-a358ae477e03')\"><div class=\"gmeta\"><div class=\"gtitle\">d918b940-c12e-4f79-b4b5-a358ae477e03</div><a class=\"dl-btn\" href=\"assets/_modulos/set_aniversario_mys_7g7u.jpg\" download=\"d918b940-c12e-4f79-b4b5-a358ae477e03.jpg\"><span class=\"ico\"><svg viewBox=\"0 0 24 24\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg></span> Descargar</a></div></div></div></div></div>"
+        },
+        {
           "id": "dmvzdgnbncn2n",
           "titulo": "SOFÁ CAMA MILO | VIDEO",
           "autor": "Marketing",
